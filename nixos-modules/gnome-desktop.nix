@@ -16,6 +16,7 @@
       gnome-photos
       gnome-tour
       gnome-text-editor
+      gedit # text editor
     ])
     ++ (with pkgs.gnome; [
       cheese # webcam tool
@@ -24,7 +25,6 @@
       gnome-calculator
       gnome-maps
       gnome-system-monitor
-      gedit # text editor
       epiphany # web browser
       evince # document viewer
       gnome-characters
@@ -35,6 +35,8 @@
       atomix # puzzle game
       yelp
     ]);
+
+  environment.systemPackages = with pkgs; [gnomeExtensions.dash-to-panel];
 
   hardware.opengl = {
     enable = true;

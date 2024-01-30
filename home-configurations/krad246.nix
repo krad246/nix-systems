@@ -7,6 +7,7 @@ args @ {
   ...
 }: let
   homeModules = ezModules;
+  unstable = pkgs.callPackage args.inputs.nixpkgs-unstable {};
 in {
   imports = with homeModules;
     [
@@ -27,11 +28,12 @@ in {
       }:
         lib.mkIf pkgs.stdenv.isLinux (lib.mkMerge [
           {
-            home.packages = with pkgs; [signal-desktop];
+            home.packages = [pkgs.pavucontrol unstable.signal-desktop unstable.zoom-us];
           }
           (import chromium)
           (import kdeconnect)
           (import webcord {inherit lib pkgs;})
+          (import obs)
         ]))
     ]
     ++ [
@@ -61,4 +63,14 @@ in {
       HOME = "${config.home.homeDirectory}";
     };
   };
+
+  xdg.desktopEntries = let
+    mkHidden = name: {
+      "${name}" = {
+        inherit name;
+        noDisplay = true;
+      };
+    };
+  in
+    lib.mkMerge [(mkHidden "Proton 8.0") (mkHidden "Zoom")];
 }

@@ -1,43 +1,53 @@
 {
+  nixConfig = {
+    extra-substituters = [
+      "https://cache.nixos.org"
+      "https://nix-community.cachix.org"
+      "https://krad246.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "krad246.cachix.org-1:naxMicfqW5ZWr7XNZeLfAT3YHWCDLs3noY0aI3eBfvQ="
+    ];
+    extra-experimental-features = "nix-command flakes";
+  };
+
   inputs = rec {
     # Package distributions
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/release-23.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/release-24.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-23.11-darwin";
-
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
     nixpkgs = nixpkgs-stable;
 
-    # Legacy and modern Nix compatibility shims.
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
+    # Hardware platform configurations with options preset
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    # Deployment scripts + other bits n bobs
+    mission-control.url = "github:Platonic-Systems/mission-control";
+
+    # Simple modules for generating a variety of image formats
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
 
-    # Simple glue between direnv, nix-shell, and flakes to get
-    # absolutely reproducible pathing in the repo.
-    flake-root.url = "github:srid/flake-root";
+    # Immutable OS root filesystem (erase your darlings)
+    impermanence.url = "github:nix-community/impermanence";
 
-    # Swiss-army-knife formatter.
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+    # Declarative disk partitioning
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
-    # Code commit cleanliness.
-    pre-commit-hooks-nix = {
-      url = "github:cachix/pre-commit-hooks.nix";
+    # WSL distribution on NixOS
+    nixos-wsl = {
+      url = "github:nix-community/nixos-wsl";
       inputs = {
-        flake-compat.follows = "flake-compat";
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixpkgs-stable";
+        flake-compat.follows = "flake-compat";
       };
-    };
-
-    # An opinionated Nix flake library (see flake-utils)
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
     # Darwin shims for Nix
@@ -52,19 +62,15 @@
       inputs.flake-compat.follows = "flake-compat";
     };
 
-    # Cross-platform (Linux / MacOS) userspace package management
-    home-manager = {
-      url = "github:nix-community/home-manager/release-23.11";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
+    nixos-cosmic = {
+      url = "github:lilyinstarlight/nixos-cosmic";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    # For WSL
-    nixos-wsl = {
-      url = "github:nix-community/nixos-wsl";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "flake-compat";
-      };
+    # Cross-platform (Linux / MacOS) userspace package management
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
     # Flake-Parts module gluing it together
@@ -76,9 +82,55 @@
       };
     };
 
-    disko = {
-      url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
+    # Legacy and flake compatibility shims.
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
+      flake = false;
+    };
+
+    # Simple connection glue between direnv, nix-shell, and flakes to get
+    # the absolute roots of various subflakes in a project.
+    flake-root.url = "github:srid/flake-root";
+
+    # An opinionated Nix flake library (see flake-utils)
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs-unstable";
+    };
+
+    # Swiss-army-knife formatter.
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # Code cleanliness checking for developers.
+    pre-commit-hooks-nix = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        nixpkgs.follows = "nixpkgs-unstable";
+        nixpkgs-stable.follows = "nixpkgs-stable";
+      };
+    };
+
+    agenix = {
+      url = "github:ryantm/agenix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs-stable";
+        darwin.follows = "darwin";
+        home-manager.follows = "home-manager";
+      };
+    };
+
+    agenix-rekey = {
+      url = "github:oddlama/agenix-rekey";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    vscode-server = {
+      url = "github:nix-community/nixos-vscode-server";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -96,13 +148,29 @@
           ez-configs.flakeModule
           pre-commit-hooks-nix.flakeModule
         ]
+        ++ [
+          mission-control.flakeModule
+        ]
         ++ [./tools];
 
       flake = {
+        agenix-rekey = inputs.agenix-rekey.configure {
+          userFlake = self;
+          nodes = self.nixosConfigurations;
+        };
+
         packages = {
-          "x86_64-linux" = {
-            nixos-wsl-tarball = self.nixosConfigurations.nixos-wsl.config.system.build.tarballBuilder;
-          };
+          "x86_64-linux" =
+            (let
+              inherit (self.nixosConfigurations) nixos-iso-installer;
+              inherit (nixos-iso-installer.config.system) build;
+            in {nixos-iso-installer = build.isoImage;})
+            // (let
+              inherit (self.nixosConfigurations) nixos-wsl;
+              inherit (nixos-wsl.config.system) build;
+            in {
+              nixos-wsl-tarball = build.tarballBuilder;
+            });
         };
 
         # Live running system
@@ -122,15 +190,18 @@
         globalArgs = {inherit self inputs;};
         nixos.hosts = {
           nixos-wsl.userHomeModules = ["keerad" "krad246"];
+          nixos-iso-installer.userHomeModules = ["nixos"];
+          immutable-gnome.userHomeModules = ["krad246"];
         };
+        darwin.hosts.nixbook-air.userHomeModules = ["krad246"];
         home = {
           users = {
             # Generate only one WSL config; requires a matching Windows user.
             keerad = {
               nameFunction = _host: "keerad@nixos-wsl";
               standalone = {
-                enable = true;
-                pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
+                enable = builtins ? currentSystem;
+                pkgs = import inputs.nixpkgs {system = builtins.currentSystem;};
               };
             };
           };

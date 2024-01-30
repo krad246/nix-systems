@@ -7,10 +7,12 @@
         wget
         unzip
         safe-rm
+        jq
       ]
       ++ [
         gnumake
         just
+        has
         gcc
       ]
       ++ [

@@ -1,0 +1,1 @@
+../../nixos-configurations/impermanent-pantheon/disko-config.nix

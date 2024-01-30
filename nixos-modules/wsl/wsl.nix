@@ -1,4 +1,8 @@
-{inputs, ...}: let
+{
+  inputs,
+  lib,
+  ...
+}: let
   inherit (inputs) nixos-wsl;
 in {
   imports = [nixos-wsl.nixosModules.wsl];
@@ -27,7 +31,6 @@ in {
     interop.register = true;
     startMenuLaunchers = true;
     nativeSystemd = true;
-    docker-desktop.enable = true;
 
     wslConf = {
       automount = {
@@ -36,14 +39,9 @@ in {
         root = "/mnt";
       };
 
-      interop = {
+      interop = lib.mkDefault {
         enabled = true;
         appendWindowsPath = true;
-      };
-
-      network = {
-        generateHosts = true;
-        generateResolvConf = true;
       };
     };
   };

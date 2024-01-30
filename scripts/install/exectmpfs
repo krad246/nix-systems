@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+SCRIPT=$(realpath "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+[[ "${VERBOSE:-0}" -eq 1 ]] && set -v
+[[ "${DEBUG:-0}" -eq 1 ]] && set -x
+
+set -euo pipefail
+
+tmp="$(mktemp -d)"
+mkdir -p "$tmp/.ro"
+mkdir -p "$tmp/.rw/upper"
+mkdir -p "$tmp/.rw/work"
+
+finish() {
+  umount -f "$tmp"
+  umount -f "$tmp/.ro"
+  rm -r "$tmp"
+}
+
+trap finish EXIT
+mount -B "$(realpath $FLAKE_ROOT)" "$tmp/.ro"
+mount -t overlay overlay -o lowerdir="$tmp/.ro",upperdir="$tmp/.rw/upper",workdir="$tmp/.rw/work" "$tmp"
+
+env --chdir "$tmp" bash -cx -- "$*"
+

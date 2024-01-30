@@ -6,6 +6,7 @@ in {
       bash
       bat
       bottom
+      cachix
       coreutils
       colima
       direnv

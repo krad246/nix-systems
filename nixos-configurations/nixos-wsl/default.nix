@@ -1,11 +1,20 @@
 {
-  self,
+  inputs,
+  ezModules,
   lib,
   ...
-}: let
-  inherit (self) nixosModules;
-in {
-  imports = [nixosModules.nixos nixosModules.wsl] ++ [./platform.nix];
+}: {
+  imports = with ezModules;
+    [
+      nixos
+      wsl
+      wsl-docker-desktop
+      flake-registry
+      cachix
+      nix-ld
+      inputs.vscode-server.nixosModules.default
+    ]
+    ++ [./platform.nix];
 
   networking.hostName = "nixos-wsl";
 
@@ -21,7 +30,7 @@ in {
     home = "/home/keerad";
     description = "Keerthi Radhakrishnan";
     initialHashedPassword = "";
-    extraGroups = ["wheel"];
+    extraGroups = ["wheel" "NetworkManager" "docker"];
   };
 
   # Linux user
@@ -31,6 +40,8 @@ in {
     home = "/home/krad246";
     description = "Keerthi Radhakrishnan";
     initialHashedPassword = "";
-    extraGroups = ["wheel"];
+    extraGroups = ["wheel" "NetworkManager" "docker"];
   };
+
+  nix.settings.trusted-users = ["keerad" "krad246"];
 }

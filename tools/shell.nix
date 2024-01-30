@@ -12,7 +12,7 @@
         config.flake-root.devShell
       ];
 
-      packages = with pkgs; [git direnv nix-direnv just ripgrep];
+      packages = with pkgs; [git direnv nix-direnv just ripgrep docker];
       shellHook = ''
       '';
     };
