@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+SCRIPT=$(realpath "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+[[ "${VERBOSE:-0}" -eq 1 ]] && set -v
+[[ "${DEBUG:-0}" -eq 1 ]] && set -x
+
+set -euo pipefail
+
+TARGET="$1"
+shift
+
+DEVICE="${1:-}"
+if [[ -z "$DEVICE" ]]; then
+  DEVICE=/dev/nvme0n1
+else
+  shift
+fi
+
+ARGSTR=(
+  --argstr device "$DEVICE"
+)
+
+MNT=/mnt
+NIXOS="$MNT/etc/nixos"
+RUNNER="$SCRIPTPATH/$TARGET/runner"
+FLAKE_SRC="$FLAKE_ROOT"
+
+if [[ -f "$RUNNER" ]]; then
+	"$RUNNER" "$@"
+else
+	command nix run github:nix-community/disko -- --mode disko "$FLAKE_SRC/legacy/$TARGET/disko-config.nix" "${ARGSTR[@]}"
+	command nix shell nixpkgs\#nixos-install-tools --command nixos-generate-config --root "$MNT" --no-filesystems
+	command nix shell nixpkgs\#nixos-install-tools --command nixos-install --root "$MNT" --no-root-passwd -I nixos-config="$FLAKE_SRC/legacy/$TARGET"
+	ARGS=(
+		--flake "/etc/nixos#$TARGET"
+	)
+
+  rsync -auvh $FLAKE_ROOT/* $NIXOS
+	command nix shell nixpkgs\#nixos-install-tools --command nixos-enter --root "$MNT" -- nixos-rebuild boot ${ARGS[@]}
+fi
+
