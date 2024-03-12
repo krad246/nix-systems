@@ -100,6 +100,9 @@
 
       flake = {
         packages = {
+          "x86_64-linux" = {
+            nixos-wsl-tarball = self.nixosConfigurations.nixos-wsl.config.system.build.tarballBuilder;
+          };
         };
 
         # Live running system
@@ -117,16 +120,19 @@
       ezConfigs = {
         root = ./.;
         globalArgs = {inherit self inputs;};
+        nixos.hosts = {
+          nixos-wsl.userHomeModules = ["keerad" "krad246"];
+        };
         home = {
-          extraSpecialArgs = {
-            inherit self inputs;
-            imports = with inputs; [
-              agenix.homeManagerModule
-              mac-app-util.homeManagerModule
-            ];
-          };
-
           users = {
+            # Generate only one WSL config; requires a matching Windows user.
+            keerad = {
+              nameFunction = _host: "keerad@nixos-wsl";
+              standalone = {
+                enable = true;
+                pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
+              };
+            };
           };
         };
       };
