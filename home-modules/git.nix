@@ -36,6 +36,7 @@
         push = {
           default = "simple";
           followtags = true;
+          autoSetupRemote = true;
         };
 
         rebase = {
