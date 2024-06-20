@@ -2,6 +2,7 @@
   environment = {
     systemPackages = with pkgs;
       [
+        coreutils
         uutils-coreutils
         envsubst
       ]
@@ -26,4 +27,6 @@
   };
 
   nixpkgs.config.allowUnfree = true;
+  programs.nix-index.enable = true;
+  programs.command-not-found.enable = false;
 }

@@ -1,4 +1,4 @@
-{
+_: {
   fileSystems."/c" = {
     depends = [
       "/mnt/c"

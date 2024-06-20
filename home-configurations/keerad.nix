@@ -5,10 +5,12 @@
   osConfig,
   ...
 }: {
-  imports = with ezModules; [
-    colima
-    shellenv
-  ];
+  imports = with ezModules;
+    [
+      colima
+      shellenv
+    ]
+    ++ lib.lists.optionals (!(builtins ? currentSystem)) [vscode];
 
   home = {
     username = osConfig.users.users.keerad.name or "keerad";

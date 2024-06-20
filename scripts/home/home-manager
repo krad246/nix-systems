@@ -9,5 +9,4 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 set -euo pipefail
 
 command nix \
-  --extra-experimental-features 'nix-command flakes' \
   run home-manager -- "$@"

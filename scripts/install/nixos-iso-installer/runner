@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+SCRIPT=$(realpath "$0")
+SCRIPTPATH=$(dirname "$SCRIPT")
+
+[[ "${VERBOSE:-0}" -eq 1 ]] && set -v
+[[ "${DEBUG:-0}" -eq 1 ]] && set -x
+
+set -euo pipefail
+
+DEVICE="${1:-}"
+if [[ -z "$DEVICE" ]]; then
+  DEVICE=/dev/sda
+else
+  shift
+fi
+
+ARGSTR=(
+  --argstr device "$DEVICE"
+)
+
+just --justfile "$FLAKE_ROOT/justfile" run build flake .#nixos-iso-installer
+find ./result/iso -name '*.iso' | xargs -I {} dd if={} of="$DEVICE" bs=4M
