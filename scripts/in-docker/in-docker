@@ -3,11 +3,6 @@
 SCRIPT=$(realpath "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-[[ "${VERBOSE:-0}" -eq 1 ]] && set -v
-[[ "${DEBUG:-0}" -eq 1 ]] && set -x
-
-set -euo pipefail
-
 VERB="$1"
 shift
 
@@ -24,11 +19,8 @@ if [[ -n "${PLATFORM:-}" ]]; then
   PLATFORM_ARGS+=(--platform "$PLATFORM")
 fi
 
-[[ "${VERBOSE:-0}" -eq 1 ]] && ARGS+=(-e VERBOSE=1)
-[[ "${DEBUG:-0}" -eq 1 ]] && ARGS+=(-e DEBUG=1)
-
 env --chdir "$SCRIPTPATH" \
-    nix shell nixpkgs#docker --command \
+    nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#docker --command \
       docker build "${PLATFORM_ARGS[@]}" -t nix-docker . \
       && docker run "${PLATFORM_ARGS[@]}" "${ARGS[@]}" -it nix-docker \
-        nix run nixpkgs#just -- run "$VERB" "$TARGET" "$@"
+        nix run nixpkgs#just -- "$VERB" "$TARGET" "$@"

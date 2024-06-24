@@ -10,6 +10,7 @@
             size = "1M";
             type = "EF02"; # for grub MBR
           };
+
           ESP = {
             name = "ESP";
             size = "512M";
@@ -20,6 +21,7 @@
               mountpoint = "/boot";
             };
           };
+
           home = {
             size = "128G";
             content = {
@@ -37,6 +39,7 @@
               mountpoint = "/nix";
             };
           };
+
           persist = {
             size = "16G";
             content = {

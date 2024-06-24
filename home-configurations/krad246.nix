@@ -34,6 +34,7 @@ in {
           (import kdeconnect)
           (import webcord {inherit lib pkgs;})
           (import obs)
+          (import xdg {inherit lib;})
         ]))
     ]
     ++ [
@@ -63,14 +64,4 @@ in {
       HOME = "${config.home.homeDirectory}";
     };
   };
-
-  xdg.desktopEntries = let
-    mkHidden = name: {
-      "${name}" = {
-        inherit name;
-        noDisplay = true;
-      };
-    };
-  in
-    lib.mkMerge [(mkHidden "Proton 8.0") (mkHidden "Zoom")];
 }

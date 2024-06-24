@@ -170,7 +170,11 @@
               inherit (nixos-wsl.config.system) build;
             in {
               nixos-wsl-tarball = build.tarballBuilder;
-            });
+            })
+            // (let
+              inherit (self.nixosConfigurations) immutable-gnome;
+              inherit (immutable-gnome.config.system) build;
+            in {immutable-gnome-vm = build.vmWithBootLoader;});
         };
 
         # Live running system

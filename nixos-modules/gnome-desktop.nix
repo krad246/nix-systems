@@ -36,7 +36,7 @@
       yelp
     ]);
 
-  environment.systemPackages = with pkgs; [gnomeExtensions.dash-to-panel];
+  environment.systemPackages = with pkgs; [gnomeExtensions.dash-to-panel gparted];
 
   hardware.opengl = {
     enable = true;

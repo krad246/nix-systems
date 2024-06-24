@@ -8,17 +8,6 @@
 
     // words - list of words to be always considered correct
     "words": [
-      "nixpkgs",
-      "pkgs",
 
-      "nixos",
-
-      "neovim",
-      "nvim",
-
-      "direnv",
-
-      "mountpoint",
-      "disko",
     ],
 }
