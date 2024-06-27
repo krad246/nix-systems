@@ -1,5 +1,4 @@
 {
-  inputs,
   pkgs,
   modulesPath,
   ...
@@ -25,7 +24,6 @@
       ];
     };
 
-    nixPath = ["nixpkgs=${inputs.nixpkgs}"];
     extraOptions = ''
       experimental-features = nix-command flakes
       eval-cache = false

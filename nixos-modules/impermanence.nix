@@ -1,8 +1,4 @@
-{inputs, ...}: let
-  inherit (inputs) impermanence;
-in {
-  imports = [impermanence.nixosModules.impermanence];
-
+{
   environment.persistence."/nix/persist" = {
     hideMounts = true;
     directories = [

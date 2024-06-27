@@ -1,14 +1,10 @@
-{
-  inputs,
-  ezModules,
-  ...
-}: let
-  nixosModules = ezModules;
-  inherit (inputs) disko impermanence;
+_: let
+  disko = import ./fetch-disko.nix;
+  impermanence = import ./fetch-impermanence.nix;
 in {
   imports =
-    [disko.nixosModules.disko ./disko-config.nix]
-    ++ [nixosModules.impermanence];
+    [disko ./disko-config.nix]
+    ++ [impermanence];
 
   fileSystems."/nix/persist".neededForBoot = true;
 }

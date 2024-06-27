@@ -13,7 +13,6 @@ in {
     [
       agenix
       colima
-      discord
       kitty
       nerdfonts
       shellenv
@@ -34,7 +33,7 @@ in {
           (import kdeconnect)
           (import webcord {inherit lib pkgs;})
           (import obs)
-          (import xdg {inherit lib;})
+          (import xdg {inherit lib pkgs;})
         ]))
     ]
     ++ [

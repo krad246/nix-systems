@@ -12,12 +12,14 @@ shift
 DEVICE="$1"
 shift
 
+TRACE=0
 ARGS=()
 while [ "$#" -gt 0 ]; do
     i="$1"; shift 1
     case "$i" in
         --debug)
             set -x
+            TRACE=1
             ;;
        *)
             ARGS+=($i)
@@ -29,6 +31,10 @@ nix() {
   command nix "$@"
 }
 
-just build flake ".#$HOSTNAME" && \
-  find ./result/iso -name '*.iso' | xargs -I {} dd if={} of="$DEVICE" bs=64M
-
+if [[ "$TRACE" -eq 1 ]]; then
+  MACHINE="$HOSTNAME" nix run github:nix-community/disko\#disko-install -- --show-trace --write-efi-boot-entries \
+    --flake "$FLAKE_ROOT#$HOSTNAME" --disk main "$DEVICE" "$@"
+else
+  MACHINE="$HOSTNAME" nix run github:nix-community/disko\#disko-install -- --write-efi-boot-entries \
+    --flake "$FLAKE_ROOT#$HOSTNAME" --disk main "$DEVICE" "$@"
+fi

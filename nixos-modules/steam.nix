@@ -6,4 +6,8 @@
   };
 
   hardware.steam-hardware.enable = true;
+
+  systemd.tmpfiles.rules = [
+    "d /games            777 nobody    nobody  - -"
+  ];
 }

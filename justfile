@@ -21,4 +21,6 @@ check *ARGS: (exec "check" "flake" ARGS)
 
 show *ARGS: (exec "show" "flake" ARGS)
 
+install CONFIG DEVICE +ARGS='': (exec CONFIG "install" DEVICE ARGS)
+
 switch PLATFORM *ARGS: (exec "switch" PLATFORM ARGS)

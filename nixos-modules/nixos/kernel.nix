@@ -4,6 +4,7 @@
   ...
 }: {
   boot = {
+    initrd.systemd.enable = true;
     tmp = {
       useTmpfs = true;
       cleanOnBoot = true;
@@ -23,4 +24,7 @@
 
   # This just holds up boot, (imo)
   systemd.services.NetworkManager-wait-online.enable = false;
+
+  #
+  services.logrotate.checkConfig = false;
 }

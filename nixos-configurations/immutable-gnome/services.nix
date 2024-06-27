@@ -1,4 +1,6 @@
 {pkgs, ...}: {
+  imports = [../../nixos-modules/flake-registry.nix];
+
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
 

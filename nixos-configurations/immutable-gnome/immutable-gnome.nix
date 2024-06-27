@@ -1,35 +1,27 @@
-{
-  inputs,
-  ezModules,
-  lib,
-  ...
-}: let
-  nixosModules = ezModules;
-  inherit (inputs) nixos-hardware;
-in {
-  imports =
-    (with nixosModules;
-      [efiboot nixos flake-registry impermanence]
-      ++ [gnome-desktop nerdfonts]
-      ++ [pipewire pam-u2f kdeconnect steam]
-      ++ [docker cachix nix-ld libvirtd flatpak])
-    ++ (with nixos-hardware.nixosModules; [
-      common-cpu-amd
-      common-gpu-amd
-      common-pc
-      common-pc-ssd
-    ]);
+_args: {
+  imports = [
+    ../../nixos-modules/cachix.nix
+    ../../nixos-modules/docker.nix
+    ../../nixos-modules/efiboot.nix
+    ../../nixos-modules/flatpak.nix
+    ../../nixos-modules/gnome-desktop.nix
+    ../../nixos-modules/impermanence.nix
+    ../../nixos-modules/libvirtd.nix
+    ../../nixos-modules/kdeconnect.nix
+    ../../nixos-modules/nerdfonts.nix
+    ../../nixos-modules/nixos
+    ../../nixos-modules/nix-ld.nix
+    ../../nixos-modules/pipewire.nix
+    ../../nixos-modules/steam.nix
+  ];
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.krad246 = {
     isNormalUser = true;
     description = "Keerthi";
     extraGroups = ["NetworkManager" "wheel" "libvirtd"];
-    initialHashedPassword = "$y$j9T$oZ2NvBDMhd93Rg4bK7eYf/$TwJuUcU8xdN4SzNfYaY5xA15B.tbHQkhdTmJyF80zzB";
+    initialHashedPassword = "";
   };
 
   nix.settings.trusted-users = ["krad246"];
-
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = lib.trivial.release;
 }

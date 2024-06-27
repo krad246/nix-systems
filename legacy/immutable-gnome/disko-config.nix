@@ -1,0 +1,1 @@
+../../nixos-configurations/immutable-gnome/disko-config.nix

@@ -1,0 +1,1 @@
+../../nixos-configurations/immutable-gnome/fetch-impermanence.nix
