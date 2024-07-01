@@ -8,12 +8,14 @@
   device = lib.debug.traceVal (builtins.getEnv "DEVICE");
 
   machine = self.nixosConfigurations."${install-target}";
-  dependencies = [
-    machine.config.system.build.toplevel
-    machine.config.system.build.diskoScript
-    pkgs.stdenv.drvPath
-    (machine.pkgs.closureInfo { rootPaths = [ ]; }).drvPath
-  ] ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
+  dependencies =
+    [
+      machine.config.system.build.toplevel
+      machine.config.system.build.diskoScript
+      pkgs.stdenv.drvPath
+      (machine.pkgs.closureInfo {rootPaths = [];}).drvPath
+    ]
+    ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
 
   closureInfo = pkgs.closureInfo {rootPaths = dependencies;};
 in {

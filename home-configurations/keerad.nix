@@ -10,7 +10,7 @@
       colima
       shellenv
     ]
-    ++ lib.lists.optionals (!(builtins ? currentSystem)) [vscode];
+    ++ [vscode];
 
   home = {
     username = osConfig.users.users.keerad.name or "keerad";
