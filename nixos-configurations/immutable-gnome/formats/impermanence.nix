@@ -1,4 +1,4 @@
-_: let
+let
   boot = {
     size = "1M";
     type = "EF02"; # for grub MBR
@@ -44,7 +44,7 @@ _: let
 in {
   disko.devices = {
     disk.main = {
-      device = "/dev/null";
+      device = "/dev/nvme0n1";
       type = "disk";
       content = {
         type = "gpt";
@@ -63,4 +63,6 @@ in {
       ];
     };
   };
+
+  fileSystems."/nix/persist".neededForBoot = true;
 }

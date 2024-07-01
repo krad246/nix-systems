@@ -11,8 +11,7 @@
     };
 
     efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = config.fileSystems."/boot".mountPoint;
+      canTouchEfiVariables = false;
     };
   };
 }

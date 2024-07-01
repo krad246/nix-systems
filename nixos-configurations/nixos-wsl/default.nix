@@ -1,20 +1,18 @@
-{
-  inputs,
-  ezModules,
-  lib,
-  ...
-}: {
-  imports = with ezModules;
-    [
-      nixos
-      wsl
-      wsl-docker-desktop
-      flake-registry
-      cachix
-      nix-ld
-      inputs.vscode-server.nixosModules.default
-    ]
-    ++ [./platform.nix];
+{lib, ...}: {
+  imports =
+    [./platform.nix]
+    ++ [
+      ../../nixos-modules/cachix.nix
+      ../../nixos-modules/docker.nix
+      ../../nixos-modules/libvirtd.nix
+      ../../nixos-modules/nerdfonts.nix
+      ../../nixos-modules/nixos
+      ../../nixos-modules/nix-ld.nix
+      ../../nixos-modules/wsl
+      ../../nixos-modules/wsl-docker-desktop.nix
+      ../../nixos-modules/flake-registry.nix
+      ../../nixos-modules/vscode-server.nix
+    ];
 
   networking.hostName = "nixos-wsl";
 
