@@ -9,7 +9,9 @@
       };
       mandatoryFeatures = [];
       supportedFeatures = ["big-parallel"];
-      maxJobs = 1;
+      maxJobs = 8;
+      protocol = "ssh-ng";
+      ephemeral = true;
       systems = ["x86_64-linux" "aarch64-linux"];
     };
   };

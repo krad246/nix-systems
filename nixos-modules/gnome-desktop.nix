@@ -36,8 +36,6 @@
       yelp
     ]);
 
-  environment.systemPackages = with pkgs; [gnomeExtensions.dash-to-panel gparted];
-
   hardware.opengl = {
     enable = true;
     driSupport = true;
@@ -45,4 +43,10 @@
   };
 
   services.system76-scheduler.enable = true;
+
+  environment.systemPackages = with pkgs; [
+    whitesur-gtk-theme
+    whitesur-icon-theme
+    whitesur-cursors
+  ];
 }

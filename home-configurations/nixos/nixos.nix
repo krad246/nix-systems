@@ -7,7 +7,7 @@
 }: let
   homeModules = ezModules;
 in {
-  imports = with homeModules; [nerdfonts shellenv vscode];
+  imports = with homeModules; [colima kitty nvim shellenv vscode];
   home = {
     username = osConfig.users.users.nixos.name or "nixos";
     stateVersion = lib.trivial.release;

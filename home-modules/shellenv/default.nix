@@ -11,7 +11,6 @@ in {
       colima
       direnv
       git
-      nerdfonts
       nvim
       ripgrep
       starship
