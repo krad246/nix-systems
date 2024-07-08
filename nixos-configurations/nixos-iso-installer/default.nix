@@ -1,6 +1,7 @@
 {
   inputs,
   lib,
+  modulesPath,
   ...
 }: let
   inherit (inputs) nixos-generators;
@@ -16,8 +17,10 @@ in {
     ]
     ++ [
       nixos-generators.nixosModules.all-formats
+      "${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"
     ];
 
+  boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
   networking.hostName = "nixos-iso-installer";
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }
