@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
 
-command nix --extra-experimental-features 'nix-command flakes' \
-  run home-manager -- "$@"
+nix() {
+  VERB="$1"
+  shift
+
+  command nix --extra-experimental-features 'nix-command flakes' "$VERB" --inputs-from "$FLAKE_ROOT" "$@"
+}
+
+nix run home-manager -- "$@"

@@ -7,7 +7,7 @@ VERB="$1"
 shift
 
 nix() {
-  command nix --extra-experimental-features 'nix-command flakes' "$@"
+  command nix --extra-experimental-features 'nix-command flakes' --inputs-from "$FLAKE_ROOT" "$@"
 }
 
 case "$VERB" in

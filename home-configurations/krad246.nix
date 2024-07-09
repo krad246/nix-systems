@@ -64,4 +64,6 @@ in {
       HOME = "${config.home.homeDirectory}";
     };
   };
+
+  nix.settings.trusted-users = ["krad246"];
 }
