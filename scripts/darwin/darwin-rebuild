@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-
-nix() {
-  command nix --extra-experimental-features 'nix-command flakes' --inputs-from "$FLAKE_ROOT" "$@"
-}
-
-nix run nix-darwin#darwin-rebuild -- "$@"

@@ -1,26 +1,29 @@
 #!/usr/bin/env just --justfile
 
-flake := justfile_directory()
-scripts := flake / "scripts"
-tools := flake / "tools"
+# Pull in justfile bindings
+import 'just-flake.just'
 
 default:
-  @just --list
+    @just --list
 
-run VERB TARGET *ARGS:
-  FLAKE_ROOT={{flake}} \
-    {{ scripts / TARGET / "runner" }} {{ VERB }} {{ ARGS }}
+# Generic dispatcher
+run BUILDER VERB *ARGS:
+    @exec just {{ BUILDER }} {{ VERB }} {{ ARGS }}
 
-exec VERB TARGET *ARGS: (run VERB TARGET ARGS)
 
-docker VERB *ARGS: (exec VERB "in-docker" ARGS)
+build BUILDER *ARGS: (run BUILDER "build" ARGS)
 
-build TARGET *ARGS: (exec "build" TARGET ARGS)
+switch BUILDER *ARGS: (run BUILDER "switch" ARGS)
 
-check *ARGS: (exec "check" "flake" ARGS)
+test BUILDER *ARGS: (run BUILDER "test" ARGS)
 
-show *ARGS: (exec "show" "flake" ARGS)
 
-install CONFIG DEVICE +ARGS='': (exec CONFIG "install" DEVICE ARGS)
+darwin SUBCOMMAND *ARGS: (run "darwin-rebuild" SUBCOMMAND ARGS)
 
-switch PLATFORM *ARGS: (exec "switch" PLATFORM ARGS)
+nixos SUBCOMMAND *ARGS: (run "nixos-rebuild" SUBCOMMAND ARGS)
+
+home SUBCOMMAND *ARGS: (run "home-manager" SUBCOMMAND ARGS)
+
+flake SUBCOMMAND *ARGS: (run "nix" "flake" SUBCOMMAND ARGS)
+
+install CONFIG DEVICE +ARGS='': (run CONFIG "install" DEVICE ARGS)

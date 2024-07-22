@@ -5,11 +5,13 @@
       "https://nix-community.cachix.org"
       "https://krad246.cachix.org"
     ];
+
     extra-trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "krad246.cachix.org-1:naxMicfqW5ZWr7XNZeLfAT3YHWCDLs3noY0aI3eBfvQ="
     ];
+
     extra-experimental-features = "nix-command flakes";
   };
 
@@ -20,11 +22,12 @@
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
     nixpkgs = nixpkgs-stable;
 
+    just-flake = {
+      url = "github:/juspay/just-flake";
+    };
+
     # Hardware platform configurations with options preset
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
-    # Deployment scripts + other bits n bobs
-    mission-control.url = "github:Platonic-Systems/mission-control";
 
     # Simple modules for generating a variety of image formats
     nixos-generators = {
@@ -141,17 +144,132 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = with inputs;
-        [
-          treefmt-nix.flakeModule
-          flake-root.flakeModule
-          ez-configs.flakeModule
-          pre-commit-hooks-nix.flakeModule
-        ]
-        ++ [
-          mission-control.flakeModule
-        ]
-        ++ [./tools];
+      imports = with inputs; [
+        treefmt-nix.flakeModule
+        flake-root.flakeModule
+        ez-configs.flakeModule
+        pre-commit-hooks-nix.flakeModule
+        just-flake.flakeModule
+      ];
+
+      systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
+
+      perSystem = {
+        config,
+        lib,
+        pkgs,
+        ...
+      }: {
+        # Configure repository formatter
+        formatter = config.treefmt.build.wrapper;
+        treefmt = {
+          inherit (config.flake-root) projectRootFile;
+          programs = {
+            deadnix.enable = true;
+            alejandra.enable = true;
+            statix.enable = true;
+          };
+        };
+
+        # flake-root determines location of this flake programmatically.
+
+        # Add justfile bindings to the flake environment
+        just-flake.features = {
+          treefmt.enable = true;
+
+          nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+            enable = true;
+            justfile = ''
+              [linux]
+              nixos-rebuild VERB *ARGS:
+                ${lib.meta.getExe pkgs.nixos-rebuild} \
+                  {{ VERB }} {{ ARGS }}  --use-remote-sudo --flake "$FLAKE_ROOT"
+            '';
+          };
+
+          darwin-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
+            enable = true;
+            justfile = ''
+              [macos]
+              darwin-rebuild VERB *ARGS:
+                ${lib.meta.getExe pkgs.darwin-rebuild} \
+                  {{ VERB }} {{ ARGS }} --flake "$FLAKE_ROOT"
+            '';
+          };
+
+          home-manager = {
+            enable = true;
+            justfile = ''
+              [unix]
+              home-manager VERB *ARGS:
+                ${lib.meta.getExe pkgs.home-manager} \
+                  {{ VERB }} {{ ARGS }} --flake "$FLAKE_ROOT"
+            '';
+          };
+
+          nix = {
+            enable = true;
+            justfile = ''
+              [unix]
+              nix *ARGS:
+                ${lib.meta.getExe pkgs.nix} \
+                  --extra-experimental-features 'nix-command flakes' {{ ARGS }} --inputs-from "$FLAKE_ROOT"
+            '';
+          };
+        };
+
+        # Make commit actions also use something similar to treefmt
+        pre-commit.settings.hooks = {
+          cspell.enable = false;
+
+          nil.enable = true;
+
+          deadnix.enable = true;
+          alejandra.enable = true;
+          statix.enable = true;
+        };
+
+        # Create devShell with all features above
+        devShells.default = pkgs.mkShell {
+          inputsFrom = [
+            config.flake-root.devShell
+            config.just-flake.outputs.devShell
+            config.treefmt.build.devShell
+            config.pre-commit.devShell
+          ];
+
+          packages = with pkgs; [git direnv nix-direnv just ripgrep];
+          shellHook = ''
+          '';
+        };
+      };
+
+      ezConfigs = {
+        root = ./.;
+        globalArgs = {inherit self inputs;};
+        nixos.hosts = {
+          nixos-wsl.userHomeModules = ["keerad" "krad246"];
+          nixos-iso-installer.userHomeModules = ["nixos"];
+          immutable-gnome.userHomeModules = ["krad246"];
+        };
+        darwin.hosts.nixbook-air.userHomeModules = ["krad246"];
+        home = {
+          users = {
+            # Generate only one WSL config; requires a matching Windows user.
+            keerad = {
+              nameFunction = _host: "keerad@nixos-wsl";
+              standalone = {
+                enable = builtins ? currentSystem;
+                pkgs = import inputs.nixpkgs {system = builtins.currentSystem;};
+              };
+            };
+          };
+        };
+      };
+
+      # mkFlake expects this to be present,
+      # so even if we don't use anything from perSystem, we need to set it to something.
+      # You can set it to anything you want if you also want to provide perSystem outputs in your flake.
 
       flake = {
         agenix-rekey = inputs.agenix-rekey.configure {
@@ -175,40 +293,6 @@
               inherit (self.nixosConfigurations) immutable-gnome;
               inherit (immutable-gnome.config.system) build;
             in {immutable-gnome-vm = build.vmWithBootLoader;});
-        };
-
-        # Live running system
-
-        # Deployable ISO image
-
-        # Deployable NixOS initial generation + live reloading package.
-      };
-
-      # mkFlake expects this to be present,
-      # so even if we don't use anything from perSystem, we need to set it to something.
-      # You can set it to anything you want if you also want to provide perSystem outputs in your flake.
-      systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
-
-      ezConfigs = {
-        root = ./.;
-        globalArgs = {inherit self inputs;};
-        nixos.hosts = {
-          nixos-wsl.userHomeModules = ["keerad" "krad246"];
-          nixos-iso-installer.userHomeModules = ["nixos"];
-          immutable-gnome.userHomeModules = ["krad246"];
-        };
-        darwin.hosts.nixbook-air.userHomeModules = ["krad246"];
-        home = {
-          users = {
-            # Generate only one WSL config; requires a matching Windows user.
-            keerad = {
-              nameFunction = _host: "keerad@nixos-wsl";
-              standalone = {
-                enable = builtins ? currentSystem;
-                pkgs = import inputs.nixpkgs {system = builtins.currentSystem;};
-              };
-            };
-          };
         };
       };
     };

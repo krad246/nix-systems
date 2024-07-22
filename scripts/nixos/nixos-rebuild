@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-command nix --extra-experimental-features 'nix-command flakes' \
-  run nixpkgs#nixos-rebuild -- "$@"

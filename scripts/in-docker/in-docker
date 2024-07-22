@@ -22,7 +22,7 @@ fi
 NIX="nix --extra-experimental-features 'nix-command flakes'"
 
 env --chdir "$SCRIPTPATH" \
-    "$NIX" shell nixpkgs#docker --command \
+    nix shell nixpkgs#docker --command \
       docker build "${PLATFORM_ARGS[@]}" -t nix-docker . \
       && docker run "${PLATFORM_ARGS[@]}" "${ARGS[@]}" -it nix-docker \
         "$NIX" run nixpkgs#just -- "$VERB" "$TARGET" "$@"
