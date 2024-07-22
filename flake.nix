@@ -174,47 +174,63 @@
         # flake-root determines location of this flake programmatically.
 
         # Add justfile bindings to the flake environment
-        just-flake.features = {
+        just-flake.features = let
+          mkJustRecipe = args @ {
+            pname,
+            os,
+            extraArgs,
+            ...
+          }: let
+            maybeString = pred: val: lib.strings.optionalString pred val;
+            mkAlias = alias: pname: "alias ${alias} := ${pname}";
+          in ''
+            # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
+            [${os}]
+            ${pname} VERB *ARGS:
+              ${lib.meta.getExe pkgs.${pname}} {{ VERB }} ${extraArgs} {{ ARGS }}
+
+            ${maybeString (args ? alias) (mkAlias args.alias pname)}
+          '';
+        in {
           treefmt.enable = true;
 
           nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
             enable = true;
-            justfile = ''
-              [linux]
-              nixos-rebuild VERB *ARGS:
-                ${lib.meta.getExe pkgs.nixos-rebuild} \
-                  {{ VERB }} {{ ARGS }}  --use-remote-sudo --flake "$FLAKE_ROOT"
-            '';
+            justfile = mkJustRecipe {
+              pname = "nixos-rebuild";
+              os = "linux";
+              extraArgs = "--flake $FLAKE_ROOT --use-remote-sudo";
+              alias = "nixos";
+            };
           };
 
           darwin-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
             enable = true;
-            justfile = ''
-              [macos]
-              darwin-rebuild VERB *ARGS:
-                ${lib.meta.getExe pkgs.darwin-rebuild} \
-                  {{ VERB }} {{ ARGS }} --flake "$FLAKE_ROOT"
-            '';
+            justfile = mkJustRecipe {
+              pname = "darwin-rebuild";
+              os = "macos";
+              extraArgs = "--flake $FLAKE_ROOT";
+              alias = "darwin";
+            };
           };
 
           home-manager = {
             enable = true;
-            justfile = ''
-              [unix]
-              home-manager VERB *ARGS:
-                ${lib.meta.getExe pkgs.home-manager} \
-                  {{ VERB }} {{ ARGS }} --flake "$FLAKE_ROOT"
-            '';
+            justfile = mkJustRecipe {
+              pname = "home-manager";
+              os = "unix";
+              extraArgs = "--flake $FLAKE_ROOT -b backup";
+              alias = "home";
+            };
           };
 
           nix = {
             enable = true;
-            justfile = ''
-              [unix]
-              nix *ARGS:
-                ${lib.meta.getExe pkgs.nix} \
-                  --extra-experimental-features 'nix-command flakes' {{ ARGS }} --inputs-from "$FLAKE_ROOT"
-            '';
+            justfile = mkJustRecipe {
+              pname = "nix";
+              os = "unix";
+              extraArgs = "--extra-experimental-features 'nix-command flakes'";
+            };
           };
         };
 
@@ -266,10 +282,6 @@
           };
         };
       };
-
-      # mkFlake expects this to be present,
-      # so even if we don't use anything from perSystem, we need to set it to something.
-      # You can set it to anything you want if you also want to provide perSystem outputs in your flake.
 
       flake = {
         agenix-rekey = inputs.agenix-rekey.configure {
