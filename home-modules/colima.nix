@@ -7,6 +7,7 @@
 }: let
   triple = lib.strings.splitString "-" pkgs.stdenv.system;
   uname = builtins.elemAt triple 0;
+
   maybeRosetta =
     if pkgs.stdenv.isDarwin
     then "--vm-type vz --vz-rosetta"

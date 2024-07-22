@@ -23,7 +23,7 @@
     nixpkgs = nixpkgs-stable;
 
     just-flake = {
-      url = "github:/juspay/just-flake";
+      url = "github:juspay/just-flake";
     };
 
     # Hardware platform configurations with options preset
@@ -158,6 +158,7 @@
         config,
         lib,
         pkgs,
+        inputs',
         ...
       }: {
         # Configure repository formatter
@@ -173,21 +174,24 @@
 
         # flake-root determines location of this flake programmatically.
 
-        # Add justfile bindings to the flake environment
+        # Add justfile drvdings to the flake environment
         just-flake.features = let
           mkJustRecipe = args @ {
-            pname,
+            drv,
             os,
             extraArgs,
             ...
           }: let
             maybeString = pred: val: lib.strings.optionalString pred val;
             mkAlias = alias: pname: "alias ${alias} := ${pname}";
+            name = lib.strings.getName drv;
+            version = lib.strings.getVersion drv;
+            pname = lib.strings.removePrefix "-${version}" name;
           in ''
             # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
             [${os}]
             ${pname} VERB *ARGS:
-              ${lib.meta.getExe pkgs.${pname}} {{ VERB }} ${extraArgs} {{ ARGS }}
+              ${lib.meta.getExe drv} {{ VERB }} ${extraArgs} {{ ARGS }}
 
             ${maybeString (args ? alias) (mkAlias args.alias pname)}
           '';
@@ -197,7 +201,7 @@
           nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
             enable = true;
             justfile = mkJustRecipe {
-              pname = "nixos-rebuild";
+              drv = pkgs.nixos-rebuild;
               os = "linux";
               extraArgs = "--flake $FLAKE_ROOT --use-remote-sudo";
               alias = "nixos";
@@ -207,7 +211,7 @@
           darwin-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
             enable = true;
             justfile = mkJustRecipe {
-              pname = "darwin-rebuild";
+              drv = inputs'.darwin.packages.darwin-rebuild;
               os = "macos";
               extraArgs = "--flake $FLAKE_ROOT";
               alias = "darwin";
@@ -217,7 +221,7 @@
           home-manager = {
             enable = true;
             justfile = mkJustRecipe {
-              pname = "home-manager";
+              drv = pkgs.home-manager;
               os = "unix";
               extraArgs = "--flake $FLAKE_ROOT -b backup";
               alias = "home";
@@ -227,7 +231,7 @@
           nix = {
             enable = true;
             justfile = mkJustRecipe {
-              pname = "nix";
+              drv = pkgs.nix;
               os = "unix";
               extraArgs = "--extra-experimental-features 'nix-command flakes'";
             };

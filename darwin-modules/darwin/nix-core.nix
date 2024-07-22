@@ -4,7 +4,9 @@
     checkConfig = true;
     gc.automatic = true;
     settings = {
-      auto-optimise-store = true;
+      keep-outputs = true;
+      keep-derivations = true;
+      auto-optimise-store = false;
       sandbox = false;
       substituters = [
         "https://cache.nixos.org"
@@ -18,7 +20,6 @@
 
     extraOptions = ''
       experimental-features = nix-command flakes
-      eval-cache = false
     '';
 
     nixPath = [
@@ -26,6 +27,7 @@
     ];
 
     useDaemon = true;
+    distributedBuilds = true;
   };
 
   nixpkgs.config.allowUnfree = true;

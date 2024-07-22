@@ -20,6 +20,7 @@
         nodePackages.undollar
         duf
       ]
-      ++ [comma];
+      ++ [comma]
+      ++ [nix-tree nix-du nix-diff];
   };
 }
