@@ -4,22 +4,19 @@
   ...
 }: {
   boot = {
-    tmpOnTmpfs = true;
     initrd.systemd.enable = true;
     tmp = {
       useTmpfs = true;
       cleanOnBoot = true;
     };
     kernelPackages = pkgs.linuxPackages_zen;
-    kernelModules = ["kvm-amd" "kvm-intel"];
-  };
-
-  zramSwap = {
-    enable = true;
-    algorithm = "lz4";
   };
 
   services.zram-generator.enable = true;
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+  };
 
   # Not technically a part of the kernel, but close enough...
   networking.networkmanager.enable = true;

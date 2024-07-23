@@ -195,6 +195,10 @@
 
             ${maybeString (args ? alias) (mkAlias args.alias pname)}
           '';
+
+          commonArgs = "--option experimental-features 'nix-command flakes' --option inputs-from \"FLAKE_ROOT\"";
+          flakeArgs = "--flake \"$FLAKE_ROOT\"";
+          builderArgs = commonArgs + flakeArgs;
         in {
           treefmt.enable = true;
 
@@ -203,7 +207,7 @@
             justfile = mkJustRecipe {
               drv = pkgs.nixos-rebuild;
               os = "linux";
-              extraArgs = "--flake $FLAKE_ROOT --use-remote-sudo";
+              extraArgs = builderArgs + "--use-remote-sudo";
               alias = "nixos";
             };
           };
@@ -213,7 +217,7 @@
             justfile = mkJustRecipe {
               drv = inputs'.darwin.packages.darwin-rebuild;
               os = "macos";
-              extraArgs = "--flake $FLAKE_ROOT";
+              extraArgs = builderArgs;
               alias = "darwin";
             };
           };
@@ -223,7 +227,7 @@
             justfile = mkJustRecipe {
               drv = pkgs.home-manager;
               os = "unix";
-              extraArgs = "--flake $FLAKE_ROOT -b backup";
+              extraArgs = builderArgs + "-b bak";
               alias = "home";
             };
           };
@@ -231,9 +235,9 @@
           nix = {
             enable = true;
             justfile = mkJustRecipe {
-              drv = pkgs.nix;
+              drv = pkgs.nixFlakes;
               os = "unix";
-              extraArgs = "--extra-experimental-features 'nix-command flakes'";
+              extraArgs = commonArgs;
             };
           };
         };

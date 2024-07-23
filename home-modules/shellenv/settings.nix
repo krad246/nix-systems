@@ -19,7 +19,7 @@
 
   news.display = "silent";
   nix = lib.mkDefault {
-    package = lib.attrsets.attrByPath ["nix" "package"] pkgs.nix osConfig;
+    package = lib.attrsets.attrByPath ["nix" "package"] pkgs.nixFlakes osConfig;
     settings = lib.attrsets.attrByPath ["nix" "settings"] {experimental-features = ["nix-command flakes"];} osConfig;
   };
 

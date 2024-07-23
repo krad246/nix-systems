@@ -21,4 +21,6 @@
   programs.virt-manager.enable = true;
   programs.dconf.enable = true;
   services.dnsmasq.enable = true;
+
+  boot.kernelModules = ["kvm-amd" "kvm-intel"];
 }

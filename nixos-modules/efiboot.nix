@@ -1,8 +1,12 @@
-{config, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   # Use the GRUB 2 boot loader.
   boot.loader = {
     grub = {
-      enable = true;
+      enable = lib.mkDefault true;
       efiSupport = true;
       efiInstallAsRemovable = !config.boot.loader.efi.canTouchEfiVariables;
 

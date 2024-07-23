@@ -29,6 +29,5 @@ nix() {
   command nix "$@"
 }
 
-just build flake ".#$HOSTNAME" && \
+just nixos-rebuild build ".#$HOSTNAME" && \
   find ./result/iso -name '*.iso' | xargs -I {} dd if={} of="$DEVICE" bs=64M
-
