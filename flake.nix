@@ -22,8 +22,71 @@
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
     nixpkgs = nixpkgs-stable;
 
+    # Legacy and flake compatibility shims.
+    flake-compat = {
+      url = "github:edolstra/flake-compat";
+      flake = false;
+    };
+
+    # Simple connection glue between direnv, nix-shell, and flakes to get
+    # the absolute roots of various subflakes in a project.
+    flake-root.url = "github:srid/flake-root";
+
+    # An opinionated Nix flake library (see flake-utils)
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs-unstable";
+    };
+
+    # Glue logic between just and Nix (replacement to mission-control)
     just-flake = {
       url = "github:juspay/just-flake";
+    };
+
+    # Swiss-army-knife formatter.
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+
+    # Code cleanliness checking for developers.
+    pre-commit-hooks-nix = {
+      url = "github:cachix/pre-commit-hooks.nix";
+      inputs = {
+        flake-compat.follows = "flake-compat";
+        nixpkgs.follows = "nixpkgs-unstable";
+        nixpkgs-stable.follows = "nixpkgs-stable";
+      };
+    };
+
+    # WSL distribution on NixOS
+    nixos-wsl = {
+      url = "github:nix-community/nixos-wsl";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-compat.follows = "flake-compat";
+      };
+    };
+
+    # Darwin shims for Nix
+    darwin = {
+      url = "github:lnl7/nix-darwin/master";
+      inputs.nixpkgs.follows = "nixpkgs-darwin";
+    };
+
+    # Cross-platform (Linux / MacOS) userspace package management
+    home-manager = {
+      url = "github:nix-community/home-manager/release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
+
+    # Flake-Parts module gluing it together
+    ez-configs = {
+      url = "github:ehllie/ez-configs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        flake-parts.follows = "flake-parts";
+      };
     };
 
     # Hardware platform configurations with options preset
@@ -44,79 +107,7 @@
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
-    # WSL distribution on NixOS
-    nixos-wsl = {
-      url = "github:nix-community/nixos-wsl";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "flake-compat";
-      };
-    };
-
-    # Darwin shims for Nix
-    darwin = {
-      url = "github:lnl7/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
-    };
-
-    # Handles the Spotlight and Dock synchronization
-    mac-app-util = {
-      url = "github:hraban/mac-app-util";
-      inputs.flake-compat.follows = "flake-compat";
-    };
-
-    nixos-cosmic = {
-      url = "github:lilyinstarlight/nixos-cosmic";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Cross-platform (Linux / MacOS) userspace package management
-    home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
-    };
-
-    # Flake-Parts module gluing it together
-    ez-configs = {
-      url = "github:ehllie/ez-configs";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
-      };
-    };
-
-    # Legacy and flake compatibility shims.
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
-
-    # Simple connection glue between direnv, nix-shell, and flakes to get
-    # the absolute roots of various subflakes in a project.
-    flake-root.url = "github:srid/flake-root";
-
-    # An opinionated Nix flake library (see flake-utils)
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs-unstable";
-    };
-
-    # Swiss-army-knife formatter.
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
-    };
-
-    # Code cleanliness checking for developers.
-    pre-commit-hooks-nix = {
-      url = "github:cachix/pre-commit-hooks.nix";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        nixpkgs.follows = "nixpkgs-unstable";
-        nixpkgs-stable.follows = "nixpkgs-stable";
-      };
-    };
-
+    # AGE encrypted secrets
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
@@ -126,9 +117,16 @@
       };
     };
 
+    # Handle rekeying via Yubikey, etc.
     agenix-rekey = {
       url = "github:oddlama/agenix-rekey";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Handles the Spotlight and Dock synchronization
+    mac-app-util = {
+      url = "github:hraban/mac-app-util";
+      inputs.flake-compat.follows = "flake-compat";
     };
 
     vscode-server = {
@@ -174,16 +172,20 @@
 
         # flake-root determines location of this flake programmatically.
 
-        # Add justfile drvdings to the flake environment
+        # Add justfile bindings to the flake environment
         just-flake.features = let
+          # Compose a simple just target from the name of the incoming derivation
           mkJustRecipe = args @ {
             drv,
             os,
             extraArgs,
             ...
           }: let
+            # Conditionally include an alias line if an alias is passd
             maybeString = pred: val: lib.strings.optionalString pred val;
             mkAlias = alias: pname: "alias ${alias} := ${pname}";
+
+            # Extract the package symbolic name without the version
             name = lib.strings.getName drv;
             version = lib.strings.getVersion drv;
             pname = lib.strings.removePrefix "-${version}" name;
@@ -202,6 +204,7 @@
         in {
           treefmt.enable = true;
 
+          # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
           nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
             enable = true;
             justfile = mkJustRecipe {
@@ -212,6 +215,7 @@
             };
           };
 
+          # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
           darwin-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
             enable = true;
             justfile = mkJustRecipe {
@@ -222,6 +226,7 @@
             };
           };
 
+          # Home configs work on all *nix systems
           home-manager = {
             enable = true;
             justfile = mkJustRecipe {
@@ -232,6 +237,7 @@
             };
           };
 
+          # nix works on all *nix systems
           nix = {
             enable = true;
             justfile = mkJustRecipe {
