@@ -246,6 +246,18 @@
               extraArgs = commonArgs;
             };
           };
+
+          # TODO: generally functions same as 'switch X'
+          # unless X is an output that must be deployed or otherwise installed
+          # this implies that a builder script that is already known by this build system can /
+          # should be callable through this target.
+          install = {
+            enable = true;
+            justfile = ''
+              install TARGET *ARGS:
+                exec just nix run .#{TARGET}-installer -- {{ ARGS }}
+            '';
+          };
         };
 
         # Make commit actions also use something similar to treefmt
