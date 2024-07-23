@@ -199,7 +199,7 @@
           '';
 
           commonArgs = "--option experimental-features 'nix-command flakes' --option inputs-from \"FLAKE_ROOT\"";
-          flakeArgs = "--flake \"$FLAKE_ROOT\"";
+          flakeArgs = " --flake \"$FLAKE_ROOT\"";
           builderArgs = commonArgs + flakeArgs;
         in {
           treefmt.enable = true;
@@ -210,7 +210,7 @@
             justfile = mkJustRecipe {
               drv = pkgs.nixos-rebuild;
               os = "linux";
-              extraArgs = builderArgs + "--use-remote-sudo";
+              extraArgs = builderArgs + " --use-remote-sudo";
               alias = "nixos";
             };
           };
@@ -232,7 +232,7 @@
             justfile = mkJustRecipe {
               drv = pkgs.home-manager;
               os = "unix";
-              extraArgs = builderArgs + "-b bak";
+              extraArgs = builderArgs + " -b bak";
               alias = "home";
             };
           };
@@ -313,24 +313,6 @@
         agenix-rekey = inputs.agenix-rekey.configure {
           userFlake = self;
           nodes = self.nixosConfigurations;
-        };
-
-        packages = {
-          "x86_64-linux" =
-            (let
-              inherit (self.nixosConfigurations) nixos-iso-installer;
-              inherit (nixos-iso-installer.config.system) build;
-            in {nixos-iso-installer = build.isoImage;})
-            // (let
-              inherit (self.nixosConfigurations) nixos-wsl;
-              inherit (nixos-wsl.config.system) build;
-            in {
-              nixos-wsl-tarball = build.tarballBuilder;
-            })
-            // (let
-              inherit (self.nixosConfigurations) immutable-gnome;
-              inherit (immutable-gnome.config.system) build;
-            in {immutable-gnome-vm = build.vmWithBootLoader;});
         };
       };
     };

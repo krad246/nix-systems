@@ -12,5 +12,3 @@ run BUILDER VERB *ARGS:
 
 # Flake related subcommands. Syntax: just flake <subcommand>
 flake SUBCOMMAND *ARGS: (run "nix" "flake" SUBCOMMAND "--inputs-from $FLAKE_ROOT" ARGS)
-
-install CONFIG DEVICE +ARGS='': (run CONFIG "install" DEVICE ARGS)
