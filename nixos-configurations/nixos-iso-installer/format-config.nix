@@ -4,12 +4,15 @@
     };
 
     install-iso-hyperv = _: {
+      imports = [../../nixos-modules/efiboot.nix];
     };
 
     install-iso = _: {
+      imports = [../../nixos-modules/efiboot.nix];
     };
 
     iso = _: {
+      imports = [../../nixos-modules/efiboot.nix];
     };
 
     kexec-bundle = _: {

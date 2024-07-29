@@ -1,9 +1,4 @@
 {config, ...}: {
-  imports = [
-    ../../nixos-modules/nix-ld.nix
-    ../../nixos-modules/zram.nix
-  ];
-
   boot.tmp = {
     cleanOnBoot = true;
     useTmpfs = true;

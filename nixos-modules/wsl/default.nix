@@ -1,3 +1,3 @@
 {
-  imports = [./fstab.nix ./wsl.nix];
+  imports = [./docker-desktop.nix ./fstab.nix ./wsl.nix];
 }

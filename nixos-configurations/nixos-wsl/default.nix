@@ -1,14 +1,17 @@
 {lib, ...}: {
   imports = [
     ../../nixos-modules/docker.nix
-    ../../nixos-modules/flake-registry.nix
     ../../nixos-modules/nixos
-    ../../nixos-modules/nix-ld.nix
     ../../nixos-modules/wsl
-    ../../nixos-modules/wsl-docker-desktop.nix
     ../../nixos-modules/vscode-server.nix
   ];
 
+  nix.settings = {
+    allowed-users = ["keerad" "krad246"];
+    trusted-users = ["keerad" "krad246"];
+  };
+
+  nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "nixos-wsl";
 
   # NixOS is going to get the first user ID
@@ -35,8 +38,4 @@
     initialHashedPassword = "";
     extraGroups = ["wheel" "NetworkManager" "docker"];
   };
-
-  nix.settings.trusted-users = ["keerad" "krad246"];
-
-  nixpkgs.hostPlatform = "x86_64-linux";
 }
