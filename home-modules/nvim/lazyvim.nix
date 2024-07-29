@@ -3,7 +3,6 @@
   pkgs,
   ...
 }: let
-  homeModules = ezModules;
   treesitterWithGrammars =
     pkgs.vimPlugins.nvim-treesitter.withPlugins
     (p: [
@@ -25,7 +24,7 @@
       p.yaml
     ]);
 in {
-  imports = with homeModules; [rust golang];
+  imports = with ezModules; [rust golang];
   home.packages = with pkgs; [nil fd ripgrep];
   programs.neovim = {
     enable = true;

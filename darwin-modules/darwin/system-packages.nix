@@ -3,6 +3,11 @@
   pkgs,
   ...
 }: {
+  imports = [
+    ../../darwin-modules/flake-registry
+    ../../darwin-modules/homebrew
+  ];
+
   homebrew = {
     brews = ["bash" "zsh"];
   };

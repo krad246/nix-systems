@@ -1,8 +1,6 @@
-{ezModules, ...}: let
-  homeModules = ezModules;
-in {
+{ezModules, ...}: {
   imports =
-    (with homeModules; [
+    (with ezModules; [
       bash
       bat
       bottom

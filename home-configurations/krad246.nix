@@ -5,10 +5,8 @@ args @ {
   pkgs,
   osConfig,
   ...
-}: let
-  homeModules = ezModules;
-in {
-  imports = with homeModules;
+}: {
+  imports = with ezModules;
     [
       agenix
       colima

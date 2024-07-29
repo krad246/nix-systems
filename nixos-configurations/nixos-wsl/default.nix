@@ -1,18 +1,16 @@
 {lib, ...}: {
-  imports =
-    [./platform.nix]
-    ++ [
-      ../../nixos-modules/cachix.nix
-      ../../nixos-modules/docker.nix
-      ../../nixos-modules/libvirtd.nix
-      ../../nixos-modules/nerdfonts.nix
-      ../../nixos-modules/nixos
-      ../../nixos-modules/nix-ld.nix
-      ../../nixos-modules/wsl
-      ../../nixos-modules/wsl-docker-desktop.nix
-      ../../nixos-modules/flake-registry.nix
-      ../../nixos-modules/vscode-server.nix
-    ];
+  imports = [
+    ../../nixos-modules/cachix.nix
+    ../../nixos-modules/docker.nix
+    ../../nixos-modules/libvirtd.nix
+    ../../nixos-modules/nerdfonts.nix
+    ../../nixos-modules/nixos
+    ../../nixos-modules/nix-ld.nix
+    ../../nixos-modules/wsl
+    ../../nixos-modules/wsl-docker-desktop.nix
+    ../../nixos-modules/flake-registry.nix
+    ../../nixos-modules/vscode-server.nix
+  ];
 
   networking.hostName = "nixos-wsl";
 
@@ -42,4 +40,6 @@
   };
 
   nix.settings.trusted-users = ["keerad" "krad246"];
+
+  nixpkgs.hostPlatform = "x86_64-linux";
 }

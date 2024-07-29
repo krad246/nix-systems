@@ -20,7 +20,7 @@
     };
 
     qcow = _: {
-      boot.loader.grub.device = lib.mkForce "/dev/vda";
+      boot.loader.grub.device = "/dev/vda";
     };
 
     raw-efi = _: {
@@ -28,7 +28,7 @@
     };
 
     raw = _: {
-      boot.loader.grub.device = lib.mkForce "/dev/vda";
+      boot.loader.grub.device = "/dev/vda";
     };
 
     sd-aarch64-installer = _: {
@@ -38,6 +38,7 @@
     };
 
     vagrant-virtualbox = _: {
+      sound.enable = lib.mkForce false;
     };
 
     virtualbox = _: {

@@ -1,12 +1,10 @@
-{ezModules, ...}: let
-  darwinModules = ezModules;
-in {
-  imports = with darwinModules; [
-    dock
-    finder
-    single-user
-    ui-ux
-    pointer
+{
+  imports = [
+    ../../darwin-modules/dock.nix
+    ../../darwin-modules/finder.nix
+    ../../darwin-modules/pointer.nix
+    ../../darwin-modules/single-user.nix
+    ../../darwin-modules/ui-ux.nix
   ];
 
   system.defaults = {
