@@ -9,7 +9,6 @@ in {
   imports =
     [nixos-generators.nixosModules.all-formats]
     ++ [
-      ../../nixos-modules/efiboot.nix
       ../../nixos-modules/gnome-desktop.nix
       ../../nixos-modules/nixos
     ]
@@ -17,6 +16,8 @@ in {
       "${modulesPath}/profiles/installation-device.nix"
     ];
 
+  # Default settings are simple EFI system on tmpfs
+  boot.loader.grub.device = lib.mkDefault "nodev";
   fileSystems."/" = lib.mkDefault {
     device = "none";
     fsType = "tmpfs";

@@ -5,10 +5,11 @@
   ...
 }: let
   machine = self.nixosConfigurations.immutable-gnome;
+  inherit (machine.config.system) build;
   dependencies =
     [
-      machine.config.system.build.toplevel
-      machine.config.system.build.diskoScript
+      build.toplevel
+      build.diskoScript
       machine.pkgs.stdenv.drvPath
       (machine.pkgs.closureInfo {rootPaths = [];}).drvPath
     ]

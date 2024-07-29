@@ -1,36 +1,34 @@
-{
+{lib, ...}: {
   formatConfigs = {
-    docker = _: {
-    };
-
     hyperv = _: {
     };
 
     install-iso-hyperv = _: {
-      imports = [];
     };
 
     install-iso = _: {
-      imports = [];
     };
 
     iso = _: {
-      imports = [];
     };
 
     kexec-bundle = _: {
     };
 
     qcow-efi = _: {
+      imports = [../../nixos-modules/efiboot.nix];
     };
 
     qcow = _: {
+      boot.loader.grub.device = lib.mkForce "/dev/vda";
     };
 
     raw-efi = _: {
+      imports = [../../nixos-modules/efiboot.nix];
     };
 
     raw = _: {
+      boot.loader.grub.device = lib.mkForce "/dev/vda";
     };
 
     sd-aarch64-installer = _: {

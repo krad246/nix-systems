@@ -9,7 +9,7 @@
       enable = lib.mkDefault true;
       efiSupport = true;
       efiInstallAsRemovable = !config.boot.loader.efi.canTouchEfiVariables;
-      device = "nodev"; # or "nodev" for efi only
+      device = lib.mkDefault "nodev"; # or "nodev" for efi only
     };
 
     efi = {
