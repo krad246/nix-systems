@@ -274,43 +274,48 @@
         };
 
         packages = let
-          iso = self.nixosConfigurations.nixos-iso-installer;
-          inherit (iso.config) formats;
-        in {
-          nixos-iso-installer-hyperv = formats.hyperv;
-          nixos-iso-installer-install-iso-hyperv = formats.install-iso-hyperv;
-          nixos-iso-installer-install-iso = formats.install-iso;
-          nixos-iso-installer-iso = formats.iso;
-          nixos-iso-installer-qcow-efi = formats.qcow-efi;
-          nixos-iso-installer-qcow = formats.qcow;
-          nixos-iso-installer-raw-efi = formats.raw-efi;
-          nixos-iso-installer-raw = formats.raw;
-          nixos-iso-installer-vagrant-virtualbox = formats.vagrant-virtualbox;
-          nixos-iso-installer-virtualbox = formats.virtualbox;
-          nixos-iso-installer-vm-bootloader = formats.vm-bootloader;
-          nixos-iso-installer-vm-nogui = formats.vm-nogui;
-          nixos-iso-installer-vm = formats.vm;
+          mkFormat = host: format: {"${host}-${format}" = self.nixosConfigurations."${host}".config.formats."${format}";};
 
-          nix-build-all = let
-            devour-flake = pkgs.callPackage inputs.devour-flake {};
-          in
-            pkgs.writeShellApplication {
-              name = "nix-build-all";
-              runtimeInputs = [
-                pkgs.nix
-                devour-flake
-              ];
+          mkHostFormatsImpl = host: [
+            (mkFormat host "hyperv")
+            (mkFormat host "install-iso-hyperv")
+            (mkFormat host "install-iso")
+            (mkFormat host "iso")
+            (mkFormat host "qcow-efi")
+            (mkFormat host "qcow")
+            (mkFormat host "raw-efi")
+            (mkFormat host "raw")
+            (mkFormat host "vagrant-virtualbox")
+            (mkFormat host "virtualbox")
+            (mkFormat host "vm-bootloader")
+            (mkFormat host "vm-nogui")
+            (mkFormat host "vm")
+          ];
+        in
+          lib.mkMerge ([
+              {
+                nix-build-all = let
+                  devour-flake = pkgs.callPackage inputs.devour-flake {};
+                in
+                  pkgs.writeShellApplication {
+                    name = "nix-build-all";
+                    runtimeInputs = [
+                      pkgs.nix
+                      devour-flake
+                    ];
 
-              text = ''
-                # Make sure that flake.lock is sync
-                ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
+                    text = ''
+                      # Make sure that flake.lock is sync
+                      ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
 
-                # Do a full nix build (all outputs)
-                # This uses https://github.com/srid/devour-flake
-                ${lib.getExe devour-flake} . "$@"
-              '';
-            };
-        };
+                      # Do a full nix build (all outputs)
+                      # This uses https://github.com/srid/devour-flake
+                      ${lib.getExe devour-flake} . "$@"
+                    '';
+                  };
+              }
+            ]
+            ++ (mkHostFormatsImpl "nixos-iso-installer"));
       };
 
       ezConfigs = {
