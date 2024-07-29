@@ -1,9 +1,7 @@
 {
   imports = [
     ../../darwin-modules/darwin
-    ../../darwin-modules/flake-registry.nix
     ../../darwin-modules/homebrew
-    ../../darwin-modules/linux-builder.nix
   ];
 
   users.users.krad246 = {

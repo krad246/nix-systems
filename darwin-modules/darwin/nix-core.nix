@@ -1,6 +1,4 @@
 {pkgs, ...}: {
-  imports = [../../darwin-modules/flake-registry.nix];
-
   nix = {
     package = pkgs.nixFlakes;
     checkConfig = true;

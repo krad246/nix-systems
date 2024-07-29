@@ -1,3 +1,3 @@
 {
-  imports = [./environment.nix ./kernel.nix];
+  imports = [./environment.nix ./kernel.nix ./nix-daemon.nix ./packages.nix];
 }

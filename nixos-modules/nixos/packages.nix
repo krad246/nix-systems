@@ -27,7 +27,8 @@
       ]
       ++ [comma nix-index]
       ++ [git gh]
-      ++ [direnv nix-direnv];
+      ++ [direnv nix-direnv]
+      ++ [cachix];
   };
 
   programs.nix-index.enable = true;
