@@ -315,8 +315,16 @@
           nodes = self.nixosConfigurations;
         };
 
-        packages = {
-          nixos-iso-installer = self.nixosConfigurations.nixos-iso-installer.config.formats.iso;
+        packages = let
+          iso = self.nixosConfigurations.nixos-iso-installer;
+          inherit
+            (iso.config)
+            formats
+            ;
+        in {
+          nixos-iso-installer-vm = formats.vm;
+          nixos-iso-installer-vm-bootloader = formats.vm-bootloader;
+          nixos-iso-installer-vm-nogui = formats.vm-nogui;
         };
       };
     };

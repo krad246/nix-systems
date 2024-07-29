@@ -66,6 +66,7 @@ in
       };
 
       vm-bootloader = _: {
+        virtualisation.diskSize = 16 * 1024;
       };
 
       vm-nogui = _: {
