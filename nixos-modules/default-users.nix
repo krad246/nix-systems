@@ -13,4 +13,9 @@
   };
 
   security.sudo.wheelNeedsPassword = false;
+
+  nix.settings = rec {
+    allowed-users = ["nixos" "root" "@wheel"];
+    trusted-users = ["nixos" "root" "@wheel"];
+  };
 }

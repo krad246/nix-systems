@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   environment = {
     systemPackages = with pkgs;
       [
@@ -26,7 +30,6 @@
       ++ [direnv nix-direnv];
   };
 
-  nixpkgs.config.allowUnfree = true;
   programs.nix-index.enable = true;
-  programs.command-not-found.enable = false;
+  programs.command-not-found.enable = !config.programs.nix-index.enable;
 }

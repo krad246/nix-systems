@@ -1,22 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
-  boot = {
-    tmp = {
-      useTmpfs = true;
-      cleanOnBoot = true;
-    };
-    kernelPackages = pkgs.linuxPackages_zen;
-  };
-
-  services.zram-generator.enable = true;
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-  };
-
+{config, ...}: {
   # Not technically a part of the kernel, but close enough...
   networking.networkmanager.enable = true;
   networking.wireless.enable = !config.networking.networkmanager.enable;
