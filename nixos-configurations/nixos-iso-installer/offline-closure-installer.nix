@@ -1,12 +1,10 @@
 {
   self,
+  lib,
   pkgs,
   ...
 }: let
-  install-target = "immutable-gnome";
-  device = "/dev/nvme0n1";
-
-  machine = self.nixosConfigurations."${install-target}";
+  machine = self.nixosConfigurations.immutable-gnome;
   dependencies =
     [
       machine.config.system.build.toplevel
@@ -18,13 +16,13 @@
 
   closureInfo = pkgs.closureInfo {rootPaths = dependencies;};
 in {
-  system.includeBuildDependencies = true;
+  system.includeBuildDependencies = false;
 
   environment.etc."install-closure".source = "${closureInfo}/store-paths";
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "install-nixos-unattended" ''
       set -eux
-      exec ${pkgs.disko}/bin/disko-install --flake "${self}#${install-target}" --disk main "${device}"
+      exec ${lib.getExe pkgs.disko} --flake "${self}#immutable-gnome" --disk main "$1"
     '')
   ];
 }

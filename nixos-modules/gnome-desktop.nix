@@ -48,5 +48,7 @@
     whitesur-gtk-theme
     whitesur-icon-theme
     whitesur-cursors
+
+    gnome.gnome-tweaks
   ];
 }

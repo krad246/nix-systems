@@ -12,7 +12,7 @@
       maxJobs = 16;
       protocol = "ssh-ng";
       ephemeral = true;
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = ["i686-linux" "x86_64-linux" "aarch64-linux"];
     };
   };
 }

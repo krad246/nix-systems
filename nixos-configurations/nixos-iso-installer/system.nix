@@ -9,9 +9,8 @@ in {
   imports =
     [nixos-generators.nixosModules.all-formats]
     ++ [
-      ../../nixos-modules/default-users.nix
-      ../../nixos-modules/flake-registry.nix
       ../../nixos-modules/gnome-desktop.nix
+      ../../nixos-modules/nixos
     ]
     ++ ["${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"];
 

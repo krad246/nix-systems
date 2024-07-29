@@ -7,7 +7,6 @@ args @ {
   ...
 }: let
   homeModules = ezModules;
-  unstable = pkgs.callPackage args.inputs.nixpkgs-unstable {};
 in {
   imports = with homeModules;
     [
@@ -27,7 +26,7 @@ in {
       }:
         lib.mkIf pkgs.stdenv.isLinux (lib.mkMerge [
           {
-            home.packages = [pkgs.pavucontrol unstable.signal-desktop unstable.zoom-us];
+            home.packages = [pkgs.pavucontrol pkgs.signal-desktop pkgs.zoom-us];
           }
           (import chromium)
           (import kdeconnect)

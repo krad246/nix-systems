@@ -181,14 +181,15 @@
             # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
             [${os}]
             ${pname} VERB *ARGS:
-              ${lib.meta.getExe drv} {{ VERB }} ${extraArgs} {{ ARGS }}
+              ${lib.meta.getExe drv} {{ VERB }} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
 
             ${maybeString (args ? alias) (mkAlias args.alias pname)}
           '';
 
-          commonArgs = "--option experimental-features 'nix-command flakes' --option inputs-from \"FLAKE_ROOT\"";
-          flakeArgs = " --flake \"$FLAKE_ROOT\"";
-          builderArgs = commonArgs + flakeArgs;
+          flakeRoot = "\"$FLAKE_ROOT\"";
+          commonArgs = ["--option experimental-features 'nix-command flakes'" "--option inputs-from ${flakeRoot}"];
+          flakeArgs = ["--flake ${flakeRoot}"];
+          builderArgs = commonArgs ++ flakeArgs;
         in {
           treefmt.enable = true;
 
@@ -198,7 +199,7 @@
             justfile = mkJustRecipe {
               drv = pkgs.nixos-rebuild;
               os = "linux";
-              extraArgs = builderArgs + " --use-remote-sudo";
+              extraArgs = builderArgs ++ ["--use-remote-sudo"];
               alias = "nixos";
             };
           };
@@ -220,7 +221,7 @@
             justfile = mkJustRecipe {
               drv = pkgs.home-manager;
               os = "unix";
-              extraArgs = builderArgs + " -b bak";
+              extraArgs = builderArgs ++ ["-b bak"];
               alias = "home";
             };
           };
@@ -243,7 +244,15 @@
             enable = true;
             justfile = ''
               install TARGET *ARGS:
-                exec just nix run .#{TARGET}-installer -- {{ ARGS }}
+                exec ${lib.getExe pkgs.just} nix run .#{{TARGET}}-installer -- {{ ARGS }}
+            '';
+          };
+
+          check = {
+            enable = true;
+            justfile = ''
+              check *ARGS: fmt
+               exec ${lib.getExe pkgs.just} nix flake check {{ ARGS }}
             '';
           };
         };

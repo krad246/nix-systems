@@ -1,4 +1,10 @@
-let
+{
+  modulesPath,
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   boot = {
     size = "1M";
     type = "EF02"; # for grub MBR
@@ -25,7 +31,7 @@ let
   };
 
   nix = {
-    size = "128G";
+    size = "256G";
     content = {
       type = "filesystem";
       format = "ext4";
@@ -65,4 +71,17 @@ in {
   };
 
   fileSystems."/nix/persist".neededForBoot = true;
+
+  formatConfigs.impermanence = _: let
+    impermanence = import ./fetch-impermanence.nix;
+  in {
+    imports = [impermanence] ++ [../../../nixos-modules/impermanence.nix];
+    formatAttr = "impermanence";
+
+    system.build.impermanence = import "${modulesPath}/../lib/make-disk-image.nix" {
+      inherit config lib pkgs;
+      diskSize = "auto";
+      format = "raw";
+    };
+  };
 }
