@@ -4,7 +4,6 @@
   ...
 }: {
   imports = [
-    ../../darwin-modules/flake-registry
     ../../darwin-modules/homebrew
   ];
 
