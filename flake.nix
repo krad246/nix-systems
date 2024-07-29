@@ -200,7 +200,7 @@
               drv = pkgs.nixos-rebuild;
               os = "linux";
               extraArgs = builderArgs ++ ["--use-remote-sudo"];
-              alias = "nixos";
+              alias = "os";
             };
           };
 
@@ -211,7 +211,7 @@
               drv = inputs'.darwin.packages.darwin-rebuild;
               os = "macos";
               extraArgs = builderArgs;
-              alias = "darwin";
+              alias = "os";
             };
           };
 
@@ -280,6 +280,9 @@
           packages = with pkgs; [git direnv nix-direnv just ripgrep];
           shellHook = ''
           '';
+        };
+
+        packages = {
         };
       };
 

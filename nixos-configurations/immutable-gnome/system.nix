@@ -34,8 +34,10 @@ in {
     initialHashedPassword = "";
   };
 
-  nix.settings.allowed-users = ["krad246"];
-  nix.settings.trusted-users = ["krad246"];
+  nix.settings = {
+    allowed-users = ["krad246"];
+    trusted-users = ["krad246"];
+  };
 
   boot = {
     initrd.availableKernelModules = ["nvme" "xhci_pci" "ahci" "usbhid" "uas" "sd_mod"];
@@ -52,19 +54,7 @@ in {
   # Enable touchpad support (enabled default in most desktopManager).
   services.libinput.enable = true;
 
-  # Set your time zone.
-  time.timeZone = "America/New_York";
-
-  # Configure keymap in X11
-  services.xserver = {
-    xkb = {
-      layout = "us";
-      variant = "";
-    };
-  };
-
   networking.hostName = lib.mkForce "immutable-gnome";
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-
   system.stateVersion = lib.trivial.release;
 }

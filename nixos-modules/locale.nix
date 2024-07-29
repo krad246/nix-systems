@@ -12,4 +12,15 @@
       LC_TELEPHONE = "en_US.UTF-8";
     };
   };
+
+  # Configure keymap in X11
+  services.xserver = {
+    xkb = {
+      layout = "us";
+      variant = "";
+    };
+  };
+
+  # Set your time zone.
+  time.timeZone = "America/New_York";
 }
