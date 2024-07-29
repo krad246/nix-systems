@@ -1,6 +1,5 @@
 {config, ...}: {
   imports = [
-    ../../nixos-modules/efiboot.nix
     ../../nixos-modules/nix-daemon.nix
     ../../nixos-modules/nix-ld.nix
     ../../nixos-modules/zram.nix

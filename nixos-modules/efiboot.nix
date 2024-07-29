@@ -9,8 +9,6 @@
       enable = lib.mkDefault true;
       efiSupport = true;
       efiInstallAsRemovable = !config.boot.loader.efi.canTouchEfiVariables;
-
-      # Define on which hard drive you want to install Grub.
       device = "nodev"; # or "nodev" for efi only
     };
 

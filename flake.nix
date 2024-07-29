@@ -314,6 +314,10 @@
           userFlake = self;
           nodes = self.nixosConfigurations;
         };
+
+        packages = {
+          nixos-iso-installer = self.nixosConfigurations.nixos-iso-installer.config.formats.iso;
+        };
       };
     };
 }

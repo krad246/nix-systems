@@ -12,7 +12,10 @@ in {
       ../../nixos-modules/gnome-desktop.nix
       ../../nixos-modules/nixos
     ]
-    ++ ["${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"];
+    ++ [
+      "${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"
+      "${modulesPath}/profiles/installation-device.nix"
+    ];
 
   fileSystems."/" = lib.mkDefault {
     device = "none";

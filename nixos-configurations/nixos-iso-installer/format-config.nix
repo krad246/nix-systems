@@ -1,10 +1,20 @@
-{lib, ...}: let
+{
+  lib,
+  modulesPath,
+  ...
+}: let
   folder = ./formats;
   filterSrc = key: value: value == "regular" && lib.hasSuffix ".nix" key;
   impls = lib.filterAttrs filterSrc (builtins.readDir folder);
 in
   builtins.trace impls {
-    formatConfigs = {
+    formatConfigs = let
+      isoImports =
+        [../../nixos-modules/efiboot.nix]
+        ++ [
+          "${modulesPath}/installer/cd-dvd/iso-image.nix"
+        ];
+    in {
       docker = _: {
       };
 
@@ -12,12 +22,15 @@ in
       };
 
       install-iso-hyperv = _: {
+        imports = isoImports;
       };
 
       install-iso = _: {
+        imports = isoImports;
       };
 
       iso = _: {
+        imports = isoImports;
       };
 
       kexec-bundle = _: {
