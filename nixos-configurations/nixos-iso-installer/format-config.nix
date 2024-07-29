@@ -9,11 +9,14 @@
 in
   builtins.trace impls {
     formatConfigs = let
-      isoImports =
+      commonImports =
         [../../nixos-modules/efiboot.nix]
         ++ [
-          "${modulesPath}/installer/cd-dvd/iso-image.nix"
+          "${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"
         ];
+      isoImports = [
+        "${modulesPath}/installer/cd-dvd/iso-image.nix"
+      ];
     in {
       docker = _: {
       };
@@ -22,15 +25,15 @@ in
       };
 
       install-iso-hyperv = _: {
-        imports = isoImports;
+        imports = commonImports ++ isoImports;
       };
 
       install-iso = _: {
-        imports = isoImports;
+        imports = commonImports ++ isoImports;
       };
 
       iso = _: {
-        imports = isoImports;
+        imports = commonImports ++ isoImports;
       };
 
       kexec-bundle = _: {
@@ -58,6 +61,8 @@ in
       };
 
       virtualbox = _: {
+        # works
+        imports = [];
       };
 
       vm-bootloader = _: {
