@@ -86,6 +86,22 @@
         "type": "github"
       }
     },
+    "devour-flake": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1709858306,
+        "narHash": "sha256-Vey9n9hIlWiSAZ6CCTpkrL6jt4r2JvT2ik9wa2bjeC0=",
+        "owner": "srid",
+        "repo": "devour-flake",
+        "rev": "17b711b9deadbbc5629cb7d2b64cf86ae72af3fa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "srid",
+        "repo": "devour-flake",
+        "type": "github"
+      }
+    },
     "devshell": {
       "inputs": {
         "nixpkgs": [
@@ -638,6 +654,7 @@
         "agenix": "agenix",
         "agenix-rekey": "agenix-rekey",
         "darwin": "darwin",
+        "devour-flake": "devour-flake",
         "disko": "disko",
         "ez-configs": "ez-configs",
         "flake-compat": "flake-compat_2",

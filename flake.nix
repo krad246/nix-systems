@@ -3,12 +3,12 @@
     extra-experimental-features = "nix-command flakes";
   };
 
-  inputs = rec {
+  inputs = {
     # Package distributions
     nixpkgs-stable.url = "github:NixOS/nixpkgs/release-24.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
-    nixpkgs = nixpkgs-stable;
+    nixpkgs.url = "github:NixOS/nixpkgs/release-24.05";
 
     # Legacy and flake compatibility shims.
     flake-compat = {
@@ -19,6 +19,11 @@
     # Simple connection glue between direnv, nix-shell, and flakes to get
     # the absolute roots of various subflakes in a project.
     flake-root.url = "github:srid/flake-root";
+
+    devour-flake = {
+      url = "github:srid/devour-flake";
+      flake = false;
+    };
 
     # An opinionated Nix flake library (see flake-utils)
     flake-parts = {
@@ -236,18 +241,6 @@
             };
           };
 
-          # TODO: generally functions same as 'switch X'
-          # unless X is an output that must be deployed or otherwise installed
-          # this implies that a builder script that is already known by this build system can /
-          # should be callable through this target.
-          install = {
-            enable = true;
-            justfile = ''
-              install TARGET *ARGS:
-                exec ${lib.getExe pkgs.just} nix run .#{{TARGET}}-installer -- {{ ARGS }}
-            '';
-          };
-
           check = {
             enable = true;
             justfile = ''
@@ -278,11 +271,45 @@
           ];
 
           packages = with pkgs; [git direnv nix-direnv just ripgrep];
-          shellHook = ''
-          '';
         };
 
-        packages = {
+        packages = let
+          iso = self.nixosConfigurations.nixos-iso-installer;
+          inherit (iso.config) formats;
+        in {
+          nixos-iso-installer-hyperv = formats.hyperv;
+          nixos-iso-installer-install-iso-hyperv = formats.install-iso-hyperv;
+          nixos-iso-installer-install-iso = formats.install-iso;
+          nixos-iso-installer-iso = formats.iso;
+          nixos-iso-installer-qcow-efi = formats.qcow-efi;
+          nixos-iso-installer-qcow = formats.qcow;
+          nixos-iso-installer-raw-efi = formats.raw-efi;
+          nixos-iso-installer-raw = formats.raw;
+          nixos-iso-installer-vagrant-virtualbox = formats.vagrant-virtualbox;
+          nixos-iso-installer-virtualbox = formats.virtualbox;
+          nixos-iso-installer-vm-bootloader = formats.vm-bootloader;
+          nixos-iso-installer-vm-nogui = formats.vm-nogui;
+          nixos-iso-installer-vm = formats.vm;
+
+          nix-build-all = let
+            devour-flake = pkgs.callPackage inputs.devour-flake {};
+          in
+            pkgs.writeShellApplication {
+              name = "nix-build-all";
+              runtimeInputs = [
+                pkgs.nix
+                devour-flake
+              ];
+
+              text = ''
+                # Make sure that flake.lock is sync
+                ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
+
+                # Do a full nix build (all outputs)
+                # This uses https://github.com/srid/devour-flake
+                ${lib.getExe devour-flake} . "$@"
+              '';
+            };
         };
       };
 
@@ -306,25 +333,6 @@
               };
             };
           };
-        };
-      };
-
-      flake = {
-        agenix-rekey = inputs.agenix-rekey.configure {
-          userFlake = self;
-          nodes = self.nixosConfigurations;
-        };
-
-        packages = let
-          iso = self.nixosConfigurations.nixos-iso-installer;
-          inherit
-            (iso.config)
-            formats
-            ;
-        in {
-          nixos-iso-installer-vm = formats.vm;
-          nixos-iso-installer-vm-bootloader = formats.vm-bootloader;
-          nixos-iso-installer-vm-nogui = formats.vm-nogui;
         };
       };
     };

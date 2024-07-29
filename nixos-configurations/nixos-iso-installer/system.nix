@@ -9,6 +9,7 @@ in {
   imports =
     [nixos-generators.nixosModules.all-formats]
     ++ [
+      ../../nixos-modules/efiboot.nix
       ../../nixos-modules/gnome-desktop.nix
       ../../nixos-modules/nixos
     ]
