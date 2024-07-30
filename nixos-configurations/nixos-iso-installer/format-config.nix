@@ -4,15 +4,15 @@
     };
 
     install-iso-hyperv = _: {
-      imports = [../../nixos-modules/efiboot.nix];
+      #     imports = ["${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"];
     };
 
     install-iso = _: {
-      imports = [../../nixos-modules/efiboot.nix];
+      #      imports = ["${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"];
     };
 
     iso = _: {
-      imports = [../../nixos-modules/efiboot.nix];
+      #   imports = ["${modulesPath}/installer/cd-dvd/installation-cd-graphical-gnome.nix"];
     };
 
     kexec-bundle = _: {
