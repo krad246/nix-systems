@@ -7,6 +7,34 @@
   }: let
     builderName = "docker-builder";
 
+    etc = let
+      inherit (pkgs) lib;
+      nixosCore = lib.evalModules {
+        modules = [
+          {
+            environment.etc."/nix/nix.conf" = {
+              text = ''
+                extra-experimental-features = "nix-command flakes"
+              '';
+            };
+          }
+        ];
+      };
+    in
+      pkgs.dockerTools.streamLayeredImage {
+        name = "etc";
+        tag = "latest";
+        enableFakechroot = true;
+        fakeRootCommands = ''
+          mkdir -p /etc
+          ${nixosCore.config.system.build.etcActivationCommands}
+        '';
+        config.Cmd = pkgs.writeScript "etc-cmd" ''
+          #!${pkgs.busybox}/bin/sh
+          ${pkgs.busybox}/bin/cat /etc/some-config-file
+        '';
+      };
+
     docker-builder = pkgs.dockerTools.buildImage {
       name = builderName;
       fromImage = pkgs.dockerTools.pullImage {
@@ -57,6 +85,7 @@
     packages = lib.mkIf pkgs.stdenv.isLinux {
       inherit docker-builder;
       inherit docker-builder-exec;
+      inherit etc;
     };
   };
 }
