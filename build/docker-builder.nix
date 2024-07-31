@@ -32,11 +32,13 @@
 
       maxLayers = 128;
 
+      # TODO: determine how to create /etc files through a nixos module
       enableFakechroot = true;
       fakeRootCommands = ''
+        set -x
         NIX_CONF=/etc/nix/nix.conf
-        mkdir -p "$(dirname $NIX_CONF)" && \
-          echo 'extra-experimental-features = nix-command flakes' >> "$NIX_CONF"
+        mkdir -p "$(dirname $NIX_CONF)" && touch "$NIX_CONF" && \
+          echo 'extra-experimental-features = nix-command flakes' >>"$NIX_CONF"
       '';
     };
 
