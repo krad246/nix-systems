@@ -5,6 +5,20 @@
     system,
     ...
   }: let
+    nixosCustomizations = lib.nixosSystem {
+      inherit system;
+      modules = [
+        {
+          environment.etc."some-config-file" = {
+            text = ''
+              127.0.0.1 localhost
+              ::1 localhost
+            '';
+          };
+        }
+      ];
+    };
+
     builderName = "docker-builder";
     WorkingDir = "/workdir";
 
@@ -33,15 +47,11 @@
         inherit WorkingDir;
       };
 
-      maxLayers = 128;
-
-      # TODO: determine how to create /etc files through a nixos module
+      maxLayers = 32;
       enableFakechroot = true;
       fakeRootCommands = ''
-        set -x
-        NIX_CONF=/etc/nix/nix.conf
-        mkdir -p "$(dirname $NIX_CONF)" && touch "$NIX_CONF" && \
-          echo 'extra-experimental-features = nix-command flakes' >>"$NIX_CONF"
+        mkdir -p /etc && \
+          ${nixosCustomizations.config.system.build.etcActivationCommands}
       '';
     };
 

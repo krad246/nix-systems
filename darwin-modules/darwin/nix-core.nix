@@ -5,8 +5,8 @@
     gc.automatic = true;
     settings = {
       experimental-features = ["nix-command" "flakes"];
-      keep-outputs = true;
-      keep-derivations = true;
+      keep-outputs = false;
+      keep-derivations = false;
       auto-optimise-store = false;
       sandbox = false;
       substituters = [
