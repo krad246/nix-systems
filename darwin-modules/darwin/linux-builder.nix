@@ -15,8 +15,6 @@
           memorySize = lib.mkForce 6144;
         };
       };
-      mandatoryFeatures = [];
-      supportedFeatures = ["kvm" "benchmark" "big-parallel"];
       maxJobs = 16;
       protocol = "ssh-ng";
       ephemeral = true;
