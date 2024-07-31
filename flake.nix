@@ -20,6 +20,7 @@
     # the absolute roots of various subflakes in a project.
     flake-root.url = "github:srid/flake-root";
 
+    # Consumer flake to build all outputs in this flake
     devour-flake = {
       url = "github:srid/devour-flake";
       flake = false;
@@ -135,147 +136,31 @@
     ...
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      imports = with inputs; [
-        treefmt-nix.flakeModule
-        flake-root.flakeModule
-        ez-configs.flakeModule
-        pre-commit-hooks-nix.flakeModule
-        just-flake.flakeModule
-      ];
+      imports =
+        (with inputs; [
+          treefmt-nix.flakeModule
+          flake-root.flakeModule
+          ez-configs.flakeModule
+          pre-commit-hooks-nix.flakeModule
+          just-flake.flakeModule
+        ])
+        ++ [
+          ./build/devshell.nix
+          ./build/docker-builder.nix
+          ./build/formatter.nix
+          ./build/just-flake.nix
+        ];
 
+      debug = true;
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 
       perSystem = {
         config,
         lib,
-        pkgs,
-        inputs',
         ...
       }: {
-        # Configure repository formatter
-        formatter = config.treefmt.build.wrapper;
-        treefmt = {
-          inherit (config.flake-root) projectRootFile;
-          programs = {
-            deadnix.enable = true;
-            alejandra.enable = true;
-            statix.enable = true;
-          };
-        };
-
-        # flake-root determines location of this flake programmatically.
-
-        # Add justfile bindings to the flake environment
-        just-flake.features = let
-          # Compose a simple just target from the name of the incoming derivation
-          mkJustRecipe = args @ {
-            drv,
-            os,
-            extraArgs,
-            ...
-          }: let
-            # Conditionally include an alias line if an alias is passd
-            maybeString = pred: val: lib.strings.optionalString pred val;
-            mkAlias = alias: pname: "alias ${alias} := ${pname}";
-
-            # Extract the package symbolic name without the version
-            name = lib.strings.getName drv;
-            version = lib.strings.getVersion drv;
-            pname = lib.strings.removePrefix "-${version}" name;
-          in ''
-            # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
-            [${os}]
-            ${pname} VERB *ARGS:
-              ${lib.meta.getExe drv} {{ VERB }} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
-
-            ${maybeString (args ? alias) (mkAlias args.alias pname)}
-          '';
-
-          flakeRoot = "\"$FLAKE_ROOT\"";
-          commonArgs = ["--option experimental-features 'nix-command flakes'" "--option inputs-from ${flakeRoot}"];
-          flakeArgs = ["--flake ${flakeRoot}"];
-          builderArgs = commonArgs ++ flakeArgs;
-        in {
-          treefmt.enable = true;
-
-          # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
-          nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-            enable = true;
-            justfile = mkJustRecipe {
-              drv = pkgs.nixos-rebuild;
-              os = "linux";
-              extraArgs = builderArgs ++ ["--use-remote-sudo"];
-              alias = "os";
-            };
-          };
-
-          # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
-          darwin-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
-            enable = true;
-            justfile = mkJustRecipe {
-              drv = inputs'.darwin.packages.darwin-rebuild;
-              os = "macos";
-              extraArgs = builderArgs;
-              alias = "os";
-            };
-          };
-
-          # Home configs work on all *nix systems
-          home-manager = {
-            enable = true;
-            justfile = mkJustRecipe {
-              drv = pkgs.home-manager;
-              os = "unix";
-              extraArgs = builderArgs ++ ["-b bak"];
-              alias = "home";
-            };
-          };
-
-          # nix works on all *nix systems
-          nix = {
-            enable = true;
-            justfile = mkJustRecipe {
-              drv = pkgs.nixFlakes;
-              os = "unix";
-              extraArgs = commonArgs;
-            };
-          };
-
-          check = {
-            enable = true;
-            justfile = ''
-              check *ARGS: fmt
-               exec ${lib.getExe pkgs.just} nix flake check {{ ARGS }}
-            '';
-          };
-        };
-
-        # Make commit actions also use something similar to treefmt
-        pre-commit.settings.hooks = {
-          cspell.enable = false;
-
-          nil.enable = true;
-
-          deadnix.enable = true;
-          alejandra.enable = true;
-          statix.enable = true;
-        };
-
-        # Create devShell with all features above
-        devShells.default = pkgs.mkShell {
-          inputsFrom = [
-            config.flake-root.devShell
-            config.just-flake.outputs.devShell
-            config.treefmt.build.devShell
-            config.pre-commit.devShell
-          ];
-
-          packages = with pkgs; [git direnv nix-direnv just ripgrep];
-        };
-
         packages = let
           mkFormat = host: format: {"${host}-${format}" = self.nixosConfigurations."${host}".config.formats."${format}";};
-
           mkHostFormatsImpl = host: [
             (mkFormat host "hyperv")
             (mkFormat host "install-iso-hyperv")
@@ -292,40 +177,7 @@
             (mkFormat host "vm")
           ];
         in
-          lib.mkMerge ([
-              {
-                nix-build-all = let
-                  devour-flake = pkgs.callPackage inputs.devour-flake {};
-                in
-                  pkgs.writeShellApplication {
-                    name = "nix-build-all";
-                    runtimeInputs = [
-                      pkgs.nix
-                      devour-flake
-                    ];
-
-                    text = ''
-                      # Make sure that flake.lock is sync
-                      ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
-
-                      # Do a full nix build (all outputs)
-                      # This uses https://github.com/srid/devour-flake
-                      ${lib.getExe devour-flake} . "$@"
-                    '';
-                  };
-
-                # TODO: doesn't make sense on aarch64-darwin.
-                docker-builder = pkgs.dockerTools.buildImage {
-                  name = "docker-builder";
-                  copyToRoot = [
-                    pkgs.hello
-                    pkgs.file
-                    pkgs.dockerTools.binSh
-                  ];
-                };
-              }
-            ]
-            ++ (mkHostFormatsImpl "nixos-iso-installer"));
+          lib.mkMerge (mkHostFormatsImpl "nixos-iso-installer");
       };
 
       ezConfigs = {
