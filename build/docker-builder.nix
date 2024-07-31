@@ -41,7 +41,7 @@
           IMAGE="$(docker load -i ${docker-builder} | sed -nr 's/^Loaded image: (.*)$/\1/p')"
           docker run \
             --platform "${dockerPlatormMap.${system}}" \
-            -v "$FLAKE_ROOT":"${workdir}":ro \
+            -v "$FLAKE_ROOT":"$WORKDIR":ro \
            "$IMAGE" sh -c "$*"
         '';
       };
