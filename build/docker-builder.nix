@@ -1,4 +1,4 @@
-{self, ...}: {
+{
   perSystem = {
     lib,
     pkgs,
@@ -41,7 +41,7 @@
           IMAGE="$(docker load -i ${docker-builder} | sed -nr 's/^Loaded image: (.*)$/\1/p')"
           docker run \
             --platform "${dockerPlatormMap.${system}}" \
-            -v "${self}":"${workdir}":ro \
+            -v "$FLAKE_ROOT":"${workdir}":ro \
            "$IMAGE" sh -c "$*"
         '';
       };
