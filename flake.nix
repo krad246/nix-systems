@@ -313,6 +313,16 @@
                       ${lib.getExe devour-flake} . "$@"
                     '';
                   };
+
+                # TODO: doesn't make sense on aarch64-darwin.
+                docker-builder = pkgs.dockerTools.buildImage {
+                  name = "docker-builder";
+                  copyToRoot = [
+                    pkgs.hello
+                    pkgs.file
+                    pkgs.dockerTools.binSh
+                  ];
+                };
               }
             ]
             ++ (mkHostFormatsImpl "nixos-iso-installer"));
