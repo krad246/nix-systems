@@ -8,7 +8,7 @@
     builderName = "docker-builder";
     WorkingDir = "/workdir";
 
-    nixos-nix-docker = pkgs.dockerTools.pullImage {
+    docker-nixos-nix-image = pkgs.dockerTools.pullImage {
       imageName = "nixos/nix";
       imageDigest = "sha256:5a2a7ee72e88528ff9422f16a8a0be580d8c173928369a20e8a6ba77a55cd95d";
       sha256 = "1jh1bdydfxprz54nmxx0yz2anwswkb1ny9d7gbh98zq02kkasjvf";
@@ -18,8 +18,11 @@
 
     docker-builder = pkgs.dockerTools.streamLayeredImage {
       name = builderName;
-      fromImage = nixos-nix-docker;
+      fromImage = null;
       contents = [
+        pkgs.dockerTools.binSh
+        pkgs.util-linux
+        pkgs.coreutils
       ];
 
       config = {
@@ -64,6 +67,7 @@
     packages = lib.mkIf pkgs.stdenv.isLinux {
       inherit docker-builder;
       inherit docker-builder-exec;
+      inherit docker-nixos-nix-image;
     };
   };
 }
