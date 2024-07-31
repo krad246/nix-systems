@@ -9,12 +9,9 @@
       inherit system;
       modules = [
         {
-          environment.etc."some-config-file" = {
-            text = ''
-              127.0.0.1 localhost
-              ::1 localhost
-            '';
-          };
+          boot.tmp.useTmpfs = true;
+          nix.settings.experimental-features = ["nix-command" "flakes"];
+          system.stateVersion = lib.trivial.release;
         }
       ];
     };
@@ -37,6 +34,8 @@
         pkgs.dockerTools.binSh
         pkgs.util-linux
         pkgs.coreutils
+        pkgs.nixFlakes
+        pkgs.git
       ];
 
       config = {
@@ -50,8 +49,8 @@
       maxLayers = 32;
       enableFakechroot = true;
       fakeRootCommands = ''
-        mkdir -p /etc && \
-          ${nixosCustomizations.config.system.build.etcActivationCommands}
+        mkdir -p /{etc,tmp}
+        ${nixosCustomizations.config.system.build.etcActivationCommands}
       '';
     };
 
