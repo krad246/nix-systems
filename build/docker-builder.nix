@@ -6,60 +6,38 @@
     ...
   }: let
     builderName = "docker-builder";
+    WorkingDir = "/workdir";
 
-    etc = let
-      inherit (pkgs) lib;
-      nixosCore = lib.evalModules {
-        modules = [
-          {
-            environment.etc."/nix/nix.conf" = {
-              text = ''
-                extra-experimental-features = "nix-command flakes"
-              '';
-            };
-          }
-        ];
-      };
-    in
-      pkgs.dockerTools.streamLayeredImage {
-        name = "etc";
-        tag = "latest";
-        enableFakechroot = true;
-        fakeRootCommands = ''
-          mkdir -p /etc
-          ${nixosCore.config.system.build.etcActivationCommands}
-        '';
-        config.Cmd = pkgs.writeScript "etc-cmd" ''
-          #!${pkgs.busybox}/bin/sh
-          ${pkgs.busybox}/bin/cat /etc/some-config-file
-        '';
-      };
+    nixos-nix-docker = pkgs.dockerTools.pullImage {
+      imageName = "nixos/nix";
+      imageDigest = "sha256:5a2a7ee72e88528ff9422f16a8a0be580d8c173928369a20e8a6ba77a55cd95d";
+      sha256 = "1jh1bdydfxprz54nmxx0yz2anwswkb1ny9d7gbh98zq02kkasjvf";
+      finalImageName = "nixos/nix";
+      finalImageTag = "latest";
+    };
 
-    docker-builder = pkgs.dockerTools.buildImage {
+    docker-builder = pkgs.dockerTools.streamLayeredImage {
       name = builderName;
-      fromImage = pkgs.dockerTools.pullImage {
-        imageName = "nixos/nix";
-        imageDigest = "sha256:5a2a7ee72e88528ff9422f16a8a0be580d8c173928369a20e8a6ba77a55cd95d";
-        sha256 = "1jh1bdydfxprz54nmxx0yz2anwswkb1ny9d7gbh98zq02kkasjvf";
-        finalImageName = "nixos/nix";
-        finalImageTag = "latest";
-      };
-
-      copyToRoot = [
-        pkgs.dockerTools.binSh
-        pkgs.coreutils
-        pkgs.nix
+      fromImage = nixos-nix-docker;
+      contents = [
       ];
 
-      config = let
-        WorkingDir = "/workdir";
-      in {
+      config = {
         Volumes = {
           "${WorkingDir}" = {};
         };
 
         inherit WorkingDir;
       };
+
+      maxLayers = 128;
+
+      enableFakechroot = true;
+      fakeRootCommands = ''
+        NIX_CONF=/etc/nix/nix.conf
+        mkdir -p "$(dirname $NIX_CONF)" && \
+          echo 'extra-experimental-features = nix-command flakes' >> "$NIX_CONF"
+      '';
     };
 
     dockerPlatormMap = {
@@ -67,25 +45,23 @@
       "aarch64-linux" = "linux/arm64";
     };
 
-    docker-builder-exec = let
-      workdir = docker-builder.passthru.buildArgs.config.WorkingDir;
-    in
-      pkgs.writeShellApplication {
-        name = "${builderName}-exec";
-        text = ''
-          WORKDIR=${workdir}
-          IMAGE="$(docker load -i ${docker-builder} | sed -nr 's/^Loaded image: (.*)$/\1/p')"
-          docker run \
-            --platform "${dockerPlatormMap.${system}}" \
-            -v "$FLAKE_ROOT":"$WORKDIR":ro \
-           "$IMAGE" sh -c "$*"
-        '';
-      };
+    docker-builder-exec = pkgs.writeShellApplication {
+      name = "${builderName}-exec";
+      text = ''
+        set -eux
+        WORKDIR=${WorkingDir}
+        IMAGE="$(${docker-builder} | docker image load | sed -nr 's/^Loaded image: (.*)$/\1/p')"
+        docker run \
+          --platform "${dockerPlatormMap.${system}}" \
+          -v "$FLAKE_ROOT":"$WORKDIR":ro \
+          -it \
+         "$IMAGE" "$@"
+      '';
+    };
   in {
     packages = lib.mkIf pkgs.stdenv.isLinux {
       inherit docker-builder;
       inherit docker-builder-exec;
-      inherit etc;
     };
   };
 }

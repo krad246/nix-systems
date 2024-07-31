@@ -3,6 +3,7 @@
     lib,
     pkgs,
     inputs',
+    self',
     ...
   }: let
     # Compose a simple just target from the name of the incoming derivation
@@ -86,6 +87,14 @@
         justfile = ''
           check *ARGS: fmt
             exec ${lib.getExe pkgs.just} nix flake check {{ ARGS }}
+        '';
+      };
+
+      docker-exec = {
+        enable = true;
+        justfile = ''
+          docker-exec *ARGS:
+            ${lib.getExe self'.packages.docker-builder-exec} {{ ARGS }}
         '';
       };
     };
