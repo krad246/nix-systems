@@ -9,6 +9,14 @@
 
     docker-builder = pkgs.dockerTools.buildImage {
       name = builderName;
+      fromImage = pkgs.dockerTools.pullImage {
+        imageName = "nixos/nix";
+        imageDigest = "sha256:5a2a7ee72e88528ff9422f16a8a0be580d8c173928369a20e8a6ba77a55cd95d";
+        sha256 = "1jh1bdydfxprz54nmxx0yz2anwswkb1ny9d7gbh98zq02kkasjvf";
+        finalImageName = "nixos/nix";
+        finalImageTag = "latest";
+      };
+
       copyToRoot = [
         pkgs.dockerTools.binSh
         pkgs.coreutils
