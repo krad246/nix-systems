@@ -25,7 +25,7 @@ in {
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "install-nixos-unattended" ''
       set -eux
-      exec ${pkgs.disko}/bin/disko-install --flake "${self}#${machine.config.networking.hostName}" --disk main "$1"
+      exec ${pkgs.disko}/bin/disko-install --flake "${self}#${machine.config.networking.hostName}" --option inputs-from "${self}" "$@"
     '')
   ];
 }

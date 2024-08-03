@@ -1,6 +1,5 @@
 {
   inputs,
-  config,
   lib,
   ...
 }: let
@@ -15,7 +14,8 @@ in {
       ../../nixos-modules/pam-u2f.nix
       ../../nixos-modules/pipewire.nix
       ../../nixos-modules/vscode-server.nix
-    ];
+    ]
+    ++ [./hardware-configuration.nix];
 
   # Default settings are simple EFI system on tmpfs
   boot.loader.grub.device = lib.mkDefault "nodev";
@@ -37,10 +37,5 @@ in {
     trusted-users = ["krad246"];
   };
 
-  networking.useDHCP = lib.mkDefault true;
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-
-  networking.hostName = lib.mkForce "immutable-gnome";
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   system.stateVersion = lib.trivial.release;
 }
