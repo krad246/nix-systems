@@ -1,15 +1,17 @@
 {
   self,
-  lib,
   pkgs,
   ...
 }: let
   machine = self.nixosConfigurations.immutable-gnome;
   inherit (machine.config.system) build;
+
   dependencies =
     [
       build.toplevel
       build.diskoScript
+    ]
+    ++ [
       machine.pkgs.stdenv.drvPath
       (machine.pkgs.closureInfo {rootPaths = [];}).drvPath
     ]
@@ -23,7 +25,7 @@ in {
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "install-nixos-unattended" ''
       set -eux
-      exec ${lib.getExe pkgs.disko} --flake "${self}#immutable-gnome" --disk main "$1"
+      exec ${pkgs.disko}/bin/disko-install --flake "${self}#${machine.config.networking.hostName}" --disk main "$1"
     '')
   ];
 }

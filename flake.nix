@@ -162,16 +162,8 @@
         packages = let
           mkFormat = host: format: {"${host}-${format}" = self.nixosConfigurations."${host}".config.formats."${format}";};
           mkHostFormatsImpl = host: [
-            (mkFormat host "hyperv")
-            (mkFormat host "install-iso-hyperv")
             (mkFormat host "install-iso")
             (mkFormat host "iso")
-            (mkFormat host "qcow-efi")
-            (mkFormat host "qcow")
-            (mkFormat host "raw-efi")
-            (mkFormat host "raw")
-            (mkFormat host "vagrant-virtualbox")
-            (mkFormat host "virtualbox")
             (mkFormat host "vm-bootloader")
             (mkFormat host "vm-nogui")
             (mkFormat host "vm")

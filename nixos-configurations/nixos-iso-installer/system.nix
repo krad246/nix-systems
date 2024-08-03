@@ -16,7 +16,7 @@ in {
       "${modulesPath}/profiles/installation-device.nix"
     ];
 
-  # Default settings are simple EFI system on tmpfs
+  # ISO system essentially boots into EFI on tmpfs
   boot.loader.grub.device = lib.mkDefault "nodev";
   fileSystems."/" = lib.mkDefault {
     device = "none";

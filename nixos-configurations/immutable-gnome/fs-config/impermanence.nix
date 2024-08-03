@@ -1,10 +1,5 @@
-{
-  modulesPath,
-  config,
-  lib,
-  pkgs,
-  ...
-}: let
+{inputs, ...}: let
+  inherit (inputs) disko impermanence;
   boot = {
     size = "1M";
     type = "EF02"; # for grub MBR
@@ -22,7 +17,7 @@
   };
 
   home = {
-    size = "128G";
+    size = "384G";
     content = {
       type = "filesystem";
       format = "ext4";
@@ -31,7 +26,7 @@
   };
 
   nix = {
-    size = "256G";
+    size = "512G";
     content = {
       type = "filesystem";
       format = "ext4";
@@ -48,6 +43,8 @@
     };
   };
 in {
+  imports = [disko.nixosModules.disko] ++ [impermanence.nixosModules.impermanence];
+
   disko.devices = {
     disk.main = {
       device = "/dev/nvme0n1";
@@ -56,7 +53,7 @@ in {
         type = "gpt";
         partitions = {
           inherit boot ESP;
-          inherit home nix persist;
+          inherit persist nix home;
         };
       };
     };
@@ -72,16 +69,25 @@ in {
 
   fileSystems."/nix/persist".neededForBoot = true;
 
-  formatConfigs.impermanence = _: let
-    impermanence = import ./fetch-impermanence.nix;
-  in {
-    imports = [impermanence] ++ [../../../nixos-modules/impermanence.nix];
-    formatAttr = "impermanence";
-
-    system.build.impermanence = import "${modulesPath}/../lib/make-disk-image.nix" {
-      inherit config lib pkgs;
-      diskSize = "auto";
-      format = "raw";
-    };
+  environment.persistence."/nix/persist" = {
+    hideMounts = true;
+    directories = [
+      "/var/log"
+      "/var/lib/bluetooth"
+      "/var/lib/nixos"
+      "/var/lib/systemd/coredump"
+      "/etc/NetworkManager/system-connections"
+      {
+        directory = "/var/lib/colord";
+        user = "colord";
+        group = "colord";
+        mode = "u=rwx,g=rx,o=";
+      }
+    ];
+    files = [
+      "/etc/machine-id"
+    ];
   };
+
+  users.mutableUsers = false;
 }

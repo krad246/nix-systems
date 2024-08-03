@@ -1,8 +1,7 @@
-{lib, ...}: {
+{
   imports = [
+    ./format-config.nix
+    ./fs-config/simple.nix
     ./system.nix
   ];
-
-  networking.hostName = lib.mkForce "immutable-gnome";
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 }
