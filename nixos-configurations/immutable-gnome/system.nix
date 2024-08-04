@@ -13,7 +13,6 @@ in {
       ../../nixos-modules/nixos
       ../../nixos-modules/pam-u2f.nix
       ../../nixos-modules/pipewire.nix
-      ../../nixos-modules/vscode-server.nix
     ]
     ++ [./hardware-configuration.nix];
 
@@ -30,6 +29,12 @@ in {
     description = "Keerthi";
     extraGroups = ["NetworkManager" "wheel" "libvirtd"];
     initialHashedPassword = "";
+    hashedPassword = "";
+  };
+
+  services.xserver.displayManager.autoLogin = {
+    enable = true;
+    user = "krad246";
   };
 
   nix.settings = {

@@ -14,7 +14,6 @@ args @ {
       nerdfonts
       shellenv
       spotify
-      vscode
     ]
     ++ [
       ({
