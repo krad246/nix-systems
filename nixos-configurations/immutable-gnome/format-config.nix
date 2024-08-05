@@ -1,4 +1,6 @@
 {
   formatConfigs = {
+    hyperv = _: {
+    };
   };
 }

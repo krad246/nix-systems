@@ -2,6 +2,7 @@
   pkgs,
   lib,
   ezModules,
+  config,
   osConfig,
   ...
 }: {
@@ -25,5 +26,9 @@
     packages = with pkgs; [
       nodejs
     ];
+  };
+
+  nix.settings = {
+    trusted-users = ["${config.home.username}"];
   };
 }

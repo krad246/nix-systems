@@ -9,11 +9,6 @@
     wsl
   ];
 
-  nix.settings = {
-    allowed-users = ["keerad" "krad246"];
-    trusted-users = ["keerad" "krad246"];
-  };
-
   nixpkgs.hostPlatform = "x86_64-linux";
   networking.hostName = "nixos-wsl";
 

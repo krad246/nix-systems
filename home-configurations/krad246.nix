@@ -31,6 +31,10 @@ args @ {
           HOME = "${config.home.homeDirectory}";
         };
       };
+
+      nix.settings = {
+        trusted-users = ["${config.home.username}"];
+      };
     }
 
     (lib.mkIf pkgs.stdenv.isDarwin (import ezModules.darwin args))
