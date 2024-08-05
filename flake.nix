@@ -122,11 +122,6 @@
       url = "github:hraban/mac-app-util";
       inputs.flake-compat.follows = "flake-compat";
     };
-
-    vscode-server = {
-      url = "github:nix-community/nixos-vscode-server";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs @ {
