@@ -5,15 +5,12 @@
   pkgs,
   ...
 }: let
-  triple = lib.strings.splitString "-" pkgs.stdenv.system;
-  uname = builtins.elemAt triple 0;
-
   maybeRosetta =
     if pkgs.stdenv.isDarwin
     then "--vm-type vz --vz-rosetta"
     else "";
   mkScript = arch:
-    pkgs.writeShellScript "colima-${arch}-start" ''
+    pkgs.writeShellScript "colima-${arch}" ''
       ${lib.getExe pkgs.colima} start \
         -p ${arch} \
         --arch ${arch} \
@@ -31,7 +28,7 @@
   darwinPath = lib.strings.concatStringsSep ":" ["${homePathCfg}" "${darwinPathCfg}"];
   mkSystemdService = script: arch:
     lib.mkIf pkgs.stdenv.isLinux {
-      systemd.user.services."colima-${arch}-autostart" = {
+      systemd.user.services."colima-${arch}" = {
         Unit = {
           Description = "Start Colima ${arch} VM.";
         };
@@ -47,7 +44,7 @@
 
   mkLaunchUnit = script: arch:
     lib.mkIf pkgs.stdenv.isDarwin {
-      launchd.agents."colima-${arch}-autostart" = {
+      launchd.agents."colima-${arch}" = {
         enable = true;
         config = {
           EnvironmentVariables = {
@@ -66,6 +63,7 @@ in {
   home.packages = with pkgs; [colima docker];
   home.sessionPath = ["${lib.makeBinPath [pkgs.docker]}"];
   imports = [
-    (_: mkUnits uname)
+    (_: mkUnits "x86_64-linux")
+    (_: mkUnits "aarch64-linux")
   ];
 }

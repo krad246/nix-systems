@@ -8,6 +8,7 @@
   imports = with ezModules; [
     nerdfonts
     shellenv
+    vscode
   ];
 
   home = {
