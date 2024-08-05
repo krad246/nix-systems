@@ -37,10 +37,5 @@ in {
     user = "krad246";
   };
 
-  nix.settings = {
-    allowed-users = ["krad246"];
-    trusted-users = ["krad246"];
-  };
-
   system.stateVersion = lib.trivial.release;
 }

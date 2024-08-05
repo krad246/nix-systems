@@ -27,7 +27,7 @@ in {
         partitions = {
           inherit boot ESP;
           root = {
-            size = "768G";
+            size = "95%";
             content = {
               type = "filesystem";
               format = "ext4";
@@ -35,7 +35,7 @@ in {
             };
           };
           encryptedSwap = {
-            size = "64G";
+            size = "5%";
             content = {
               type = "swap";
               randomEncryption = true;
