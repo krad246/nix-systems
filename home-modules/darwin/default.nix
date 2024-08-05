@@ -1,3 +1,3 @@
 {
-  imports = [./home-manager.nix];
+  imports = [./dock.nix];
 }

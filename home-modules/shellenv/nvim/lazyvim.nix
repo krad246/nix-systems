@@ -1,8 +1,4 @@
-{
-  ezModules,
-  pkgs,
-  ...
-}: let
+{pkgs, ...}: let
   treesitterWithGrammars =
     pkgs.vimPlugins.nvim-treesitter.withPlugins
     (p: [
@@ -24,8 +20,8 @@
       p.yaml
     ]);
 in {
-  imports = with ezModules; [rust golang];
   home.packages = with pkgs; [nil fd ripgrep];
+
   programs.neovim = {
     enable = true;
     viAlias = true;

@@ -5,7 +5,7 @@
   osConfig,
   ...
 }: {
-  imports = with ezModules; [colima kitty nvim shellenv];
+  imports = with ezModules; [shellenv];
   home = {
     username = osConfig.users.users.nixos.name or "nixos";
     stateVersion = lib.trivial.release;

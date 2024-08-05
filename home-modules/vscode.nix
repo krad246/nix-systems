@@ -12,6 +12,7 @@ in {
     enable = true;
     enableFHS = true;
   };
+
   programs.vscode = {
     enable = true;
     package =

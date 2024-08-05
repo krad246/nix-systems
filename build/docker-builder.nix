@@ -3,8 +3,33 @@
     lib,
     pkgs,
     system,
+    self',
     ...
   }: let
+    dockerPlatforms = {
+      "x86_64-linux" = {
+        os = "linux";
+        arch = "amd64";
+      };
+
+      "i386-linux" = {
+        os = "linux";
+        arch = "i386";
+      };
+
+      "aarch64-linux" = {
+        os = "linux";
+        arch = "arm64";
+      };
+
+      "aarch64-darwin" = {
+        os = "linux";
+        arch = "arm64";
+      };
+    };
+
+    dockerVMPlatform = dockerPlatforms."${system}";
+
     nixosCustomizations = lib.nixosSystem {
       inherit system;
       modules = [
@@ -16,7 +41,6 @@
       ];
     };
 
-    builderName = "docker-builder";
     WorkingDir = "/workdir";
 
     docker-nixos-nix-image = pkgs.dockerTools.pullImage {
@@ -25,11 +49,18 @@
       sha256 = "1jh1bdydfxprz54nmxx0yz2anwswkb1ny9d7gbh98zq02kkasjvf";
       finalImageName = "nixos/nix";
       finalImageTag = "latest";
+
+      inherit (dockerVMPlatform) os arch;
     };
 
-    docker-builder = pkgs.dockerTools.streamLayeredImage {
-      name = builderName;
-      fromImage = null;
+    docker-builder = pkgs.dockerTools.buildImage {
+      name = "docker-builder";
+      fromImage = docker-nixos-nix-image;
+    };
+
+    stream-docker-builder = pkgs.dockerTools.streamLayeredImage {
+      name = "stream-docker-builder";
+      fromImage = docker-nixos-nix-image;
       contents = [
         pkgs.dockerTools.binSh
         pkgs.util-linux
@@ -54,29 +85,31 @@
       '';
     };
 
-    dockerPlatormMap = {
-      "x86_64-linux" = "linux/amd64";
-      "aarch64-linux" = "linux/arm64";
-    };
-
     docker-builder-exec = pkgs.writeShellApplication {
-      name = "${builderName}-exec";
+      name = "docker-builder-exec";
       text = ''
         set -eux
         WORKDIR=${WorkingDir}
-        IMAGE="$(${docker-builder} | docker image load | sed -nr 's/^Loaded image: (.*)$/\1/p')"
+        IMAGE="$(docker load < ${self'.packages.docker-builder} | sed -nr 's/^Loaded image: (.*)$/\1/p')"
         docker run \
-          --platform "${dockerPlatormMap.${system}}" \
+          --platform "${dockerVMPlatform.os}/${dockerVMPlatform.arch}" \
           -v "$FLAKE_ROOT":"$WORKDIR":ro \
           -it \
          "$IMAGE" "$@"
       '';
     };
   in {
-    packages = lib.mkIf pkgs.stdenv.isLinux {
-      inherit docker-builder;
-      inherit docker-builder-exec;
-      inherit docker-nixos-nix-image;
-    };
+    packages = lib.mkMerge [
+      (lib.mkIf pkgs.stdenv.isLinux {
+        inherit stream-docker-builder;
+      })
+      (lib.mkIf pkgs.stdenv.isDarwin {
+        inherit docker-nixos-nix-image;
+      })
+      {
+        inherit docker-builder;
+        inherit docker-builder-exec;
+      }
+    ];
   };
 }

@@ -1,64 +1,48 @@
-args @ {
+{
   ezModules,
   config,
   lib,
   pkgs,
   osConfig,
+  inputs,
   ...
 }: {
-  imports = with ezModules;
-    [
-      agenix
-      colima
-      kitty
-      nerdfonts
-      shellenv
-      spotify
-    ]
-    ++ [
-      ({
-        lib,
-        pkgs,
-        ...
-      }:
-        lib.mkIf pkgs.stdenv.isLinux (lib.mkMerge [
-          {
-            home.packages = [pkgs.pavucontrol pkgs.signal-desktop pkgs.zoom-us];
-          }
-          (import chromium)
-          (import kdeconnect)
-          (import webcord {inherit lib pkgs;})
-          (import obs)
-          (import xdg {inherit lib pkgs;})
-        ]))
-    ]
-    ++ [
-      ({
-        lib,
-        pkgs,
-        ...
-      }:
-        lib.mkIf pkgs.stdenv.isDarwin (lib.mkMerge [
-          (import darwin {inherit lib pkgs;})
-          (import dock (args // {inherit lib pkgs;}))
-        ]))
-    ];
+  imports = with ezModules; [
+    kitty
+    shellenv
+    spotify
+  ];
 
-  home = {
-    username = osConfig.users.users.krad246.name or "krad246";
-    stateVersion = lib.trivial.release;
-    homeDirectory =
-      osConfig.users.users.krad246.home
-      or (
-        if pkgs.stdenv.isDarwin
-        then "/Users/krad246"
-        else "/home/krad246"
-      );
+  config = lib.mkMerge [
+    {
+      home = {
+        username = osConfig.users.users.krad246.name or "krad246";
+        stateVersion = lib.trivial.release;
+        homeDirectory =
+          osConfig.users.users.krad246.home
+          or (
+            if pkgs.stdenv.isDarwin
+            then "/Users/krad246"
+            else "/home/krad246"
+          );
 
-    sessionVariables = {
-      HOME = "${config.home.homeDirectory}";
-    };
-  };
+        sessionVariables = {
+          HOME = "${config.home.homeDirectory}";
+        };
+      };
+    }
 
-  nix.settings.trusted-users = ["krad246"];
+    (lib.mkIf pkgs.stdenv.isDarwin (lib.evalModules {
+      modules = [
+        {
+          _module.args.pkgs = pkgs;
+          _module.args.inputs = inputs;
+        }
+        ezModules.darwin
+      ];
+    }))
+
+    (lib.mkIf pkgs.stdenv.isLinux {
+      })
+  ];
 }

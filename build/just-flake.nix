@@ -90,7 +90,7 @@
         '';
       };
 
-      docker-exec = {
+      docker-exec = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         enable = true;
         justfile = ''
           docker-exec *ARGS:

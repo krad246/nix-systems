@@ -1,14 +1,21 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  osConfig,
+  ...
+}: {
   nix = {
-    package = pkgs.nixFlakes;
+    package = lib.mkDefault pkgs.nixFlakes;
+
     checkConfig = true;
     gc.automatic = true;
     settings = {
       experimental-features = ["nix-command" "flakes"];
-      keep-outputs = false;
-      keep-derivations = false;
-      auto-optimise-store = false;
-      sandbox = false;
+      keep-outputs = lib.attrsets.attrByPath ["nix" "settings" "keep-outputs"] false osConfig;
+      keep-derivations = lib.attrsets.attrByPath ["nix" "settings" "keep-derivations"] false osConfig;
+
+      sandbox = lib.attrsets.attrByPath ["nix" "settings" "sandbox"] "relaxed" osConfig;
+
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
@@ -29,12 +36,7 @@
     extraOptions = ''
       experimental-features = nix-command flakes
     '';
-
-    useDaemon = true;
-    distributedBuilds = true;
   };
 
   nixpkgs.config.allowUnfree = true;
-  services.nix-daemon.enable = true;
-  system.stateVersion = 4;
 }

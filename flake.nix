@@ -149,22 +149,8 @@
       debug = true;
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 
-      perSystem = {
-        config,
-        lib,
-        ...
-      }: {
-        packages = let
-          mkFormat = host: format: {"${host}-${format}" = self.nixosConfigurations."${host}".config.formats."${format}";};
-          mkHostFormatsImpl = host: [
-            (mkFormat host "install-iso")
-            (mkFormat host "iso")
-            (mkFormat host "vm-bootloader")
-            (mkFormat host "vm-nogui")
-            (mkFormat host "vm")
-          ];
-        in
-          lib.mkMerge (mkHostFormatsImpl "nixos-iso-installer");
+      perSystem = _: {
+        packages = {};
       };
 
       ezConfigs = {

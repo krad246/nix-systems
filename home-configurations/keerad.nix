@@ -5,12 +5,10 @@
   osConfig,
   ...
 }: {
-  imports = with ezModules;
-    [
-      colima
-      shellenv
-    ]
-    ++ [vscode];
+  imports = with ezModules; [
+    shellenv
+    vscode
+  ];
 
   home = {
     username = osConfig.users.users.keerad.name or "keerad";

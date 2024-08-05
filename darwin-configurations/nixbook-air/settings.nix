@@ -1,10 +1,10 @@
-{
-  imports = [
-    ../../darwin-modules/dock.nix
-    ../../darwin-modules/finder.nix
-    ../../darwin-modules/pointer.nix
-    ../../darwin-modules/single-user.nix
-    ../../darwin-modules/ui-ux.nix
+{ezModules, ...}: {
+  imports = with ezModules; [
+    dock
+    finder
+    pointer
+    single-user
+    ui-ux
   ];
 
   system.defaults = {

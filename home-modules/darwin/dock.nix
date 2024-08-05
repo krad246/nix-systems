@@ -8,6 +8,7 @@
 }: let
   inherit (inputs) mac-app-util;
   inherit (pkgs.stdenv) system;
+
   instantiate = mac-app-util.packages.${system}.default;
 
   # The upstream maintainer did not add the mainProgram attribute, so we are

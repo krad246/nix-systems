@@ -1,10 +1,11 @@
 {
   config,
   pkgs,
+  ezModules,
   ...
 }: {
   imports = [
-    ../../darwin-modules/homebrew
+    ezModules.homebrew
   ];
 
   homebrew = {

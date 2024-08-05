@@ -1,17 +1,12 @@
-{
-  imports = [
-    ../../darwin-modules/darwin
-    ../../darwin-modules/homebrew
+{ezModules, ...}: {
+  imports = with ezModules; [
+    darwin
+    homebrew
   ];
 
   users.users.krad246 = {
     home = "/Users/krad246";
     createHome = true;
-  };
-
-  nix.settings = {
-    allowed-users = ["krad246" "@admin"];
-    trusted-users = ["krad246" "@admin"];
   };
 
   homebrew = {
