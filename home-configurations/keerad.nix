@@ -6,6 +6,7 @@
   ...
 }: {
   imports = with ezModules; [
+    nerdfonts
     shellenv
   ];
 

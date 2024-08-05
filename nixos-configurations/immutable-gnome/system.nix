@@ -1,5 +1,6 @@
 {
   inputs,
+  ezModules,
   lib,
   ...
 }: let
@@ -8,13 +9,12 @@ in {
   imports =
     [nixos-generators.nixosModules.all-formats]
     ++ [
-      ../../nixos-modules/gnome-desktop.nix
-      ../../nixos-modules/kdeconnect.nix
-      ../../nixos-modules/nixos
-      ../../nixos-modules/pam-u2f.nix
-      ../../nixos-modules/pipewire.nix
-    ]
-    ++ [./hardware-configuration.nix];
+      ezModules.gnome-desktop
+      ezModules.kdeconnect
+      ezModules.nixos
+      ezModules.pam-u2f
+      ezModules.pipewire
+    ];
 
   # Default settings are simple EFI system on tmpfs
   boot.loader.grub.device = lib.mkDefault "nodev";

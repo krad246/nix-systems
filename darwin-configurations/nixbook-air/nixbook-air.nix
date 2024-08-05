@@ -1,7 +1,6 @@
 {ezModules, ...}: {
   imports = with ezModules; [
     darwin
-    homebrew
   ];
 
   users.users.krad246 = {
@@ -10,7 +9,7 @@
   };
 
   homebrew = {
-    casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"] ++ ["signal"] ++ ["vmware-fusion"];
+    casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"] ++ ["discord" "signal"] ++ ["vmware-fusion"];
   };
 
   nixpkgs.hostPlatform = "aarch64-darwin";

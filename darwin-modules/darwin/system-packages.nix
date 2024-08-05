@@ -1,11 +1,10 @@
 {
   config,
   pkgs,
-  ezModules,
   ...
 }: {
   imports = [
-    ezModules.homebrew
+    ./homebrew
   ];
 
   homebrew = {

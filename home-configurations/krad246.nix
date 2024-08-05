@@ -8,8 +8,10 @@ args @ {
 }: {
   imports = with ezModules; [
     kitty
+    nerdfonts
     shellenv
     spotify
+    vscode
   ];
 
   config = lib.mkMerge [

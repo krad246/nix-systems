@@ -56,6 +56,7 @@
     docker-builder = pkgs.dockerTools.buildImage {
       name = "docker-builder";
       fromImage = docker-nixos-nix-image;
+      architecture = dockerVMPlatform.arch;
     };
 
     stream-docker-builder = pkgs.dockerTools.streamLayeredImage {
@@ -76,6 +77,8 @@
 
         inherit WorkingDir;
       };
+
+      architecture = dockerVMPlatform.arch;
 
       maxLayers = 32;
       enableFakechroot = true;

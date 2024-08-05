@@ -3,7 +3,6 @@
     lib,
     pkgs,
     inputs',
-    self',
     ...
   }: let
     # Compose a simple just target from the name of the incoming derivation
@@ -25,7 +24,7 @@
       # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
       [${os}]
       ${pname} VERB *ARGS:
-        exec ${lib.meta.getExe drv} {{ VERB }} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
+        @${lib.meta.getExe drv} {{ VERB }} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
 
       ${maybeString (args ? alias) (mkAlias args.alias pname)}
     '';
@@ -86,15 +85,25 @@
         enable = true;
         justfile = ''
           check *ARGS: fmt
-            exec ${lib.getExe pkgs.just} nix flake check {{ ARGS }}
+            @${lib.getExe pkgs.just} nix flake check {{ ARGS }}
         '';
       };
 
-      docker-exec = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+      commit = {
+        enable = true;
+        justfile = let
+          gitBin = lib.getExe pkgs.git;
+        in ''
+          commit *ARGS:
+            @${gitBin} add -u && ${gitBin} commit {{ quote(ARGS) }}
+        '';
+      };
+
+      docker-exec = {
         enable = true;
         justfile = ''
-          docker-exec *ARGS:
-            ${lib.getExe self'.packages.docker-builder-exec} {{ ARGS }}
+          docker-exec SYSTEM *ARGS:
+            @${lib.getExe pkgs.just} nix run .#packages.{{SYSTEM}}.docker-builder-exec -- {{ ARGS }}
         '';
       };
     };

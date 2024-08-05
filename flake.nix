@@ -26,6 +26,10 @@
       flake = false;
     };
 
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+    };
+
     # An opinionated Nix flake library (see flake-utils)
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
@@ -121,6 +125,11 @@
     mac-app-util = {
       url = "github:hraban/mac-app-util";
       inputs.flake-compat.follows = "flake-compat";
+    };
+
+    vscode-server = {
+      url = "github:nix-community/nixos-vscode-server";
+      inputs.flake-utils.follows = "flake-utils";
     };
   };
 

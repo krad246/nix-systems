@@ -2,6 +2,7 @@
   inputs,
   lib,
   modulesPath,
+  ezModules,
   ...
 }: let
   inherit (inputs) nixos-generators;
@@ -9,8 +10,8 @@ in {
   imports =
     [nixos-generators.nixosModules.all-formats]
     ++ [
-      ../../nixos-modules/gnome-desktop.nix
-      ../../nixos-modules/nixos
+      ezModules.gnome-desktop
+      ezModules.nixos
     ]
     ++ [
       "${modulesPath}/profiles/installation-device.nix"
