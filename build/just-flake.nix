@@ -81,21 +81,13 @@
         };
       };
 
-      check = {
-        enable = true;
-        justfile = ''
-          check *ARGS: fmt
-            @${lib.getExe pkgs.just} nix flake check {{ ARGS }}
-        '';
-      };
-
       commit = {
         enable = true;
         justfile = let
           gitBin = lib.getExe pkgs.git;
         in ''
           commit *ARGS:
-            @${gitBin} add -u && ${gitBin} commit {{ quote(ARGS) }}
+            @${gitBin} add -u && ${gitBin} commit {{ ARGS }}
         '';
       };
 
