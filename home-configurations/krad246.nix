@@ -1,10 +1,9 @@
-{
+args @ {
   ezModules,
   config,
   lib,
   pkgs,
   osConfig,
-  inputs,
   ...
 }: {
   imports = with ezModules; [
@@ -32,17 +31,7 @@
       };
     }
 
-    (lib.mkIf pkgs.stdenv.isDarwin (lib.evalModules {
-      modules = [
-        {
-          _module.args.pkgs = pkgs;
-          _module.args.inputs = inputs;
-        }
-        ezModules.darwin
-      ];
-    }))
-
-    (lib.mkIf pkgs.stdenv.isLinux {
-      })
+    (lib.mkIf pkgs.stdenv.isDarwin (import ezModules.darwin args))
+    (lib.mkIf pkgs.stdenv.isLinux (import ezModules.linux args))
   ];
 }

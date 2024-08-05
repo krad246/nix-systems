@@ -1,9 +1,12 @@
-{lib, ...}: {
-  imports = [
-    ../../nixos-modules/docker.nix
-    ../../nixos-modules/nixos
-    ../../nixos-modules/wsl
-    ../../nixos-modules/vscode-server.nix
+{
+  lib,
+  ezModules,
+  ...
+}: {
+  imports = with ezModules; [
+    docker
+    nixos
+    wsl
   ];
 
   nix.settings = {

@@ -7,7 +7,6 @@
 }: {
   imports = with ezModules; [
     shellenv
-    vscode
   ];
 
   home = {
