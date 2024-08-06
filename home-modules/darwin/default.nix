@@ -8,4 +8,7 @@ args @ {
 in
   lib.mkMerge [
     (mac-app-util.homeManagerModules.default (args // {inherit pkgs;}))
+    {
+      home.packages = with pkgs; [sshfs-fuse];
+    }
   ]
