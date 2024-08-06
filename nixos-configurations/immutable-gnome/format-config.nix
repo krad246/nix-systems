@@ -8,6 +8,11 @@
 in {
   formatConfigs = {
     hyperv = _: {
+      boot.kernelParams = ["nomodeset"];
+    };
+
+    install-iso-hyperv = _: {
+      boot.kernelParams = ["nomodeset"];
     };
 
     raw-efi = _: {

@@ -29,10 +29,9 @@ in {
     description = "Keerthi";
     extraGroups = ["NetworkManager" "wheel" "libvirtd"];
     initialHashedPassword = "";
-    hashedPassword = "";
   };
 
-  services.xserver.displayManager.autoLogin = {
+  services.xserver.displayManager.autoLogin = lib.mkDefault {
     enable = true;
     user = "krad246";
   };
