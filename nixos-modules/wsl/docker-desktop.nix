@@ -8,7 +8,7 @@
     enable = true;
 
     # Enable integration with Docker Desktop (needs to be installed)
-    docker-desktop.enable = lib.mkDefault false;
+    docker-desktop.enable = lib.mkDefault true;
 
     extraBin = with pkgs; [
       # Binaries for Docker Desktop wsl-distro-proxy

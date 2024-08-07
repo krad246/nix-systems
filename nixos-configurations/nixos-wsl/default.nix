@@ -4,7 +4,7 @@
   ...
 }: {
   imports = with ezModules; [
-    docker
+    libvirtd
     nixos
     wsl
   ];

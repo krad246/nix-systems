@@ -87,7 +87,7 @@
           gitBin = lib.getExe pkgs.git;
         in ''
           commit *ARGS:
-            @${gitBin} add -u && ${gitBin} commit {{ ARGS }}
+            @${gitBin} add -u && ${gitBin} commit {{ quote(ARGS) }}
         '';
       };
 

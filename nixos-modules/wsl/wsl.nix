@@ -1,8 +1,4 @@
-{
-  inputs,
-  lib,
-  ...
-}: let
+{inputs, ...}: let
   inherit (inputs) nixos-wsl;
 in {
   imports = [nixos-wsl.nixosModules.wsl];
@@ -13,6 +9,7 @@ in {
     loader.grub.device = "nodev"; # or "nodev" for efi only
     isContainer = true;
   };
+
   systemd.services = {
     "serial-getty@ttyS0".enable = false;
     "serial-getty@hvc0".enable = false;
@@ -28,18 +25,19 @@ in {
 
   wsl = {
     enable = true;
-    interop.register = true;
+    interop = {
+      register = true;
+      includePath = true;
+    };
+    usbip.autoAttach = [];
+    useWindowsDriver = true;
     startMenuLaunchers = true;
     nativeSystemd = true;
 
     wslConf = {
-      automount = {
-        enabled = true;
-        options = "metadata";
-        root = "/mnt";
-      };
-
-      interop = lib.mkDefault {
+      automount.enabled = true;
+      boot.systemd = true;
+      interop = {
         enabled = true;
         appendWindowsPath = true;
       };

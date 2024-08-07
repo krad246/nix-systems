@@ -8,13 +8,15 @@
 in {
   imports =
     [nixos-generators.nixosModules.all-formats]
-    ++ [
-      ezModules.gnome-desktop
-      ezModules.kdeconnect
-      ezModules.nixos
-      ezModules.pam-u2f
-      ezModules.pipewire
-    ];
+    ++ (with ezModules; [
+      gnome-desktop
+      kdeconnect
+      libvirtd
+      nixos
+      pam-u2f
+      pipewire
+      steam
+    ]);
 
   # Default settings are simple EFI system on tmpfs
   boot.loader.grub.device = lib.mkDefault "nodev";
