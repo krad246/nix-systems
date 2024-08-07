@@ -1,9 +1,11 @@
 {
   self,
   pkgs,
+  specialArgs,
   ...
 }: let
-  machine = self.nixosConfigurations.immutable-gnome;
+  inherit (specialArgs) hostNixosConfig hostNixosDiskoConf;
+  machine = hostNixosConfig.extendModules {modules = hostNixosDiskoConf;};
   inherit (machine.config.system) build;
 
   dependencies =
