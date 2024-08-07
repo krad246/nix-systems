@@ -1,12 +1,12 @@
-{
+{lib, ...}: {
   # Enable sound with pipewire.
-  sound.enable = true;
+  sound.enable = lib.mkDefault true;
   hardware.bluetooth.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
   services = {
     pipewire = {
-      enable = true;
+      enable = lib.mkDefault true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;

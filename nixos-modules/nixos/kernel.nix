@@ -1,7 +1,7 @@
 {config, ...}: {
   boot.tmp = {
     cleanOnBoot = true;
-    useTmpfs = true;
+    useTmpfs = false;
   };
 
   # Not technically a part of the kernel, but close enough...

@@ -1,6 +1,7 @@
 {
   inputs,
   self,
+  ezModules,
   ...
 }: let
   inherit (inputs) disko;
@@ -16,7 +17,10 @@ in {
     };
 
     install-iso = {modulesPath, ...}: {
-      imports = ["${modulesPath}/profiles/installation-device.nix"];
+      imports = [
+        "${modulesPath}/profiles/installation-device.nix"
+      ];
+
       boot.supportedFilesystems = ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
@@ -27,6 +31,8 @@ in {
     };
 
     raw-efi = _: {
+      imports = [ezModules.steam];
+
       system.build.raw = diskoLib.makeDiskImages {
         nixosConfig = self.nixosConfigurations.immutable-gnome.extendModules {modules = [./fs-config/simple.nix];};
         inherit diskoLib;

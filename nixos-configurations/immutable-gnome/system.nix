@@ -15,7 +15,6 @@ in {
       nixos
       pam-u2f
       pipewire
-      steam
     ]);
 
   # Default settings are simple EFI system on tmpfs
