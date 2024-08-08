@@ -1,3 +1,3 @@
 {
-  imports = [./luks-lvm.nix];
+  imports = [./luks-impermanence.nix];
 }
