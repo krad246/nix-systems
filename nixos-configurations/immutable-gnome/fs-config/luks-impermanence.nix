@@ -47,7 +47,7 @@ in {
 
   disko.devices = {
     disk.main = {
-      device = "/dev/null";
+      device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23080R800503";
       type = "disk";
       content = {
         type = "gpt";

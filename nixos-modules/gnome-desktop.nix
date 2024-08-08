@@ -34,6 +34,7 @@
       hitori # sudoku game
       atomix # puzzle game
       yelp
+      gnome-clocks
     ]);
 
   hardware.opengl = {

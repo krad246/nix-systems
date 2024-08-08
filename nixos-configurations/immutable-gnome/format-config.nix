@@ -1,6 +1,5 @@
 args @ {
   self,
-  ezModules,
   pkgs,
   config,
   ...
@@ -100,15 +99,13 @@ in {
     };
 
     raw = _: {
-      imports = [ezModules.steam];
       disko.enableConfig = false;
     };
 
     raw-efi = _: {
-      imports = [ezModules.steam];
-
-      # FIXME: how does this differ from diskoLib raw
       disko.enableConfig = false;
+
+      # TODO: determine what overriding system.build.raw with diskoLib's disk image builder does
     };
 
     sd-aarch64 = {lib, ...}: {

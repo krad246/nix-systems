@@ -1,5 +1,6 @@
 {
   self,
+  ezModules,
   pkgs,
   specialArgs,
   ...
@@ -34,6 +35,7 @@ in {
         --option inputs-from "${self}" \
         --option experimental-features 'nix-command flakes' \
         --write-efi-boot-entries \
+        --extra-config '${builtins.toJSON (import ezModules.steam)}'
       "$@"
     '')
   ];
