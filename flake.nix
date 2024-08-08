@@ -158,8 +158,14 @@
       debug = true;
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 
-      perSystem = _: {
-        packages = {};
+      perSystem = {lib, ...}: {
+        packages = let
+          formatNames = nixosConfig: builtins.attrNames nixosConfig.config.formats;
+          makeFormats = nixosConfig:
+            lib.attrsets.genAttrs (formatNames nixosConfig) (formatName:
+              nixosConfig.config.formats.${formatName});
+        in
+          makeFormats self.nixosConfigurations.immutable-gnome;
       };
 
       ezConfigs = {

@@ -23,6 +23,8 @@
 
   # Set your time zone.
   time.timeZone = "America/New_York";
+
   system.stateVersion = lib.trivial.release;
-  documentation.enable = false;
+
+  documentation.enable = lib.mkDefault false;
 }

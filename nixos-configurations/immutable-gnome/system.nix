@@ -4,10 +4,11 @@
   lib,
   ...
 }: let
-  inherit (inputs) nixos-generators;
+  inherit (inputs) nixos-generators disko;
 in {
   imports =
-    [nixos-generators.nixosModules.all-formats]
+    [disko.nixosModules.disko]
+    ++ [nixos-generators.nixosModules.all-formats]
     ++ (with ezModules; [
       gnome-desktop
       kdeconnect
@@ -16,14 +17,6 @@ in {
       pam-u2f
       pipewire
     ]);
-
-  # Default settings are simple EFI system on tmpfs
-  boot.loader.grub.device = lib.mkDefault "nodev";
-  fileSystems."/" = lib.mkDefault {
-    device = "none";
-    fsType = "tmpfs";
-    options = ["defaults"];
-  };
 
   users.users.krad246 = {
     isNormalUser = true;

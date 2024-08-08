@@ -6,7 +6,7 @@
 }: let
   inherit (specialArgs) nixosConfig;
 
-  withDisko = nixosConfig.extendModules {modules = [./fs-config];};
+  withDisko = nixosConfig;
   inherit (withDisko.config.system) build;
 
   dependencies =

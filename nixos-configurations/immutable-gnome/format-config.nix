@@ -24,12 +24,8 @@ in {
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso-hyperv = {modulesPath, ...}: {
-      imports =
-        [
-          "${modulesPath}/profiles/installation-device.nix"
-        ]
-        ++ [offlineInstaller];
+    install-iso-hyperv = {...}: {
+      imports = [offlineInstaller];
 
       boot.kernelParams = ["nomodeset"];
     };
@@ -47,19 +43,16 @@ in {
     iso = _: {
     };
 
-    qcow-efi = _: {
+    kubevirt = _: {
+      disko.enableConfig = false;
+    };
+
+    raw = _: {
+      disko.enableConfig = false;
     };
 
     raw-efi = _: {
       imports = [ezModules.steam];
-
-      system.build.raw = let
-        diskoLib = disko.lib;
-      in
-        diskoLib.makeDiskImages {
-          nixosConfig = machine.extendModules {modules = [./fs-config];};
-          inherit diskoLib;
-        };
     };
 
     vagrant-virtualbox = _: {
