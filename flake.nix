@@ -164,7 +164,12 @@
             lib.attrsets.nameValuePair
             "${nixosConfig.config.networking.hostName}/${format}"
             drv;
-          getFormats = nixosConfig: lib.attrsets.attrByPath ["config" "formats"] {} nixosConfig;
+          getFormats = nixosConfig: let
+            formats =
+              lib.attrsets.attrByPath ["config" "formats"] {}
+              nixosConfig;
+          in
+            builtins.removeAttrs formats [];
           makeHostFormatSet = nixosConfig:
             lib.attrsets.mapAttrs' (format: drv: makeHostFormat nixosConfig format drv)
             (getFormats nixosConfig);

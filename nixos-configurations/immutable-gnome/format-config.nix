@@ -43,24 +43,19 @@ in {
     };
 
     hyperv = _: {
-      imports = [ezModules.gnome-desktop];
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso-hyperv = {...}: {
+    install-iso-hyperv = _: {
       imports = [offlineInstaller];
+
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso = {modulesPath, ...}: {
-      imports =
-        [
-          "${modulesPath}/profiles/installation-device.nix"
-        ]
-        ++ [offlineInstaller];
-
+    install-iso = {...}: {
+      imports = [offlineInstaller];
       boot.supportedFilesystems = ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
@@ -111,13 +106,30 @@ in {
 
     raw-efi = _: {
       imports = [ezModules.steam];
+
+      # FIXME: how does this differ from diskoLib raw
+      disko.enableConfig = false;
+    };
+
+    sd-aarch64 = {lib, ...}: {
+      disko.enableConfig = false;
+      nixpkgs.hostPlatform = lib.mkForce "aarch64-linux";
+    };
+
+    sd-aarch64-installer = {lib, ...}: {
+      imports = [offlineInstaller];
+
+      disko.enableConfig = false;
+      nixpkgs.hostPlatform = lib.mkForce "aarch64-linux";
     };
 
     vagrant-virtualbox = _: {
+      disko.enableConfig = false;
     };
 
     virtualbox = _: {
       boot.kernelParams = ["nomodeset"];
+      disko.enableConfig = false;
     };
 
     vm-bootloader = _: {
@@ -131,6 +143,7 @@ in {
 
     vmware = _: {
       boot.kernelParams = ["nomodeset"];
+      disko.enableConfig = false;
     };
   };
 }
