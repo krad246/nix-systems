@@ -10,26 +10,31 @@ args @ {
 
   inherit (config.networking) hostName;
   machine = self.nixosConfigurations."${hostName}";
+
+  offlineInstaller = import ./offline-closure-installer.nix (args
+    // {
+      inherit self pkgs;
+      specialArgs = {
+        nixosConfig = machine;
+      };
+    });
 in {
   formatConfigs = {
     hyperv = _: {
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso-hyperv = _: {
+    install-iso-hyperv = {modulesPath, ...}: {
+      imports =
+        [
+          "${modulesPath}/profiles/installation-device.nix"
+        ]
+        ++ [offlineInstaller];
+
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso = {modulesPath, ...}: let
-      offlineInstaller = import ./offline-closure-installer.nix (args
-        // {
-          inherit self pkgs;
-          specialArgs = {
-            hostNixosConfig = machine;
-            hostNixosDiskoConf = [./fs-config/simple.nix];
-          };
-        });
-    in {
+    install-iso = {modulesPath, ...}: {
       imports =
         [
           "${modulesPath}/profiles/installation-device.nix"
@@ -52,7 +57,7 @@ in {
         diskoLib = disko.lib;
       in
         diskoLib.makeDiskImages {
-          nixosConfig = self.nixosConfigurations.immutable-gnome.extendModules {modules = [./fs-config/simple.nix];};
+          nixosConfig = machine.extendModules {modules = [./fs-config];};
           inherit diskoLib;
         };
     };

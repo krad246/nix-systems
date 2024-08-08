@@ -4,9 +4,10 @@
   specialArgs,
   ...
 }: let
-  inherit (specialArgs) hostNixosConfig hostNixosDiskoConf;
-  machine = hostNixosConfig.extendModules {modules = hostNixosDiskoConf;};
-  inherit (machine.config.system) build;
+  inherit (specialArgs) nixosConfig;
+
+  withDisko = nixosConfig.extendModules {modules = [./fs-config];};
+  inherit (withDisko.config.system) build;
 
   dependencies =
     [
@@ -14,8 +15,8 @@
       build.diskoScript
     ]
     ++ [
-      machine.pkgs.stdenv.drvPath
-      (machine.pkgs.closureInfo {rootPaths = [];}).drvPath
+      withDisko.pkgs.stdenv.drvPath
+      (withDisko.pkgs.closureInfo {rootPaths = [];}).drvPath
     ]
     ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
 
@@ -27,7 +28,14 @@ in {
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "install-nixos-unattended" ''
       set -eux
-      exec ${pkgs.disko}/bin/disko-install --flake "${self}#${machine.config.networking.hostName}" --option inputs-from "${self}" "$@"
+      exec ${pkgs.disko}/bin/disko-install \
+        --flake "${self}#${withDisko.config.networking.hostName}" \
+        --extra-files "${self}" /opt/nixos \
+        --option inputs-from "${self}" \
+        --option experimental-features 'nix-command flakes' \
+        --write-efi-boot-entries \
+        --system-config '${builtins.toJSON (import ./fs-config)}' \
+      "$@"
     '')
   ];
 }
