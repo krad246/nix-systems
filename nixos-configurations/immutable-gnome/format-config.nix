@@ -1,13 +1,10 @@
 args @ {
-  inputs,
   self,
   ezModules,
   pkgs,
   config,
   ...
 }: let
-  inherit (inputs) disko;
-
   inherit (config.networking) hostName;
   machine = self.nixosConfigurations."${hostName}";
 
@@ -20,13 +17,40 @@ args @ {
     });
 in {
   formatConfigs = {
+    amazon = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+      services.udisks2.enable = lib.mkForce false;
+    };
+
+    azure = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+      networking.networkmanager.enable = lib.mkForce false;
+    };
+
+    do = {lib, ...}: {
+      networking.hostName = lib.mkForce "";
+    };
+
+    docker = {lib, ...}: {
+      networking.firewall.enable = lib.mkForce false;
+    };
+
+    gce = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+    };
+
     hyperv = _: {
+      imports = [ezModules.gnome-desktop];
+      disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
     };
 
     install-iso-hyperv = {...}: {
       imports = [offlineInstaller];
-
+      disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
     };
 
@@ -41,6 +65,10 @@ in {
     };
 
     iso = _: {
+    };
+
+    kexec = {lib, ...}: {
+      networking.hostName = lib.mkForce "kexec";
     };
 
     kubevirt = _: {

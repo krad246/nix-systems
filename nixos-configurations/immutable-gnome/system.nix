@@ -4,11 +4,10 @@
   lib,
   ...
 }: let
-  inherit (inputs) nixos-generators disko;
+  inherit (inputs) nixos-generators;
 in {
   imports =
-    [disko.nixosModules.disko]
-    ++ [nixos-generators.nixosModules.all-formats]
+    [nixos-generators.nixosModules.all-formats]
     ++ (with ezModules; [
       gnome-desktop
       kdeconnect
@@ -25,7 +24,7 @@ in {
     initialHashedPassword = "";
   };
 
-  services.xserver.displayManager.autoLogin = lib.mkDefault {
+  services.displayManager.autoLogin = lib.mkDefault {
     enable = true;
     user = "krad246";
   };

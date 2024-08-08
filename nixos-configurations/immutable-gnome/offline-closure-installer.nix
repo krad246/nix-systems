@@ -34,7 +34,6 @@ in {
         --option inputs-from "${self}" \
         --option experimental-features 'nix-command flakes' \
         --write-efi-boot-entries \
-        --system-config '${builtins.toJSON (import ./fs-config)}' \
       "$@"
     '')
   ];
