@@ -28,7 +28,7 @@
         name = "nix-build-all";
         text = ''
           ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
-          ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} . "$@"
+          ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "$@"
         '';
       };
     };
