@@ -71,11 +71,41 @@ in {
       networking.hostName = lib.mkForce "kexec";
     };
 
+    kexec-bundle = {lib, ...}: {
+      networking.hostName = lib.mkForce "kexec";
+    };
+
     kubevirt = _: {
       disko.enableConfig = false;
     };
 
+    linode = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.useDHCP = lib.mkForce true;
+    };
+
+    openstack = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+    };
+
+    proxmox-lxc = _: {
+    };
+
+    proxmox = _: {
+      disko.enableConfig = false;
+    };
+
+    qcow = _: {
+      disko.enableConfig = false;
+    };
+
+    qcow-efi = _: {
+      disko.enableConfig = false;
+    };
+
     raw = _: {
+      imports = [ezModules.steam];
       disko.enableConfig = false;
     };
 
