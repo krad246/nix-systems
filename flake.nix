@@ -160,12 +160,18 @@
 
       perSystem = {lib, ...}: {
         packages = let
-          formatNames = nixosConfig: builtins.attrNames nixosConfig.config.formats;
-          makeFormats = nixosConfig:
-            lib.attrsets.genAttrs (formatNames nixosConfig) (formatName:
-              nixosConfig.config.formats.${formatName});
+          makeHostFormat = nixosConfig: format: drv:
+            lib.attrsets.nameValuePair
+            "${nixosConfig.config.networking.hostName}/${format}"
+            drv;
+          getFormats = nixosConfig: lib.attrsets.attrByPath ["config" "formats"] {} nixosConfig;
+          makeHostFormatSet = nixosConfig:
+            lib.attrsets.mapAttrs' (format: drv: makeHostFormat nixosConfig format drv)
+            (getFormats nixosConfig);
+          hostConfigs = lib.attrsets.attrValues self.nixosConfigurations;
+          hostFormats = lib.lists.forEach hostConfigs makeHostFormatSet;
         in
-          makeFormats self.nixosConfigurations.immutable-gnome;
+          lib.attrsets.mergeAttrsList hostFormats;
       };
 
       ezConfigs = {
