@@ -1,3 +1,3 @@
 {
-  imports = [./simple.nix];
+  imports = [./luks-lvm.nix];
 }

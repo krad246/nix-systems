@@ -27,20 +27,36 @@ in {
         partitions = {
           inherit boot ESP;
           root = {
-            size = "32G";
+            size = "100%";
             content = {
-              type = "filesystem";
-              format = "ext4";
-              mountpoint = "/";
+              type = "lvm_pv";
+              vg = "pool";
             };
           };
-          encryptedSwap = {
-            size = "8G";
-            content = {
-              type = "swap";
-              randomEncryption = true;
-              priority = 100; # prefer to encrypt as long as we have space for it
-            };
+        };
+      };
+    };
+
+    lvm_vg.pool = {
+      type = "lvm_vg";
+      lvs = {
+        root = {
+          size = "95%VG";
+          content = {
+            type = "filesystem";
+            format = "ext4";
+            mountpoint = "/";
+            mountOptions = ["defaults"];
+          };
+        };
+
+        swap = {
+          size = "5%VG";
+          content = {
+            type = "swap";
+            randomEncryption = true;
+            priority = 100;
+            resumeDevice = true;
           };
         };
       };

@@ -26,11 +26,18 @@ in {
         type = "gpt";
         partitions = {
           inherit boot ESP;
-          root = {
+          luks = {
             size = "100%";
             content = {
-              type = "lvm_pv";
-              vg = "pool";
+              type = "luks";
+              name = "crypted";
+              extraOpenArgs = [];
+              settings = {};
+              additionalKeyFiles = [];
+              content = {
+                type = "lvm_pv";
+                vg = "pool";
+              };
             };
           };
         };
@@ -41,7 +48,7 @@ in {
       type = "lvm_vg";
       lvs = {
         root = {
-          size = "768G";
+          size = "95%VG";
           content = {
             type = "filesystem";
             format = "ext4";
@@ -50,8 +57,8 @@ in {
           };
         };
 
-        encryptedSwap = {
-          size = "64G";
+        swap = {
+          size = "5%VG";
           content = {
             type = "swap";
             randomEncryption = true;
