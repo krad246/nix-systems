@@ -25,6 +25,9 @@
       gnome-calculator
       gnome-maps
       gnome-system-monitor
+      gnome-clocks
+      gnome-weather
+      gnome-contacts
       epiphany # web browser
       evince # document viewer
       gnome-characters
@@ -34,7 +37,6 @@
       hitori # sudoku game
       atomix # puzzle game
       yelp
-      gnome-clocks
     ]);
 
   hardware.opengl = {
@@ -48,7 +50,5 @@
     whitesur-gtk-theme
     whitesur-icon-theme
     whitesur-cursors
-
-    gnome.gnome-tweaks
   ];
 }
