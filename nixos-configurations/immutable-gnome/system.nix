@@ -15,6 +15,7 @@ in {
       nixos
       pam-u2f
       pipewire
+      steam
     ]);
 
   users.users.krad246 = {

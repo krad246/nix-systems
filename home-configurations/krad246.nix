@@ -10,6 +10,8 @@ args @ {
     kitty
     nerdfonts
     shellenv
+    spotify
+    vscode
   ];
 
   config = lib.mkMerge [
