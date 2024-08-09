@@ -13,6 +13,7 @@
 
   environment.gnome.excludePackages =
     (with pkgs; [
+      simple-scan
       gnome-photos
       gnome-tour
       gnome-text-editor
