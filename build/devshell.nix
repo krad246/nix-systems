@@ -24,8 +24,8 @@
     };
 
     packages = {
-      nix-build-all = pkgs.writeShellApplication {
-        name = "nix-build-all";
+      "build/all" = pkgs.writeShellApplication {
+        name = "build-all";
         text = ''
           ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
           ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "$@"
