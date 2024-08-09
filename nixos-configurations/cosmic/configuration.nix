@@ -14,7 +14,8 @@ in {
       ./hardware-configuration.nix
     ]
     ++ [nixos-generators.nixosModules.all-formats]
-    ++ [ezModules.cosmic-desktop];
+    ++ [ezModules.cosmic-desktop]
+    ++ [ezModules.nixos ezModules.pipewire];
 
   # Use the GRUB 2 boot loader.
   boot.loader.grub.enable = true;
