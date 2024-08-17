@@ -193,7 +193,8 @@
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
         in
           lib.attrsets.mergeAttrsList (formats
-            ++ [
+            ++ (
+              lib.lists.optional pkgs.stdenv.isLinux
               {
                 nixos-install = pkgs.writeShellScriptBin "install-nixos-unattended" ''
                   set -euxo pipefail
@@ -207,7 +208,7 @@
                   "$\{@:1:\}"
                 '';
               }
-            ]);
+            ));
 
         apps = let
           mkAppPackages = nixosCfg:

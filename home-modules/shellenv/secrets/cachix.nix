@@ -16,11 +16,11 @@
           throw
           "Illegal platform for this module!"
       );
-  exec = lib.strings.optionalString (config.age.secrets ? cachix) ''
+  exec = ''
     ${lib.getExe pkgs.cachix} authtoken --stdin ${redirect} ${config.age.secrets.cachix.path}
   '';
 in {
-  systemd.user.services."${name}" = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services."${name}" = lib.mkIf (pkgs.stdenv.isLinux && (config.age.secrets ? cachix)) {
     Unit = {
       Description = "Cachix login after secrets mounting";
       Requires = ["agenix.service"];
@@ -36,7 +36,7 @@ in {
     };
   };
 
-  launchd.agents."${name}" = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents."${name}" = lib.mkIf (pkgs.stdenv.isDarwin && (config.age.secrets ? cachix)) {
     enable = true;
     config = {
       ProgramArguments = ["${lib.getExe pkgs.bash}" "-c" "${exec}"];

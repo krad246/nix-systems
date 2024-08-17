@@ -25,6 +25,11 @@
           };
 
           programs.ccache.enable = true;
+
+          # Give the builder all of our substituters.
+          nix.settings = {
+            inherit (config.nix.settings) substituters trusted-substituters trusted-public-keys;
+          };
         };
 
       maxJobs = 16;

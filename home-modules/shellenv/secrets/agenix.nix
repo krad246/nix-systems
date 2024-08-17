@@ -8,9 +8,11 @@
 }: let
   inherit (inputs) agenix;
   agenixMountPoint = "${config.home.homeDirectory}/.secrets";
+  thisHost = osConfig.networking.hostName;
 
-  hosts = builtins.attrNames (builtins.readDir ./hosts);
-  hostSecretsDir = ./hosts/${osConfig.networking.hostName};
+  hosts =  builtins.readDir ./hosts;
+  hostNames = builtins.attrNames (hosts);
+  hostSecretsDir = ./hosts/${thisHost};
 
   mkSecret = name: {
     "${name}" = {
@@ -20,7 +22,7 @@
     };
   };
 
-  secretNames = lib.lists.optionals (hosts ? osConfig.networking.hostName) (builtins.attrNames (builtins.readDir hostSecretsDir));
+  secretNames = lib.lists.optionals (hosts ? "${thisHost}") (builtins.attrNames (builtins.readDir hostSecretsDir));
   stripAgeSuffix = x: lib.strings.removeSuffix ".age" x;
   secrets = lib.attrsets.mergeAttrsList (lib.lists.forEach secretNames (sname:
     mkSecret
