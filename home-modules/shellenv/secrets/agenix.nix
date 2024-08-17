@@ -8,6 +8,8 @@
 }: let
   inherit (inputs) agenix;
   agenixMountPoint = "${config.home.homeDirectory}/.secrets";
+
+  hosts = builtins.attrNames (builtins.readDir ./hosts);
   hostSecretsDir = ./hosts/${osConfig.networking.hostName};
 
   mkSecret = name: {
@@ -18,7 +20,7 @@
     };
   };
 
-  secretNames = builtins.attrNames (builtins.readDir hostSecretsDir);
+  secretNames = lib.lists.optionals (hosts ? osConfig.networking.hostName) (builtins.attrNames (builtins.readDir hostSecretsDir));
   stripAgeSuffix = x: lib.strings.removeSuffix ".age" x;
   secrets = lib.attrsets.mergeAttrsList (lib.lists.forEach secretNames (sname:
     mkSecret
@@ -33,7 +35,10 @@ in {
   # Actual key points at a pointer to the real secret
   # Either the secret is decrypted and provides the backing value
   # Or there is a file named appropriately (impure)
-  home.file = {
+  home.file = lib.attrsets.optionalAttrs (config.age.secrets
+    ? id_ed25519_pub
+    && config.age.secrets
+    ? id_ed25519_priv) {
     ".ssh/id_ed25519.pub".source =
       config.lib.file.mkOutOfStoreSymlink
       config.age.secrets.id_ed25519_pub.path;

@@ -16,7 +16,9 @@
           throw
           "Illegal platform for this module!"
       );
-  exec = "${lib.getExe pkgs.gh} auth login -p ssh --with-token ${redirect} ${config.age.secrets.gh.path}";
+  exec = lib.strings.optionalString (config.age.secrets ? gh) ''
+    ${lib.getExe pkgs.gh} auth login -p ssh --with-token ${redirect} ${config.age.secrets.gh.path}
+  '';
 in {
   systemd.user.services."${name}" = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {

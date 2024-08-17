@@ -16,7 +16,9 @@
           throw
           "Illegal platform for this module!"
       );
-  exec = "${lib.getExe pkgs.cachix} authtoken --stdin ${redirect} ${config.age.secrets.cachix.path}";
+  exec = lib.strings.optionalString (config.age.secrets ? cachix) ''
+    ${lib.getExe pkgs.cachix} authtoken --stdin ${redirect} ${config.age.secrets.cachix.path}
+  '';
 in {
   systemd.user.services."${name}" = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
