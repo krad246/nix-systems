@@ -10,8 +10,7 @@
   agenixMountPoint = "${config.home.homeDirectory}/.secrets";
   thisHost = osConfig.networking.hostName;
 
-  hosts =  builtins.readDir ./hosts;
-  hostNames = builtins.attrNames (hosts);
+  hosts = builtins.readDir ./hosts;
   hostSecretsDir = ./hosts/${thisHost};
 
   mkSecret = name: {

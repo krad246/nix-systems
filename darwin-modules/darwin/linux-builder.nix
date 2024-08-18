@@ -19,9 +19,13 @@
           # Emulate all of the linux-builder systems aside from the host platform of the builder
           # because it makes no sense.
           boot.binfmt.emulatedSystems = lib.lists.remove system linux-builder.systems;
-          virtualisation.darwin-builder = {
-            diskSize = 1024 * 96;
-            memorySize = 1024 * 6;
+          virtualisation = {
+            darwin-builder = {
+              diskSize = 1024 * 96;
+              memorySize = 1024 * 6;
+            };
+
+            cores = 4;
           };
 
           programs.ccache.enable = true;

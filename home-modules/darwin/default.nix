@@ -1,17 +1,10 @@
-args @ {
-  inputs,
+{
   pkgs,
-  lib,
   ezModules,
   ...
-}: let
-  inherit (inputs) mac-app-util;
-  dockModule = mac-app-util.homeManagerModules.default;
-  isSupported = builtins.hasAttr pkgs.stdenv.system mac-app-util.packages;
-  importIfSupported = x: lib.mkIf isSupported x;
-in {
+}: {
   imports =
-    [(importIfSupported (dockModule args))]
+    [./unionfs.nix ./mac-app-util.nix]
     ++ (with ezModules; [discord kitty vscode]);
 
   home = {
