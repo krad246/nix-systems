@@ -5,44 +5,35 @@
   pkgs,
   ...
 }: let
-  maybeRosetta =
-    if pkgs.stdenv.isDarwin
-    then "--vm-type vz --vz-rosetta"
-    else "";
+  vmConfig =
+    lib.attrsets.attrByPath ["virtualisation"] {
+      cores = 2;
+
+      darwin-builder = {
+        memorySize = 4 * 1024;
+        diskSize = 8 * 1024;
+      };
+    }
+    osConfig;
   mkScript = arch:
     pkgs.writeShellScript "colima-${arch}" ''
       ${lib.getExe pkgs.colima} start \
         -p ${arch} \
         --arch ${arch} \
-        --disk 16 \
-        --cpu 8 --memory 8 \
+        --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
+        --cpu ${builtins.toString vmConfig.cores} \
+        --memory ${builtins.toString (vmConfig.darwin-builder.memorySize / 1024)} \
         --verbose \
-        --foreground ${maybeRosetta}
+        --foreground --vm-type vz --vz-rosetta
     '';
 
-  nixosPathCfg = lib.attrsets.attrByPath ["system" "path"] "" osConfig;
   darwinPathCfg = lib.attrsets.attrByPath ["environment" "systemPath"] "" osConfig;
   homePathCfg = lib.strings.concatStringsSep ":" config.home.sessionPath;
-
-  linuxPath = lib.strings.concatStringsSep ":" ["${homePathCfg}" "${lib.makeBinPath [nixosPathCfg]}"];
   darwinPath = lib.strings.concatStringsSep ":" ["${homePathCfg}" "${darwinPathCfg}"];
-  mkSystemdService = script: arch:
-    lib.mkIf pkgs.stdenv.isLinux {
-      systemd.user.services."colima-${arch}" = {
-        Unit = {
-          Description = "Start Colima ${arch} VM.";
-        };
-        Install = {
-          WantedBy = ["default.target"];
-        };
-        Service = {
-          ExecStart = "${script}";
-          Environment = ["PATH=${linuxPath}"];
-        };
-      };
-    };
 
-  mkLaunchUnit = script: arch:
+  mkLaunchUnit = arch: let
+    script = mkScript arch;
+  in
     lib.mkIf pkgs.stdenv.isDarwin {
       launchd.agents."colima-${arch}" = {
         enable = true;
@@ -54,16 +45,18 @@
           ProgramArguments = ["${script}"];
           RunAtLoad = true;
           KeepAlive = true;
+
+          StandardOutPath = "${config.home.homeDirectory}/Library/Logs/colima-${arch}/stdout";
+          StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/colima-${arch}/stderr";
         };
       };
     };
 
-  mkUnits = arch: let script = mkScript arch; in lib.mkMerge [(mkSystemdService script arch) (mkLaunchUnit script arch)];
+  parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
 in {
   home.packages = with pkgs; [colima docker];
   home.sessionPath = ["${lib.makeBinPath [pkgs.docker]}"];
   imports = [
-    (_: mkUnits "x86_64")
-    (_: mkUnits "aarch64")
+    (mkLaunchUnit parse.cpu.name)
   ];
 }

@@ -9,6 +9,5 @@ args @ {
   isSupported = builtins.hasAttr pkgs.stdenv.system mac-app-util.packages;
   importIfSupported = x: lib.mkIf isSupported x;
 in {
-  imports =
-    [(importIfSupported (dockModule args))];
+  imports = [(importIfSupported (dockModule args))];
 }

@@ -4,7 +4,11 @@
       ./bash.nix
       ./bat.nix
       ./bottom.nix
-      ./colima.nix
+    ]
+    ++ [
+      ./colima
+    ]
+    ++ [
       ./coreutils.nix
       ./direnv.nix
       ./git.nix

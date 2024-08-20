@@ -78,7 +78,7 @@
         "nixos/nix" = pkgs.dockerTools.pullImage {
           imageName = "nixos/nix";
           imageDigest = "sha256:5a2a7ee72e88528ff9422f16a8a0be580d8c173928369a20e8a6ba77a55cd95d";
-          sha256 = "1jh1bdydfxprz54nmxx0yz2anwswkb1ny9d7gbh98zq02kkasjvf";
+          sha256 = "sha256-vJHHhEpndS858jA3Vyo/FwRxhTr1gNJrpZ0NhajdFfQ=";
           finalImageName = "nixos/nix";
           finalImageTag = "latest";
 
@@ -87,7 +87,7 @@
 
         "docker/image" = pkgs.dockerTools.buildImage {
           name = "docker-image";
-          fromImage = self'.packages."nixos/nix";
+          fromImage = null;
           architecture = dockerVMPlatform.arch;
         };
       }

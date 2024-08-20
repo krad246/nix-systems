@@ -25,14 +25,13 @@ in {
   environment.etc."install-closure".source = "${closureInfo}/store-paths";
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "install-nixos-unattended" ''
-      set -eux
-      exec ${lib.getExe' pkgs.disko "disko-install"} \
+      ${lib.getExe' pkgs.disko "disko-install"} \
         --flake "${self}#${nixosConfig.config.networking.hostName}" \
         --extra-files "${self}" /opt/nixos \
         --option inputs-from "${self}" \
         --option experimental-features 'nix-command flakes' \
         --write-efi-boot-entries \
-        --system-config '${builtins.toJSON {}}'
+        --system-config '${builtins.toJSON {}}' \
       "$@"
     '')
   ];

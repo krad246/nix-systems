@@ -197,7 +197,6 @@
               lib.lists.optional pkgs.stdenv.isLinux
               {
                 nixos-install = pkgs.writeShellScriptBin "install-nixos-unattended" ''
-                  set -euxo pipefail
                   sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
                     --flake "${self}#$1" \
                     --extra-files "${self}" /opt/nixos \
