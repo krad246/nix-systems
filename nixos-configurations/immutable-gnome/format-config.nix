@@ -29,10 +29,12 @@ in {
     };
 
     do = {lib, ...}: {
+      disko.enableConfig = false;
       networking.hostName = lib.mkForce "";
     };
 
     docker = {lib, ...}: {
+      disko.enableConfig = false;
       networking.firewall.enable = lib.mkForce false;
     };
 
@@ -87,6 +89,7 @@ in {
     };
 
     proxmox-lxc = _: {
+      disko.enableConfig = false;
     };
 
     proxmox = _: {

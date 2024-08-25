@@ -1,6 +1,16 @@
 {
   nixConfig = {
     extra-experimental-features = "nix-command flakes";
+    extra-substituters = [
+      "https://cache.nixos.org"
+      "https://nix-community.cachix.org"
+      "https://krad246.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "krad246.cachix.org-1:naxMicfqW5ZWr7XNZeLfAT3YHWCDLs3noY0aI3eBfvQ="
+    ];
   };
 
   inputs = {
@@ -203,14 +213,11 @@
             ++ (
               lib.lists.optional pkgs.stdenv.isLinux
               {
-                nixos-install = pkgs.writeShellScriptBin "install-nixos-unattended" ''
-                  name="$1"
-                  shift
-
+                nixos-install = pkgs.writeShellScriptBin "nixos-install-unattended" ''
                   sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
-                    --flake "${self}#$name" \
-                    --extra-files "${self}" /opt/nixos \
-                    --option inputs-from "${self}" \
+                    --flake "$FLAKE_ROOT#$HOSTNAME" \
+                    --extra-files "$FLAKE_ROOT" /opt/nixos \
+                    --option inputs-from "$FLAKE_ROOT" \
                     --option experimental-features 'nix-command flakes' \
                     --write-efi-boot-entries \
                     --system-config '${builtins.toJSON {}}' \
@@ -261,7 +268,7 @@
                   if impure
                   then builtins.currentSystem
                   else throw "Cannot build the
-                standalone configuration in impure mode!";
+                standalone configuration in pure mode!";
                 pkgs = import nixpkgs {inherit system;};
               in {
                 enable = impure;
