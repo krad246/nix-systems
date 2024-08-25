@@ -5,22 +5,12 @@
   ...
 }: let
   name = "agenix-cachix-authtoken";
-  redirect =
-    if pkgs.stdenv.isLinux
-    then "<"
-    else
-      (
-        if pkgs.stdenv.isDarwin
-        then "&lt;"
-        else
-          throw
-          "Illegal platform for this module!"
-      );
   exec = ''
-    ${lib.getExe pkgs.cachix} authtoken --stdin ${redirect} ${config.age.secrets.cachix.path}
+    ${lib.getExe pkgs.cachix} authtoken --stdin < ${config.age.secrets.cachix.path}
   '';
+  hasCachix = config.age.secrets ? cachix;
 in {
-  systemd.user.services."${name}" = lib.mkIf (pkgs.stdenv.isLinux && (config.age.secrets ? cachix)) {
+  systemd.user.services."${name}" = lib.mkIf (pkgs.stdenv.isLinux && hasCachix) {
     Unit = {
       Description = "Cachix login after secrets mounting";
       Requires = ["agenix.service"];
@@ -36,10 +26,10 @@ in {
     };
   };
 
-  launchd.agents."${name}" = lib.mkIf (pkgs.stdenv.isDarwin && (config.age.secrets ? cachix)) {
+  launchd.agents."${name}" = lib.mkIf (pkgs.stdenv.isDarwin && hasCachix) {
     enable = true;
     config = {
-      ProgramArguments = ["${lib.getExe pkgs.bash}" "-c" "${exec}"];
+      ProgramArguments = ["${lib.getExe pkgs.bash}" "-c" "${lib.strings.escapeXML exec}"];
       RunAtLoad = true;
       StandardOutPath = "${config.home.homeDirectory}/Library/Logs/${name}/stdout";
       StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/${name}/stderr";

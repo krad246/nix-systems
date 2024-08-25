@@ -15,8 +15,7 @@
 
   mkSecret = name: {
     "${name}" = {
-      file =
-        builtins.toPath "${hostSecretsDir}/${name}.age";
+      file = hostSecretsDir + "/${name}.age";
       path = "${agenixMountPoint}/${name}";
     };
   };

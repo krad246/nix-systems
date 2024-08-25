@@ -145,8 +145,15 @@
     flake-parts,
     ez-configs,
     ...
-  }:
-    flake-parts.lib.mkFlake {inherit inputs;} {
+  }: let
+    lib =
+      inputs.nixpkgs.lib.extend
+      (_final: _prev: (import ./lib));
+  in
+    flake-parts.lib.mkFlake {
+      inherit inputs;
+      specialArgs = {inherit lib;};
+    } {
       imports =
         (with inputs; [
           treefmt-nix.flakeModule
@@ -197,14 +204,17 @@
               lib.lists.optional pkgs.stdenv.isLinux
               {
                 nixos-install = pkgs.writeShellScriptBin "install-nixos-unattended" ''
+                  name="$1"
+                  shift
+
                   sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
-                    --flake "${self}#$1" \
+                    --flake "${self}#$name" \
                     --extra-files "${self}" /opt/nixos \
                     --option inputs-from "${self}" \
                     --option experimental-features 'nix-command flakes' \
                     --write-efi-boot-entries \
                     --system-config '${builtins.toJSON {}}' \
-                  "$\{@:1:\}"
+                  "$@"
                 '';
               }
             ));

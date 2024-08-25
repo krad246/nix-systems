@@ -87,7 +87,7 @@
 
         "docker/image" = pkgs.dockerTools.buildImage {
           name = "docker-image";
-          fromImage = null;
+          fromImage = self'.packages."nixos/nix";
           architecture = dockerVMPlatform.arch;
         };
       }

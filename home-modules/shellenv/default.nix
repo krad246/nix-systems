@@ -6,11 +6,16 @@
       ./bottom.nix
     ]
     ++ [
+      ./bitwarden.nix
+    ]
+    ++ [
       ./colima
     ]
     ++ [
       ./coreutils.nix
       ./direnv.nix
+      ./fd.nix
+      ./fzf.nix
       ./git.nix
       ./nix-core.nix
       ./nvim
@@ -27,8 +32,6 @@
 
   home = {
     packages = with pkgs; [cachix];
-    sessionVariables = {
-    };
   };
 
   news.display = "silent";
