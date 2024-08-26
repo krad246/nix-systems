@@ -81,33 +81,32 @@
         };
       };
 
+      add = {
+        enable = true;
+        justfile = ''
+          add +ARGS="":
+            ${lib.getExe pkgs.git} add --chmod=+x {{ ARGS }}
+        '';
+      };
+
       commit = {
         enable = true;
-        justfile = let
-          gitBin = lib.getExe pkgs.git;
-        in ''
-          commit +ARGS="":
-            @${gitBin} add -u && \
-              ${gitBin} commit {{ ARGS }}
+        justfile = ''
+          commit +ARGS="": (add '-u')
+            ${lib.getExe pkgs.git} commit {{ ARGS }}
         '';
       };
 
       amend = {
         enable = true;
-        justfile = let
-          gitBin = lib.getExe pkgs.git;
-        in ''
-          amend +ARGS="":
-            @${gitBin} add -u && \
-              ${gitBin} commit --amend {{ ARGS }}
+        justfile = ''
+          amend +ARGS="": (add '-u') (commit '--amend' ARGS)
         '';
       };
 
       docker-exec = {
         enable = true;
         justfile = ''
-          docker-exec SYSTEM *ARGS:
-            @${lib.getExe pkgs.just} nix run .#packages.{{SYSTEM}}.docker-builder-exec -- {{ ARGS }}
         '';
       };
     };

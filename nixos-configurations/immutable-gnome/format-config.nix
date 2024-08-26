@@ -128,6 +128,10 @@ in {
       hardware.opengl.driSupport32Bit = lib.mkForce false;
     };
 
+    sd-x86_64 = _: {
+      disko.enableConfig = false;
+    };
+
     vagrant-virtualbox = _: {
       disko.enableConfig = false;
     };

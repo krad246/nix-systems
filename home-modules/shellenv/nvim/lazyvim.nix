@@ -20,7 +20,9 @@
       p.yaml
     ]);
 in {
-  home.packages = with pkgs; [nil fd ripgrep];
+  imports = [../fd.nix ../ripgrep.nix];
+
+  home.packages = with pkgs; [nil];
 
   programs.neovim = {
     enable = true;

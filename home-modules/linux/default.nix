@@ -11,6 +11,7 @@
     if noXlibs
     then false
     else osConfig.services.xserver.enable; # usually true.
+  hasFlatpak = lib.attrsets.attrByPath ["services" "flatpak" "enable"] false osConfig;
 
   # nixos-generators vm-nogui sets this to false
   isGraphicalVM = lib.attrsets.attrByPath ["virtualisation" "graphics" "enable"] false osConfig;
@@ -23,7 +24,7 @@
   isGraphicalNixOS =
     if (isWSL || isContainer || (!hasXEnabled) || (!isGraphicalVM))
     then false
-    else hasXEnabled;
+    else hasXEnabled && hasFlatpak;
   inherit (inputs) nix-flatpak;
 in {
   imports =
