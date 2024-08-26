@@ -4,6 +4,7 @@
   ...
 }: {
   imports = with ezModules; [
+    nixos
     libvirtd
     wsl
   ];

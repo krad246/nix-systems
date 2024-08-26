@@ -26,30 +26,31 @@
     then false
     else hasXEnabled && hasFlatpak;
   inherit (inputs) nix-flatpak;
-in {
-  imports =
-    [nix-flatpak.homeManagerModules.nix-flatpak]
-    ++ (
-      lib.optionals isGraphicalNixOS (with ezModules; [
-        chromium
-        discord
-        dconf
-        kdeconnect
-        kitty
-        nerdfonts
-        vscode
-        vscode-server
-      ])
-    );
+in
+  lib.attrsets.optionalAttrs false {
+    imports =
+      [nix-flatpak.homeManagerModules.nix-flatpak]
+      ++ (
+        lib.optionals isGraphicalNixOS (with ezModules; [
+          chromium
+          discord
+          dconf
+          kdeconnect
+          kitty
+          nerdfonts
+          vscode
+          vscode-server
+        ])
+      );
 
-  services = lib.mkIf isGraphicalNixOS {
-    flatpak.packages = [
-      "org.pulseaudio.pavucontrol"
-      "us.zoom.Zoom"
-      "org.signal.Signal"
-      "com.spotify.Client"
-      "com.valvesoftware.Steam"
-      "com.github.tchx84.Flatseal"
-    ];
-  };
-}
+    services = lib.mkIf isGraphicalNixOS {
+      flatpak.packages = [
+        "org.pulseaudio.pavucontrol"
+        "us.zoom.Zoom"
+        "org.signal.Signal"
+        "com.spotify.Client"
+        "com.valvesoftware.Steam"
+        "com.github.tchx84.Flatseal"
+      ];
+    };
+  }

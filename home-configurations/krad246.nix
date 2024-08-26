@@ -6,6 +6,7 @@
   ...
 }: {
   imports = with ezModules; [
+    shellenv
   ];
 
   home = {

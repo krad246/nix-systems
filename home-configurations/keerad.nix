@@ -7,6 +7,7 @@
   ...
 }: {
   imports = with ezModules; [
+    shellenv
     vscode-server
   ];
 
