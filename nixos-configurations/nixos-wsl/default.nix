@@ -8,7 +8,7 @@
     wsl
   ];
 
-  nixpkgs.hostPlatform = "x86_64-linux";
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   networking.hostName = "nixos-wsl";
 
   # NixOS is going to get the first user ID

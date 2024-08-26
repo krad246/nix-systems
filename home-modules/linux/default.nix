@@ -35,6 +35,7 @@ in {
         dconf
         kdeconnect
         kitty
+        nerdfonts
         vscode
         vscode-server
       ])

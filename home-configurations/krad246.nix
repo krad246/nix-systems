@@ -6,7 +6,6 @@
   ...
 }: {
   imports = with ezModules; [
-    nerdfonts
   ];
 
   home = {

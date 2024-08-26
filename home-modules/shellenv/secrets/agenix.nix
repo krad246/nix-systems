@@ -34,7 +34,7 @@ in {
 
   # Actual key points at a pointer to the real secret
   # Either the secret is decrypted and provides the backing value
-  # Or there is a file named appropriately (impure)
+  # Or there is a file named appropriately (impure-ish)
   home.file = lib.attrsets.optionalAttrs (config.age.secrets
     ? id_ed25519_pub
     && config.age.secrets

@@ -141,8 +141,16 @@ in {
       disko.enableConfig = false;
     };
 
-    vm-nogui = _: {
+    vm-nogui = {lib, ...}: {
       disko.enableConfig = false;
+      services.xserver = lib.mkForce {
+        enable = false;
+        displayManager.gdm.enable = false;
+        desktopManager.gnome.enable = false;
+        displayManager.startx.enable = false;
+      };
+      xdg.portal.enable = lib.mkForce false;
+      services.flatpak.enable = lib.mkForce false;
     };
 
     vm = _: {

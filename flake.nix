@@ -186,9 +186,10 @@
         self',
         pkgs,
         lib,
+        system,
         ...
       }: let
-        nixosConfigs = lib.attrsets.attrValues self.nixosConfigurations;
+        nixosConfigs = lib.lists.forEach (lib.attrsets.attrValues self.nixosConfigurations) (nixosCfg: nixosCfg.extendModules {modules = [{nixpkgs.hostPlatform = system;}];});
 
         declaredFormats = nixosCfg: let
           formats =
@@ -208,23 +209,21 @@
             lib.attrsets.mapAttrs' (format: drv: mapHostFormat nixosCfg format drv)
             (declaredFormats nixosCfg);
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
+          nixos-install = pkgs.writeShellScriptBin "nixos-install-unattended" ''
+            sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
+              --flake "$FLAKE_ROOT#$HOSTNAME" \
+              --extra-files "$FLAKE_ROOT" /opt/nixos \
+              --option inputs-from "$FLAKE_ROOT" \
+              --option experimental-features 'nix-command flakes' \
+              --write-efi-boot-entries \
+              --system-config '${builtins.toJSON {}}' \
+            "$@"
+          '';
         in
-          lib.attrsets.mergeAttrsList (formats
-            ++ (
-              lib.lists.optional pkgs.stdenv.isLinux
-              {
-                nixos-install = pkgs.writeShellScriptBin "nixos-install-unattended" ''
-                  sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
-                    --flake "$FLAKE_ROOT#$HOSTNAME" \
-                    --extra-files "$FLAKE_ROOT" /opt/nixos \
-                    --option inputs-from "$FLAKE_ROOT" \
-                    --option experimental-features 'nix-command flakes' \
-                    --write-efi-boot-entries \
-                    --system-config '${builtins.toJSON {}}' \
-                  "$@"
-                '';
-              }
-            ));
+          lib.attrsets.mergeAttrsList (lib.lists.flatten [
+            (lib.lists.optionals pkgs.stdenv.isLinux [formats])
+            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install;}])
+          ]);
 
         apps = let
           mkAppPackages = nixosCfg:
