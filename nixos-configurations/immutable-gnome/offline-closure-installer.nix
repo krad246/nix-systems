@@ -23,6 +23,6 @@ in {
   system.includeBuildDependencies = false;
   environment.etc."install-closure".source = "${closureInfo}/store-paths";
   environment.systemPackages = [
-    self.packages.${pkgs.stdenv.system}.nixos-install
+    self.packages.${pkgs.stdenv.system}.nixos-install-unattended
   ];
 }

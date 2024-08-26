@@ -1,7 +1,14 @@
-{config, ...}: {
-  boot.tmp = {
-    cleanOnBoot = true;
-    useTmpfs = false;
+{
+  config,
+  pkgs,
+  ...
+}: {
+  boot = {
+    kernelPackages = pkgs.linuxPackages_latest;
+    tmp = {
+      cleanOnBoot = true;
+      useTmpfs = false;
+    };
   };
 
   # Not technically a part of the kernel, but close enough...

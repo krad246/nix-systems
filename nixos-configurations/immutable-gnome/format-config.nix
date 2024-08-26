@@ -48,18 +48,19 @@ in {
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso-hyperv = _: {
+    install-iso-hyperv = {lib, ...}: {
       imports = [offlineInstaller];
 
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
+      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
-    install-iso = {...}: {
+    install-iso = {lib, ...}: {
       imports = [offlineInstaller];
 
       disko.enableConfig = false;
-      boot.supportedFilesystems = ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
+      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
     iso = _: {
@@ -68,6 +69,8 @@ in {
 
     kexec = {lib, ...}: {
       networking.hostName = lib.mkForce "kexec";
+
+      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
     kexec-bundle = {lib, ...}: {
