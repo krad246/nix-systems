@@ -23,8 +23,8 @@
     in ''
       # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
       [${os}]
-      ${pname} VERB *ARGS:
-        @${lib.meta.getExe drv} {{ VERB }} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
+      ${pname} +ARGS="":
+        @${lib.meta.getExe' drv pname} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
 
       ${maybeString (args ? alias) (mkAlias args.alias pname)}
     '';

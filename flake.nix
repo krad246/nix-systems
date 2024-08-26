@@ -129,12 +129,12 @@
     agenix-rekey = {
       url = "github:oddlama/agenix-rekey";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pre-commit-hooks.follows = "pre-commit-hooks-nix";
     };
 
     # Handles the Spotlight and Dock synchronization
     mac-app-util = {
       url = "github:hraban/mac-app-util";
-      inputs.flake-compat.follows = "flake-compat";
     };
 
     vscode-server = {
@@ -144,7 +144,11 @@
 
     nixos-cosmic = {
       url = "github:lilyinstarlight/nixos-cosmic";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs-stable";
+        flake-compat.follows = "flake-compat";
+      };
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
@@ -189,7 +193,14 @@
         ...
       }: let
         nixosHosts = lib.attrsets.attrValues self.nixosConfigurations;
-        withSystem = nixosCfg: nixosCfg.extendModules {modules = [{nixpkgs.hostPlatform = system;}];};
+        withSystem = nixosCfg:
+          nixosCfg.extendModules {
+            modules = [
+              {
+                nixpkgs.hostPlatform = system;
+              }
+            ];
+          };
         nixosConfigs = lib.lists.forEach nixosHosts withSystem;
 
         declaredFormats = nixosCfg: let

@@ -40,57 +40,96 @@
         }
       ];
     };
-
-    WorkingDir = "/workdir";
   in {
-    packages = lib.mkMerge [
-      (lib.mkIf pkgs.stdenv.isLinux {
-        "docker/stream" = pkgs.dockerTools.streamLayeredImage {
-          name = "docker-stream";
-          fromImage = self'.packages."nixos/nix";
-          contents = [
-            pkgs.dockerTools.binSh
-            pkgs.util-linux
-            pkgs.coreutils
-            pkgs.nixFlakes
-            pkgs.git
-          ];
+    packages = lib.mkIf pkgs.stdenv.isLinux {
+      "docker/image/stream" = pkgs.dockerTools.streamLayeredImage {
+        name = "docker-image-stream";
+        contents = [
+          pkgs.dockerTools.binSh
+          pkgs.util-linux
+          pkgs.coreutils
+          pkgs.nixFlakes
+          pkgs.git
+        ];
 
-          config = {
-            Volumes = {
-              "${WorkingDir}" = {};
-            };
-
-            inherit WorkingDir;
+        config = let
+          WorkingDir = "/workdir";
+        in {
+          Volumes = {
+            "${WorkingDir}" = {};
           };
 
-          architecture = dockerVMPlatform.arch;
-
-          maxLayers = 32;
-          enableFakechroot = true;
-          fakeRootCommands = ''
-            mkdir -p /{etc,tmp}
-            ${nixosCustomizations.config.system.build.etcActivationCommands}
-          '';
-        };
-      })
-      {
-        "nixos/nix" = pkgs.dockerTools.pullImage {
-          imageName = "nixos/nix";
-          imageDigest = "sha256:5a2a7ee72e88528ff9422f16a8a0be580d8c173928369a20e8a6ba77a55cd95d";
-          sha256 = "sha256-vJHHhEpndS858jA3Vyo/FwRxhTr1gNJrpZ0NhajdFfQ=";
-          finalImageName = "nixos/nix";
-          finalImageTag = "latest";
-
-          inherit (dockerVMPlatform) os arch;
+          inherit WorkingDir;
         };
 
-        "docker/image" = pkgs.dockerTools.buildImage {
-          name = "docker-image";
-          fromImage = self'.packages."nixos/nix";
-          architecture = dockerVMPlatform.arch;
+        architecture = dockerVMPlatform.arch;
+
+        maxLayers = 32;
+        enableFakechroot = true;
+        fakeRootCommands = ''
+          mkdir -p /{etc,tmp}
+          ${nixosCustomizations.config.system.build.etcActivationCommands}
+        '';
+      };
+
+      "docker/image/build" = pkgs.dockerTools.buildImageWithNixDb {
+        name = "docker-image-build";
+        architecture = dockerVMPlatform.arch;
+
+        copyToRoot = pkgs.buildEnv {
+          name = "docker-image-root";
+          paths =
+            (with pkgs.dockerTools; [usrBinEnv binSh caCertificates fakeNss])
+            ++ (with pkgs; [
+              coreutils
+              nixFlakes
+              git
+              bashInteractive
+            ]);
         };
-      }
-    ];
+
+        extraCommands = ''
+          mkdir -p tmp
+        '';
+
+        config = let
+          WorkingDir = "/workdir";
+        in {
+          Env = [];
+
+          Volumes = {
+            "${WorkingDir}" = {};
+          };
+
+          inherit WorkingDir;
+        };
+      };
+
+      "docker/image/import" = pkgs.writeShellApplication {
+        name = "docker-image-import";
+        text = let
+          img = self'.packages."docker/image/build";
+        in ''
+          if docker image inspect ${img.imageName}:${img.imageTag} "$@"; then
+            true
+          else
+            docker load -q < ${img}
+          fi
+        '';
+      };
+
+      "docker/container/run" = pkgs.writeShellApplication {
+        name = "docker-container-run";
+        runtimeInputs = [self'.packages."docker/image/import"];
+        text = ''
+          set -x
+          ID="$(cat <(docker-image-import --format '{{.Id}}'))"
+          docker run -it --rm --net=host \
+            -v "$FLAKE_ROOT:$(docker image inspect "$ID" --format='{{ .Config.WorkingDir }}'):ro" \
+            "$ID" \
+            "$@"
+        '';
+      };
+    };
   };
 }

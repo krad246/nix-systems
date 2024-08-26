@@ -7,27 +7,36 @@
   ...
 }: let
   inherit (inputs) agenix;
-  agenixMountPoint = "${config.home.homeDirectory}/.secrets";
-  thisHost = osConfig.networking.hostName;
+  inherit (config.home) homeDirectory;
 
-  hosts = builtins.readDir ./hosts;
-  hostSecretsDir = ./hosts/${thisHost};
+  supportedHosts = builtins.readDir ./hosts;
+  hostExists =
+    if lib.attrsets.hasAttrByPath ["networking" "hostName"] osConfig
+    then lib.attrsets.hasAttrByPath [osConfig.networking.hostName] supportedHosts
+    else false;
+  hostSecrets = lib.attrsets.optionalAttrs hostExists (builtins.readDir ./hosts/${osConfig.networking.hostName});
+
+  secretNames = let
+    files = builtins.attrNames hostSecrets;
+    removeExt = x: lib.strings.removeSuffix ".age" x;
+  in
+    lib.lists.forEach files removeExt;
 
   mkSecret = name: {
     "${name}" = {
-      file = hostSecretsDir + "/${name}.age";
-      path = "${agenixMountPoint}/${name}";
+      file = ./hosts/${osConfig.networking.hostName}/${name}.age;
+      path = "${homeDirectory}/.secrets/${name}";
     };
   };
 
-  secretNames = lib.lists.optionals (hosts ? "${thisHost}") (builtins.attrNames (builtins.readDir hostSecretsDir));
-  stripAgeSuffix = x: lib.strings.removeSuffix ".age" x;
-  secrets = lib.attrsets.mergeAttrsList (lib.lists.forEach secretNames (sname:
-    mkSecret
-    (stripAgeSuffix sname)));
+  mkSecrets = names: (lib.lists.forEach names mkSecret);
 in {
   imports = [agenix.homeManagerModules.age];
-  age = {
+  home.packages = [agenix.packages.${pkgs.stdenv.system}.default];
+
+  age = let
+    secrets = lib.attrsets.mergeAttrsList (mkSecrets secretNames);
+  in {
     # Need a master identity to unlock these.
     inherit secrets;
   };
@@ -47,6 +56,4 @@ in {
       config.lib.file.mkOutOfStoreSymlink
       config.age.secrets.id_ed25519_priv.path;
   };
-
-  home.packages = [agenix.packages.${pkgs.stdenv.system}.default];
 }

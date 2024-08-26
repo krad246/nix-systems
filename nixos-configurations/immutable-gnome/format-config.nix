@@ -75,6 +75,8 @@ in {
 
     kexec-bundle = {lib, ...}: {
       networking.hostName = lib.mkForce "kexec";
+
+      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
     kubevirt = _: {
@@ -121,6 +123,7 @@ in {
       disko.enableConfig = false;
       nixpkgs.hostPlatform = lib.mkForce "aarch64-linux";
       hardware.opengl.driSupport32Bit = lib.mkForce false;
+      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
     sd-aarch64-installer = {lib, ...}: {
@@ -129,10 +132,13 @@ in {
       disko.enableConfig = false;
       nixpkgs.hostPlatform = lib.mkForce "aarch64-linux";
       hardware.opengl.driSupport32Bit = lib.mkForce false;
+      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
-    sd-x86_64 = _: {
+    sd-x86_64 = {lib, ...}: {
       disko.enableConfig = false;
+      nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
+      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
     };
 
     vagrant-virtualbox = _: {
