@@ -179,7 +179,6 @@
           ./build/just-flake.nix
         ];
 
-      debug = true;
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 
       perSystem = {
@@ -189,7 +188,9 @@
         system,
         ...
       }: let
-        nixosConfigs = lib.lists.forEach (lib.attrsets.attrValues self.nixosConfigurations) (nixosCfg: nixosCfg.extendModules {modules = [{nixpkgs.hostPlatform = system;}];});
+        nixosHosts = lib.attrsets.attrValues self.nixosConfigurations;
+        withSystem = nixosCfg: nixosCfg.extendModules {modules = [{nixpkgs.hostPlatform = system;}];};
+        nixosConfigs = lib.lists.forEach nixosHosts withSystem;
 
         declaredFormats = nixosCfg: let
           formats =
@@ -198,16 +199,22 @@
         in
           formats;
 
-        hostFormatName = nixosCfg: format: "${nixosCfg.config.networking.hostName}/${format}";
+        hostFormatName = nixosCfg: format: let
+          inherit (nixosCfg.config.networking) hostName;
+        in "${hostName}/${format}";
+
         mapHostFormat = nixosCfg: format: value:
           lib.attrsets.nameValuePair
           (hostFormatName nixosCfg format)
           value;
       in {
         packages = let
-          mkFormatPackages = nixosCfg:
+          mkFormatPackages = nixosCfg: let
+            declared = declaredFormats nixosCfg;
+          in
             lib.attrsets.mapAttrs' (format: drv: mapHostFormat nixosCfg format drv)
-            (declaredFormats nixosCfg);
+            declared;
+
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
           nixos-install = pkgs.writeShellScriptBin "nixos-install-unattended" ''
             sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
@@ -225,18 +232,12 @@
             (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install;}])
           ]);
 
-        apps = let
-          mkAppPackages = nixosCfg:
-            lib.attrsets.mapAttrs' (format: _drv:
-              mapHostFormat nixosCfg format {
-                type = "app";
-                program = lib.getExe self'.packages."${hostFormatName nixosCfg format}";
-              })
-            (declaredFormats nixosCfg);
-
-          runnables = lib.lists.forEach nixosConfigs mkAppPackages;
-        in
-          lib.attrsets.mergeAttrsList runnables;
+        apps =
+          lib.attrsets.mapAttrs (_pname: drv: {
+            type = "app";
+            program = lib.getExe drv;
+          })
+          self'.packages;
       };
 
       ezConfigs = {
