@@ -216,7 +216,7 @@
             declared;
 
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
-          nixos-install = pkgs.writeShellScriptBin "nixos-install-unattended" ''
+          nixos-install-unattended = pkgs.writeShellScriptBin "nixos-install-unattended" ''
             sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
               --flake "$FLAKE_ROOT#$HOSTNAME" \
               --extra-files "$FLAKE_ROOT" /opt/nixos \
@@ -229,7 +229,7 @@
         in
           lib.attrsets.mergeAttrsList (lib.lists.flatten [
             (lib.lists.optionals pkgs.stdenv.isLinux [formats])
-            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install;}])
+            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install-unattended;}])
           ]);
 
         apps =

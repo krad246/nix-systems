@@ -10,7 +10,7 @@
   hasXEnabled =
     if noXlibs
     then false
-    else osConfig.services.xserver.enable; # usually true.
+    else lib.attrsets.attrByPath ["services" "xserver" "enable"] false osConfig; # usually true.
   hasFlatpak = lib.attrsets.attrByPath ["services" "flatpak" "enable"] false osConfig;
 
   # nixos-generators vm-nogui sets this to false
