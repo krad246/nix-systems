@@ -1,13 +1,13 @@
-{
+{lib, ...}: {
   # Keep the stock users laying around.
   users = {
     users.nixos = {
-      initialHashedPassword = "$y$j9T$wGrPZQfqKmoKMYKh.DV2b.$I2/4NrxfRvS1d.M8QbPG.c8raX/jD8xBy.nOpQK./hA";
+      initialHashedPassword = lib.mkDefault "$y$j9T$wGrPZQfqKmoKMYKh.DV2b.$I2/4NrxfRvS1d.M8QbPG.c8raX/jD8xBy.nOpQK./hA";
       isNormalUser = true;
     };
 
     users.root = {
-      initialHashedPassword = "$y$j9T$2CXtKDXh5W.N9aCUikvlM/$OmcgpG/XxMUK0KUx5Hh8/3CLUcSg3OFAK02fJQiw0a7";
+      initialHashedPassword = lib.mkDefault "$y$j9T$2CXtKDXh5W.N9aCUikvlM/$OmcgpG/XxMUK0KUx5Hh8/3CLUcSg3OFAK02fJQiw0a7";
       isSystemUser = true;
     };
   };

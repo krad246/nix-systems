@@ -9,12 +9,13 @@ in {
   imports =
     [nixos-generators.nixosModules.all-formats]
     ++ (with ezModules; [
-      flatpak
       gnome-desktop
       libvirtd
       nixos
       pam-u2f
     ]);
+
+  services.flatpak.enable = lib.mkDefault false;
 
   users.users.krad246 = {
     isNormalUser = true;

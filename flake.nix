@@ -13,12 +13,11 @@
     ];
   };
 
-  inputs = {
+  inputs = rec {
     # Package distributions
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/release-24.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
-    nixpkgs.url = "github:NixOS/nixpkgs/release-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
 
     # Legacy and flake compatibility shims.
     flake-compat = {
@@ -43,7 +42,7 @@
     # An opinionated Nix flake library (see flake-utils)
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs-unstable";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
     };
 
     # Glue logic between just and Nix (replacement to mission-control)
@@ -54,7 +53,7 @@
     # Swiss-army-knife formatter.
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Code cleanliness checking for developers.
@@ -62,8 +61,8 @@
       url = "github:cachix/pre-commit-hooks.nix";
       inputs = {
         flake-compat.follows = "flake-compat";
-        nixpkgs.follows = "nixpkgs-unstable";
-        nixpkgs-stable.follows = "nixpkgs-stable";
+        nixpkgs.follows = "nixpkgs";
+        nixpkgs-stable.follows = "nixpkgs";
       };
     };
 
@@ -85,7 +84,7 @@
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Flake-Parts module gluing it together
@@ -103,7 +102,7 @@
     # Simple modules for generating a variety of image formats
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Immutable OS root filesystem (erase your darlings)
@@ -112,14 +111,14 @@
     # Declarative disk partitioning
     disko = {
       url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # AGE encrypted secrets
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
-        nixpkgs.follows = "nixpkgs-stable";
+        nixpkgs.follows = "nixpkgs";
         darwin.follows = "darwin";
         home-manager.follows = "home-manager";
       };
@@ -140,13 +139,14 @@
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
       inputs.flake-utils.follows = "flake-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixos-cosmic = {
       url = "github:lilyinstarlight/nixos-cosmic";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixpkgs-stable";
+        nixpkgs-stable.follows = "nixpkgs";
         flake-compat.follows = "flake-compat";
       };
     };
@@ -228,13 +228,13 @@
 
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
           nixos-install-unattended = pkgs.writeShellScriptBin "nixos-install-unattended" ''
-            sudo FLAKE_ROOT=${self} ${lib.getExe' pkgs.disko "disko-install"} \
+            FLAKE_ROOT=${self} sudo --preserve-env=FLAKE_ROOT ${lib.getExe' pkgs.disko "disko-install"} \
               --flake "$FLAKE_ROOT#$HOSTNAME" \
               --extra-files "$FLAKE_ROOT" /opt/nixos \
               --option inputs-from "$FLAKE_ROOT" \
               --option experimental-features 'nix-command flakes' \
               --write-efi-boot-entries \
-              --system-config '${builtins.toJSON {}}' \
+              --system-config '${builtins.toJSON (import ./nixos-modules/flatpak.nix)}' \
             "$@"
           '';
         in

@@ -1,9 +1,9 @@
 {
   perSystem = {
+    self',
     lib,
     pkgs,
     system,
-    self',
     ...
   }: let
     dockerPlatforms = {
@@ -27,109 +27,60 @@
         arch = "arm64";
       };
     };
-
-    dockerVMPlatform = dockerPlatforms."${system}";
-
-    nixosCustomizations = lib.nixosSystem {
-      inherit system;
-      modules = [
-        {
-          boot.tmp.useTmpfs = true;
-          nix.settings.experimental-features = ["nix-command" "flakes"];
-          system.stateVersion = lib.trivial.release;
-        }
-      ];
-    };
   in {
-    packages = lib.mkIf pkgs.stdenv.isLinux {
-      "docker/image/stream" = pkgs.dockerTools.streamLayeredImage {
-        name = "docker-image-stream";
-        contents = [
-          pkgs.dockerTools.binSh
-          pkgs.util-linux
-          pkgs.coreutils
-          pkgs.nixFlakes
-          pkgs.git
-        ];
+    packages = let
+      contents =
+        (with pkgs.dockerTools; [usrBinEnv binSh caCertificates fakeNss])
+        ++ (with pkgs; [
+          coreutils
+          nixFlakes
+          git
+          bashInteractive
+        ]);
 
-        config = let
-          WorkingDir = "/workdir";
-        in {
-          Volumes = {
-            "${WorkingDir}" = {};
-          };
+      copyToRoot = pkgs.buildEnv {
+        name = "docker-image-root";
+        paths = contents;
+      };
 
-          inherit WorkingDir;
+      dockerVMPlatform = dockerPlatforms."${system}";
+      architecture = dockerVMPlatform.arch;
+      config = let
+        WorkingDir = "/workdir";
+      in {
+        Env = [];
+
+        Volumes = {
+          "${WorkingDir}" = {};
         };
 
-        architecture = dockerVMPlatform.arch;
-
-        maxLayers = 32;
-        enableFakechroot = true;
-        fakeRootCommands = ''
-          mkdir -p /{etc,tmp}
-          ${nixosCustomizations.config.system.build.etcActivationCommands}
-        '';
+        inherit WorkingDir;
       };
 
-      "docker/image/build" = pkgs.dockerTools.buildImageWithNixDb {
-        name = "docker-image-build";
-        architecture = dockerVMPlatform.arch;
-
-        copyToRoot = pkgs.buildEnv {
-          name = "docker-image-root";
-          paths =
-            (with pkgs.dockerTools; [usrBinEnv binSh caCertificates fakeNss])
-            ++ (with pkgs; [
-              coreutils
-              nixFlakes
-              git
-              bashInteractive
-            ]);
+      runCommands = ''
+        mkdir -p /tmp
+      '';
+    in
+      lib.mkIf pkgs.stdenv.isLinux {
+        "docker/devshell" = pkgs.dockerTools.buildNixShellImage {
+          drv = self'.devShells.default;
         };
 
-        extraCommands = ''
-          mkdir -p tmp
-        '';
+        "docker/image" = pkgs.dockerTools.buildImageWithNixDb {
+          name = "docker-image";
+          inherit architecture;
+          inherit copyToRoot;
+          runAsRoot = runCommands;
+          inherit config;
+        };
 
-        config = let
-          WorkingDir = "/workdir";
-        in {
-          Env = [];
-
-          Volumes = {
-            "${WorkingDir}" = {};
-          };
-
-          inherit WorkingDir;
+        "docker/image/multilayer" = pkgs.dockerTools.buildLayeredImageWithNixDb {
+          name = "docker-image-multilayer";
+          inherit architecture;
+          inherit contents;
+          fakeRootCommands = runCommands;
+          inherit config;
         };
       };
-
-      "docker/image/import" = pkgs.writeShellApplication {
-        name = "docker-image-import";
-        text = let
-          img = self'.packages."docker/image/build";
-        in ''
-          if docker image inspect ${img.imageName}:${img.imageTag} "$@"; then
-            true
-          else
-            docker load -q < ${img}
-          fi
-        '';
-      };
-
-      "docker/container/run" = pkgs.writeShellApplication {
-        name = "docker-container-run";
-        runtimeInputs = [self'.packages."docker/image/import"];
-        text = ''
-          set -x
-          ID="$(cat <(docker-image-import --format '{{.Id}}'))"
-          docker run -it --rm --net=host \
-            -v "$FLAKE_ROOT:$(docker image inspect "$ID" --format='{{ .Config.WorkingDir }}'):ro" \
-            "$ID" \
-            "$@"
-        '';
-      };
-    };
   };
 }

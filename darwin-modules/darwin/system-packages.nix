@@ -16,7 +16,7 @@ in {
 
   environment = {
     shells = ["${brewRoot}/bash" "${brewRoot}/zsh"];
-    loginShell = "${brewRoot}/zsh";
+    loginShell = "${brewRoot}/bash";
     systemPackages = [pkgs.m-cli];
   };
 }

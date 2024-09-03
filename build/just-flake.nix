@@ -24,7 +24,7 @@
       # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
       [${os}]
       ${pname} +ARGS="":
-        @${lib.meta.getExe' drv pname} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
+        ${lib.meta.getExe' drv pname} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
 
       ${maybeString (args ? alias) (mkAlias args.alias pname)}
     '';
@@ -81,6 +81,14 @@
         };
       };
 
+      build = {
+        enable = true;
+        justfile = ''
+          build +ARGS="": (nix "build" \
+              (replace_regex(ARGS, "#([[:ascii:]]+)", "#$1 --out-link $1")))
+        '';
+      };
+
       add = {
         enable = true;
         justfile = ''
@@ -93,7 +101,7 @@
         enable = true;
         justfile = ''
           commit +ARGS="": (add '-u')
-            ${lib.getExe pkgs.git} commit {{ ARGS }}
+            ${lib.getExe pkgs.git} commit '{{ ARGS }}'
         '';
       };
 
@@ -101,12 +109,6 @@
         enable = true;
         justfile = ''
           amend +ARGS="": (add '-A') (commit '--amend' ARGS)
-        '';
-      };
-
-      docker-exec = {
-        enable = true;
-        justfile = ''
         '';
       };
     };

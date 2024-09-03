@@ -1,13 +1,8 @@
-{
-  config,
-  pkgs,
-  ...
-}: {
+{config, ...}: {
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
     tmp = {
       cleanOnBoot = true;
-      useTmpfs = false;
+      useTmpfs = true;
     };
   };
 

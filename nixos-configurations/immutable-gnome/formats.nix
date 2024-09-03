@@ -1,21 +1,9 @@
-args @ {
+{
   self,
-  pkgs,
   config,
   ...
-}: let
-  inherit (config.networking) hostName;
-  machine = self.nixosConfigurations."${hostName}";
-
-  offlineInstaller = import ./offline-closure-installer.nix (args
-    // {
-      inherit self pkgs;
-      specialArgs = {
-        nixosConfig = machine;
-      };
-    });
-in {
-  formatConfigs = {
+}: {
+  formatConfigs = rec {
     amazon = {lib, ...}: {
       disko.enableConfig = false;
       networking.hostName = lib.mkForce "";
@@ -26,6 +14,10 @@ in {
       disko.enableConfig = false;
       networking.hostName = lib.mkForce "";
       networking.networkmanager.enable = lib.mkForce false;
+    };
+
+    cloudstack = {
+      disko.enableConfig = false;
     };
 
     do = {lib, ...}: {
@@ -43,43 +35,49 @@ in {
       networking.hostName = lib.mkForce "";
     };
 
-    hyperv = _: {
+    hyperv = {
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso-hyperv = {lib, ...}: {
-      imports = [offlineInstaller];
+    install-iso = {
+      pkgs,
+      lib,
+      ...
+    }: {
+      imports = let
+        inherit (config.networking) hostName;
+        machine = self.nixosConfigurations."${hostName}";
+        installer = import ./offline-closure-installer.nix {
+          inherit self pkgs;
+          specialArgs = {
+            nixosConfig = machine;
+          };
+        };
+      in [installer];
 
       disko.enableConfig = false;
-      boot.kernelParams = ["nomodeset"];
-      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
+      boot.supportedFilesystems = {
+        zfs = lib.mkForce false;
+      };
     };
 
-    install-iso = {lib, ...}: {
-      imports = [offlineInstaller];
+    install-iso-hyperv = install-iso;
 
-      disko.enableConfig = false;
-      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
-    };
-
-    iso = _: {
-      disko.enableConfig = false;
+    iso = {
     };
 
     kexec = {lib, ...}: {
       networking.hostName = lib.mkForce "kexec";
 
-      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
+      boot.supportedFilesystems = {
+        zfs = lib.mkForce false;
+      };
     };
 
-    kexec-bundle = {lib, ...}: {
-      networking.hostName = lib.mkForce "kexec";
+    kexec-bundle = kexec;
 
-      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
-    };
-
-    kubevirt = _: {
+    kubevirt = {
       disko.enableConfig = false;
     };
 
@@ -93,56 +91,41 @@ in {
       networking.hostName = lib.mkForce "";
     };
 
-    proxmox-lxc = _: {
+    proxmox = {
       disko.enableConfig = false;
     };
 
-    proxmox = _: {
+    proxmox-lxc = proxmox;
+
+    qcow = {
       disko.enableConfig = false;
     };
 
-    qcow = _: {
+    qcow-efi = qcow;
+
+    raw = {
       disko.enableConfig = false;
     };
 
-    qcow-efi = _: {
-      disko.enableConfig = false;
-    };
-
-    raw = _: {
-      disko.enableConfig = false;
-    };
-
-    raw-efi = _: {
-      disko.enableConfig = false;
-
-      # TODO: determine what overriding system.build.raw with diskoLib's disk image builder does
-    };
+    raw-efi = raw;
 
     sd-aarch64 = {lib, ...}: {
       disko.enableConfig = false;
       nixpkgs.hostPlatform = lib.mkForce "aarch64-linux";
       hardware.opengl.driSupport32Bit = lib.mkForce false;
-      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
+      boot.supportedFilesystems = {
+        zfs = lib.mkForce false;
+      };
     };
 
-    sd-aarch64-installer = {lib, ...}: {
-      imports = [offlineInstaller];
-
-      disko.enableConfig = false;
-      nixpkgs.hostPlatform = lib.mkForce "aarch64-linux";
-      hardware.opengl.driSupport32Bit = lib.mkForce false;
-      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
-    };
+    sd-aarch64-installer = sd-aarch64;
 
     sd-x86_64 = {lib, ...}: {
       disko.enableConfig = false;
       nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
-      boot.supportedFilesystems = lib.mkForce ["btrfs" "reiserfs" "vfat" "f2fs" "xfs" "ntfs" "cifs"];
-    };
-
-    vagrant-virtualbox = _: {
-      disko.enableConfig = false;
+      boot.supportedFilesystems = {
+        zfs = lib.mkForce false;
+      };
     };
 
     virtualbox = _: {
@@ -150,9 +133,7 @@ in {
       disko.enableConfig = false;
     };
 
-    vm-bootloader = _: {
-      disko.enableConfig = false;
-    };
+    vagrant-virtualbox = virtualbox;
 
     vm-nogui = {lib, ...}: {
       disko.enableConfig = false;
@@ -166,11 +147,13 @@ in {
       services.flatpak.enable = lib.mkForce false;
     };
 
-    vm = _: {
+    vm-bootloader = vm;
+
+    vm = {
       disko.enableConfig = false;
     };
 
-    vmware = _: {
+    vmware = {
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
     };

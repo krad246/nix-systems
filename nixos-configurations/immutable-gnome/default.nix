@@ -1,7 +1,7 @@
 {
   imports = [
-    ./format-config.nix
-    ./fs-config.nix
+    ./disko.nix
+    ./formats.nix
     ./hardware-configuration.nix
     ./system.nix
   ];

@@ -20,7 +20,6 @@
 
   closureInfo = pkgs.closureInfo {rootPaths = dependencies;};
 in {
-  system.includeBuildDependencies = false;
   environment.etc."install-closure".source = "${closureInfo}/store-paths";
   environment.systemPackages = [
     self.packages.${pkgs.stdenv.system}.nixos-install-unattended
