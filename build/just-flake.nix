@@ -101,15 +101,19 @@
       commit = {
         enable = true;
         justfile = ''
-          commit MESSAGE +ARGS="": (add '-u')
-            ${lib.getExe pkgs.git} commit -m {{ quote(MESSAGE) }} {{ ARGS }}
+          commit MESSAGE="" +ARGS="": (add '-u')
+            ${lib.getExe pkgs.git} commit \
+              {{ if MESSAGE == "" { "" } \
+                  else { "-m" } }} \
+                    {{ MESSAGE }} \
+                    {{ ARGS }}
         '';
       };
 
       amend = {
         enable = true;
         justfile = ''
-          amend +ARGS="": (add '-A') (commit '--amend' ARGS)
+          amend +ARGS="": (add '-A') (commit "" "--amend" ARGS)
         '';
       };
     };
