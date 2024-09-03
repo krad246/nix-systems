@@ -65,6 +65,7 @@
     install-iso-hyperv = install-iso;
 
     iso = {
+      disko.enableConfig = false;
     };
 
     kexec = {lib, ...}: {

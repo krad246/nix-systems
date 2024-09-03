@@ -84,8 +84,9 @@
       build = {
         enable = true;
         justfile = ''
-          build +ARGS="": (nix "build" \
-              (replace_regex(ARGS, "#([[:ascii:]]+)", "#$1 --out-link $1")))
+          build +ARGS="": (nix "build" replace_regex(ARGS, \
+                                                    "#([[:ascii:]]+)", \
+                                                    "#$1 --out-link $1"))
         '';
       };
 
@@ -100,8 +101,8 @@
       commit = {
         enable = true;
         justfile = ''
-          commit +ARGS="": (add '-u')
-            ${lib.getExe pkgs.git} commit '{{ ARGS }}'
+          commit MESSAGE +ARGS="": (add '-u')
+            ${lib.getExe pkgs.git} commit -m {{ quote(MESSAGE) }} {{ ARGS }}
         '';
       };
 
