@@ -84,7 +84,7 @@
       build = {
         enable = true;
         justfile = ''
-          build +ARGS="": (nix "build" replace_regex(ARGS, \
+          build +ARGS: (nix "build" replace_regex(ARGS, \
                                                     "#([[:ascii:]]+)", \
                                                     "#$1 --out-link $1"))
         '';
@@ -93,7 +93,7 @@
       add = {
         enable = true;
         justfile = ''
-          add +ARGS="":
+          add +ARGS="-u":
             ${lib.getExe pkgs.git} add --chmod=+x {{ ARGS }}
         '';
       };
