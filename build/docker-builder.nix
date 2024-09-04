@@ -62,10 +62,27 @@
             echo "{ \"uid\": \"$(id -u)\", \"gid\": \"$(id -g)\" }" >"$out"
           '';
           me = builtins.fromJSON (builtins.readFile whoami);
+
+          mkTmpfs = pkgs.writeShellApplication {
+            name = "mount-tmpfs";
+            text = builtins.readFile ../mount-tmpfs;
+          };
+
+          execTmpfs = pkgs.writeShellApplication {
+            name = "exec-tmpfs";
+            runtimeInputs = [pkgs.sudo] ++ [pkgs.coreutils pkgs.util-linux];
+            text = ''
+              sudo ${lib.getExe mkTmpfs} "$PWD"
+              "$@"
+            '';
+          };
         in
           pkgs.dockerTools.buildNixShellImage {
             drv = self'.devShells.nix-shell;
             inherit (me) uid gid;
+            command = ''
+              DEBUG=1 ${lib.getExe execTmpfs}
+            '';
           };
 
         "docker/image" = pkgs.dockerTools.buildImageWithNixDb {
