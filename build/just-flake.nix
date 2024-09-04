@@ -90,6 +90,13 @@
         '';
       };
 
+      develop = {
+        enable = true;
+        justfile = ''
+          develop +ARGS: (nix "develop" ARGS)
+        '';
+      };
+
       run = {
         enable = true;
         justfile = ''

@@ -40,7 +40,7 @@
 
       dockerVMPlatform = dockerPlatforms."${system}";
       architecture = dockerVMPlatform.arch;
-      config = let
+      containerCfg = let
         WorkingDir = "/workdir";
       in {
         Env = [];
@@ -57,16 +57,23 @@
       '';
     in
       lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        "docker/devshell" = pkgs.dockerTools.buildNixShellImage {
-          drv = self'.devShells.nix-shell;
-        };
+        "docker/devshell" = let
+          whoami = pkgs.runCommand "whoami" {} ''
+            echo "{ \"uid\": \"$(id -u)\", \"gid\": \"$(id -g)\" }" >"$out"
+          '';
+          me = builtins.fromJSON (builtins.readFile whoami);
+        in
+          pkgs.dockerTools.buildNixShellImage {
+            drv = self'.devShells.nix-shell;
+            inherit (me) uid gid;
+          };
 
         "docker/image" = pkgs.dockerTools.buildImageWithNixDb {
           name = "docker-image";
           inherit architecture;
           inherit copyToRoot;
           runAsRoot = runCommands;
-          inherit config;
+          config = containerCfg;
         };
 
         "docker/image/multilayer" = pkgs.dockerTools.buildLayeredImageWithNixDb {
@@ -74,7 +81,7 @@
           inherit architecture;
           inherit contents;
           fakeRootCommands = runCommands;
-          inherit config;
+          config = containerCfg;
         };
       };
   };

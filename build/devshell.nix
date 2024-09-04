@@ -36,13 +36,16 @@
             in ''
               docker load < ${img}
               WORKDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${img.imageName}:${img.imageTag}))"
-              docker run -it -v "$PWD:$WORKDIR" ${img.imageName}:${img.imageTag}
+              docker run -it \
+                --net host \
+                -v "$PWD:$WORKDIR" \
+                ${img.imageName}:${img.imageTag}
             '';
           };
         in
           pkgs.mkShell {
             shellHook = ''
-              ${lib.getExe run-docker}
+              exec ${lib.getExe run-docker}
             '';
           };
       };
