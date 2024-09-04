@@ -1,7 +1,6 @@
 {
   imports = [
     ./default-users.nix
-    ./efiboot.nix
     ./environment.nix
     ./flake-registry.nix
     ./kernel.nix

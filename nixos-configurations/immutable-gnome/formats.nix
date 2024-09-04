@@ -64,9 +64,7 @@
 
     install-iso-hyperv = install-iso;
 
-    iso = {
-      disko.enableConfig = false;
-    };
+    iso = install-iso;
 
     kexec = {lib, ...}: {
       networking.hostName = lib.mkForce "kexec";

@@ -90,6 +90,13 @@
         '';
       };
 
+      run = {
+        enable = true;
+        justfile = ''
+          run +ARGS: (nix "run" ARGS)
+        '';
+      };
+
       add = {
         enable = true;
         justfile = ''
@@ -101,17 +108,15 @@
       commit = {
         enable = true;
         justfile = ''
-          commit MESSAGE="" +ARGS="": (add '-u')
-            ${lib.getExe pkgs.git} commit \
-              {{ if MESSAGE == "" { "" } \
-                  else { "-m" } }} {{ (MESSAGE) }} {{ ARGS }}
+          commit +ARGS="": (add '-u')
+            ${lib.getExe pkgs.git} commit {{ ARGS }}
         '';
       };
 
       amend = {
         enable = true;
         justfile = ''
-          amend +ARGS="": (add '-A') (commit "" "--amend" ARGS)
+          amend +ARGS="": (add '-A') (commit "--amend" ARGS)
         '';
       };
     };
