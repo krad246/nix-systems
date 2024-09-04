@@ -104,9 +104,7 @@
           commit MESSAGE="" +ARGS="": (add '-u')
             ${lib.getExe pkgs.git} commit \
               {{ if MESSAGE == "" { "" } \
-                  else { "-m" } }} \
-                    {{ MESSAGE }} \
-                    {{ ARGS }}
+                  else { "-m" } }} {{ (MESSAGE) }} {{ ARGS }}
         '';
       };
 

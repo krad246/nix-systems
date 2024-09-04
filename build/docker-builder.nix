@@ -21,11 +21,6 @@
         os = "linux";
         arch = "arm64";
       };
-
-      "aarch64-darwin" = {
-        os = "linux";
-        arch = "arm64";
-      };
     };
   in {
     packages = let
@@ -61,9 +56,9 @@
         mkdir -p /tmp
       '';
     in
-      lib.mkIf pkgs.stdenv.isLinux {
+      lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         "docker/devshell" = pkgs.dockerTools.buildNixShellImage {
-          drv = self'.devShells.default;
+          drv = self'.devShells.nix-shell;
         };
 
         "docker/image" = pkgs.dockerTools.buildImageWithNixDb {
