@@ -46,9 +46,6 @@
           pkgs.dockerTools.buildNixShellImage {
             drv = self'.devShells.default;
             inherit (me) uid gid;
-            # command = ''
-            #   DEBUG=1 echo '${lib.getExe execTmpfs}'
-            # '';
           };
 
         "docker/image" = pkgs.dockerTools.buildImageWithNixDb {

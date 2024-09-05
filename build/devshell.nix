@@ -13,6 +13,7 @@
       text = let
         img = self.packages.${sys}."docker/devshell";
       in ''
+        set -x
         docker load < ${img}
         WORKDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${img.imageName}:${img.imageTag}))"
         docker run -it \
@@ -42,6 +43,7 @@ in {
       in
         pkgs.mkShell {
           shellHook = ''
+            set -x
             exec ${lib.getExe (dockerRun {
               inherit pkgs;
               sys = "aarch64-linux";
@@ -85,6 +87,13 @@ in {
         in
           pkgs.mkShell {
             shellHook = ''
+              # TODO: mount tmpfs
+
+              finish() {
+                :
+              }
+
+              trap finish EXIT
               exec ${lib.getExe run}
             '';
           };
@@ -96,6 +105,7 @@ in {
         "build/all" = pkgs.writeShellApplication {
           name = "build-all";
           text = ''
+            set -x
             ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
             ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "$FLAKE_ROOT" "$@"
           '';
