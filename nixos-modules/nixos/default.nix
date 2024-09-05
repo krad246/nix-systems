@@ -1,6 +1,7 @@
 {
   imports = [
     ./binfmt.nix
+    ./ccache-stdenv.nix
     ./default-users.nix
     ./environment.nix
     ./flake-registry.nix
