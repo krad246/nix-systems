@@ -3,11 +3,31 @@
   inputs,
   ...
 }: let
+  dockerPlatforms = {
+    "x86_64-linux" = {
+      os = "linux";
+      arch = "amd64";
+    };
+
+    "i386-linux" = {
+      os = "linux";
+      arch = "i386";
+    };
+
+    "aarch64-linux" = {
+      os = "linux";
+      arch = "arm64";
+    };
+  };
+
   mkDockerRun = {
     pkgs,
     sys,
     ...
-  }:
+  }: let
+    dockerVMPlatform = dockerPlatforms.${sys};
+    inherit (dockerVMPlatform) os arch;
+  in
     pkgs.writeShellApplication {
       name = "docker-run";
       text = let
@@ -16,6 +36,7 @@
         docker load < ${img}
         WORKDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${img.imageName}:${img.imageTag}))"
         docker run -it \
+          --platform ${os}/${arch} \
           --net host \
           -v "$PWD:$WORKDIR" \
           ${img.imageName}:${img.imageTag}

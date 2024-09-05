@@ -22,6 +22,9 @@
         arch = "arm64";
       };
     };
+
+    dockerVMPlatform = dockerPlatforms."${system}";
+    inherit (dockerVMPlatform) os architecture;
   in {
     packages = let
       contents =
@@ -38,8 +41,6 @@
         paths = contents;
       };
 
-      dockerVMPlatform = dockerPlatforms."${system}";
-      architecture = dockerVMPlatform.arch;
       containerCfg = let
         WorkingDir = "/workdir";
       in {
@@ -73,7 +74,7 @@
 
         "docker/image" = pkgs.dockerTools.buildImageWithNixDb {
           name = "docker-image";
-          inherit architecture;
+          inherit os architecture;
           inherit copyToRoot;
           runAsRoot = runCommands;
           config = containerCfg;
@@ -81,7 +82,7 @@
 
         "docker/image/multilayer" = pkgs.dockerTools.buildLayeredImageWithNixDb {
           name = "docker-image-multilayer";
-          inherit architecture;
+          inherit os architecture;
           inherit contents;
           fakeRootCommands = runCommands;
           config = containerCfg;
