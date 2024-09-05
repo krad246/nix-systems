@@ -22,7 +22,8 @@
       ./ripgrep.nix
     ]
     ++ [
-      ./secrets
+      ./agenix.nix
+      ../../secrets
     ]
     ++ [
       ./starship.nix

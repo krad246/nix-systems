@@ -1,14 +1,19 @@
-{pkgs, ...}: {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   nix = {
     package = pkgs.nixFlakes;
     checkConfig = true;
     gc.automatic = true;
     settings = {
       experimental-features = ["nix-command" "flakes"];
-      keep-outputs = false;
-      keep-derivations = false;
+      keep-outputs = lib.mkDefault false;
+      keep-derivations = lib.mkDefault false;
       auto-optimise-store = false;
-      sandbox = false;
+      sandbox = lib.mkDefault false;
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
@@ -28,10 +33,20 @@
 
     extraOptions = ''
       experimental-features = nix-command flakes
+      builders-use-substitutes = true
     '';
 
     useDaemon = true;
     distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = "dullahan.local";
+        system = "aarch64-darwin";
+        maxJobs = 16;
+        speedFactor = 1;
+        sshKey = config.age.secrets.id_ed25519_priv.path;
+      }
+    ];
   };
 
   nixpkgs.config.allowUnfree = true;

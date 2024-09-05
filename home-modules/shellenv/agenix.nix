@@ -9,12 +9,12 @@
   inherit (inputs) agenix;
   inherit (config.home) homeDirectory;
 
-  supportedHosts = builtins.readDir ./hosts;
+  supportedHosts = builtins.readDir ../../secrets/hosts;
   hostExists =
     if lib.attrsets.hasAttrByPath ["networking" "hostName"] osConfig
     then lib.attrsets.hasAttrByPath [osConfig.networking.hostName] supportedHosts
     else false;
-  hostSecrets = lib.attrsets.optionalAttrs hostExists (builtins.readDir ./hosts/${osConfig.networking.hostName});
+  hostSecrets = lib.attrsets.optionalAttrs hostExists (builtins.readDir ../../secrets/hosts/${osConfig.networking.hostName});
 
   secretNames = let
     files = builtins.attrNames hostSecrets;
@@ -24,7 +24,7 @@
 
   mkSecret = name: {
     "${name}" = {
-      file = ./hosts/${osConfig.networking.hostName}/${name}.age;
+      file = ../../secrets/hosts/${osConfig.networking.hostName}/${name}.age;
       path = "${homeDirectory}/.secrets/${name}";
     };
   };
