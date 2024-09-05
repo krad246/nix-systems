@@ -62,42 +62,14 @@
             echo "{ \"uid\": \"$(id -u)\", \"gid\": \"$(id -g)\" }" >"$out"
           '';
           me = builtins.fromJSON (builtins.readFile whoami);
-
-          mkTmpfs = pkgs.writeShellApplication {
-            name = "mount-tmpfs";
-            text = builtins.readFile ../mount-tmpfs;
-          };
-
-          execTmpfs = pkgs.writeShellApplication {
-            name = "exec-tmpfs";
-            runtimeInputs = [pkgs.sudo] ++ [pkgs.coreutils pkgs.util-linux];
-            text = ''
-              sudo ${lib.getExe mkTmpfs} "$PWD"
-              "$@"
-            '';
-          };
         in
           pkgs.dockerTools.buildNixShellImage {
-            drv = self'.devShells.nix-shell;
+            drv = self'.devShells.default;
             inherit (me) uid gid;
-            command = ''
-              DEBUG=1 ${lib.getExe execTmpfs}
-            '';
+            # command = ''
+            #   DEBUG=1 echo '${lib.getExe execTmpfs}'
+            # '';
           };
-
-        "docker/run" = pkgs.writeShellApplication {
-          name = "docker-run";
-          text = let
-            img = self'.packages."docker/devshell";
-          in ''
-            docker load < ${img}
-            WORKDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${img.imageName}:${img.imageTag}))"
-            docker run -it \
-              --net host \
-              -v "$PWD:$WORKDIR" \
-              ${img.imageName}:${img.imageTag}
-          '';
-        };
 
         "docker/image" = pkgs.dockerTools.buildImageWithNixDb {
           name = "docker-image";
