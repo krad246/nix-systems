@@ -5,54 +5,41 @@
 }: let
   mkDockerRun = {
     pkgs,
-    sys,
+    platform,
     ...
   }:
     pkgs.writeShellApplication {
       name = "docker-run";
       text = let
-        img = self.packages.${sys}."docker/devshell";
+        img = self.packages.${platform}."docker/devshell";
+        platPkgs = import inputs.nixpkgs {system = platform;};
       in ''
         set -x
         docker load < ${img}
         WORKDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${img.imageName}:${img.imageTag}))"
         docker run -it \
           --privileged \
-          --platform ${pkgs.go.GOOS}/${pkgs.go.GOARCH} \
+          --platform linux/${platPkgs.go.GOARCH} \
           --net host \
           -v "$PWD:$WORKDIR" \
           ${img.imageName}:${img.imageTag}
       '';
     };
 
-  dockerRun = {
+  mkDocker = {
     pkgs,
-    sys ? pkgs.stdenv.system,
+    platform ? pkgs.stdenv.system,
     ...
-  }:
-    mkDockerRun {
-      inherit pkgs;
-      inherit sys;
-    };
-in {
-  flake = {
-    devShells.aarch64-darwin = {
-      docker = let
-        pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
-        inherit (pkgs) lib;
-      in
-        pkgs.mkShell {
-          shellHook = ''
-            set -x
-            exec ${lib.getExe (dockerRun {
-              inherit pkgs;
-              sys = "aarch64-linux";
-            })}
-          '';
-        };
+  }: let
+    inherit (pkgs) lib;
+  in {
+    "docker/${platform}" = pkgs.mkShell {
+      shellHook = ''
+        ${lib.getExe (mkDockerRun {inherit pkgs platform;})}
+      '';
     };
   };
-
+in {
   perSystem = {
     self',
     config,
@@ -60,13 +47,6 @@ in {
     pkgs,
     ...
   }: {
-    pre-commit.settings.hooks = {
-      nil.enable = true;
-      deadnix.enable = true;
-      alejandra.enable = true;
-      statix.enable = true;
-    };
-
     devShells =
       {
         default = self'.devShells.nix-shell;
@@ -81,38 +61,18 @@ in {
           packages = with pkgs; [git direnv nix-direnv just ripgrep nixFlakes];
         };
       }
-      // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        docker = let
-          run = self'.packages."docker/run";
-        in
-          pkgs.mkShell {
-            shellHook = ''
-              # TODO: mount tmpfs
+      // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux (mkDocker {inherit pkgs;});
+  };
 
-              finish() {
-                :
-              }
-
-              trap finish EXIT
-              exec ${lib.getExe run}
-            '';
-          };
-      };
-
-    packages =
-      {
-        default = self'.packages."build/all";
-        "build/all" = pkgs.writeShellApplication {
-          name = "build-all";
-          text = ''
-            set -x
-            ${lib.getExe pkgs.nix} flake lock --no-update-lock-file
-            ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "$FLAKE_ROOT" "$@"
-          '';
-        };
-      }
-      // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        "docker/run" = dockerRun {inherit pkgs;};
-      };
+  flake = {
+    devShells.aarch64-darwin =
+      (mkDocker {
+        pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
+        platform = "aarch64-linux";
+      })
+      // (mkDocker {
+        pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
+        platform = "x86_64-linux";
+      });
   };
 }

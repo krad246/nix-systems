@@ -177,10 +177,7 @@
           just-flake.flakeModule
         ])
         ++ [
-          ./build/devshell.nix
-          ./build/docker-builder.nix
-          ./build/formatter.nix
-          ./build/just-flake.nix
+          ./build
         ];
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
