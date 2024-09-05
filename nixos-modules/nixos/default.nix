@@ -1,5 +1,6 @@
 {
   imports = [
+    ./binfmt.nix
     ./default-users.nix
     ./environment.nix
     ./flake-registry.nix
