@@ -3,29 +3,8 @@
     self',
     lib,
     pkgs,
-    system,
     ...
-  }: let
-    dockerPlatforms = {
-      "x86_64-linux" = {
-        os = "linux";
-        arch = "amd64";
-      };
-
-      "i386-linux" = {
-        os = "linux";
-        arch = "i386";
-      };
-
-      "aarch64-linux" = {
-        os = "linux";
-        arch = "arm64";
-      };
-    };
-
-    dockerVMPlatform = dockerPlatforms."${system}";
-    inherit (dockerVMPlatform) os architecture;
-  in {
+  }: {
     packages = let
       contents =
         (with pkgs.dockerTools; [usrBinEnv binSh caCertificates fakeNss])
@@ -74,7 +53,7 @@
 
         "docker/image" = pkgs.dockerTools.buildImageWithNixDb {
           name = "docker-image";
-          inherit os architecture;
+          arch = pkgs.go.GOARCH;
           inherit copyToRoot;
           runAsRoot = runCommands;
           config = containerCfg;
@@ -82,7 +61,7 @@
 
         "docker/image/multilayer" = pkgs.dockerTools.buildLayeredImageWithNixDb {
           name = "docker-image-multilayer";
-          inherit os architecture;
+          arch = pkgs.go.GOARCH;
           inherit contents;
           fakeRootCommands = runCommands;
           config = containerCfg;
