@@ -18,7 +18,6 @@
         docker load < ${img}
         WORKDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${img.imageName}:${img.imageTag}))"
         docker run -it \
-          --privileged \
           --platform linux/${platPkgs.go.GOARCH} \
           --net host \
           -v "$PWD:$WORKDIR" \
@@ -58,7 +57,14 @@ in {
             config.pre-commit.devShell
           ];
 
-          packages = with pkgs; [git direnv nix-direnv just ripgrep nixFlakes];
+          packages = with pkgs;
+            [git]
+            ++ [direnv nix-direnv]
+            ++ [just fd fzf ripgrep]
+            ++ [uutils-coreutils nano]
+            ++ [safe-rm]
+            ++ [nixFlakes nix-tree]
+            ++ [dive];
         };
       }
       // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux (mkDocker {inherit pkgs;});
