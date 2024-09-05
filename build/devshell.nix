@@ -3,6 +3,8 @@
   inputs,
   ...
 }: let
+  # Make a script for pkgs.stdenv.system's architecture
+  # that runs our devshell parametrized on 'platform'
   mkDockerRun = {
     pkgs,
     platform,
@@ -13,15 +15,38 @@
       text = let
         img = self.packages.${platform}."docker/devshell";
         platPkgs = import inputs.nixpkgs {system = platform;};
+        tagString = "${img.imageName}:${img.imageTag}";
       in ''
         set -x
-        docker load < ${img}
-        WORKDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${img.imageName}:${img.imageTag}))"
-        docker run -it \
+
+        if ! docker images ${tagString}; then
+          docker load < ${img}
+        fi
+
+        WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
+
+        lowerdir="$PWD"
+        tmpdir="$(mktemp -d -p "$lowerdir")"
+
+        upperdir="$tmpdir/.rw/upper"
+        workdir="$tmpdir/.rw/work"
+
+        mkdir -p "$lowerdir"
+        mkdir -p "$upperdir"
+        mkdir -p "$workdir"
+
+        vname="$(basename "$tmpdir")"
+        docker volume create --driver local --opt type=overlay \
+          --opt o="lowerdir=$lowerdir,upperdir=$upperdir,workdir=$workdir" \
+          --opt device=overlay "$vname"
+
+        docker run --rm -it --read-only \
           --platform linux/${platPkgs.go.GOARCH} \
           --net host \
-          -v "$PWD:$WORKDIR" \
+          -v "$vname:$WDIR:rw" \
           ${img.imageName}:${img.imageTag}
+
+        docker volume rm "$vname"
       '';
     };
 
@@ -34,7 +59,7 @@
   in {
     "docker/${platform}" = pkgs.mkShell {
       shellHook = ''
-        ${lib.getExe (mkDockerRun {inherit pkgs platform;})}
+        exec ${lib.getExe (mkDockerRun {inherit pkgs platform;})}
       '';
     };
   };
@@ -67,10 +92,12 @@ in {
             ++ [dive];
         };
       }
+      # Expose a dockerized environment for this architecture
       // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux (mkDocker {inherit pkgs;});
   };
 
   flake = {
+    # Provide an aarch64-linux dockerized environment as well as an x86_64-linux env
     devShells.aarch64-darwin =
       (mkDocker {
         pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
