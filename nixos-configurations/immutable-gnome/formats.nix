@@ -34,7 +34,7 @@
     hyperv = {lib, ...}: {
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
-      hyperv.baseImageSize = lib.mkForce 65536;
+      hyperv.baseImageSize = lib.mkForce 131072;
     };
 
     iso = {lib, ...}: {

@@ -253,7 +253,7 @@
         globalArgs = {inherit self inputs;};
 
         nixos.hosts = {
-          nixos-wsl.userHomeModules = ["keerad" "krad246"];
+          windex.userHomeModules = ["keerad" "krad246"];
           immutable-gnome.userHomeModules = ["krad246"];
         };
 

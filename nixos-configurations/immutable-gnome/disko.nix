@@ -126,6 +126,4 @@ in {
       ];
     };
   };
-
-  users.mutableUsers = false;
 }
