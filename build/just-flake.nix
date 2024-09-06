@@ -81,10 +81,17 @@
         };
       };
 
+      flake = {
+        enable = true;
+        justfile = ''
+          flake +ARGS: (nix "flake" ARGS)
+        '';
+      };
+
       build = {
         enable = true;
         justfile = ''
-          build +ARGS: (nix "build" replace_regex(ARGS, \
+          build +ARGS="": (nix "build" replace_regex(ARGS, \
                                                     "#([[:ascii:]]+)", \
                                                     "#$1 --out-link $1"))
         '';
@@ -93,14 +100,28 @@
       develop = {
         enable = true;
         justfile = ''
-          develop +ARGS: (nix "develop" ARGS)
+          develop +ARGS="": (nix "develop" ARGS)
         '';
       };
 
       run = {
         enable = true;
         justfile = ''
-          run +ARGS: (nix "run" ARGS)
+          run +ARGS="": (nix "run" ARGS)
+        '';
+      };
+
+      show = {
+        enable = true;
+        justfile = ''
+          show +ARGS="": (flake "show" ARGS)
+        '';
+      };
+
+      check = {
+        enable = true;
+        justfile = ''
+          check +ARGS="": (flake "check" ARGS)
         '';
       };
 

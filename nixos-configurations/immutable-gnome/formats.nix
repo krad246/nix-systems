@@ -156,5 +156,8 @@
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
     };
+
+    wsl = {
+    };
   };
 }
