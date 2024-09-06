@@ -19,11 +19,8 @@
       in ''
         set -x
 
-        oroot="$FLAKE_ROOT"
-        mkdir -p "$oroot"
-
         # Generate a random tmpdir - also used as volume name
-        tmpdir="$(mktemp -d -p "$oroot")"
+        tmpdir="$(mktemp -d)"
         vname="$(basename "$tmpdir")"
 
         # Install an exit handler
