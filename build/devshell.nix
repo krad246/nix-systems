@@ -112,14 +112,25 @@ in {
 
   flake = {
     # Provide an aarch64-linux dockerized environment as well as an x86_64-linux env
-    devShells.aarch64-darwin =
-      (mkDocker {
-        pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
+    devShells = {
+      aarch64-darwin =
+        (mkDocker {
+          pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
+          platform = "aarch64-linux";
+        })
+        // (mkDocker {
+          pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
+          platform = "x86_64-linux";
+        });
+
+      x86_64-linux = mkDocker {
+        pkgs = import inputs.nixpkgs {system = "x86_64-linux";};
         platform = "aarch64-linux";
-      })
-      // (mkDocker {
-        pkgs = import inputs.nixpkgs {system = "aarch64-darwin";};
+      };
+      aarch64-linux = mkDocker {
+        pkgs = import inputs.nixpkgs {system = "aarch64-linux";};
         platform = "x86_64-linux";
-      });
+      };
+    };
   };
 }

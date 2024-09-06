@@ -50,7 +50,7 @@
       };
 
     install-iso-hyperv = args: let
-      hypervOpts = hyperv args;
+      hypervOpts = hyperv;
       installIsoOpts = install-iso args;
       removeMissing = builtins.removeAttrs hypervOpts ["hyperv"];
     in
@@ -136,8 +136,8 @@
 
     vm-bootloader = vm;
 
-    vm-nogui = args @ {lib, ...}:
-      (vm args)
+    vm-nogui = {lib, ...}:
+      vm
       // {
         services.xserver = lib.mkForce {
           enable = false;
