@@ -31,10 +31,9 @@
       networking.hostName = lib.mkForce "";
     };
 
-    hyperv = {lib, ...}: {
+    hyperv = {
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
-      hyperv.baseImageSize = lib.mkForce 131072;
     };
 
     iso = {lib, ...}: {

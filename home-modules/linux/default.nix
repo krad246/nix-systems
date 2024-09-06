@@ -22,15 +22,15 @@
   # docker images set this
   isContainer = lib.attrsets.attrByPath ["boot" "isContainer"] false osConfig;
   isGraphicalNixOS =
-    if (isWSL || isContainer || (!hasXEnabled) || (!isGraphicalVM))
+    if (isWSL || isContainer || (!hasXEnabled))
     then false
-    else hasXEnabled && hasFlatpak;
+    else (hasXEnabled || isGraphicalVM);
   inherit (inputs) nix-flatpak;
 in {
   imports =
     [nix-flatpak.homeManagerModules.nix-flatpak]
     ++ (
-      lib.optionals isGraphicalNixOS (with ezModules; [
+      lib.optionals (lib.debug.traceVal isGraphicalNixOS) (with ezModules; [
         chromium
         discord
         dconf
@@ -42,7 +42,7 @@ in {
       ])
     );
 
-  services = lib.mkIf isGraphicalNixOS {
+  services = lib.mkIf (isGraphicalNixOS && hasFlatpak) {
     flatpak.packages = [
       "org.pulseaudio.pavucontrol"
       "us.zoom.Zoom"
