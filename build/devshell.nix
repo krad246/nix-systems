@@ -55,13 +55,13 @@
         WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
 
         # Mount the overlay volume onto the repo
-        docker run --rm -it --net host \
-          --cap-add=SYS_ADMIN \
+        docker run --read-only --rm -it --net host \
           --platform linux/${platPkgs.go.GOARCH} \
-          --mount="type=bind,src=$lowerdir,dst=/lower,readonly" \
+          --mount=type=bind,src="$lowerdir",dst=/lower,ro \
           --tmpfs /upper \
           --tmpfs /work \
-          -v "$vname:$WDIR:rw" \
+          --mount=type=bind,src=/nix/store,dst=/host-store,ro \
+          --mount=type=volume,src="$vname",dst="$WDIR" \
           ${img.imageName}:${img.imageTag}
       '';
     };

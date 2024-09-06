@@ -1,20 +1,21 @@
 {
+  inputs,
+  config,
   lib,
   ezModules,
   ...
-}: {
-  imports = with ezModules; [
-    nixos
-    libvirtd
-    wsl
-  ];
-
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  networking.hostName = "nixos-wsl";
+}: let
+  inherit (inputs) nixos-generators;
+in {
+  imports =
+    [nixos-generators.nixosModules.all-formats]
+    ++ (with ezModules; [
+      nixos
+      wsl
+    ]);
 
   # NixOS is going to get the first user ID
   # It'll own this distro as the default user
-
   wsl.defaultUser = "keerad";
 
   # Shared home with Windows; handled via overlayFS mount
@@ -33,7 +34,18 @@
     isNormalUser = true;
     home = "/home/krad246";
     description = "Keerthi Radhakrishnan";
-    initialHashedPassword = "";
     extraGroups = ["wheel" "NetworkManager" "docker"];
+  };
+
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+
+  formats = lib.mkForce {
+    tarball = config.system.build.tarballBuilder;
+  };
+
+  formatConfigs = {
+    tarball = {
+      formatAttr = "tarballBuilder";
+    };
   };
 }

@@ -1,8 +1,4 @@
 {
-  self,
-  config,
-  ...
-}: {
   formatConfigs = rec {
     amazon = {lib, ...}: {
       disko.enableConfig = false;
@@ -40,21 +36,8 @@
       boot.kernelParams = ["nomodeset"];
     };
 
-    install-iso = {
-      pkgs,
-      lib,
-      ...
-    }: {
-      imports = let
-        inherit (config.networking) hostName;
-        machine = self.nixosConfigurations."${hostName}";
-        installer = import ./offline-closure-installer.nix {
-          inherit self pkgs;
-          specialArgs = {
-            nixosConfig = machine;
-          };
-        };
-      in [installer];
+    install-iso = {lib, ...}: {
+      imports = [./offline-closure-installer.nix];
 
       disko.enableConfig = false;
       boot.supportedFilesystems = {
@@ -155,9 +138,6 @@
     vmware = {
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
-    };
-
-    wsl = {
     };
   };
 }

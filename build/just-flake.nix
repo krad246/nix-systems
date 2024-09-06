@@ -144,7 +144,7 @@
       amend = {
         enable = true;
         justfile = ''
-          amend +ARGS="": (add '-A') (commit "--amend" ARGS)
+          amend +ARGS="": (add '-u') (commit "--amend" ARGS)
         '';
       };
     };

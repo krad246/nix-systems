@@ -1,11 +1,12 @@
 {
   self,
   pkgs,
-  specialArgs,
+  config,
   ...
 }: let
-  inherit (specialArgs) nixosConfig;
-  inherit (nixosConfig.config.system) build;
+  inherit (config.networking) hostName;
+  machine = self.nixosConfigurations."${hostName}";
+  inherit (machine.config.system) build;
 
   dependencies =
     [
@@ -13,8 +14,8 @@
       build.diskoScript
     ]
     ++ [
-      nixosConfig.pkgs.stdenv.drvPath
-      (nixosConfig.pkgs.closureInfo {rootPaths = [];}).drvPath
+      machine.pkgs.stdenv.drvPath
+      (machine.pkgs.closureInfo {rootPaths = [];}).drvPath
     ]
     ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
 
