@@ -19,27 +19,32 @@
       in ''
         set -x
 
-        if ! docker images ${tagString}; then
+        # Load image if it hasn't already been loaded
+        if ! docker image inspect ${tagString}; then
           docker load < ${img}
         fi
 
-        WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
+        # Generate a random tmpdir - also used as volume name
+        tmpdir="$(mktemp -d -p "$PWD/.cache")"
+        vname="$(basename "$tmpdir")"
 
-        lowerdir="$PWD"
-        tmpdir="$(mktemp -d -p "$lowerdir")"
-
-        upperdir="$tmpdir/.rw/upper"
-        workdir="$tmpdir/.rw/work"
-
+        # Create overlay dirs
+        lowerdir="$tmpdir/ro"
+        upperdir="$tmpdir/rw/upper"
+        workdir="$tmpdir/rw/work"
         mkdir -p "$lowerdir"
         mkdir -p "$upperdir"
         mkdir -p "$workdir"
 
-        vname="$(basename "$tmpdir")"
+        # Create overlayfs mount as docker volume using dirs above
         docker volume create --driver local --opt type=overlay \
           --opt o="lowerdir=$lowerdir,upperdir=$upperdir,workdir=$workdir" \
           --opt device=overlay "$vname"
 
+        # TODO: query the WorkingDir through the Nix interface instead of at runtime
+        WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
+
+        # Mount the overlay volume onto the repo
         docker run --rm -it --read-only \
           --platform linux/${platPkgs.go.GOARCH} \
           --net host \

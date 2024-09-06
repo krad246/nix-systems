@@ -127,7 +127,7 @@
       };
     };
 
-    virtualbox = _: {
+    virtualbox = {
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
     };
