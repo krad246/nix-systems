@@ -19,22 +19,32 @@
       in ''
         set -x
 
+        oroot="$FLAKE_ROOT"
+        mkdir -p "$oroot"
+
+        # Generate a random tmpdir - also used as volume name
+        tmpdir="$(mktemp -d -p "$oroot")"
+        vname="$(basename "$tmpdir")"
+
+        # Install an exit handler
+        bailout() {
+          docker volume rm "$vname"
+        }
+
+        trap bailout EXIT
+
         # Load image if it hasn't already been loaded
-        if ! docker image inspect ${tagString}; then
+        # Dump it to a logfile
+        json="$tmpdir/image.json"
+        if ! docker image inspect ${tagString} >"$json"; then
           docker load < ${img}
         fi
 
-        # Generate a random tmpdir - also used as volume name
-        tmpdir="$(mktemp -d -p "$PWD/.cache")"
-        vname="$(basename "$tmpdir")"
-
         # Create overlay dirs
-        lowerdir="$tmpdir/ro"
+        lowerdir="$FLAKE_ROOT"
         upperdir="$tmpdir/rw/upper"
         workdir="$tmpdir/rw/work"
-        mkdir -p "$lowerdir"
-        mkdir -p "$upperdir"
-        mkdir -p "$workdir"
+        mkdir -p {"$workdir","$upperdir"}
 
         # Create overlayfs mount as docker volume using dirs above
         docker volume create --driver local --opt type=overlay \
@@ -45,13 +55,10 @@
         WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
 
         # Mount the overlay volume onto the repo
-        docker run --rm -it --read-only \
+        docker run --rm -it --net host \
           --platform linux/${platPkgs.go.GOARCH} \
-          --net host \
           -v "$vname:$WDIR:rw" \
           ${img.imageName}:${img.imageTag}
-
-        docker volume rm "$vname"
       '';
     };
 
@@ -94,7 +101,7 @@ in {
             ++ [uutils-coreutils nano]
             ++ [safe-rm]
             ++ [nixFlakes nix-tree]
-            ++ [dive];
+            ++ [docker dive];
         };
       }
       # Expose a dockerized environment for this architecture
