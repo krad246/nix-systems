@@ -56,7 +56,11 @@
 
         # Mount the overlay volume onto the repo
         docker run --rm -it --net host \
+          --cap-add=SYS_ADMIN \
           --platform linux/${platPkgs.go.GOARCH} \
+          --mount="type=bind,src=$lowerdir,dst=/lower,readonly" \
+          --tmpfs /upper \
+          --tmpfs /work \
           -v "$vname:$WDIR:rw" \
           ${img.imageName}:${img.imageTag}
       '';
@@ -100,6 +104,7 @@ in {
             ++ [just fd fzf ripgrep]
             ++ [uutils-coreutils nano]
             ++ [safe-rm]
+            ++ [procps util-linux]
             ++ [nixFlakes nix-tree]
             ++ [docker dive];
         };
