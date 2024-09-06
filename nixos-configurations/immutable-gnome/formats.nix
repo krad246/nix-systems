@@ -31,23 +31,31 @@
       networking.hostName = lib.mkForce "";
     };
 
-    hyperv = {
+    hyperv = {lib, ...}: {
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
+      hyperv.baseImageSize = lib.mkForce 65536;
     };
 
-    install-iso = {lib, ...}: {
-      imports = [./offline-closure-installer.nix];
-
+    iso = {lib, ...}: {
       disko.enableConfig = false;
       boot.supportedFilesystems = {
         zfs = lib.mkForce false;
       };
     };
 
-    install-iso-hyperv = install-iso;
+    install-iso = args:
+      (iso args)
+      // {
+        imports = [./offline-closure-installer.nix];
+      };
 
-    iso = install-iso;
+    install-iso-hyperv = args: let
+      hypervOpts = hyperv args;
+      installIsoOpts = install-iso args;
+      removeMissing = builtins.removeAttrs hypervOpts ["hyperv"];
+    in
+      removeMissing // installIsoOpts;
 
     kexec = {lib, ...}: {
       networking.hostName = lib.mkForce "kexec";
@@ -100,7 +108,13 @@
       };
     };
 
-    sd-aarch64-installer = sd-aarch64;
+    sd-aarch64-installer = args:
+      (sd-aarch64 args)
+      // {
+        imports = [
+          ./offline-closure-installer.nix
+        ];
+      };
 
     sd-x86_64 = {lib, ...}: {
       disko.enableConfig = false;
@@ -117,23 +131,24 @@
 
     vagrant-virtualbox = virtualbox;
 
-    vm-nogui = {lib, ...}: {
+    vm = {
       disko.enableConfig = false;
-      services.xserver = lib.mkForce {
-        enable = false;
-        displayManager.gdm.enable = false;
-        desktopManager.gnome.enable = false;
-        displayManager.startx.enable = false;
-      };
-      xdg.portal.enable = lib.mkForce false;
-      services.flatpak.enable = lib.mkForce false;
     };
 
     vm-bootloader = vm;
 
-    vm = {
-      disko.enableConfig = false;
-    };
+    vm-nogui = args @ {lib, ...}:
+      (vm args)
+      // {
+        services.xserver = lib.mkForce {
+          enable = false;
+          displayManager.gdm.enable = false;
+          desktopManager.gnome.enable = false;
+          displayManager.startx.enable = false;
+        };
+        xdg.portal.enable = lib.mkForce false;
+        services.flatpak.enable = lib.mkForce false;
+      };
 
     vmware = {
       boot.kernelParams = ["nomodeset"];

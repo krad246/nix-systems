@@ -10,9 +10,7 @@ in {
     [nixos-generators.nixosModules.all-formats]
     ++ (with ezModules; [
       gnome-desktop
-      libvirtd
       nixos
-      pam-u2f
     ]);
 
   services.flatpak.enable = lib.mkDefault false;
