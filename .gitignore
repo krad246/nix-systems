@@ -1,5 +1,6 @@
 .direnv
 .pre-commit-config.yaml
+cache
 devshell
 image/multilayer
 install-iso
