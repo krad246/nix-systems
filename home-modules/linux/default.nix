@@ -30,7 +30,7 @@ in {
   imports =
     [nix-flatpak.homeManagerModules.nix-flatpak]
     ++ (
-      lib.optionals (lib.debug.traceVal isGraphicalNixOS) (with ezModules; [
+      lib.optionals isGraphicalNixOS (with ezModules; [
         chromium
         discord
         dconf
