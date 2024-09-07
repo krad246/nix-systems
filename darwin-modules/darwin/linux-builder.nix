@@ -44,4 +44,11 @@
   };
 
   homebrew.casks = ["docker"];
+
+  launchd.daemons.linux-builder = {
+    serviceConfig = {
+      StandardOutPath = "/var/log/darwin-builder.log";
+      StandardErrorPath = "/var/log/darwin-builder.log";
+    };
+  };
 }

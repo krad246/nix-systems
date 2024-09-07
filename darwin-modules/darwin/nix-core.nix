@@ -44,7 +44,7 @@
         system = "aarch64-darwin";
         maxJobs = 16;
         speedFactor = 1;
-        sshKey = config.age.secrets.id_ed25519_priv.path;
+        sshKey = config.age.secrets."id_ed25519_priv.age".path;
       }
     ];
   };

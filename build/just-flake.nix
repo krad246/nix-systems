@@ -147,6 +147,15 @@
           amend +ARGS="": (add '-u') (commit "--amend" ARGS)
         '';
       };
+
+      rekey = {
+        enable = true;
+        justfile = ''
+          rekey +ARGS="":
+            env --chdir "$FLAKE_ROOT/secrets" \
+              ${lib.getExe inputs'.agenix.packages.default} -r {{ ARGS }}
+        '';
+      };
     };
   };
 }
