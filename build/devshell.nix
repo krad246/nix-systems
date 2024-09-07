@@ -9,7 +9,9 @@
     pkgs,
     platform,
     ...
-  }:
+  }: let
+    inherit (pkgs) lib;
+  in
     pkgs.writeShellApplication {
       name = "docker-run";
       text = let
@@ -20,7 +22,7 @@
         set -x
 
         # Generate a random tmpdir - also used as volume name
-        tmpdir="$(mktemp -d)"
+        tmpdir="$(mktemp -d ${lib.strings.optionalString pkgs.stdenv.isDarwin "-p \"$HOME/.cache\""})";
         vname="$(basename "$tmpdir")"
 
         # Install an exit handler
@@ -50,14 +52,15 @@
 
         # TODO: query the WorkingDir through the Nix interface instead of at runtime
         WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
+        export WDIR
+
+        user="$(cat <(docker image inspect -f '{{.Config.User}}' ${tagString}))"
+        gid="''${user#*:}"
 
         # Mount the overlay volume onto the repo
-        docker run --read-only --rm -it --net host \
+        docker run --rm -it \
           --platform linux/${platPkgs.go.GOARCH} \
-          --mount=type=bind,src="$lowerdir",dst=/lower,ro \
-          --tmpfs /upper \
-          --tmpfs /work \
-          --mount=type=bind,src=/nix/store,dst=/host-store,ro \
+          --group-add "$gid" \
           --mount=type=volume,src="$vname",dst="$WDIR" \
           ${img.imageName}:${img.imageTag}
       '';
