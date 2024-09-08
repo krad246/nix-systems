@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   pkgs,
   ...
@@ -37,16 +36,6 @@
     '';
 
     useDaemon = true;
-    distributedBuilds = true;
-    buildMachines = [
-      {
-        hostName = "dullahan.local";
-        system = "aarch64-darwin";
-        maxJobs = 16;
-        speedFactor = 1;
-        sshKey = config.age.secrets."id_ed25519_priv.age".path;
-      }
-    ];
   };
 
   nixpkgs.config.allowUnfree = true;

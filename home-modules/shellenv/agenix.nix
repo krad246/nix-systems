@@ -12,7 +12,7 @@ in {
   imports = [agenix.homeManagerModules.age] ++ [../../secrets];
 
   age = {
-    secretsDir = lib.mkIf (hasPrivKey && hasPubkey) "${config.home.homeDirectory}/.agenix";
+    secretsDir = lib.mkIf (hasPrivKey && hasPubkey) "${config.home.homeDirectory}/.secrets";
   };
 
   # Actual key points at a pointer to the real secret

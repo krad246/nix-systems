@@ -36,7 +36,9 @@
       flakeArgs = ["--flake ${flakeRoot}"];
       builderArgs = commonArgs ++ flakeArgs;
     in {
-      treefmt.enable = true;
+      treefmt = {
+        enable = true;
+      };
 
       # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
       nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {

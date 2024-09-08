@@ -1,4 +1,4 @@
-{config, ...}: {
+{
   # Add ability to use TouchID for sudo authentication
   security.pam.enableSudoTouchIdAuth = true;
 
@@ -45,12 +45,5 @@
 
       _HIHideMenuBar = false;
     };
-
-    smb.NetBIOSName = config.networking.hostName;
-  };
-
-  networking = {
-    computerName = config.networking.hostName;
-    localHostName = config.networking.hostName;
   };
 }
