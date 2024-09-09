@@ -19,48 +19,33 @@
         img = self.packages.${platform}."docker/devshell";
         platPkgs = import inputs.nixpkgs {system = platform;};
         tagString = "${img.imageName}:${img.imageTag}";
+        mktemp = lib.getExe' pkgs.coreutils "mktemp";
+        docker = lib.getExe pkgs.docker;
+        cat = lib.getExe' pkgs.coreutils "cat";
       in ''
         set -x
 
-        # Generate a random tmpdir - also used as volume name
-        # TODO: on darwin there needs to be a tmpfs on this directory otherwise stuff is readonly
-        tmpdir="$(mktemp -d ${lib.strings.optionalString pkgs.stdenv.isDarwin "-p \"$HOME/.cache\""})";
-        vname="$(basename "$tmpdir")"
-        export vname
+        tmpdir="$(${mktemp} -d ${lib.strings.optionalString pkgs.stdenv.isDarwin "-p \"$HOME/.cache\""})";
 
         # Load image if it hasn't already been loaded
-        # Dump it to a logfile
-        json="$tmpdir/image.json"
-        if ! docker image inspect ${tagString} >"$json"; then
-          docker load < ${img}
+        if ! ${docker} image inspect ${tagString} >/dev/null; then
+          ${docker} load < ${img}
         fi
 
-        # Create overlay dirs
-        lowerdir="$FLAKE_ROOT"
-        upperdir="$tmpdir/rw/upper"
-        workdir="$tmpdir/rw/work"
-        mkdir -p {"$workdir","$upperdir"}
-
-        # Create overlayfs mount as docker volume using dirs above
-        docker volume create --driver local --opt type=overlay \
-          --opt o="lowerdir=$lowerdir,upperdir=$upperdir,workdir=$workdir" \
-          --opt device=overlay "$vname"
-
         # TODO: query the WorkingDir through the Nix interface instead of at runtime
-        WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
+        WDIR="$(${cat} <(${docker} image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
         export WDIR
 
         # TODO: probably drop this
-        user="$(cat <(docker image inspect -f '{{.Config.User}}' ${tagString}))"
+        user="$(${cat} <(${docker} image inspect -f '{{.Config.User}}' ${tagString}))"
         gid="''${user#*:}"
         export user gid
 
-        # spawn unprivileged user shell session
+        # spawn unprivileged container
+        # mount the host nix store and the project workspace
         cidfile="$tmpdir/container.cid"
         hostStore=/host-store
-        containerStore=/container-store
-        mergedStore=/overlay-store
-        docker run --rm -itd \
+        ${docker} run --rm -itd \
           --cap-add SYS_ADMIN \
           --net=host \
           -u "$user" \
@@ -68,82 +53,50 @@
           --cidfile "$cidfile" \
           --group-add "$gid" \
           --mount=type=bind,src="$FLAKE_ROOT",dst="$WDIR" \
-          --mount=type=bind,src=/nix/store,dst="$hostStore/lowerdir",readonly \
-          --tmpfs "$hostStore/rw" \
-          --tmpfs "$containerStore/rw" \
-          --tmpfs "$mergedStore/rw" \
-        ${tagString} && docker ps
+          --mount=type=bind,src=/nix/store,dst="$hostStore",readonly \
+          --tmpfs /tmp \
+        ${tagString} && ${docker} ps
 
-        # Install an exit handler
         bailout() {
-          docker container stop "$(cat "$cidfile")"
-          docker volume rm "$vname"
+          ${docker} container stop "$(cat "$cidfile")"
+          ${lib.getExe pkgs.safe-rm} -dr "$tmpdir"
         }
 
+        # Install an exit handler
         trap bailout EXIT
 
         # Determine entry point of container (with the associated environment variables, etc.)
-        cmd="$(cat <(docker image inspect -f '{{join .Config.Cmd " "}}' ${tagString}))"
+        cmd="$(${cat} <(${docker} image inspect -f '{{join .Config.Cmd " "}}' ${tagString}))"
         export cmd
 
-        # mount command for overlay nix store
+        # put tmpfs on upperdir, merge host store and container store
         # shellcheck disable=SC2086
-        mounter="$(cat << EOM
+        mounter="$(${cat} << EOM
             set -x;
-
-            # mount tmpfs on hostStore
-            # shellcheck disable=SC2086
-            mkdir -p $hostStore/rw/{upperdir,workdir} &&
-              mount -t overlay \
-                -o X-mount.mkdir \
-                -o lowerdir="$hostStore/lowerdir" \
-                -o upperdir="$hostStore/rw/upperdir" \
-                -o workdir="$hostStore/rw/workdir" \
-                overlay "$hostStore"
-
-            # mount tmpfs on containerStore
-            # shellcheck disable=SC2086
-            mkdir -p $containerStore/rw/{upperdir,workdir} && \
-              mount -B -o X-mount.mkdir,ro \
-                /nix/store "$containerStore/lowerdir" && \
-              mount -t overlay \
-                -o X-mount.mkdir \
-                -o lowerdir="$containerStore/lowerdir" \
-                -o upperdir="$containerStore/rw/upperdir" \
-                -o workdir="$containerStore/rw/workdir" \
-              overlay "$containerStore"
-
-            # merge hostStore and containerStore
-            # shellcheck disable=SC2086
-            mkdir -p $mergedStore/rw/{upperdir,workdir} && \
-              mount -B -o X-mount.mkdir,ro \
-                "$hostStore" "$mergedStore/lowerdir" && \
-              mount -B -o X-mount.mkdir \
-                "$containerStore" "$mergedStore/rw/upperdir" && \
-              mount -t overlay \
-                -o X-mount.mkdir \
-                -o lowerdir="$mergedStore/lowerdir" \
-                -o upperdir="$mergedStore/rw/upperdir" \
-                -o workdir="$mergedStore/rw/workdir" \
-              overlay "$mergedStore"
-
+            ${lib.getExe' pkgs.coreutils "mkdir"} -p /tmp/{workdir,upperdir} &&
+            ${lib.getExe' pkgs.util-linux "mount"} -t overlay \
+              -o X-mount.mkdir \
+              -o lowerdir=/nix/store:"$hostStore" \
+              -o upperdir=/tmp/upperdir \
+              -o workdir=/tmp/workdir \
+              overlay /nix/store;
             set +x
         EOM
 
         )"
 
-        # run as root for a small command to mount
+        # run as root for a small command to mount overlayfs
         # needs extended capabilities for this one command
         # shellcheck disable=SC2086
-        docker exec -it \
+        ${docker} exec -itd \
           --privileged \
           -u root \
           -it \
-          "$(cat "$cidfile")" \
+          "$(${cat} "$cidfile")" \
           $cmd -ci \
           "$mounter"
 
-        docker attach "$(cat "$cidfile")"
+        ${docker} attach "$(${cat} "$cidfile")"
       '';
     };
 
