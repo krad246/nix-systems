@@ -1,6 +1,6 @@
 {
   ezModules,
-  pkgs,
+  config,
   ...
 }: {
   imports = with ezModules; [
@@ -12,10 +12,6 @@
     SetEnv PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
   '';
 
-  environment.etc."ssh/sshd_config.d/103-sshd-use-pam".text = ''
-    UsePAM yes
-  '';
-
   users = {
     users = {
       krad246 = {
@@ -24,28 +20,20 @@
 
         uid = 501;
         gid = 20;
-      };
-
-      nixremote = {
-        home = "/Users/nixremote";
-        createHome = true;
 
         openssh.authorizedKeys = {
-          # public key of krad246@nixbook-air
-          keys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxG+GLvLuIXhSskofvux2kvRBSDECBf6G3+9rUguER1"];
+          keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxG+GLvLuIXhSskofvux2kvRBSDECBf6G3+9rUguER1"
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINzCjoarVDF5bnWX3SBciYyaiMzGnzTF9uefbja5xLB0"
+          ];
         };
 
-        uid = 502;
-        gid = 20;
-
-        shell = pkgs.bashInteractive;
+        shell = "${config.homebrew.brewPrefix}/bash";
       };
     };
 
-    knownUsers = ["krad246" "nixremote"];
+    knownUsers = ["krad246"];
   };
-
-  nix.settings.trusted-users = ["nixremote"];
 
   homebrew = {
     casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"] ++ ["signal"];

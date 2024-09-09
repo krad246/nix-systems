@@ -2,8 +2,7 @@
   ezModules,
   config,
   ...
-}:
-{
+}: {
   imports = with ezModules; [
     darwin
   ];
@@ -14,19 +13,16 @@
       createHome = true;
       uid = 501;
       gid = 20;
+      shell = "${config.homebrew.brewPrefix}/bash";
     };
     knownUsers = ["krad246"];
   };
-}
-// (let
-  sshUser = "nixremote";
-  hostName = "dullahan";
-in {
+
   # add SSH access for remote building
   environment.etc."ssh/ssh_config.d/101-dullahan.conf".text = ''
-    Host ${hostName}
-      HostName ${hostName}.local
-      User ${sshUser}
+    Host dullahan
+      HostName dullahan.local
+      User krad246
 
       IdentitiesOnly yes
       IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
@@ -37,13 +33,13 @@ in {
     distributedBuilds = true;
     buildMachines = [
       {
-        inherit hostName;
+        hostName = "dullahan";
         system = "aarch64-darwin";
         protocol = "ssh-ng";
         maxJobs = 16;
         speedFactor = 2;
 
-        inherit sshUser;
+        sshUser = "krad246";
         sshKey = config.age.secrets."id_ed25519_priv.age".path;
       }
     ];
@@ -54,4 +50,4 @@ in {
   };
 
   nixpkgs.hostPlatform = "aarch64-darwin";
-})
+}

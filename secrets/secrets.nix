@@ -12,6 +12,9 @@ let
         # krad246@nixbook-air
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIxG+GLvLuIXhSskofvux2kvRBSDECBf6G3+9rUguER1"
 
+        # krad246@nixbook-air
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCrJQiFW64lLJ2+90wQDNHtJhj2W++Z6h5RHuDuyCC9Tw4jqscin5tnJNy0TGSls3KpWaRsavOqRmW+zBSHXTEzUYp6TXIMvSVNS+K8hDmLeBNvxK41BbJjJ+uWSjufq4TrIpNwZIQo3uYCRQM3CgU65Mr4NlpjJ6rdAOBw9g0raYlIgNgdhs/ODE7TEsgQs+8Lsqy24BgGvxnEA1Pfkj1ZFacFsgz8TtMvvp7exgO+yyAeE1ZHN2eq3ISJVeBOSm6xzKm0s/S7Z86/QggJu58UOw7lxxKoYU2ToVd1Yp8gie9Ka9ptlRT/3VKUUiNVVKfc+uyHvMkN65iv6qFOYTd6LELGMdVZmc+9/RCmO41d5kxsNH/ce/eSGmRS0KIDtjaHD4PXNDINJjVTrx73psAz5nqe8XbUhTRsz9ht8MsAhx/jD+FN1hTKuzzXAIQw0LK1IS+GxymF6axgmZ00Tax8arrIc2sllhhD/HEhHLbYZg+23FMAM89PVUT55Bd0Pi5kU1dNNSzeclo2epe1cmrAdB7kqYrG6laFmQSlTlmxKrST9xhRgHrPECWFNhbEm2oImbh69mkD+HZ+70c4MDEmNuobR7jtNcylAJlcsQ+S6UQT1KKWIYPGnqjnBM2n6HNgHNofjbcAaVIQalv4+4urSUb8ebtQpGM/qUsjLiVQlQ== krad246@gmail.com"
+
         # root@nixbook-air
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAII7/zqo4VsyDk/760jQaV6GLJ40E4+ETMJPexWmsQOPc root@nixbook-air"
       ];
