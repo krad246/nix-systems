@@ -23,6 +23,6 @@ in {
     extraSpecialArgs = {
     };
     sharedModules = [];
-    verbose = true;
+    verbose = false;
   };
 }

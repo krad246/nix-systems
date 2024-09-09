@@ -56,7 +56,7 @@
       }
       {
         hostName = "headless-penguin";
-        system = "aarch64-linux";
+        systems = ["aarch64-linux" "x86_64-linux"];
         protocol = "ssh-ng";
         maxJobs = 16;
         speedFactor = 2;

@@ -124,9 +124,10 @@
       };
     };
 
-    virtualbox = {
+    virtualbox = {lib, ...}: {
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
+      nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
     };
 
     vagrant-virtualbox = virtualbox;

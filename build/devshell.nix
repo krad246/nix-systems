@@ -5,6 +5,7 @@
 }: let
   # Make a script for pkgs.stdenv.system's architecture
   # that runs our devshell parametrized on 'platform'
+  # TODO: flake-parts might have an equivalent replacement.
   mkDockerRun = {
     pkgs,
     platform,
@@ -106,7 +107,7 @@ in {
             ++ [uutils-coreutils nano]
             ++ [safe-rm]
             ++ [procps util-linux]
-            ++ [nixFlakes nix-tree]
+            ++ [nixFlakes nix-tree nil]
             ++ [docker dive];
         };
       }
@@ -116,6 +117,7 @@ in {
 
   flake = {
     # Provide an aarch64-linux dockerized environment as well as an x86_64-linux env
+    # TODO: Might also be made obsolete by flake-parts.
     devShells = {
       aarch64-darwin =
         (mkDocker {
