@@ -56,7 +56,7 @@
           --platform linux/${platPkgs.go.GOARCH} \
           --cidfile "$cidfile" \
           --group-add "$gid" \
-          --mount="type=bind,src=$FLAKE_ROOT,dst=/flake" \
+          --mount="type=bind,src=$FLAKE_ROOT,dst=/flake",readonly \
           --mount=type=bind,src=/nix/store,dst="$hostStore",readonly \
           --tmpfs "$tmpfs" \
         ${tagString} && ${docker} ps
@@ -87,10 +87,10 @@
         # put tmpfs on upperdir, merge host store and container store
         # shellcheck disable=SC2086
         mounter="$(${cat} << EOM
-           ${lib.getExe' platPkgs.coreutils "mkdir"} -p ''${storeDirs[@]} &&
-            ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
+          ${lib.getExe' platPkgs.coreutils "mkdir"} -p ''${storeDirs[@]}
+          ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
               -o X-mount.mkdir \
-              -o lowerdir=/nix/store:"$hostStore" \
+              -o lowerdir=/nix/store:$hostStore \
               -o upperdir="''${storeDirs[1]}" \
               -o workdir="''${storeDirs[0]}" \
               overlay /nix/store;
@@ -98,8 +98,7 @@
             ${lib.getExe' platPkgs.coreutils "echo"} user_allow_other >/etc/fuse.conf &&
             ${lib.getExe platPkgs.bindfs} -u "$uid" -g "$gid" -p 700 /flake "$WDIR";
 
-            ${lib.getExe' platPkgs.coreutils "echo"} 'experimental-features = nix-command flakes'
-            >>/etc/nix/nix.conf
+            ${lib.getExe' platPkgs.coreutils "echo"} 'experimental-features = nix-command flakes'>>/etc/nix/nix.conf
 
             ${lib.getExe' platPkgs.coreutils "install"} -d \
               -m 0755 -o "$uid" -g "$gid" ''${flakeDirs[@]} &&
@@ -181,11 +180,6 @@ in {
     packages = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
       "docker/devshell" = pkgs.dockerTools.buildNixShellImage {
         drv = self'.devShells.default;
-        #command = ''
-        #  cd "$HOME" && \
-        #    direnv allow "$HOME" && \
-        #    eval "$(direnv hook "$SHELL")"
-        #'';
       };
     };
   };
