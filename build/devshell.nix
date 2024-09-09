@@ -96,7 +96,7 @@
               overlay /nix/store;
 
             ${lib.getExe' platPkgs.coreutils "echo"} user_allow_other >/etc/fuse.conf &&
-            ${lib.getExe platPkgs.bindfs} -u "$uid" -g "$gid" -p 700 /flake "$WDIR";
+            ${lib.getExe platPkgs.bindfs} -u "$uid" -g "$gid" -p 755 /flake "$WDIR";
 
             ${lib.getExe' platPkgs.coreutils "echo"} 'experimental-features = nix-command flakes'>>/etc/nix/nix.conf
 
