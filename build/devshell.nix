@@ -25,8 +25,6 @@
       in ''
         set -x
 
-        tmpdir="$(${mktemp} -d ${lib.strings.optionalString pkgs.stdenv.isDarwin "-p \"$HOME/.cache\""})";
-
         # Load image if it hasn't already been loaded
         if ! ${docker} image inspect ${tagString} >/dev/null; then
           ${docker} load < ${img}
@@ -38,28 +36,33 @@
 
         # TODO: probably drop this
         user="$(${cat} <(${docker} image inspect -f '{{.Config.User}}' ${tagString}))"
+        uid="''${user%:*}"
         gid="''${user#*:}"
-        export user gid
+        export user uid gid
 
         # spawn unprivileged container
         # mount the host nix store and the project workspace
+        tmpdir="$(${mktemp} -d ${lib.strings.optionalString pkgs.stdenv.isDarwin "-p \"$HOME/.cache\""})";
         cidfile="$tmpdir/container.cid"
         hostStore=/host-store
+        tmpfs=/tmp
+
         ${docker} run --rm -itd \
           --cap-add SYS_ADMIN \
           --net=host \
+          --device /dev/fuse \
           -u "$user" \
+          -w /flake \
           --platform linux/${platPkgs.go.GOARCH} \
           --cidfile "$cidfile" \
           --group-add "$gid" \
-          --mount=type=bind,src="$FLAKE_ROOT",dst="$WDIR" \
+          --mount="type=bind,src=$FLAKE_ROOT,dst=/flake" \
           --mount=type=bind,src=/nix/store,dst="$hostStore",readonly \
-          --tmpfs /tmp \
+          --tmpfs "$tmpfs" \
         ${tagString} && ${docker} ps
 
         bailout() {
-          ${docker} container stop "$(cat "$cidfile")"
-          ${lib.getExe pkgs.safe-rm} -dr "$tmpdir"
+          ${lib.getExe pkgs.safe-rm} -drv "$tmpdir"
         }
 
         # Install an exit handler
@@ -69,18 +72,43 @@
         cmd="$(${cat} <(${docker} image inspect -f '{{join .Config.Cmd " "}}' ${tagString}))"
         export cmd
 
+        # shellcheck disable=SC2206
+        storeDirs=(
+          $tmpfs/nix/store/workdir
+          $tmpfs/nix/store/upperdir
+        )
+
+        # shellcheck disable=SC2206
+        flakeDirs=(
+          $tmpfs$WDIR/workdir
+          $tmpfs$WDIR/upperdir
+        )
+
         # put tmpfs on upperdir, merge host store and container store
         # shellcheck disable=SC2086
         mounter="$(${cat} << EOM
-            set -x;
-            ${lib.getExe' pkgs.coreutils "mkdir"} -p /tmp/{workdir,upperdir} &&
-            ${lib.getExe' pkgs.util-linux "mount"} -t overlay \
+           ${lib.getExe' platPkgs.coreutils "mkdir"} -p ''${storeDirs[@]} &&
+            ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
               -o X-mount.mkdir \
               -o lowerdir=/nix/store:"$hostStore" \
-              -o upperdir=/tmp/upperdir \
-              -o workdir=/tmp/workdir \
+              -o upperdir="''${storeDirs[1]}" \
+              -o workdir="''${storeDirs[0]}" \
               overlay /nix/store;
-            set +x
+
+            ${lib.getExe' platPkgs.coreutils "echo"} user_allow_other >/etc/fuse.conf &&
+            ${lib.getExe platPkgs.bindfs} -u "$uid" -g "$gid" -p 700 /flake "$WDIR";
+
+            ${lib.getExe' platPkgs.coreutils "echo"} 'experimental-features = nix-command flakes'
+            >>/etc/nix/nix.conf
+
+            ${lib.getExe' platPkgs.coreutils "install"} -d \
+              -m 0755 -o "$uid" -g "$gid" ''${flakeDirs[@]} &&
+            ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
+              -o X-mount.mkdir \
+              -o lowerdir="$WDIR" \
+              -o upperdir="''${flakeDirs[1]}" \
+              -o workdir="''${flakeDirs[0]}" \
+              overlay "$WDIR";
         EOM
 
         )"
@@ -88,7 +116,7 @@
         # run as root for a small command to mount overlayfs
         # needs extended capabilities for this one command
         # shellcheck disable=SC2086
-        ${docker} exec -itd \
+        ${docker} exec -it \
           --privileged \
           -u root \
           -it \
@@ -134,15 +162,17 @@ in {
             config.pre-commit.devShell
           ];
 
-          packages = with pkgs;
-            [git]
-            ++ [direnv nix-direnv]
-            ++ [just fd fzf ripgrep]
-            ++ [uutils-coreutils nano]
-            ++ [safe-rm]
-            ++ [procps util-linux]
-            ++ [nixFlakes nix-tree nil]
-            ++ [docker dive];
+          packages =
+            (with pkgs;
+              [git]
+              ++ [direnv nix-direnv]
+              ++ [just fd fzf ripgrep]
+              ++ [uutils-coreutils nano]
+              ++ [safe-rm]
+              ++ [procps util-linux]
+              ++ [nixFlakes nix-tree nil]
+              ++ [docker dive])
+            ++ (lib.optionals pkgs.stdenv.isLinux [pkgs.fuse pkgs.fuse3 pkgs.bindfs]);
         };
       }
       # Expose a dockerized environment for this architecture
@@ -151,7 +181,11 @@ in {
     packages = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
       "docker/devshell" = pkgs.dockerTools.buildNixShellImage {
         drv = self'.devShells.default;
-        gid = 100;
+        #command = ''
+        #  cd "$HOME" && \
+        #    direnv allow "$HOME" && \
+        #    eval "$(direnv hook "$SHELL")"
+        #'';
       };
     };
   };
