@@ -24,6 +24,7 @@
         # Generate a random tmpdir - also used as volume name
         tmpdir="$(mktemp -d ${lib.strings.optionalString pkgs.stdenv.isDarwin "-p \"$HOME/.cache\""})";
         vname="$(basename "$tmpdir")"
+        export vname
 
         # Install an exit handler
         bailout() {
@@ -61,7 +62,7 @@
         docker run --rm -it \
           --platform linux/${platPkgs.go.GOARCH} \
           --group-add "$gid" \
-          --mount=type=volume,src="$vname",dst="$WDIR" \
+          --mount=type=volume,src="$FLAKEROOT",dst="$WDIR" \
           ${img.imageName}:${img.imageTag}
       '';
     };

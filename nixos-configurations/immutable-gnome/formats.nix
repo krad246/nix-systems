@@ -10,6 +10,7 @@
       disko.enableConfig = false;
       networking.hostName = lib.mkForce "";
       networking.networkmanager.enable = lib.mkForce false;
+      nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
     };
 
     cloudstack = {
