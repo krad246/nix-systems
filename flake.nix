@@ -18,6 +18,7 @@
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    lix.url = "git+https://git.lix.systems/lix-project/lix.git";
 
     # Legacy and flake compatibility shims.
     flake-compat = {

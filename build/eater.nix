@@ -32,11 +32,13 @@
 
         ${lib.getExe pkgs.nixFlakes} \
           --option experimental-features 'nix-command flakes' \
-          flake lock --no-update-lock-file "$FLAKE_ROOT" \
-        && ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} \
-        "$FLAKE_ROOT" --override-input systems github:nix-systems/aarch64-darwin && \
-        ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} \ "$FLAKE_ROOT" \
-          --override-input systems github:nix-systems/default-linux "$@"
+          flake lock --no-update-lock-file "$FLAKE_ROOT" && \
+        ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "$FLAKE_ROOT" \
+          --override-input systems github:nix-systems/aarch64-darwin "$@" && \
+        ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "$FLAKE_ROOT" \
+          --override-input systems github:nix-systems/aarch64-linux "$@" && \
+        ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "$FLAKE_ROOT" \
+          --override-input systems github:nix-systems/x86_64-linux "$@"
       '';
     };
 }

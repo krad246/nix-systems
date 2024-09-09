@@ -8,6 +8,7 @@
       ++ [
         neofetch
         nodePackages.undollar
+        has
       ];
   };
 }
