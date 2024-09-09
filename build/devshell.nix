@@ -23,16 +23,10 @@
         set -x
 
         # Generate a random tmpdir - also used as volume name
+        # TODO: on darwin there needs to be a tmpfs on this directory otherwise stuff is readonly
         tmpdir="$(mktemp -d ${lib.strings.optionalString pkgs.stdenv.isDarwin "-p \"$HOME/.cache\""})";
         vname="$(basename "$tmpdir")"
         export vname
-
-        # Install an exit handler
-        bailout() {
-          docker volume rm "$vname"
-        }
-
-        trap bailout EXIT
 
         # Load image if it hasn't already been loaded
         # Dump it to a logfile
@@ -56,15 +50,100 @@
         WDIR="$(cat <(docker image inspect -f '{{.Config.WorkingDir}}' ${tagString}))"
         export WDIR
 
+        # TODO: probably drop this
         user="$(cat <(docker image inspect -f '{{.Config.User}}' ${tagString}))"
         gid="''${user#*:}"
+        export user gid
 
-        # Mount the overlay volume onto the repo
-        docker run --rm -it \
+        # spawn unprivileged user shell session
+        cidfile="$tmpdir/container.cid"
+        hostStore=/host-store
+        containerStore=/container-store
+        mergedStore=/overlay-store
+        docker run --rm -itd \
+          --cap-add SYS_ADMIN \
+          --net=host \
+          -u "$user" \
           --platform linux/${platPkgs.go.GOARCH} \
+          --cidfile "$cidfile" \
           --group-add "$gid" \
-          --mount=type=volume,src="$FLAKEROOT",dst="$WDIR" \
-          ${img.imageName}:${img.imageTag}
+          --mount=type=bind,src="$FLAKE_ROOT",dst="$WDIR" \
+          --mount=type=bind,src=/nix/store,dst="$hostStore/lowerdir",readonly \
+          --tmpfs "$hostStore/rw" \
+          --tmpfs "$containerStore/rw" \
+          --tmpfs "$mergedStore/rw" \
+        ${tagString} && docker ps
+
+        # Install an exit handler
+        bailout() {
+          docker container stop "$(cat "$cidfile")"
+          docker volume rm "$vname"
+        }
+
+        trap bailout EXIT
+
+        # Determine entry point of container (with the associated environment variables, etc.)
+        cmd="$(cat <(docker image inspect -f '{{join .Config.Cmd " "}}' ${tagString}))"
+        export cmd
+
+        # mount command for overlay nix store
+        # shellcheck disable=SC2086
+        mounter="$(cat << EOM
+            set -x;
+
+            # mount tmpfs on hostStore
+            # shellcheck disable=SC2086
+            mkdir -p $hostStore/rw/{upperdir,workdir} &&
+              mount -t overlay \
+                -o X-mount.mkdir \
+                -o lowerdir="$hostStore/lowerdir" \
+                -o upperdir="$hostStore/rw/upperdir" \
+                -o workdir="$hostStore/rw/workdir" \
+                overlay "$hostStore"
+
+            # mount tmpfs on containerStore
+            # shellcheck disable=SC2086
+            mkdir -p $containerStore/rw/{upperdir,workdir} && \
+              mount -B -o X-mount.mkdir,ro \
+                /nix/store "$containerStore/lowerdir" && \
+              mount -t overlay \
+                -o X-mount.mkdir \
+                -o lowerdir="$containerStore/lowerdir" \
+                -o upperdir="$containerStore/rw/upperdir" \
+                -o workdir="$containerStore/rw/workdir" \
+              overlay "$containerStore"
+
+            # merge hostStore and containerStore
+            # shellcheck disable=SC2086
+            mkdir -p $mergedStore/rw/{upperdir,workdir} && \
+              mount -B -o X-mount.mkdir,ro \
+                "$hostStore" "$mergedStore/lowerdir" && \
+              mount -B -o X-mount.mkdir \
+                "$containerStore" "$mergedStore/rw/upperdir" && \
+              mount -t overlay \
+                -o X-mount.mkdir \
+                -o lowerdir="$mergedStore/lowerdir" \
+                -o upperdir="$mergedStore/rw/upperdir" \
+                -o workdir="$mergedStore/rw/workdir" \
+              overlay "$mergedStore"
+
+            set +x
+        EOM
+
+        )"
+
+        # run as root for a small command to mount
+        # needs extended capabilities for this one command
+        # shellcheck disable=SC2086
+        docker exec -it \
+          --privileged \
+          -u root \
+          -it \
+          "$(cat "$cidfile")" \
+          $cmd -ci \
+          "$mounter"
+
+        docker attach "$(cat "$cidfile")"
       '';
     };
 
@@ -74,12 +153,14 @@
     ...
   }: let
     inherit (pkgs) lib;
-  in {
-    "docker/${platform}" = pkgs.mkShell {
+    wrapDockerRun = pkgs.mkShell {
       shellHook = ''
         exec ${lib.getExe (mkDockerRun {inherit pkgs platform;})}
       '';
     };
+  in {
+    "${platform}" = wrapDockerRun;
+    "docker/${platform}" = wrapDockerRun;
   };
 in {
   perSystem = {
@@ -113,6 +194,13 @@ in {
       }
       # Expose a dockerized environment for this architecture
       // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux (mkDocker {inherit pkgs;});
+
+    packages = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+      "docker/devshell" = pkgs.dockerTools.buildNixShellImage {
+        drv = self'.devShells.default;
+        gid = 100;
+      };
+    };
   };
 
   flake = {

@@ -13,7 +13,7 @@
     shellAliases = rec {
       ls = lib.getExe pkgs.lsd;
       cat = lib.getExe config.programs.bat.package;
-      rg = lib.getExe pkgs.bat-extras.batgrep;
+      bag = lib.getExe pkgs.bat-extras.batgrep;
       man = lib.getExe pkgs.bat-extras.batman;
       watch = lib.getExe (pkgs.bat-extras.batwatch.override {withEntr = true;});
       tail = watch;

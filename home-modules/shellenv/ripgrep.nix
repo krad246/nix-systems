@@ -6,8 +6,7 @@
   programs.ripgrep = {
     enable = true;
     arguments = [
-      "--hidden"
-      "--unrestricted"
+      "--no-require-git"
     ];
   };
 
