@@ -52,11 +52,10 @@
           --net=host \
           --device /dev/fuse \
           -u "$user" \
-          -w /flake \
           --platform linux/${platPkgs.go.GOARCH} \
           --cidfile "$cidfile" \
           --group-add "$gid" \
-          --mount="type=bind,src=$FLAKE_ROOT,dst=/flake",readonly \
+          --mount="type=bind,src=$FLAKE_ROOT,dst=/self",readonly \
           --mount=type=bind,src=/nix/store,dst="$hostStore",readonly \
           --tmpfs "$tmpfs" \
         ${tagString} && ${docker} ps
@@ -72,45 +71,57 @@
         cmd="$(${cat} <(${docker} image inspect -f '{{join .Config.Cmd " "}}' ${tagString}))"
         export cmd
 
-        # shellcheck disable=SC2206
-        storeDirs=(
-          $tmpfs/nix/store/workdir
-          $tmpfs/nix/store/upperdir
-          /chattr-store
-        )
-
-        # shellcheck disable=SC2206
-        flakeDirs=(
-          $tmpfs$WDIR/workdir
-          $tmpfs$WDIR/upperdir
-        )
-
         # put tmpfs on upperdir, merge host store and container store
         # shellcheck disable=SC2086
         mounter="$(${cat} << EOM
-            ${lib.getExe' platPkgs.coreutils "install"} -d \
-              -m 0755 -o "$uid" -g "$gid" ''${storeDirs[@]}
-          ${lib.getExe platPkgs.bindfs} -u "$uid" -g "$gid" -p 755 "$hostStore" ''${storeDirs[2]}
-          ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
-              -o X-mount.mkdir \
-              -o lowerdir=/nix/store:''${storeDirs[2]} \
-              -o upperdir="''${storeDirs[1]}" \
-              -o workdir="''${storeDirs[0]}" \
-              overlay /nix/store;
+            set -eux
 
-            ${lib.getExe' platPkgs.coreutils "echo"} user_allow_other >/etc/fuse.conf &&
-            ${lib.getExe platPkgs.bindfs} -u "$uid" -g "$gid" -p 755 /flake "$WDIR";
-
-            ${lib.getExe' platPkgs.coreutils "echo"} 'experimental-features = nix-command flakes'>>/etc/nix/nix.conf
+            # make tmpfs dirs and give exclusive ownership of nix store
+            ${lib.getExe' platPkgs.findutils "find"} /nix -print0 | \
+              ${lib.getExe' platPkgs.findutils "xargs"} -P$(nproc) -0 -I{} \
+                ${lib.getExe platPkgs.bashInteractive} -c \
+                  '${lib.getExe' platPkgs.coreutils "chown"} "$user" {}' || \
+                    ${lib.getExe' platPkgs.coreutils "true"};
 
             ${lib.getExe' platPkgs.coreutils "install"} -d \
-              -m 0755 -o "$uid" -g "$gid" ''${flakeDirs[@]} &&
+              -m 0755 -o "$uid" -g "$gid" \
+                "$tmpfs/nix" \
+                "$tmpfs/nix/store" \
+                "$tmpfs/nix/store/upperdir" \
+                "$tmpfs/nix/store/workdir" \
+                "$tmpfs/$WDIR" \
+                "$tmpfs/$WDIR/upperdir" \
+                "$tmpfs/$WDIR/workdir" \
+                /overlay-store \
+                /container-store \
+                /flake
+
+            # rebind host store with permissions changed
+
+            # merge container store
+            ${lib.getExe platPkgs.bindfs} \
+              -u "$uid" -g "$gid" -p 755 "$hostStore" /overlay-store &&
             ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
               -o X-mount.mkdir \
-              -o lowerdir="$WDIR" \
-              -o upperdir="''${flakeDirs[1]}" \
-              -o workdir="''${flakeDirs[0]}" \
-              overlay "$WDIR";
+              -o lowerdir=/nix/store:/overlay-store \
+              -o upperdir="$tmpfs/nix/store/upperdir" \
+              -o workdir="$tmpfs/nix/store/workdir" \
+            overlay /nix/store;
+
+            # merge workspace
+            ${lib.getExe platPkgs.bindfs} \
+              -u "$uid" -g "$gid" -p 755 /self /flake &&
+            ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
+              -o X-mount.mkdir \
+              -o lowerdir=/flake \
+              -o upperdir="$tmpfs/$WDIR/upperdir" \
+              -o workdir="$tmpfs/$WDIR/workdir" \
+            overlay "$WDIR";
+
+            ${lib.getExe' platPkgs.coreutils "echo"} \
+              user_allow_other >/etc/fuse.conf &&
+            ${lib.getExe' platPkgs.coreutils "echo"} \
+              'experimental-features = nix-command flakes'>>/etc/nix/nix.conf
         EOM
 
         )"
