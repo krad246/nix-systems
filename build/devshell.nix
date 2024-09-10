@@ -76,6 +76,7 @@
         storeDirs=(
           $tmpfs/nix/store/workdir
           $tmpfs/nix/store/upperdir
+          /chattr-store
         )
 
         # shellcheck disable=SC2206
@@ -87,10 +88,12 @@
         # put tmpfs on upperdir, merge host store and container store
         # shellcheck disable=SC2086
         mounter="$(${cat} << EOM
-          ${lib.getExe' platPkgs.coreutils "mkdir"} -p ''${storeDirs[@]}
+            ${lib.getExe' platPkgs.coreutils "install"} -d \
+              -m 0755 -o "$uid" -g "$gid" ''${storeDirs[@]}
+          ${lib.getExe platPkgs.bindfs} -u "$uid" -g "$gid" -p 755 "$hostStore" ''${storeDirs[2]}
           ${lib.getExe' platPkgs.util-linux "mount"} -t overlay \
               -o X-mount.mkdir \
-              -o lowerdir=/nix/store:$hostStore \
+              -o lowerdir=/nix/store:''${storeDirs[2]} \
               -o upperdir="''${storeDirs[1]}" \
               -o workdir="''${storeDirs[0]}" \
               overlay /nix/store;
