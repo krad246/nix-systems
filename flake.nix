@@ -225,26 +225,44 @@
             declared;
 
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
-          nixos-install-unattended = pkgs.writeShellScriptBin "nixos-install-unattended" ''
-            FLAKE_ROOT=${self} sudo --preserve-env=FLAKE_ROOT ${lib.getExe' pkgs.disko "disko-install"} \
-              --flake "$FLAKE_ROOT#$HOSTNAME" \
-              --extra-files "$FLAKE_ROOT" /opt/nixos \
-              --option inputs-from "$FLAKE_ROOT" \
-              --option experimental-features 'nix-command flakes' \
-              --write-efi-boot-entries \
-              --system-config '${builtins.toJSON (import ./nixos-modules/flatpak.nix {inherit lib;})}' \
-            "$@"
-          '';
+          nixos-install-unattended = pkgs.writeShellApplication {
+            name = "nixos-install-unattended";
+            text = ''
+              disko() {
+                mode="$1"
+                shift
+
+                ${lib.getExe' pkgs.disko "disko-install"} \
+                  --flake "${self}#$HOSTNAME" \
+                  --option inputs-from "${self}" \
+                  --option experimental-features 'nix-command flakes' \
+                  --mode "$mode" \
+                "$@"
+              }
+
+              disko format \
+                --write-efi-boot-entries \
+                --system-config '{}' \
+                "$@"
+
+              disko mount \
+                --write-efi-boot-entries \
+                --system-config '${import ./nixos-modules/flatpak.nix}' \
+                "$@"
+            '';
+          };
+
+          disko-install = nixos-install-unattended;
         in
           lib.attrsets.mergeAttrsList (lib.lists.flatten [
             (lib.lists.optionals pkgs.stdenv.isLinux [formats])
-            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install-unattended;}])
+            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install-unattended disko-install;}])
           ]);
 
         apps =
-          lib.attrsets.mapAttrs (_pname: drv: {
+          lib.attrsets.mapAttrs (pname: drv: {
             type = "app";
-            program = lib.getExe drv;
+            program = lib.getExe' drv pname;
           })
           self'.packages;
       };

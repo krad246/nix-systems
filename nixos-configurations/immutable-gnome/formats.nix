@@ -91,13 +91,13 @@
       disko.enableConfig = false;
     };
 
-    qcow-efi = qcow;
+    qcow-efi = qcow // {imports = [ezModules.efiboot];};
 
     raw = {
       disko.enableConfig = false;
     };
 
-    raw-efi = raw;
+    raw-efi = raw // {imports = [ezModules.efiboot];};
 
     sd-aarch64 = {lib, ...}: {
       disko.enableConfig = false;

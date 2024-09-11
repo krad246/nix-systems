@@ -23,11 +23,11 @@
 
         virtualisation = {
           darwin-builder = {
-            diskSize = 1024 * 96;
+            diskSize = 1024 * 80;
             memorySize = 1024 * 6;
           };
 
-          cores = 6;
+          cores = 8;
         };
         # Give the builder all of our substituters.
         nix.settings = {
