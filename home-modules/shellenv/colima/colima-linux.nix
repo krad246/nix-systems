@@ -69,7 +69,6 @@
   parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
 in {
   home.packages = with pkgs; [colima docker];
-  home.sessionPath = ["${lib.makeBinPath [pkgs.docker]}"];
   imports =
     [
       (mkSystemdService "aarch64")

@@ -267,7 +267,7 @@
           users = {
             keerad = {
               # Generate only one WSL config; requires a matching Windows user
-              nameFunction = _name: "keerad@nixos-wsl";
+              nameFunction = _name: "keerad@windex";
 
               # Standalone configuration independent of the host
               standalone = let

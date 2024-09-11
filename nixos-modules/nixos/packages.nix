@@ -1,7 +1,8 @@
 {pkgs, ...}: {
   environment = {
-    systemPackages = with pkgs; [
-      safe-rm
-    ];
+    systemPackages = with pkgs; (
+       [ coreutils safe-rm ] ++
+       [ bashmount ]
+    );
   };
 }

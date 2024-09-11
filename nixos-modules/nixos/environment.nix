@@ -25,6 +25,4 @@
   time.timeZone = "America/New_York";
 
   system.stateVersion = lib.trivial.release;
-
-  documentation.enable = lib.mkDefault false;
 }

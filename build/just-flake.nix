@@ -24,6 +24,7 @@
       # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
       [${os}]
       ${pname} +ARGS="":
+        #!${lib.meta.getExe pkgs.bash}
         ${lib.meta.getExe' drv pname} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
 
       ${maybeString (args ? alias) (mkAlias args.alias pname)}
@@ -32,7 +33,11 @@
     just-flake.features = let
       # Extra args to tack onto the invocation wrappers below...
       flakeRoot = "\"$FLAKE_ROOT\"";
-      commonArgs = ["--option experimental-features 'nix-command flakes'" "--option inputs-from ${flakeRoot}"];
+      commonArgs = [
+        "--option experimental-features 'nix-command flakes'"
+        "--option inputs-from ${flakeRoot}"
+        "--fallback"
+      ];
       flakeArgs = ["--flake ${flakeRoot}"];
       builderArgs = commonArgs ++ flakeArgs;
     in {

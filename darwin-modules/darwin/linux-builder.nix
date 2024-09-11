@@ -4,7 +4,7 @@
   ...
 }: {
   nix = {
-    settings.trusted-users = ["@admin"];
+    settings.trusted-users = ["@admin" "@wheel"];
 
     linux-builder = {
       enable = true;
@@ -15,7 +15,7 @@
         inherit (pkgs.stdenv) system;
         inherit (config.nix) linux-builder;
       in
-        lib.attrsets.optionalAttrs (!lib.trivial.inPureEvalMode) {
+        {
           imports = [./ccache-stdenv.nix];
 
           # Emulate all of the linux-builder systems aside from the host platform of the builder
