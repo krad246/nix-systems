@@ -247,7 +247,7 @@
 
               disko mount \
                 --write-efi-boot-entries \
-                --system-config '${import ./nixos-modules/flatpak.nix}' \
+                --system-config '${builtins.toJSON (import ./nixos-modules/flatpak.nix {inherit lib;})}' \
                 "$@"
             '';
           };

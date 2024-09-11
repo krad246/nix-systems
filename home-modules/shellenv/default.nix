@@ -47,7 +47,7 @@
       la = "${ll} -A";
       lal = la;
 
-      reload = "exec $SHELL";
+      reload = "direnv reload \"$PWD\" && exec $SHELL";
     };
   };
 
