@@ -1,3 +1,3 @@
-{
-  services.flatpak.enable = true;
+{lib, ...}: {
+  services.flatpak.enable = lib.mkForce true;
 }

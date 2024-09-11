@@ -13,7 +13,7 @@ in {
       nixos
     ]);
 
-  services.flatpak.enable = lib.mkDefault false;
+  services.flatpak.enable = false;
 
   users.users.krad246 = {
     isNormalUser = true;

@@ -47,6 +47,7 @@
   in
     lib.debug.traceIf rest "extended modules"
     rest;
+  flatpakModules = lib.debug.traceIf (extendedModules && hasFlatpak) "flatpak modules" true;
 in {
   imports =
     [nix-flatpak.homeManagerModules.nix-flatpak]
@@ -61,7 +62,7 @@ in {
       vscode-server
     ]));
 
-  services = lib.mkIf (extendedModules && hasFlatpak) {
+  services = lib.mkIf (flatpakModules) {
     flatpak.packages = [
       "org.pulseaudio.pavucontrol"
       "us.zoom.Zoom"
