@@ -1,4 +1,4 @@
-{
+{ezModules, ...}: {
   formatConfigs = rec {
     amazon = {lib, ...}: {
       disko.enableConfig = false;
@@ -47,7 +47,7 @@
     install-iso = args:
       (iso args)
       // {
-        imports = [./offline-closure-installer.nix];
+        imports = [ezModules.efiboot] ++ [./offline-closure-installer.nix];
       };
 
     install-iso-hyperv = args: let
