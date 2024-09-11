@@ -11,7 +11,6 @@
 
   home = {
     shellAliases = rec {
-      ls = lib.getExe pkgs.lsd;
       cat = lib.getExe config.programs.bat.package;
       bag = lib.getExe pkgs.bat-extras.batgrep;
       man = lib.getExe pkgs.bat-extras.batman;

@@ -232,7 +232,7 @@
               --option inputs-from "$FLAKE_ROOT" \
               --option experimental-features 'nix-command flakes' \
               --write-efi-boot-entries \
-              --system-config '${builtins.toJSON (import ./nixos-modules/flatpak.nix { inherit lib; })}' \
+              --system-config '${builtins.toJSON (import ./nixos-modules/flatpak.nix {inherit lib;})}' \
             "$@"
           '';
         in

@@ -1,3 +1,3 @@
 {
-  imports = [./colima-darwin.nix ./colima-linux.nix];
+  imports = [./colima-linux.nix];
 }

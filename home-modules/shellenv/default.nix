@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   imports =
     [
       ./bash.nix
@@ -34,6 +38,17 @@
   home = {
     packages = with pkgs; [cachix];
     preferXdgDirectories = true;
+
+    shellAliases = rec {
+      l = "${lib.getExe pkgs.lsd} --hyperlink auto --group-dirs first";
+
+      ls = l;
+      ll = "${ls} -gl";
+      la = "${ll} -A";
+      lal = la;
+
+      reload = "exec $SHELL";
+    };
   };
 
   news.display = "silent";

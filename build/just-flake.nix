@@ -36,7 +36,6 @@
       commonArgs = [
         "--option experimental-features 'nix-command flakes'"
         "--option inputs-from ${flakeRoot}"
-        "--fallback"
       ];
       flakeArgs = ["--flake ${flakeRoot}"];
       builderArgs = commonArgs ++ flakeArgs;
@@ -51,7 +50,7 @@
         justfile = mkJustRecipe {
           drv = pkgs.nixos-rebuild;
           os = "linux";
-          extraArgs = builderArgs ++ ["--use-remote-sudo"];
+          extraArgs = builderArgs ++ ["--use-remote-sudo" "--fallback"];
           alias = "os";
         };
       };
@@ -62,7 +61,7 @@
         justfile = mkJustRecipe {
           drv = inputs'.darwin.packages.darwin-rebuild;
           os = "macos";
-          extraArgs = builderArgs;
+          extraArgs = builderArgs ++ ["--fallback"];
           alias = "os";
         };
       };

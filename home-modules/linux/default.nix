@@ -24,7 +24,7 @@
   # common for VMs
   growableRoot = lib.attrsets.attrByPath ["boot" "growPartition"] false osConfig;
 
-  isIso = lib.attrsets.hasAttrByPath [ "system" "build" "isoImage" ] osConfig;
+  isIso = lib.attrsets.hasAttrByPath ["system" "build" "isoImage"] osConfig;
 
   isVM =
     isContainer
@@ -62,7 +62,7 @@ in {
       vscode-server
     ]));
 
-  services = lib.mkIf (flatpakModules) {
+  services = lib.mkIf flatpakModules {
     flatpak.packages = [
       "org.pulseaudio.pavucontrol"
       "us.zoom.Zoom"
