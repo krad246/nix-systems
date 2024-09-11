@@ -24,6 +24,8 @@
   # common for VMs
   growableRoot = lib.attrsets.attrByPath ["boot" "growPartition"] false osConfig;
 
+  isIso = lib.attrsets.hasAttrByPath [ "system" "build" "isoImage" ] osConfig;
+
   isVM =
     isContainer
     || growableRoot
@@ -41,7 +43,7 @@
 
   baseModules = lib.debug.traceIf isGraphicalNixOS "base modules" isGraphicalNixOS;
   extendedModules = let
-    rest = baseModules && !isVM;
+    rest = baseModules && !isVM && !isIso;
   in
     lib.debug.traceIf rest "extended modules"
     rest;
