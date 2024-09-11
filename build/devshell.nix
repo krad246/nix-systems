@@ -55,7 +55,7 @@
           --platform linux/${platPkgs.go.GOARCH} \
           --cidfile "$cidfile" \
           --group-add "$gid" \
-          --mount="type=bind,src=$FLAKE_ROOT,dst=/self",readonly \
+          --mount=type=bind,src="$FLAKE_ROOT",dst=/self,readonly \
           --mount=type=bind,src=/nix/store,dst="$hostStore",readonly \
           --tmpfs "$tmpfs" \
         ${tagString} && ${docker} ps
@@ -194,6 +194,7 @@ in {
     packages = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
       "docker/devshell" = pkgs.dockerTools.buildNixShellImage {
         drv = self'.devShells.default;
+        homeDirectory = "/tmp";
       };
     };
   };
