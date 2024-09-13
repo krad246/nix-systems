@@ -5,5 +5,6 @@
     ./eater.nix
     ./formatter.nix
     ./just-flake.nix
+    ./tests.nix
   ];
 }

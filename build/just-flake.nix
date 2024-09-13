@@ -123,7 +123,7 @@
       check = {
         enable = true;
         justfile = ''
-          check *ARGS: (add) (flake "check" ARGS)
+          check *ARGS: (fmt) (add) (run)
         '';
       };
 
@@ -146,7 +146,7 @@
       commit = {
         enable = true;
         justfile = ''
-          commit *ARGS: (add '-u')
+          commit +ARGS="--dry-run": (add '-u')
             ${lib.getExe pkgs.git} commit {{ ARGS }}
         '';
       };
@@ -163,7 +163,7 @@
         justfile = ''
           rekey *ARGS:
             env --chdir "$FLAKE_ROOT/secrets" \
-              ${lib.getExe inputs'.agenix.packages.default} -r {{ ARGS }}
+              ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
         '';
       };
 
