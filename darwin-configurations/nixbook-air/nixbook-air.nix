@@ -48,7 +48,7 @@
         hostName = "dullahan";
         system = "aarch64-darwin";
         protocol = "ssh-ng";
-        maxJobs = 32;
+        maxJobs = 16;
         speedFactor = 2;
 
         sshUser = "krad246";
@@ -58,7 +58,7 @@
         hostName = "headless-penguin";
         systems = ["aarch64-linux" "x86_64-linux"];
         protocol = "ssh-ng";
-        maxJobs = 32;
+        maxJobs = 16;
         speedFactor = 2;
         sshUser = "builder";
         sshKey = "/etc/nix/builder_ed25519";
