@@ -1,4 +1,12 @@
-{ezModules, ...}: {
+{
+  ezModules,
+  inputs,
+  ...
+}: let
+  inherit (inputs) nixos-generators;
+in {
+  imports = [nixos-generators.nixosModules.all-formats];
+
   formatConfigs = rec {
     amazon = {lib, ...}: {
       disko.enableConfig = false;
@@ -44,8 +52,8 @@
       };
     };
 
-    install-iso = args:
-      (iso args)
+    install-iso = _args:
+      {disko.enableConfig = false;}
       // {
         imports = [ezModules.efiboot] ++ [./offline-closure-installer.nix];
       };

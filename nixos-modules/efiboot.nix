@@ -3,7 +3,7 @@
   lib,
   ...
 }: {
-  boot.loader = lib.mkDefault {
+  boot.loader = lib.mkForce {
     efi = {
       canTouchEfiVariables = !config.boot.loader.grub.efiInstallAsRemovable;
     };

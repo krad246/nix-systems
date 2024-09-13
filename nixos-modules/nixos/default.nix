@@ -19,4 +19,14 @@ in {
     ++ [
       home-manager.nixosModules.home-manager
     ];
+
+  home-manager = {
+    useUserPackages = true;
+    useGlobalPkgs = true;
+    backupFileExtension = "bak";
+    extraSpecialArgs = {
+    };
+    sharedModules = [];
+    verbose = false;
+  };
 }

@@ -1,17 +1,12 @@
 {
-  inputs,
   ezModules,
   lib,
   ...
-}: let
-  inherit (inputs) nixos-generators;
-in {
-  imports =
-    [nixos-generators.nixosModules.all-formats]
-    ++ (with ezModules; [
-      gnome-desktop
-      nixos
-    ]);
+}: {
+  imports = with ezModules; [
+    gnome-desktop
+    nixos
+  ];
 
   services.flatpak.enable = false;
 
