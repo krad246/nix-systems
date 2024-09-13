@@ -273,7 +273,7 @@
 
         nixos.hosts = {
           windex.userHomeModules = ["keerad" "krad246"];
-          immutable-gnome.userHomeModules = ["krad246"];
+          fortress.userHomeModules = ["krad246"];
         };
 
         darwin.hosts = {
