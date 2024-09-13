@@ -3,12 +3,12 @@
   lib,
   ...
 }: {
-  boot.loader = lib.mkDefault {
+  boot.loader = {
     efi = {
       canTouchEfiVariables = !config.boot.loader.grub.efiInstallAsRemovable;
     };
     grub = {
-      enable = true;
+      enable = lib.mkDefault true;
       efiSupport = true;
       efiInstallAsRemovable = true; # in case canTouchEfiVariables doesn't work for your system
       device = "nodev";

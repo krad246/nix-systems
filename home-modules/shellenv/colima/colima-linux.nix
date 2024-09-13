@@ -12,15 +12,18 @@
   };
 
   mkScript = arch:
-    pkgs.writeShellScript "colima-${arch}" ''
-      ${lib.getExe pkgs.colima} start \
-        -p ${arch} \
-        --arch ${arch} \
-        --disk ${builtins.toString (vmConfig.diskSize / 1024)} \
-        --cpu ${builtins.toString vmConfig.cores} \
-        --memory ${builtins.toString (vmConfig.memorySize / 1024)} \
-        --verbose
-    '';
+    pkgs.writeShellApplication {
+      name = "colima-${arch}";
+      text = ''
+        ${lib.getExe pkgs.colima} start \
+          -p ${arch} \
+          --arch ${arch} \
+          --disk ${builtins.toString (vmConfig.diskSize / 1024)} \
+          --cpu ${builtins.toString vmConfig.cores} \
+          --memory ${builtins.toString (vmConfig.memorySize / 1024)} \
+          --verbose
+      '';
+    };
 
   nixosPathCfg = lib.attrsets.attrByPath ["system" "path"] "" osConfig;
   homePathCfg = lib.strings.concatStringsSep ":" config.home.sessionPath;

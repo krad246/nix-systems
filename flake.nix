@@ -260,9 +260,9 @@
           ]);
 
         apps =
-          lib.attrsets.mapAttrs (pname: drv: {
+          lib.attrsets.mapAttrs (_pname: drv: {
             type = "app";
-            program = lib.getExe' drv pname;
+            program = lib.getExe drv;
           })
           self'.packages;
       };

@@ -1,4 +1,4 @@
-{
+{self, ...}: {
   perSystem = {
     lib,
     pkgs,
@@ -8,6 +8,7 @@
     # Compose a simple just target from the name of the incoming derivation
     mkJustRecipe = args @ {
       drv,
+      pname ? lib.getName drv,
       os,
       extraArgs,
       ...
@@ -15,15 +16,10 @@
       # Conditionally include an alias line if an alias is passd
       maybeString = pred: val: lib.strings.optionalString pred val;
       mkAlias = alias: pname: "alias ${alias} := ${pname}";
-
-      # Extract the package symbolic name without the version
-      name = lib.strings.getName drv;
-      version = lib.strings.getVersion drv;
-      pname = lib.strings.removePrefix "-${version}" name;
     in ''
       # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
       [${os}]
-      ${pname} +ARGS="":
+      @${pname} *ARGS:
         #!${lib.meta.getExe pkgs.bash}
         ${lib.meta.getExe' drv pname} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
 
@@ -32,7 +28,7 @@
   in {
     just-flake.features = let
       # Extra args to tack onto the invocation wrappers below...
-      flakeRoot = "\"$FLAKE_ROOT\"";
+      flakeRoot = self;
       commonArgs = [
         "--option experimental-features 'nix-command flakes'"
         "--option inputs-from ${flakeRoot}"
@@ -90,14 +86,14 @@
       flake = {
         enable = true;
         justfile = ''
-          flake +ARGS: (nix "flake" ARGS)
+          flake *ARGS: (nix "flake" ARGS)
         '';
       };
 
       build = {
         enable = true;
         justfile = ''
-          build +ARGS="": (nix "build" replace_regex(ARGS, \
+          build *ARGS: (nix "build" replace_regex(ARGS, \
                                                     "#([[:ascii:]]+)", \
                                                     "#$1 --out-link $1"))
         '';
@@ -106,43 +102,51 @@
       develop = {
         enable = true;
         justfile = ''
-          develop +ARGS="": (nix "develop" ARGS)
+          develop *ARGS: (nix "develop" ARGS)
         '';
       };
 
       run = {
         enable = true;
         justfile = ''
-          run +ARGS="": (nix "run" ARGS)
+          run *ARGS: (add) (nix "run" ARGS)
         '';
       };
 
       show = {
         enable = true;
         justfile = ''
-          show +ARGS="": (flake "show" ARGS)
+          show *ARGS: (flake "show" ARGS)
         '';
       };
 
       check = {
         enable = true;
         justfile = ''
-          check +ARGS="": (flake "check" ARGS)
+          check *ARGS: (add) (flake "check" ARGS)
+        '';
+      };
+
+      git = {
+        enable = true;
+        justfile = ''
+          [no-exit-message]
+          git *ARGS:
+              ${lib.getExe pkgs.git} {{ ARGS }}
         '';
       };
 
       add = {
         enable = true;
         justfile = ''
-          add +ARGS="-u":
-            ${lib.getExe pkgs.git} add --chmod=+x {{ ARGS }}
+          add +ARGS='-u': (git "add" "--chmod=+x" ARGS)
         '';
       };
 
       commit = {
         enable = true;
         justfile = ''
-          commit +ARGS="": (add '-u')
+          commit *ARGS: (add '-u')
             ${lib.getExe pkgs.git} commit {{ ARGS }}
         '';
       };
@@ -150,16 +154,26 @@
       amend = {
         enable = true;
         justfile = ''
-          amend +ARGS="": (add '-u') (commit "--amend" ARGS)
+          amend *ARGS: (add '-u') (commit "--amend" ARGS)
         '';
       };
 
       rekey = {
         enable = true;
         justfile = ''
-          rekey +ARGS="":
+          rekey *ARGS:
             env --chdir "$FLAKE_ROOT/secrets" \
               ${lib.getExe inputs'.agenix.packages.default} -r {{ ARGS }}
+        '';
+      };
+
+      burn = {
+        enable = true;
+        justfile = ''
+          burn DISK +ARGS: (build ARGS)
+            ${lib.getExe' pkgs.findutils "find"} {{ replace_regex(ARGS, "#([[:ascii:]]+)", "$1") }} \
+                  -type f -name "*.iso" -print0 | ${lib.getExe' pkgs.coreutils "xargs"} -0 -I {} \
+                    ${lib.getExe' pkgs.coreutils "dd"} if={} of={{ DISK }} status=progress conv=fsync bs=64M
         '';
       };
     };

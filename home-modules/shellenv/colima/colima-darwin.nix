@@ -16,16 +16,19 @@
     }
     osConfig;
   mkScript = arch:
-    pkgs.writeShellScript "colima-${arch}" ''
-      ${lib.getExe pkgs.colima} start \
-        -p ${arch} \
-        --arch ${arch} \
-        --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
-        --cpu ${builtins.toString vmConfig.cores} \
-        --memory ${builtins.toString (vmConfig.darwin-builder.memorySize / 1024)} \
-        --verbose \
-        --foreground --vm-type vz --vz-rosetta
-    '';
+    pkgs.writeShellApplication {
+      name = "colima-${arch}";
+      text = ''
+        ${lib.getExe pkgs.colima} start \
+          -p ${arch} \
+          --arch ${arch} \
+          --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
+          --cpu ${builtins.toString vmConfig.cores} \
+          --memory ${builtins.toString (vmConfig.darwin-builder.memorySize / 1024)} \
+          --verbose \
+          --foreground --vm-type vz --vz-rosetta
+      '';
+    };
 
   darwinPathCfg = lib.attrsets.attrByPath ["environment" "systemPath"] "" osConfig;
   homePathCfg = lib.strings.concatStringsSep ":" config.home.sessionPath;
