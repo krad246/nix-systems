@@ -1,37 +1,45 @@
 {
   ezModules,
   inputs,
-  lib,
-  config,
   ...
 }: let
   inherit (inputs) nixos-generators;
 in {
   imports = [nixos-generators.nixosModules.all-formats];
 
-  formats = lib.mkForce rec {
-    hyperv = config.system.build.hypervImage;
-    iso = config.system.build.isoImage;
-    install-iso = iso;
-    install-iso-hyperv = install-iso;
-    kexec = config.system.build.kexec_tarball;
-    inherit (config.system.build) kexec_bundle;
-    inherit (config.system.build) qcow;
-    inherit (config.system.build) qcow-efi;
-    inherit (config.system.build) raw;
-    inherit (config.system.build) raw-efi;
-    sd-aarch64 = config.system.build.sdImage;
-    sd-aarch64-installer = sd-aarch64;
-    sd-x86_64 = sd-aarch64;
-    vagrant-virtualbox = config.system.build.vagrantVirtualbox;
-    virtualbox = config.system.build.virtualBoxOVA;
-    inherit (config.system.build) vm;
-    vm-bootloader = vm;
-    vm-nogui = vm;
-    vmware = config.system.build.vmwareImage;
-  };
-
   formatConfigs = rec {
+    amazon = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+      services.udisks2.enable = lib.mkForce false;
+    };
+
+    azure = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+      networking.networkmanager.enable = lib.mkForce false;
+      nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
+    };
+
+    cloudstack = {
+      disko.enableConfig = false;
+    };
+
+    do = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+    };
+
+    docker = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.firewall.enable = lib.mkForce false;
+    };
+
+    gce = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+    };
+
     hyperv = {
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
@@ -66,6 +74,26 @@ in {
     };
 
     kexec-bundle = kexec;
+
+    kubevirt = {
+      disko.enableConfig = false;
+    };
+
+    linode = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.useDHCP = lib.mkForce true;
+    };
+
+    openstack = {lib, ...}: {
+      disko.enableConfig = false;
+      networking.hostName = lib.mkForce "";
+    };
+
+    proxmox = {
+      disko.enableConfig = false;
+    };
+
+    proxmox-lxc = proxmox;
 
     qcow = {
       disko.enableConfig = false;
