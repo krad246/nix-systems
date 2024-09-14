@@ -147,8 +147,7 @@
       commit = {
         enable = true;
         justfile = ''
-          commit +ARGS="--dry-run": (add "-u")
-            ${lib.getExe pkgs.git} commit {{ ARGS }}
+          commit +ARGS="--dry-run": (add "-u") (git "commit" ARGS)
         '';
       };
 

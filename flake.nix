@@ -205,8 +205,26 @@
           formats =
             lib.attrsets.attrByPath ["config" "formats"] {}
             nixosCfg;
+
+          exclude = [
+            "amazon"
+            "azure"
+            "cloudstack"
+            "do"
+            "docker"
+            "gce"
+            "kubevirt"
+            "linode"
+            "lxc-metadata"
+            "lxc"
+            "openstack"
+            "proxmox-lxc"
+            "proxmox"
+          ];
+
+          include = builtins.removeAttrs formats exclude;
         in
-          formats;
+          builtins.trace (builtins.attrNames include) include;
 
         hostFormatName = nixosCfg: format: let
           inherit (nixosCfg.config.networking) hostName;

@@ -8,38 +8,6 @@ in {
   imports = [nixos-generators.nixosModules.all-formats];
 
   formatConfigs = rec {
-    amazon = {lib, ...}: {
-      disko.enableConfig = false;
-      networking.hostName = lib.mkForce "";
-      services.udisks2.enable = lib.mkForce false;
-    };
-
-    azure = {lib, ...}: {
-      disko.enableConfig = false;
-      networking.hostName = lib.mkForce "";
-      networking.networkmanager.enable = lib.mkForce false;
-      nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
-    };
-
-    cloudstack = {
-      disko.enableConfig = false;
-    };
-
-    do = {lib, ...}: {
-      disko.enableConfig = false;
-      networking.hostName = lib.mkForce "";
-    };
-
-    docker = {lib, ...}: {
-      disko.enableConfig = false;
-      networking.firewall.enable = lib.mkForce false;
-    };
-
-    gce = {lib, ...}: {
-      disko.enableConfig = false;
-      networking.hostName = lib.mkForce "";
-    };
-
     hyperv = {
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
@@ -69,26 +37,6 @@ in {
     };
 
     kexec-bundle = kexec;
-
-    kubevirt = {
-      disko.enableConfig = false;
-    };
-
-    linode = {lib, ...}: {
-      disko.enableConfig = false;
-      networking.useDHCP = lib.mkForce true;
-    };
-
-    openstack = {lib, ...}: {
-      disko.enableConfig = false;
-      networking.hostName = lib.mkForce "";
-    };
-
-    proxmox = {
-      disko.enableConfig = false;
-    };
-
-    proxmox-lxc = proxmox;
 
     qcow = {
       disko.enableConfig = false;
