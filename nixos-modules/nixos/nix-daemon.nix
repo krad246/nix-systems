@@ -1,11 +1,15 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   nix = {
     package = pkgs.nixFlakes;
     checkConfig = true;
     gc.automatic = true;
     settings = {
-      auto-optimise-store = true;
-      sandbox = true;
+      auto-optimise-store = lib.mkDefault true;
+      sandbox = lib.mkDefault "relaxed";
 
       substituters = [
         "https://cache.nixos.org"
@@ -27,8 +31,8 @@
 
       experimental-features = ["nix-command" "flakes"];
 
-      keep-outputs = true;
-      keep-derivations = true;
+      keep-outputs = lib.mkDefault true;
+      keep-derivations = lib.mkDefault true;
     };
   };
 }
