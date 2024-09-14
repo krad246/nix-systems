@@ -139,14 +139,14 @@
       add = {
         enable = true;
         justfile = ''
-          add +ARGS='-u': (git "add" "--chmod=+x" ARGS)
+          add +ARGS="-u": (git "add" "--chmod=+x" ARGS)
         '';
       };
 
       commit = {
         enable = true;
         justfile = ''
-          commit +ARGS="--dry-run": (add '-u')
+          commit +ARGS="--dry-run": (add "-u")
             ${lib.getExe pkgs.git} commit {{ ARGS }}
         '';
       };
@@ -154,7 +154,7 @@
       amend = {
         enable = true;
         justfile = ''
-          amend *ARGS: (add '-u') (commit "--amend" ARGS)
+          amend +ARGS="--dry-run": (add "-u") (commit "--amend" ARGS)
         '';
       };
 
