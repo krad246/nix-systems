@@ -93,9 +93,10 @@
       build = {
         enable = true;
         justfile = ''
+          flakeref := "^(.*)\\s+(([[:ascii:]]+)#([[:ascii:]]+))\\s+(.*)$"
           build *ARGS: (nix "build" replace_regex(ARGS, \
-                                                    "#([[:ascii:]]+)", \
-                                                    "#$1 --out-link $1"))
+                                                    flakeref, \
+                                                    "$2 $1 $5 --out-link $3/$4"))
         '';
       };
 
@@ -171,8 +172,9 @@
         enable = true;
         justfile = ''
           burn DISK +ARGS: (build ARGS)
-            ${lib.getExe' pkgs.findutils "find"} {{ replace_regex(ARGS, "#([[:ascii:]]+)", "$1") }} \
-                  -type f -name "*.iso" -print0 | ${lib.getExe' pkgs.coreutils "xargs"} -0 -I {} \
+            ${lib.getExe' pkgs.findutils "find"} \
+                {{ replace_regex(ARGS, flakeref, "$3/$4") }} \
+                  -type f -name "*.iso" -print0 | ${lib.getExe' pkgs.coreutils "xargs"} -r -0 -I {} \
                     ${lib.getExe' pkgs.coreutils "dd"} if={} of={{ DISK }} status=progress conv=fsync bs=64M
         '';
       };
