@@ -2,13 +2,14 @@
   ezModules,
   lib,
   ...
-}: {
+}:
+{
   imports = with ezModules; [
     gnome-desktop
     nixos
   ];
 
-  services.flatpak.enable = false;
+  services.flatpak.enable = lib.mkDefault false;
 
   users.users.krad246 = {
     isNormalUser = true;
@@ -23,4 +24,7 @@
   };
 
   system.stateVersion = lib.trivial.release;
+}
+// lib.attrsets.optionalAttrs (!lib.trivial.inPureEvalMode) {
+  services.flatpak.enable = true;
 }
