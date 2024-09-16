@@ -12,43 +12,52 @@ in {
   imports = [disko.nixosModules.disko] ++ [impermanence.nixosModules.impermanence];
 
   disko.devices = lib.mkIf enableConfig {
-    disk.main = {
-      device =
-        if !lib.trivial.inPureEvalMode
-        then "/dev/nvme0n1"
-        else "/dev/null";
-      type = "disk";
-      content = {
-        type = "gpt";
-        partitions = {
-          "boot" = {
-            size = "1M";
-            type = "EF02"; # for grub MBR
-          };
-
-          "ESP" = {
-            size = "512M";
-            type = "EF00";
-            content = {
-              type = "filesystem";
-              format = "vfat";
-              mountpoint = "/boot";
+    disk = {
+      main = {
+        device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23026J804343";
+        type = "disk";
+        content = {
+          type = "gpt";
+          partitions = {
+            "boot" = {
+              size = "1M";
+              type = "EF02"; # for grub MBR
             };
-          };
 
-          "luks" = {
-            size = "100%";
-            content = {
-              type = "luks";
-              name = "crypted";
-              extraOpenArgs = [];
-              settings = {};
-              additionalKeyFiles = [];
+            "ESP" = {
+              size = "512M";
+              type = "EF00";
               content = {
-                type = "lvm_pv";
-                vg = "pool";
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
               };
             };
+
+            "luks" = {
+              size = "100%";
+              content = {
+                type = "luks";
+                name = "crypted";
+                extraOpenArgs = [];
+                settings = {};
+                additionalKeyFiles = [];
+                content = {
+                  type = "lvm_pv";
+                  vg = "pool";
+                };
+              };
+            };
+          };
+        };
+      };
+
+      secondary = {
+        device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23080R800503";
+        type = "disk";
+        content = {
+          type = "gpt";
+          partitions = {
           };
         };
       };

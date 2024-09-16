@@ -173,7 +173,8 @@
           burn DISK +ARGS: (build ARGS)
             ${lib.getExe' pkgs.findutils "find"} -L {{ replace_regex(ARGS, flakeref, "$4/$5") }} \
                   -type f -name "*.iso" -print0 | ${lib.getExe' pkgs.findutils "xargs"} -r -0 -I {} \
-                    ${lib.getExe' pkgs.coreutils "dd"} if={} of={{ (DISK) }} status=progress conv=fsync bs=64M
+                    ${lib.getExe' pkgs.coreutils "dd"} if={} of={{ (DISK) }} status=progress \
+                    conv=fsync,notrunc bs=64M
         '';
       };
     };
