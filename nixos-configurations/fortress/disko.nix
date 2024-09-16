@@ -13,7 +13,10 @@ in {
 
   disko.devices = lib.mkIf enableConfig {
     disk.main = {
-      device = "/dev/null";
+      device =
+        if !lib.trivial.inPureEvalMode
+        then "/dev/nvme0n1"
+        else "/dev/null";
       type = "disk";
       content = {
         type = "gpt";

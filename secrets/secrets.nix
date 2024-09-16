@@ -1,6 +1,7 @@
 let
   globals = {
     nixbook-air = {
+      enable = true;
       secrets = [
         "cachix"
         "gh"
@@ -21,6 +22,7 @@ let
     };
 
     dullahan = {
+      enable = true;
       secrets = [
         "cachix"
         "gh"
@@ -37,6 +39,18 @@ let
 
         # root@dullahan.local
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXafRdLT+qPTMUzzMc35PxOP4zun6zIPTf98jQ6Bv5P"
+      ];
+    };
+
+    fortress = {
+      enable = true;
+      secrets = [
+        "id_ed25519_priv"
+        "id_ed25519_pub"
+      ];
+
+      keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILP2iDHtDzybLv/qFHMiSeJ53Xjm5ehl4/SQDV2Lol1/"
       ];
     };
   };
