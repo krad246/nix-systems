@@ -20,7 +20,13 @@ in {
       };
     };
 
-    install-iso = _args: {disko.enableConfig = false;} // {imports = [ezModules.efiboot] ++ [./offline-closure-installer.nix];};
+    install-iso = args:
+      iso args
+      // {
+        imports =
+          [ezModules.efiboot]
+          ++ [./offline-closure-installer.nix];
+      };
     install-iso-hyperv = args: let
       hypervOpts = hyperv;
       installIsoOpts = install-iso args;

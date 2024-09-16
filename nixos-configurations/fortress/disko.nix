@@ -13,7 +13,7 @@ in {
 
   disko.devices = lib.mkIf enableConfig {
     disk.main = {
-      device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23026J804343";
+      device = "/dev/null";
       type = "disk";
       content = {
         type = "gpt";
