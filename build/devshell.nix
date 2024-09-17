@@ -1,6 +1,7 @@
 {
   perSystem = {
     self',
+    inputs',
     config,
     lib,
     pkgs,
@@ -25,7 +26,8 @@
             ++ [safe-rm]
             ++ [procps util-linux]
             ++ [nixFlakes nix-tree nil]
-            ++ [docker dive])
+            ++ [docker dive]
+            ++ [inputs'.agenix.packages.agenix])
           ++ (lib.optionals pkgs.stdenv.isLinux [pkgs.fuse pkgs.fuse3 pkgs.bindfs]);
       };
     };

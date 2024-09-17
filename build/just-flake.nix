@@ -1,4 +1,4 @@
-{self, ...}: {
+{
   perSystem = {
     lib,
     pkgs,
@@ -28,7 +28,7 @@
   in {
     just-flake.features = let
       # Extra args to tack onto the invocation wrappers below...
-      flakeRoot = self;
+      flakeRoot = "$FLAKE_ROOT";
       commonArgs = [
         "--option experimental-features 'nix-command flakes'"
         "--option inputs-from ${flakeRoot}"
@@ -46,7 +46,7 @@
         justfile = mkJustRecipe {
           drv = pkgs.nixos-rebuild;
           os = "linux";
-          extraArgs = builderArgs ++ ["--use-remote-sudo" "--fallback"];
+          extraArgs = builderArgs ++ ["--use-remote-sudo" "--fallback" "--accept-flake-config"];
           alias = "os";
         };
       };
