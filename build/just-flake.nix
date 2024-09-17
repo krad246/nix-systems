@@ -79,7 +79,7 @@
         justfile = mkJustRecipe {
           drv = pkgs.nixFlakes;
           os = "unix";
-          extraArgs = commonArgs;
+          extraArgs = commonArgs ++ ["--accept-flake-config"];
         };
       };
 

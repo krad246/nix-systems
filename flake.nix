@@ -213,6 +213,8 @@
             "do"
             "docker"
             "gce"
+            "kexec"
+            "kexec-bundle"
             "kubevirt"
             "linode"
             "lxc-metadata"
@@ -220,6 +222,13 @@
             "openstack"
             "proxmox-lxc"
             "proxmox"
+            "qcow"
+            "qcow-efi"
+            "raw"
+            "raw-efi"
+            "vagrant-virtualbox"
+            "virtualbox"
+            "vmware"
           ];
 
           include = builtins.removeAttrs formats exclude;
