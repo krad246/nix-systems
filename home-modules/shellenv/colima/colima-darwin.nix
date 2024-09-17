@@ -57,7 +57,7 @@
 
   parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
 in {
-  home.packages = with pkgs; [colima docker];
+  home.packages = with pkgs; [colima];
   imports = [
     (mkLaunchUnit parse.cpu.name)
   ];
