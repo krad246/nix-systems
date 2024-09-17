@@ -184,7 +184,6 @@
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 
       perSystem = {
-        self',
         pkgs,
         lib,
         system,
@@ -206,34 +205,21 @@
             lib.attrsets.attrByPath ["config" "formats"] {}
             nixosCfg;
 
-          exclude = [
-            "amazon"
-            "azure"
-            "cloudstack"
-            "do"
-            "docker"
-            "gce"
-            "kexec"
-            "kexec-bundle"
-            "kubevirt"
-            "linode"
-            "lxc-metadata"
-            "lxc"
-            "openstack"
-            "proxmox-lxc"
-            "proxmox"
-            "qcow"
-            "qcow-efi"
-            "raw"
-            "raw-efi"
-            "vagrant-virtualbox"
-            "virtualbox"
-            "vmware"
+          include = [
+            "iso"
+            "install-iso"
+            "install-iso-hyperv"
+            "vm"
+            "vm-bootloader"
+            "vm-nogui"
           ];
 
-          include = builtins.removeAttrs formats exclude;
+          filtered = let
+            included = name: (builtins.elem name include);
+          in
+            lib.attrsets.filterAttrs (name: _value: included name) formats;
         in
-          builtins.trace (builtins.attrNames include) include;
+          filtered;
 
         hostFormatName = nixosCfg: format: let
           inherit (nixosCfg.config.networking) hostName;
@@ -285,13 +271,6 @@
             (lib.lists.optionals pkgs.stdenv.isLinux [formats])
             (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install-unattended disko-install;}])
           ]);
-
-        apps =
-          lib.attrsets.mapAttrs (_pname: drv: {
-            type = "app";
-            program = lib.getExe drv;
-          })
-          self'.packages;
       };
 
       ezConfigs = {
