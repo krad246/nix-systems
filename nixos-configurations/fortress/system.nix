@@ -4,6 +4,7 @@
   ...
 }: {
   imports = with ezModules; [
+    amdgpu
     bluetooth
     gnome-desktop
     nixos

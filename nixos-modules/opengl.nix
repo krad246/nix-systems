@@ -3,13 +3,6 @@
   pkgs,
   ...
 }: {
-  services = {
-    xserver = {
-      enable = true;
-      videoDrivers = ["modesetting"];
-    };
-  };
-
   hardware = {
     opengl = {
       enable = true;
