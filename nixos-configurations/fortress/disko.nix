@@ -51,16 +51,6 @@ in {
           };
         };
       };
-
-      secondary = {
-        device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23080R800503";
-        type = "disk";
-        content = {
-          type = "gpt";
-          partitions = {
-          };
-        };
-      };
     };
 
     lvm_vg.pool = {
@@ -85,7 +75,7 @@ in {
         };
 
         "persist" = {
-          size = "4G";
+          size = "5%VG";
           content = {
             type = "filesystem";
             format = "ext4";
