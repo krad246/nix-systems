@@ -1,7 +1,8 @@
 {
   self,
-  pkgs,
   config,
+  lib,
+  pkgs,
   ...
 }: let
   inherit (config.networking) hostName;
@@ -20,9 +21,19 @@
     ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
 
   closureInfo = pkgs.closureInfo {rootPaths = dependencies;};
+
+  nixos-install-unattended = pkgs.writeShellApplication {
+    name = "nixos-install-unattended";
+    text = let
+      installer = self.packages.${pkgs.stdenv.system}.nixos-install-unattended;
+    in ''
+      ${lib.getExe installer} --system-config '${builtins.toJSON
+        machine.config.specialisations.${hostName}.config}' "$@"
+    '';
+  };
 in {
   environment.etc."install-closure".source = "${closureInfo}/store-paths";
   environment.systemPackages = [
-    self.packages.${pkgs.stdenv.system}.nixos-install-unattended
+    nixos-install-unattended
   ];
 }
