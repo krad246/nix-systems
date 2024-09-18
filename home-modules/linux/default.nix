@@ -66,7 +66,6 @@ in {
       "us.zoom.Zoom"
       "org.signal.Signal"
       "com.spotify.Client"
-      "com.valvesoftware.Steam"
       "com.github.tchx84.Flatseal"
     ];
   };
