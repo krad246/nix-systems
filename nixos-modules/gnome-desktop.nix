@@ -1,18 +1,12 @@
-{
-  lib,
-  pkgs,
-  ...
-}: {
-  xdg.portal.enable = true;
-
+{pkgs, ...}: {
   services = {
     xserver = {
       enable = true;
       enableCtrlAltBackspace = true;
+
       displayManager.gdm.enable = true;
       desktopManager.gnome.enable = true;
-      displayManager.startx.enable = true;
-      videoDrivers = ["modesetting"];
+
       excludePackages = with pkgs; [xterm];
     };
   };
@@ -45,16 +39,4 @@
       atomix # puzzle game
       yelp
     ]);
-
-  hardware = {
-    opengl = {
-      enable = true;
-      driSupport = true;
-      driSupport32Bit = lib.mkIf pkgs.stdenv.isx86_64 true;
-    };
-  };
-
-  services = {
-    system76-scheduler.enable = true;
-  };
 }

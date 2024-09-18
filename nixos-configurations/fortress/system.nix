@@ -8,7 +8,9 @@
     bluetooth
     gnome-desktop
     nixos
+    opengl
     pipewire
+    system76-scheduler
     whitesur
   ];
 
@@ -25,7 +27,5 @@
   system.stateVersion = lib.trivial.release;
 }
 // lib.attrsets.optionalAttrs (!lib.trivial.inPureEvalMode) {
-  imports = [ezModules.flatpak];
-
-  hardware.steam-hardware.enable = true;
+  services.flatpak.enable = true;
 }
