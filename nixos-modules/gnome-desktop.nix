@@ -3,6 +3,8 @@
   pkgs,
   ...
 }: {
+  xdg.portal.enable = true;
+
   services = {
     xserver = {
       enable = true;
@@ -45,8 +47,6 @@
     ]);
 
   hardware = {
-    bluetooth.enable = true;
-    pulseaudio.enable = false;
     opengl = {
       enable = true;
       driSupport = true;
@@ -54,22 +54,7 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    whitesur-gtk-theme
-    whitesur-icon-theme
-    whitesur-cursors
-  ];
-
-  # Enable sound with pipewire.
-  sound.enable = lib.mkDefault true;
-  security.rtkit.enable = true;
   services = {
     system76-scheduler.enable = true;
-    pipewire = {
-      enable = lib.mkDefault true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
   };
 }

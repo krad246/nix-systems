@@ -5,8 +5,11 @@
 }:
 {
   imports = with ezModules; [
+    bluetooth
     gnome-desktop
     nixos
+    pipewire
+    whitesur
   ];
 
   services.flatpak.enable = lib.mkDefault false;
@@ -22,5 +25,7 @@
   system.stateVersion = lib.trivial.release;
 }
 // lib.attrsets.optionalAttrs (!lib.trivial.inPureEvalMode) {
-  services.flatpak.enable = true;
+  imports = [ezModules.flatpak];
+
+  hardware.steam-hardware.enable = true;
 }
