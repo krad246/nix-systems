@@ -21,7 +21,8 @@
       [${os}]
       @${pname} *ARGS:
         #!${lib.meta.getExe pkgs.bash}
-        ${lib.meta.getExe' drv pname} ${lib.strings.concatStringsSep " " extraArgs} {{ ARGS }}
+        ${lib.meta.getExe' drv pname} \
+          ${lib.strings.concatStringsSep " \\\n    " extraArgs} {{ ARGS }}
 
       ${maybeString (args ? alias) (mkAlias args.alias pname)}
     '';
@@ -46,7 +47,14 @@
         justfile = mkJustRecipe {
           drv = pkgs.nixos-rebuild;
           os = "linux";
-          extraArgs = builderArgs ++ ["--use-remote-sudo" "--fallback" "--accept-flake-config"];
+          extraArgs =
+            builderArgs
+            ++ [
+              "--use-remote-sudo"
+              "--fallback"
+              "--accept-flake-config"
+              "--specialisation $HOSTNAME"
+            ];
           alias = "os";
         };
       };

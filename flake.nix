@@ -13,7 +13,7 @@
     ];
   };
 
-  inputs = rec {
+  inputs = {
     # Package distributions
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
@@ -255,12 +255,12 @@
 
               disko format \
                 --write-efi-boot-entries \
-                --system-config '{}' \
+                --system-config '${builtins.toJSON {}}' \
                 "$@"
 
               disko mount \
                 --write-efi-boot-entries \
-                --system-config '{}' \
+                --system-config '${builtins.toJSON {}}' \
                 "$@"
             '';
           };
