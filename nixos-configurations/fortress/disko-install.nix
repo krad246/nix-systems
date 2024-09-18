@@ -22,10 +22,10 @@
 
   closureInfo = pkgs.closureInfo {rootPaths = dependencies;};
 
-  nixos-install-unattended = pkgs.writeShellApplication {
-    name = "nixos-install-unattended";
+  disko-install = pkgs.writeShellApplication {
+    name = "disko-install";
     text = let
-      installer = self.packages.${pkgs.stdenv.system}.nixos-install-unattended;
+      installer = self.packages.${pkgs.stdenv.system}.disko-install;
     in ''
       ${lib.getExe installer} --system-config '${builtins.toJSON {}}' "$@"
     '';
@@ -33,6 +33,6 @@
 in {
   environment.etc."install-closure".source = "${closureInfo}/store-paths";
   environment.systemPackages = [
-    nixos-install-unattended
+    disko-install
   ];
 }

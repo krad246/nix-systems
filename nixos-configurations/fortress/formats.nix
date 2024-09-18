@@ -25,7 +25,7 @@ in {
       // {
         imports =
           [ezModules.efiboot]
-          ++ [./offline-closure-installer.nix];
+          ++ [./disko-install.nix];
       };
     install-iso-hyperv = args: let
       hypervOpts = hyperv;
@@ -69,7 +69,7 @@ in {
       (sd-aarch64 args)
       // {
         imports = [
-          ./offline-closure-installer.nix
+          ./disko-install.nix
         ];
       };
 

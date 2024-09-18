@@ -47,7 +47,7 @@
       la = "${ll} -A";
       lal = la;
 
-      reload = "${lib.getExe pkgs.direnv} reload \"$PWD\" && exec $SHELL";
+      reload = "${lib.getExe pkgs.direnv} allow \"$PWD\" && ${lib.getExe pkgs.direnv} reload \"$PWD\"";
     };
   };
 

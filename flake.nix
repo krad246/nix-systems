@@ -238,8 +238,8 @@
             declared;
 
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
-          nixos-install-unattended = pkgs.writeShellApplication {
-            name = "nixos-install-unattended";
+          disko-install = pkgs.writeShellApplication {
+            name = "disko-install";
             text = ''
               disko() {
                 mode="$1"
@@ -258,12 +258,10 @@
                 "$@"
             '';
           };
-
-          disko-install = nixos-install-unattended;
         in
           lib.attrsets.mergeAttrsList (lib.lists.flatten [
             (lib.lists.optionals pkgs.stdenv.isLinux [formats])
-            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit nixos-install-unattended disko-install;}])
+            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit disko-install;}])
           ]);
       };
 

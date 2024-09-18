@@ -13,7 +13,6 @@
     if noXlibs
     then false
     else lib.attrsets.attrByPath ["services" "xserver" "enable"] false osConfig; # usually true.
-  hasFlatpak = lib.attrsets.attrByPath ["services" "flatpak" "enable"] false osConfig;
 
   # WSL instances define this attribute
   isWSL = lib.attrsets.attrByPath ["wsl" "enable"] false osConfig;
@@ -41,13 +40,12 @@
     then false
     else hasXEnabled;
 
-  baseModules = lib.debug.traceIf isGraphicalNixOS "base modules" isGraphicalNixOS;
+  baseModules = isGraphicalNixOS;
   extendedModules = let
     rest = baseModules && !isVM && !isIso;
   in
-    lib.debug.traceIf rest "extended modules"
     rest;
-  flatpakModules = lib.debug.traceIf (extendedModules && hasFlatpak) "flatpak modules" true;
+  flatpakModules = true;
 in {
   imports =
     [nix-flatpak.homeManagerModules.nix-flatpak]
