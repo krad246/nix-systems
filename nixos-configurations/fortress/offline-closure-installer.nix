@@ -27,8 +27,7 @@
     text = let
       installer = self.packages.${pkgs.stdenv.system}.nixos-install-unattended;
     in ''
-      ${lib.getExe installer} --system-config '${builtins.toJSON
-        machine.config.specialisations.${hostName}.config}' "$@"
+      ${lib.getExe installer} --system-config '${builtins.toJSON {}}' "$@"
     '';
   };
 in {

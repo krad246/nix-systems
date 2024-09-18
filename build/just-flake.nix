@@ -104,7 +104,7 @@
           flakeref := "^(([[:ascii:]]+)\\s)?(([[:ascii:]]+)#([[:ascii:]]+))(\\s([[:ascii:]]))?$"
           build *ARGS: (nix "build" replace_regex(ARGS, \
                                                     flakeref, \
-                                                    "$2 $7 --out-link $4/$5 $3"))
+                                                    "--out-link $4/$5 $3 $2 $7"))
         '';
       };
 
