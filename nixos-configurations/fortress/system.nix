@@ -14,6 +14,8 @@
     whitesur
   ];
 
+  services.flatpak.enable = lib.mkDefault false;
+
   users.users.krad246 = {
     isNormalUser = true;
     description = "Keerthi Radhakrishnan";
