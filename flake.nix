@@ -255,12 +255,6 @@
 
               disko format \
                 --write-efi-boot-entries \
-                --system-config '${builtins.toJSON {}}' \
-                "$@"
-
-              disko mount \
-                --write-efi-boot-entries \
-                --system-config '${builtins.toJSON {}}' \
                 "$@"
             '';
           };
