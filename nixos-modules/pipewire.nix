@@ -1,6 +1,7 @@
 {lib, ...}: {
   hardware = {
     pulseaudio.enable = false;
+    pulseaudio.support32Bit = true;
   };
 
   sound.enable = lib.mkDefault true;
