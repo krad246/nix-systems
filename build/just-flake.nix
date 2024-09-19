@@ -19,6 +19,7 @@
     in ''
       # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
       [${os}]
+      [no-exit-message]
       @${pname} *ARGS:
         #!${lib.meta.getExe pkgs.bash}
         ${lib.meta.getExe' drv pname} \
