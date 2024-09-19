@@ -14,12 +14,6 @@
 
   services.flatpak.enable = lib.mkDefault false;
 
-  boot.initrd.systemd.enable = true;
-  system.etc.overlay = {
-    enable = true;
-    mutable = true;
-  };
-
   users.users.krad246 = {
     isNormalUser = true;
     description = "Keerthi Radhakrishnan";
