@@ -6,7 +6,7 @@
   specialisation = {
     ${config.networking.hostName} = {
       configuration = {
-        imports = [ezModules.flatpak];
+        imports = [ezModules.flatpak] ++ [ezModules.steam];
       };
     };
   };
