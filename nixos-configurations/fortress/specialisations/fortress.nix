@@ -1,6 +1,7 @@
 {
   ezModules,
   inputs,
+  pkgs,
   ...
 }: let
   inherit (inputs) nixos-hardware;
@@ -19,6 +20,10 @@ in {
             nixos-hardware.nixosModules.common-pc
             nixos-hardware.nixosModules.common-pc-ssd
           ];
+
+        hardware.steam-hardware.enable = true;
+        boot.kernelPackages = pkgs.linuxPackages_latest;
+        services.switcherooControl.enable = true;
       };
     };
   };
