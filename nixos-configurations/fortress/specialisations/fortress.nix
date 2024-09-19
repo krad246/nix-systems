@@ -1,18 +1,15 @@
 {
   ezModules,
-  config,
   inputs,
   ...
 }: let
   inherit (inputs) nixos-hardware;
 in {
   specialisation = {
-    ${config.networking.hostName} = {
+    fortress = {
       configuration = {
         imports =
           [ezModules.flatpak]
-          ++ [ezModules.steam]
-          ++ [ezModules.amdgpu]
           ++ [
             nixos-hardware.nixosModules.common-cpu-amd
             nixos-hardware.nixosModules.common-cpu-amd-pstate

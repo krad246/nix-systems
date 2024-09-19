@@ -7,7 +7,6 @@
     bluetooth
     gnome-desktop
     nixos
-    opengl
     pipewire
     system76-scheduler
     whitesur
