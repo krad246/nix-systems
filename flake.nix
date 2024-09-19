@@ -98,7 +98,9 @@
     };
 
     # Hardware platform configurations with options preset
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+    };
 
     # Simple modules for generating a variety of image formats
     nixos-generators = {
