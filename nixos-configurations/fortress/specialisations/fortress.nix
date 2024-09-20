@@ -23,7 +23,17 @@ in {
 
         hardware.steam-hardware.enable = true;
         boot.kernelPackages = pkgs.linuxPackages_latest;
-        services.switcherooControl.enable = true;
+        programs.ssh = {
+          startAgent = true;
+        };
+        services = {
+          switcherooControl.enable = true;
+          openssh = {
+            enable = true;
+            startWhenNeeded = true;
+            ports = [22];
+          };
+        };
       };
     };
   };
