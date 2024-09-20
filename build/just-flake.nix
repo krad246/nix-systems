@@ -1,4 +1,4 @@
-{
+_: {
   perSystem = {
     lib,
     pkgs,
@@ -133,7 +133,7 @@
       check = {
         enable = true;
         justfile = ''
-          check *ARGS: (fmt) (add) (run)
+          check *ARGS: (fmt) (add) (run ".#build/all")
         '';
       };
 
@@ -171,7 +171,7 @@
         enable = true;
         justfile = ''
           rekey *ARGS:
-            env --chdir "$FLAKE_ROOT/secrets" \
+            ${lib.getExe' pkgs.coreutils "env"} --chdir "$FLAKE_ROOT/secrets" \
               ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
         '';
       };

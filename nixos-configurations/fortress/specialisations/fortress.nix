@@ -10,7 +10,7 @@ in {
     fortress = {
       configuration = {
         imports =
-          [ezModules.flatpak]
+          [ezModules.flatpak ezModules.kdeconnect]
           ++ [
             nixos-hardware.nixosModules.common-cpu-amd
             nixos-hardware.nixosModules.common-cpu-amd-pstate

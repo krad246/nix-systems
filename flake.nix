@@ -17,7 +17,12 @@
     # Package distributions
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    # Mandatory input alias, seems to be assumed by lots of packages
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+
+    # Fork of nix
     lix.url = "git+https://git.lix.systems/lix-project/lix.git";
 
     # Legacy and flake compatibility shims.
@@ -43,7 +48,7 @@
     # An opinionated Nix flake library (see flake-utils)
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
+      inputs.nixpkgs-lib.follows = "nixpkgs-stable";
     };
 
     # Glue logic between just and Nix (replacement to mission-control)
@@ -54,7 +59,7 @@
     # Swiss-army-knife formatter.
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
     # Code cleanliness checking for developers.
@@ -62,8 +67,8 @@
       url = "github:cachix/pre-commit-hooks.nix";
       inputs = {
         flake-compat.follows = "flake-compat";
-        nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-stable";
+        nixpkgs-stable.follows = "nixpkgs-stable";
       };
     };
 
@@ -71,7 +76,7 @@
     nixos-wsl = {
       url = "github:nix-community/nixos-wsl";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-stable";
         flake-compat.follows = "flake-compat";
       };
     };
@@ -85,14 +90,14 @@
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
     # Flake-Parts module gluing it together
     ez-configs = {
       url = "github:ehllie/ez-configs";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-stable";
         flake-parts.follows = "flake-parts";
       };
     };
@@ -105,7 +110,7 @@
     # Simple modules for generating a variety of image formats
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
     # Immutable OS root filesystem (erase your darlings)
@@ -114,14 +119,14 @@
     # Declarative disk partitioning
     disko = {
       url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
     # AGE encrypted secrets
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-stable";
         darwin.follows = "darwin";
         home-manager.follows = "home-manager";
       };
@@ -130,7 +135,7 @@
     # Handle rekeying via Yubikey, etc.
     agenix-rekey = {
       url = "github:oddlama/agenix-rekey";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
       inputs.pre-commit-hooks.follows = "pre-commit-hooks-nix";
     };
 
@@ -142,16 +147,20 @@
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
       inputs.flake-utils.follows = "flake-utils";
-      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
     nixos-cosmic = {
       url = "github:lilyinstarlight/nixos-cosmic";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-stable";
+        nixpkgs-stable.follows = "nixpkgs-stable";
         flake-compat.follows = "flake-compat";
       };
+    };
+
+    dconf2nix = {
+      url = "github:nix-community/dconf2nix/master";
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
@@ -164,7 +173,7 @@
     ...
   }: let
     lib =
-      inputs.nixpkgs.lib.extend
+      inputs.nixpkgs-stable.lib.extend
       (_final: _prev: (import ./lib));
   in
     flake-parts.lib.mkFlake {

@@ -70,4 +70,15 @@ in {
       "com.valvesoftware.Steam"
     ];
   };
+
+  xdg.desktopEntries = lib.mkIf baseModules {
+    "org.kde.kdeconnect.nonplasma" = {
+      name = "org.kde.kdeconnect.nonplasma";
+      noDisplay = true;
+    };
+    "org.gnome.Software" = {
+      name = "org.gnome.Software";
+      noDisplay = true;
+    };
+  };
 }
