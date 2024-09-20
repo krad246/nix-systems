@@ -1,4 +1,4 @@
-_: {
+{self, ...}: {
   perSystem = {
     lib,
     pkgs,
@@ -30,7 +30,7 @@ _: {
   in {
     just-flake.features = let
       # Extra args to tack onto the invocation wrappers below...
-      flakeRoot = "$FLAKE_ROOT";
+      flakeRoot = "${self}";
       commonArgs = [
         "--option experimental-features 'nix-command flakes'"
         "--option inputs-from ${flakeRoot}"
@@ -40,6 +40,14 @@ _: {
     in {
       treefmt = {
         enable = true;
+      };
+
+      edit = {
+        enable = true;
+        justfile = ''
+          edit *ARGS:
+            ${lib.getExe pkgs.neovim} {{ ARGS }}
+        '';
       };
 
       # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
