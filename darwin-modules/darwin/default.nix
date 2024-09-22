@@ -4,7 +4,6 @@ in {
   imports =
     [
       ./agenix.nix
-      ./flake-registry.nix
       ./homebrew
       ./linux-builder.nix
       ./mac-app-util.nix
