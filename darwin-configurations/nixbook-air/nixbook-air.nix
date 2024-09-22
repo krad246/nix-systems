@@ -72,7 +72,7 @@
         hostName = "fortress";
         systems = ["aarch64-linux" "x86_64-linux"];
         protocol = "ssh-ng";
-        maxJobs = 80;
+        maxJobs = 128;
         speedFactor = 8;
         sshUser = "krad246";
         sshKey = config.age.secrets."id_ed25519_priv.age".path;
