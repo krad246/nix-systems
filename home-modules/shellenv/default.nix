@@ -27,7 +27,7 @@
     ]
     ++ [
       ./agenix.nix
-      ./secrets
+      ./secrets.nix
     ]
     ++ [
       ./starship.nix

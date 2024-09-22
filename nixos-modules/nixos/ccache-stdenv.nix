@@ -1,1 +1,5 @@
-../../darwin-modules/darwin/ccache-stdenv.nix
+{
+  imports = [
+    ../../darwin-modules/darwin/ccache-stdenv.nix
+  ];
+}

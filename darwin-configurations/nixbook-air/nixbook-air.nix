@@ -5,6 +5,11 @@
 }: {
   imports = with ezModules; [
     darwin
+    dock
+    finder
+    pointer
+    single-user
+    ui-ux
   ];
 
   users = {
@@ -62,6 +67,15 @@
         speedFactor = 2;
         sshUser = "builder";
         sshKey = "/etc/nix/builder_ed25519";
+      }
+      {
+        hostName = "fortress";
+        systems = ["aarch64-linux" "x86_64-linux"];
+        protocol = "ssh-ng";
+        maxJobs = 80;
+        speedFactor = 8;
+        sshUser = "krad246";
+        sshKey = config.age.secrets."id_ed25519_priv.age".path;
       }
     ];
   };

@@ -1,3 +1,3 @@
 {
-  imports = [./dullahan.nix ./settings.nix];
+  imports = [./dullahan.nix];
 }

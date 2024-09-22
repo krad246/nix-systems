@@ -5,6 +5,11 @@
 }: {
   imports = with ezModules; [
     darwin
+    dock
+    finder
+    pointer
+    single-user
+    ui-ux
   ];
 
   # add nix to sshd path so nix store is pingable
@@ -50,4 +55,20 @@
       IdentitiesOnly yes
       IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
   '';
+
+  # add a remote builder!
+  nix = {
+    distributedBuilds = true;
+    buildMachines = [
+      {
+        hostName = "fortress";
+        systems = ["aarch64-linux" "x86_64-linux"];
+        protocol = "ssh-ng";
+        maxJobs = 80;
+        speedFactor = 8;
+        sshUser = "krad246";
+        sshKey = config.age.secrets."id_ed25519_priv.age".path;
+      }
+    ];
+  };
 }

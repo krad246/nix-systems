@@ -1,3 +1,3 @@
 {
-  imports = [./nixbook-air.nix ./settings.nix];
+  imports = [./nixbook-air.nix];
 }
