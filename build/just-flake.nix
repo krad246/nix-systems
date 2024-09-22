@@ -179,7 +179,7 @@
         enable = true;
         justfile = ''
           rekey *ARGS:
-            ${lib.getExe' pkgs.coreutils "env"} --chdir "$FLAKE_ROOT/secrets" \
+            ${lib.getExe' pkgs.coreutils "env"} --chdir "${flakeRoot}/secrets" \
               ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
         '';
       };
