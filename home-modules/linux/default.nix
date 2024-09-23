@@ -61,14 +61,18 @@ in {
     ]));
 
   services = lib.mkIf flatpakModules {
-    flatpak.packages = [
-      "org.pulseaudio.pavucontrol"
-      "us.zoom.Zoom"
-      "org.signal.Signal"
-      "com.spotify.Client"
-      "com.github.tchx84.Flatseal"
-      "com.valvesoftware.Steam"
-    ];
+    flatpak = {
+      uninstallUnmanaged = true;
+      update.onActivation = true;
+      packages = [
+        "org.pulseaudio.pavucontrol"
+        "us.zoom.Zoom"
+        "org.signal.Signal"
+        "com.spotify.Client"
+        "com.github.tchx84.Flatseal"
+        "com.valvesoftware.Steam"
+      ];
+    };
   };
 
   xdg.desktopEntries = lib.mkIf baseModules {
