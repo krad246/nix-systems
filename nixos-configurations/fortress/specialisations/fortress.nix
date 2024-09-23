@@ -10,24 +10,31 @@ in {
     fortress = {
       configuration = {
         imports =
-          [ezModules.flatpak ezModules.kdeconnect ezModules.avahi]
-          ++ [
-            nixos-hardware.nixosModules.common-cpu-amd
-            nixos-hardware.nixosModules.common-cpu-amd-pstate
-            nixos-hardware.nixosModules.common-cpu-amd-zenpower
-            nixos-hardware.nixosModules.common-gpu-amd
-            nixos-hardware.nixosModules.common-hidpi
-            nixos-hardware.nixosModules.common-pc
-            nixos-hardware.nixosModules.common-pc-ssd
-          ];
+          (with ezModules; [
+            avahi
+            bluetooth
+            flatpak
+            kdeconnect
+            pipewire
+            system76-scheduler
+          ])
+          ++ (with nixos-hardware.nixosModules; [
+            common-cpu-amd
+            common-cpu-amd-pstate
+            common-cpu-amd-zenpower
+            common-gpu-amd
+            common-hidpi
+            common-pc
+            common-pc-ssd
+          ]);
 
-        hardware.steam-hardware.enable = true;
         boot.kernelPackages = pkgs.linuxPackages_latest;
+
         programs.ssh = {
           startAgent = true;
         };
+
         services = {
-          switcherooControl.enable = true;
           openssh = {
             enable = true;
             startWhenNeeded = true;

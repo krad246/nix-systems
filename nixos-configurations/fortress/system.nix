@@ -4,11 +4,8 @@
   ...
 }: {
   imports = with ezModules; [
-    bluetooth
     gnome-desktop
     nixos
-    pipewire
-    system76-scheduler
     whitesur
   ];
 
