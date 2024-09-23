@@ -20,10 +20,7 @@
       p.yaml
     ]);
 in {
-  imports = [../fd.nix ../ripgrep.nix];
-
   home.packages = with pkgs; [nil];
-
   programs.neovim = {
     enable = true;
     viAlias = true;
