@@ -97,7 +97,7 @@ in {
 
     nodev."/" = {
       fsType = "tmpfs";
-      mountOptions = ["defaults"];
+      mountOptions = ["defaults"] ++ ["mode=1755"];
     };
   };
 
