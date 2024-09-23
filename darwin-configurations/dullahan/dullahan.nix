@@ -54,6 +54,7 @@
 
       IdentitiesOnly yes
       IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
+      StrictHostKeyChecking accept-new
   '';
 
   # add a remote builder!
