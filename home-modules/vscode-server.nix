@@ -9,7 +9,6 @@ in {
 
   services.vscode-server = {
     enable = true;
-    enableFHS = true;
     extraRuntimeDependencies = [pkgs.nerdfonts];
   };
 }

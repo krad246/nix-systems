@@ -6,9 +6,11 @@
   osConfig,
   ...
 }: {
-  imports = with ezModules; [
-    shellenv
-  ];
+  imports = with ezModules;
+    [
+      shellenv
+    ]
+    ++ (lib.optionals (lib.attrsets.attrByPath ["wsl" "enable"] false osConfig) [vscode-server]);
 
   home = {
     username = osConfig.users.users.keerad.name or "keerad";
@@ -20,10 +22,6 @@
         then "/Users/keerad"
         else "/home/keerad"
       );
-
-    packages = with pkgs; [
-      nodejs
-    ];
   };
 
   nix.settings = {
