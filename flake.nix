@@ -74,7 +74,7 @@
 
     # WSL distribution on NixOS
     nixos-wsl = {
-      url = "github:nix-community/nixos-wsl";
+      url = "github:nix-community/nixos-wsl/main";
       inputs = {
         nixpkgs.follows = "nixpkgs-stable";
         flake-compat.follows = "flake-compat";
