@@ -7,6 +7,7 @@
   programs.bat = {
     enable = true;
     config.theme = "gruvbox-dark";
+    extraPackages = with pkgs.bat-extras; [batgrep batman batwatch batdiff batpipe];
   };
 
   home = {
@@ -21,6 +22,9 @@
 
     sessionVariables = {
       BATDIFF_USE_DELTA = lib.trivial.boolToString true;
+      LESSOPEN = "|${lib.getExe pkgs.bat-extras.batpipe} %s";
+      LESS = "$LESS -R";
+      BATPIPE = "color";
     };
   };
 
