@@ -30,7 +30,7 @@
       ./secrets.nix
     ]
     ++ [
-      ./starship.nix
+      ./starship
       ./zoxide.nix
       ./zsh.nix
     ];
@@ -40,14 +40,14 @@
     preferXdgDirectories = true;
 
     shellAliases = rec {
-      l = "${lib.getExe pkgs.lsd} --hyperlink auto --group-dirs first";
+      l = "${lib.getExe pkgs.lsd} --hyperlink auto --group-dirs first --icon-theme unicode";
 
       ls = l;
       ll = "${ls} -gl";
       la = "${ll} -A";
       lal = la;
 
-      reload = "${lib.getExe pkgs.direnv} allow \"$PWD\" && ${lib.getExe pkgs.direnv} reload \"$PWD\"";
+      reload = "${lib.getExe pkgs.direnv} allow \"$PWD\" && ${lib.getExe pkgs.direnv} reload \"$PWD\" && exec $SHELL";
     };
   };
 
