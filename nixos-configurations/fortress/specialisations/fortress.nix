@@ -44,6 +44,8 @@ in {
             };
           };
         };
+
+        boot.kernelParams = ["usbcore.old_scheme_first=1"];
       };
     };
   };
