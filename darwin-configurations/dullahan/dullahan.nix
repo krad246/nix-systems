@@ -63,7 +63,7 @@
     buildMachines = [
       {
         hostName = "fortress";
-        systems = ["aarch64-linux" "x86_64-linux"];
+        systems = ["x86_64-linux"];
         protocol = "ssh-ng";
         maxJobs = 64;
         speedFactor = 4;
