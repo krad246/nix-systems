@@ -11,6 +11,7 @@ in {
       configuration = {
         imports =
           (with ezModules; [
+            agenix
             avahi
             bluetooth
             efiboot
@@ -46,6 +47,13 @@ in {
         };
 
         boot.kernelParams = ["usbcore.old_scheme_first=1"];
+
+        # services.cachix-watch-store = {
+        #  enable = true;
+        #  cacheName = "krad246";
+        #  cachixTokenFile = config.age.secrets.cachix.path;
+        #  verbose = true;
+        # };
       };
     };
   };
