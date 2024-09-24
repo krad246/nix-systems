@@ -13,6 +13,12 @@ in {
   programs.steam = {
     enable = true;
     package = unstable.steam;
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+
+    extest.enable = true;
+    # protontricks.enable = true;
+
+    remotePlay.openFirewall = true;
+    localNetworkGameTransfers.openFirewall = true;
+    dedicatedServer.openFirewall = true;
   };
 }

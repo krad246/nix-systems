@@ -85,7 +85,7 @@
         justfile = mkJustRecipe {
           drv = pkgs.home-manager;
           os = "unix";
-          extraArgs = builderArgs ++ ["-b bak"];
+          extraArgs = builderArgs ++ ["-b bak" "--accept-flake-config"];
           alias = "home";
         };
       };

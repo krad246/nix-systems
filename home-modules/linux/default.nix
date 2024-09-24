@@ -64,14 +64,17 @@ in {
     flatpak = {
       uninstallUnmanaged = true;
       update.onActivation = true;
-      packages = [
-        "org.pulseaudio.pavucontrol"
-        "us.zoom.Zoom"
-        "org.signal.Signal"
-        "com.spotify.Client"
-        "com.github.tchx84.Flatseal"
-        "com.valvesoftware.Steam"
-      ];
+      packages =
+        [
+          "org.pulseaudio.pavucontrol"
+          "us.zoom.Zoom"
+          "org.signal.Signal"
+          "com.spotify.Client"
+          "com.github.tchx84.Flatseal"
+        ]
+        ++ (lib.optionals (!(lib.attrsets.attrByPath ["programs" "steam" "enable"] false osConfig)) [
+          "com.valvesoftware.Steam"
+        ]);
     };
   };
 

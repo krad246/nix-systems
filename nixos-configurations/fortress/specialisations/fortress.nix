@@ -13,6 +13,7 @@ in {
           (with ezModules; [
             avahi
             bluetooth
+            efiboot
             flatpak
             kdeconnect
             pipewire
