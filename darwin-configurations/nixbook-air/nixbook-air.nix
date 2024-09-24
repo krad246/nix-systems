@@ -23,27 +23,38 @@
     knownUsers = ["krad246"];
   };
 
-  # add SSH access for remote building
-  environment.etc."ssh/ssh_config.d/101-dullahan.conf".text = ''
-    Host dullahan
-      HostName dullahan.local
-      User krad246
+  environment.etc = {
+    "ssh/ssh_config.d/101-dullahan.conf".text = ''
+      Host dullahan
+        HostName dullahan.local
+        User krad246
 
-      IdentitiesOnly yes
-      IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
-  '';
+        IdentitiesOnly yes
+        IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
+    '';
 
-  environment.etc."ssh/ssh_config.d/102-headless-penguin.conf".text = ''
-    Host headless-penguin
-      User builder
-      HostName localhost
-      Port 31022
+    "ssh/ssh_config.d/102-headless-penguin.conf".text = ''
+      Host headless-penguin
+        User builder
+        HostName localhost
+        Port 31022
 
-      ProxyJump dullahan
+        ProxyJump dullahan
 
-      IdentitiesOnly yes
-      IdentityFile /etc/nix/builder_ed25519
-  '';
+        IdentitiesOnly yes
+        IdentityFile /etc/nix/builder_ed25519
+    '';
+
+    "ssh/ssh_config.d/103-fortress.conf".text = ''
+      Host fortress
+        HostName fortress.local
+        User krad246
+
+        IdentitiesOnly yes
+        IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
+        StrictHostKeyChecking accept-new
+    '';
+  };
 
   # add a remote builder!
   nix = {
