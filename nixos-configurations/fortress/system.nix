@@ -4,6 +4,7 @@
   ...
 }: {
   imports = with ezModules; [
+    agenix
     gnome-desktop
     nixos
     whitesur

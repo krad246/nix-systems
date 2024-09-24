@@ -222,9 +222,11 @@
             "iso"
             "install-iso"
             "install-iso-hyperv"
+            "virtualbox"
             "vm"
             "vm-bootloader"
             "vm-nogui"
+            "vmware"
           ];
 
           filtered = let

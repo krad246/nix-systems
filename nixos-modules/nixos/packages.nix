@@ -2,7 +2,12 @@
   environment = {
     systemPackages = with pkgs; (
       [coreutils safe-rm]
-      ++ [bashmount]
+      ++ [bashmount duf dust]
+      ++ [
+        procps
+        procs
+        nodePackages.fkill-cli
+      ]
     );
   };
 }

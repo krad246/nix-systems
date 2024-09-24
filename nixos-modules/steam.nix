@@ -3,8 +3,8 @@
   pkgs,
   ...
 }: let
-  inherit (inputs) nixpkgs-unstable;
-  unstable = import nixpkgs-unstable {
+  inherit (inputs) nixos-unstable;
+  unstable = import nixos-unstable {
     inherit (pkgs.stdenv) system;
     config.allowUnfree = true;
   };

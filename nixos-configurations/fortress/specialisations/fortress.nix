@@ -1,7 +1,8 @@
 {
   ezModules,
   inputs,
-  pkgs,
+  config,
+  lib,
   ...
 }: let
   inherit (inputs) nixos-hardware;
@@ -11,7 +12,6 @@ in {
       configuration = {
         imports =
           (with ezModules; [
-            agenix
             avahi
             bluetooth
             efiboot
@@ -30,8 +30,6 @@ in {
             common-pc-ssd
           ]);
 
-        boot.kernelPackages = pkgs.linuxPackages_latest;
-
         programs.ssh = {
           startAgent = true;
         };
@@ -48,12 +46,13 @@ in {
 
         boot.kernelParams = ["usbcore.old_scheme_first=1"];
 
-        # services.cachix-watch-store = {
-        #  enable = true;
-        #  cacheName = "krad246";
-        #  cachixTokenFile = config.age.secrets.cachix.path;
-        #  verbose = true;
-        # };
+        services.cachix-watch-store = lib.mkIf (lib.attrsets.hasAttrByPath ["cachix.age"]
+          config.age.secrets) {
+          enable = true;
+          cacheName = "krad246";
+          cachixTokenFile = config.age.secrets."cachix.age".path;
+          verbose = true;
+        };
       };
     };
   };
