@@ -4,7 +4,7 @@
     pulseaudio.support32Bit = true;
   };
 
-  sound.enable = lib.mkDefault true;
+  # sound.enable = lib.mkDefault true;
   security.rtkit.enable = true;
   services = {
     pipewire = {

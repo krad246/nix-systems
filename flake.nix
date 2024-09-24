@@ -89,7 +89,7 @@
 
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/master";
       inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
