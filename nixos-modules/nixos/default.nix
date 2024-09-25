@@ -3,7 +3,6 @@
 in {
   imports =
     [
-      ./binfmt.nix
       ./ccache-stdenv.nix
       ./default-users.nix
       ./environment.nix

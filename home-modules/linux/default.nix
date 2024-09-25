@@ -87,5 +87,9 @@ in {
       name = "org.gnome.Software";
       noDisplay = true;
     };
+    "bottom" = {
+      name = "bottom";
+      noDisplay = true;
+    };
   };
 }

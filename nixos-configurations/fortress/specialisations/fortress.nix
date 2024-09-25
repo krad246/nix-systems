@@ -46,7 +46,10 @@ in {
           };
         };
 
-        boot.kernelParams = ["usbcore.old_scheme_first=1"];
+        boot = {
+          binfmt.emulatedSystems = ["aarch64-linux"];
+          kernelParams = ["usbcore.old_scheme_first=1"];
+        };
 
         services.cachix-watch-store = lib.mkIf (lib.attrsets.hasAttrByPath ["cachix.age"]
           config.age.secrets) {
