@@ -21,15 +21,16 @@ in {
             pipewire
             system76-scheduler
           ])
-          ++ lib.optionals pkgs.stdenv.isx86_64 (with nixos-hardware.nixosModules; [
-            common-cpu-amd
-            common-cpu-amd-pstate
-            common-cpu-amd-zenpower
-            common-gpu-amd
-            common-hidpi
-            common-pc
-            common-pc-ssd
-          ]);
+          ++ lib.optionals pkgs.stdenv.isx86_64 ([./hardware-configuration.nix]
+            ++ (with nixos-hardware.nixosModules; [
+              common-cpu-amd
+              common-cpu-amd-pstate
+              common-cpu-amd-zenpower
+              common-gpu-amd
+              common-hidpi
+              common-pc
+              common-pc-ssd
+            ]));
 
         programs.ssh = {
           startAgent = true;

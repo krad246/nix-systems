@@ -87,7 +87,7 @@ in {
       nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
     };
 
-    vagrant-virtualbox = args @ {lib, ...}: (virtualbox args) // {sound.enable = lib.mkForce false;};
+    vagrant-virtualbox = virtualbox;
 
     vm = {
       disko.enableConfig = false;
