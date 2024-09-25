@@ -47,7 +47,10 @@
       la = "${ll} -A";
       lal = la;
 
-      reload = "${lib.getExe pkgs.direnv} allow \"$PWD\" && ${lib.getExe pkgs.direnv} reload \"$PWD\" && exec $SHELL";
+      reload = ''
+        exec $SHELL --rcfile <(echo '. ~/.bashrc; ${lib.getExe pkgs.direnv} reload')
+      '';
+      tldr = "${lib.getExe pkgs.tldr}";
     };
   };
 
