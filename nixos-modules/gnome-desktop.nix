@@ -29,6 +29,8 @@
       gnome-clocks
       gnome-weather
       gnome-contacts
+      gnome-calendar
+      geary
       epiphany # web browser
       evince # document viewer
       gnome-characters
