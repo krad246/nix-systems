@@ -141,7 +141,7 @@
       check = {
         enable = true;
         justfile = ''
-          check *ARGS: (fmt) (add) (flake "check")
+          check *ARGS: (fmt) (add) (flake "check" ARGS)
         '';
       };
 

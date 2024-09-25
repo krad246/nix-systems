@@ -8,9 +8,10 @@ in {
   imports = [nixos-generators.nixosModules.all-formats];
 
   formatConfigs = rec {
-    hyperv = {
+    hyperv = {lib, ...}: {
       disko.enableConfig = false;
       boot.kernelParams = ["nomodeset"];
+      boot.binfmt.emulatedSystems = lib.mkForce [];
     };
 
     iso = {lib, ...}: {
@@ -18,6 +19,8 @@ in {
       boot.supportedFilesystems = {
         zfs = lib.mkForce false;
       };
+
+      boot.binfmt.emulatedSystems = lib.mkForce [];
     };
 
     install-iso = args:
@@ -28,7 +31,7 @@ in {
           ++ [./disko-install.nix];
       };
     install-iso-hyperv = args: let
-      hypervOpts = hyperv;
+      hypervOpts = hyperv args;
       installIsoOpts = install-iso args;
       removeMissing = builtins.removeAttrs hypervOpts ["hyperv"];
     in
@@ -90,14 +93,15 @@ in {
 
     vagrant-virtualbox = virtualbox;
 
-    vm = {
+    vm = {lib, ...}: {
       disko.enableConfig = false;
+      boot.binfmt.emulatedSystems = lib.mkForce [];
     };
 
     vm-bootloader = vm;
 
-    vm-nogui = {lib, ...}:
-      vm
+    vm-nogui = args @ {lib, ...}:
+      vm args
       // {
         services.xserver = lib.mkForce {
           enable = false;
@@ -109,9 +113,10 @@ in {
         services.flatpak.enable = lib.mkForce false;
       };
 
-    vmware = {
+    vmware = {lib, ...}: {
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
+      boot.binfmt.emulatedSystems = lib.mkForce [];
     };
   };
 }
