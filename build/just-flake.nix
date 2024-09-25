@@ -6,48 +6,34 @@
     ...
   }: let
     # Compose a simple just target from the name of the incoming derivation
-    mkJustRecipe = args @ {
+    mkJustRecipe = {
       drv,
       pname ? lib.getName drv,
       os,
       extraArgs,
+      argFmt ? "{{ VERB }} {{ ARGS }}",
       ...
-    }: let
-      # Conditionally include an alias line if an alias is passd
-      maybeString = pred: val: lib.strings.optionalString pred val;
-      mkAlias = alias: pname: "alias ${alias} := ${pname}";
-    in ''
+    }: ''
       # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
       [${os}]
       [no-exit-message]
-      @${pname} *ARGS:
+      @${pname} VERB *ARGS:
         #!${lib.meta.getExe pkgs.bash}
         ${lib.meta.getExe' drv pname} \
-          ${lib.strings.concatStringsSep " \\\n    " extraArgs} {{ ARGS }}
-
-      ${maybeString (args ? alias) (mkAlias args.alias pname)}
+          ${lib.strings.concatStringsSep " \\\n    " extraArgs} \
+          ${argFmt}
     '';
   in {
     just-flake.features = let
       # Extra args to tack onto the invocation wrappers below...
-      flakeRoot = "$FLAKE_ROOT";
-      commonArgs = [
+      builderArgs = [
         "--option experimental-features 'nix-command flakes'"
-        "--option inputs-from ${flakeRoot}"
+        "--option inputs-from $FLAKE_ROOT"
+        "--option accept-flake-config true"
       ];
-      flakeArgs = ["--flake ${flakeRoot}"];
-      builderArgs = commonArgs ++ flakeArgs;
     in {
       treefmt = {
         enable = true;
-      };
-
-      edit = {
-        enable = true;
-        justfile = ''
-          edit *ARGS:
-            ${lib.getExe pkgs.neovim} {{ ARGS }}
-        '';
       };
 
       # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
@@ -60,11 +46,8 @@
             builderArgs
             ++ [
               "--use-remote-sudo"
-              "--fallback"
-              "--accept-flake-config"
-              "--specialisation $HOSTNAME"
+              "--flake $FLAKE_ROOT"
             ];
-          alias = "os";
         };
       };
 
@@ -74,8 +57,11 @@
         justfile = mkJustRecipe {
           drv = inputs'.darwin.packages.darwin-rebuild;
           os = "macos";
-          extraArgs = builderArgs ++ ["--fallback"];
-          alias = "os";
+          extraArgs =
+            builderArgs
+            ++ [
+              "--flake $FLAKE_ROOT"
+            ];
         };
       };
 
@@ -85,8 +71,12 @@
         justfile = mkJustRecipe {
           drv = pkgs.home-manager;
           os = "unix";
-          extraArgs = builderArgs ++ ["-b bak"];
-          alias = "home";
+          extraArgs =
+            builderArgs
+            ++ [
+              "-b bak"
+              "--flake $FLAKE_ROOT"
+            ];
         };
       };
 
@@ -96,7 +86,7 @@
         justfile = mkJustRecipe {
           drv = pkgs.nixFlakes;
           os = "unix";
-          extraArgs = commonArgs ++ ["--accept-flake-config"];
+          extraArgs = builderArgs;
         };
       };
 
@@ -179,7 +169,7 @@
         enable = true;
         justfile = ''
           rekey *ARGS:
-            ${lib.getExe' pkgs.coreutils "env"} --chdir "${flakeRoot}/secrets" \
+            ${lib.getExe' pkgs.coreutils "env"} --chdir "$FLAKE_ROOT/secrets" \
               ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
         '';
       };

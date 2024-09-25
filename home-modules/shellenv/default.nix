@@ -1,6 +1,7 @@
 {
-  pkgs,
+  config,
   lib,
+  pkgs,
   ...
 }: {
   imports =
@@ -48,7 +49,10 @@
       lal = la;
 
       reload = ''
-        exec $SHELL --rcfile <(echo '. ~/.bashrc; ${lib.getExe pkgs.direnv} reload')
+        exec ${lib.getExe pkgs.bashInteractive} \
+          --rcfile <(${lib.getExe' pkgs.coreutils "echo"} \
+              'source ${config.home.homeDirectory}/.bashrc; \
+              ${lib.getExe pkgs.direnv} reload')
       '';
       tldr = "${lib.getExe pkgs.tldr}";
     };
