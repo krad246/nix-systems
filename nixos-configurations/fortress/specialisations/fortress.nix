@@ -3,6 +3,7 @@
   inputs,
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit (inputs) nixos-hardware;
@@ -20,7 +21,7 @@ in {
             pipewire
             system76-scheduler
           ])
-          ++ (with nixos-hardware.nixosModules; [
+          ++ lib.optionals pkgs.stdenv.isx86_64 (with nixos-hardware.nixosModules; [
             common-cpu-amd
             common-cpu-amd-pstate
             common-cpu-amd-zenpower
