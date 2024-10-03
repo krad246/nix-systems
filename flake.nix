@@ -16,12 +16,12 @@
   inputs = {
     # Package distributions
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixos-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # Mandatory input alias, seems to be assumed by lots of packages
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
 
     # Fork of nix
     lix.url = "git+https://git.lix.systems/lix-project/lix.git";
@@ -77,7 +77,7 @@
     nixos-wsl = {
       url = "github:nix-community/nixos-wsl/main";
       inputs = {
-        nixpkgs.follows = "nixpkgs";
+        nixpkgs.follows = "nixpkgs-stable";
         flake-compat.follows = "flake-compat";
       };
     };
@@ -90,8 +90,8 @@
 
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager = {
-      url = "github:nix-community/home-manager/master";
-      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager/release-24.05";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
     };
 
     # Flake-Parts module gluing it together
@@ -307,14 +307,14 @@
 
               # Standalone configuration independent of the host
               standalone = let
-                inherit (inputs) nixpkgs;
+                inherit (inputs) nixpkgs-stable;
                 impure = builtins ? currentSystem;
                 system =
                   if impure
                   then builtins.currentSystem
                   else throw "Cannot build the
                 standalone configuration in pure mode!";
-                pkgs = import nixpkgs {inherit system;};
+                pkgs = import nixpkgs-stable {inherit system;};
               in {
                 enable = impure;
                 inherit pkgs;
