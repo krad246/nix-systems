@@ -8,11 +8,8 @@
   inherit (inputs) nix-flatpak;
 
   # found in the minimal profile
-  noXlibs = lib.attrsets.attrByPath ["environment" "noXlibs"] false osConfig;
   hasXEnabled =
-    if noXlibs
-    then false
-    else lib.attrsets.attrByPath ["services" "xserver" "enable"] false osConfig; # usually true.
+    lib.attrsets.attrByPath ["services" "xserver" "enable"] false osConfig; # usually true.
 
   # WSL instances define this attribute
   isWSL = lib.attrsets.attrByPath ["wsl" "enable"] false osConfig;
