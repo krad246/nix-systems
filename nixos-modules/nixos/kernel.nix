@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
@@ -7,7 +8,7 @@
     kernelPackages = pkgs.linuxPackages_latest;
     tmp = {
       cleanOnBoot = true;
-      useTmpfs = true;
+      useTmpfs = lib.mkDefault true;
     };
   };
 

@@ -21,14 +21,16 @@
           (with pkgs;
             [git]
             ++ [direnv nix-direnv]
-            ++ [just fd fzf ripgrep]
-            ++ [uutils-coreutils nano]
-            ++ [safe-rm]
-            ++ [procps util-linux]
+            ++ [just]
             ++ [nixFlakes nix-tree nil]
-            ++ [docker dive]
             ++ [inputs'.agenix.packages.agenix])
-          ++ (lib.optionals pkgs.stdenv.isLinux [pkgs.fuse pkgs.fuse3 pkgs.bindfs]);
+          ++ (lib.optionals pkgs.stdenv.isLinux [
+            pkgs.fuse
+            pkgs.fuse3
+            pkgs.bindfs
+            pkgs.procps
+            pkgs.util-linux
+          ]);
       };
     };
   };
