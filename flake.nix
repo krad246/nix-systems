@@ -197,6 +197,7 @@
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 
       perSystem = {
+        self',
         pkgs,
         lib,
         system,
@@ -283,6 +284,13 @@
             (lib.lists.optionals pkgs.stdenv.isLinux [formats])
             (lib.lists.optionals pkgs.stdenv.isLinux [{inherit disko-install;}])
           ]);
+
+        apps =
+          lib.attrsets.mapAttrs (_name: value: {
+            type = "app";
+            program = lib.getExe value;
+          })
+          self'.packages;
       };
 
       ezConfigs = {
