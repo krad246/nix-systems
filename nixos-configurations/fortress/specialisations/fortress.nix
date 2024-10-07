@@ -32,6 +32,16 @@ in {
               common-pc-ssd
             ]));
 
+        services.xserver.videoDrivers = ["amdgpu"];
+
+        hardware.graphics.extraPackages = [
+          pkgs.amdvlk
+        ];
+
+        hardware.graphics.extraPackages32 = [
+          pkgs.driversi686Linux.amdvlk
+        ];
+
         programs.ssh = {
           startAgent = true;
         };
@@ -44,19 +54,19 @@ in {
             settings = {
             };
           };
+
+          cachix-watch-store = lib.mkIf (lib.attrsets.hasAttrByPath ["cachix.age"]
+            config.age.secrets) {
+            enable = true;
+            cacheName = "krad246";
+            cachixTokenFile = config.age.secrets."cachix.age".path;
+            verbose = true;
+          };
         };
 
         boot = {
           binfmt.emulatedSystems = ["aarch64-linux"];
           kernelParams = ["usbcore.old_scheme_first=1"];
-        };
-
-        services.cachix-watch-store = lib.mkIf (lib.attrsets.hasAttrByPath ["cachix.age"]
-          config.age.secrets) {
-          enable = true;
-          cacheName = "krad246";
-          cachixTokenFile = config.age.secrets."cachix.age".path;
-          verbose = true;
         };
       };
     };

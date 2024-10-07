@@ -145,7 +145,7 @@ with lib.hm.gvariant; {
       activate-window-menu = [];
       begin-move = [];
       begin-resize = [];
-      close = ["<Control>w"];
+      close = [];
       cycle-panels = [];
       cycle-panels-backward = [];
       move-to-workspace-1 = [];
