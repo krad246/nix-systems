@@ -10,6 +10,7 @@ in {
       ./nix-core.nix
       ./system-packages.nix
       ./system-settings.nix
+      ./unfree.nix
     ]
     ++ [
       home-manager.darwinModules.home-manager

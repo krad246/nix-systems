@@ -3,9 +3,7 @@
   ezModules,
   ...
 }: {
-  imports =
-    (with ezModules; [discord kitty nerdfonts vscode])
-    ++ [./unionfs.nix ./mac-app-util.nix];
+  imports = with ezModules; [discord kitty nerdfonts vscode];
 
   home = {
     packages = with pkgs; [m-cli];

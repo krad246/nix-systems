@@ -30,6 +30,13 @@
         "--option experimental-features 'nix-command flakes'"
         "--option inputs-from $FLAKE_ROOT"
         "--option accept-flake-config true"
+        "--option builders-use-substitutes true"
+        "--option connect-timeout 60"
+        "--option timeout 60"
+        "--option max-silent-time 60"
+        "--option keep-going true"
+        "--option min-free 12884901888"
+        "--option preallocate-contents true"
       ];
     in {
       treefmt = {
@@ -177,12 +184,9 @@
       burn = {
         enable = true;
         justfile = ''
-          burn DISK +ARGS: (build ARGS)
+          burn +ARGS: (build ARGS)
             ${lib.getExe' pkgs.findutils "find"} -L {{ replace_regex(ARGS, flakeref, "$4/$5") }} \
-                  -type f -name "*.iso" -print0 | ${lib.getExe' pkgs.findutils "xargs"} -r -0 -I {} \
-                    ${lib.getExe' pkgs.coreutils "dd"} if={} of={{ (DISK) }} status=progress \
-                    conv=fsync,notrunc bs=64M
-        '';
+                  -type f -print0 | ${lib.getExe pkgs.pv} -0 --help       '';
       };
     };
   };

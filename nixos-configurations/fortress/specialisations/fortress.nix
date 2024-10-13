@@ -32,16 +32,6 @@ in {
               common-pc-ssd
             ]));
 
-        services.xserver.videoDrivers = ["amdgpu"];
-
-        hardware.graphics.extraPackages = [
-          pkgs.amdvlk
-        ];
-
-        hardware.graphics.extraPackages32 = [
-          pkgs.driversi686Linux.amdvlk
-        ];
-
         programs.ssh = {
           startAgent = true;
         };
@@ -65,7 +55,7 @@ in {
         };
 
         boot = {
-          binfmt.emulatedSystems = ["aarch64-linux"];
+          binfmt.emulatedSystems = lib.lists.remove pkgs.stdenv.system ["aarch64-linux"];
           kernelParams = ["usbcore.old_scheme_first=1"];
         };
       };
