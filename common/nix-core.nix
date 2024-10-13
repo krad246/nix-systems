@@ -5,10 +5,10 @@
     settings = {
       builders-use-substitutes = true;
       experimental-features = ["nix-command" "flakes"];
-      keep-outputs = lib.mkDefault false;
-      keep-derivations = lib.mkDefault false;
-      auto-optimise-store = false;
-      sandbox = lib.mkDefault false;
+      keep-outputs = lib.mkDefault true;
+      keep-derivations = lib.mkDefault true;
+      auto-optimise-store = lib.mkDefault true;
+      sandbox = lib.mkDefault "relaxed";
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"

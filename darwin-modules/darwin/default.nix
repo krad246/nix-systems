@@ -2,15 +2,15 @@
   inherit (inputs) home-manager;
 in {
   imports =
-    [
+    [../../common/unfree.nix]
+    ++ [
       ./agenix.nix
-      ./homebrew
+      ./homebrew.nix
       ./linux-builder.nix
       ./mac-app-util.nix
       ./nix-core.nix
+      ./plist-settings.nix
       ./system-packages.nix
-      ./system-settings.nix
-      ./unfree.nix
     ]
     ++ [
       home-manager.darwinModules.home-manager

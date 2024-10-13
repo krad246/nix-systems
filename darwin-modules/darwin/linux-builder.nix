@@ -1,4 +1,5 @@
 {
+  self,
   config,
   lib,
   ...
@@ -15,7 +16,7 @@
         inherit (pkgs.stdenv) system;
         inherit (config.nix) linux-builder;
       in {
-        imports = [./ccache-stdenv.nix];
+        imports = [self.nixosModules.ccache-stdenv];
 
         # Emulate all of the linux-builder systems aside from the host platform of the builder
         # because it makes no sense.

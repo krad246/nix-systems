@@ -5,10 +5,6 @@
 }: let
   brewRoot = "${config.homebrew.brewPrefix}";
 in {
-  imports = [
-    ./homebrew
-  ];
-
   homebrew = {
     brews = ["bash" "zsh"];
     casks = ["macfuse"];

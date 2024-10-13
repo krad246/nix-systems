@@ -1,9 +1,13 @@
-{inputs, ...}: let
+{
+  inputs,
+  ezModules,
+  ...
+}: let
   inherit (inputs) home-manager;
 in {
   imports =
-    [
-      ./ccache-stdenv.nix
+    [ezModules.ccache-stdenv]
+    ++ [
       ./default-users.nix
       ./environment.nix
       ./flake-registry.nix

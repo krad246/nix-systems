@@ -1,3 +1,0 @@
-{
-  imports = [../../common/unfree.nix];
-}
