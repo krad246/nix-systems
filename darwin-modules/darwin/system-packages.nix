@@ -13,6 +13,6 @@ in {
   environment = {
     shells = ["${brewRoot}/bash" "${brewRoot}/zsh"];
     loginShell = "${brewRoot}/bash";
-    systemPackages = with pkgs; ([m-cli] ++ [coreutils safe-rm]);
+    systemPackages = with pkgs; ([m-cli] ++ [coreutils safe-rm] ++ [dust]);
   };
 }

@@ -181,12 +181,14 @@
         '';
       };
 
-      burn = {
+      dd = {
         enable = true;
         justfile = ''
-          burn +ARGS: (build ARGS)
-            ${lib.getExe' pkgs.findutils "find"} -L {{ replace_regex(ARGS, flakeref, "$4/$5") }} \
-                  -type f -print0 | ${lib.getExe pkgs.pv} -0 --help       '';
+          dd PACKAGE *ARGS: (build PACKAGE ARGS)
+            ${lib.getExe' pkgs.findutils "find"} -L \
+            {{ replace_regex(PACKAGE, flakeref, "$4/$5") }} \
+                  -type f -print0 | ${lib.getExe pkgs.pv} -0
+        '';
       };
     };
   };

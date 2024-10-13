@@ -1,5 +1,6 @@
 {
   imports = [
+    ./bootstrap.nix
     ./devshell.nix
     ./docker-builder.nix
     ./eater.nix
