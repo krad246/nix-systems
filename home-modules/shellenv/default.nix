@@ -1,4 +1,5 @@
 {
+  self,
   config,
   lib,
   pkgs,
@@ -27,8 +28,7 @@
       ./ripgrep.nix
     ]
     ++ [
-      ./agenix.nix
-      ./secrets.nix
+      self.modules.generic.agenix-home
     ]
     ++ [
       ./starship

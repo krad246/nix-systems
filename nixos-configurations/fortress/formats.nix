@@ -1,5 +1,5 @@
 {
-  ezModules,
+  self,
   inputs,
   ...
 }: let
@@ -27,7 +27,7 @@ in {
       iso args
       // {
         imports =
-          [ezModules.efiboot]
+          [self.nixosModules.efiboot]
           ++ [./disko-install.nix];
       };
     install-iso-hyperv = args: let
@@ -51,13 +51,13 @@ in {
       disko.enableConfig = false;
     };
 
-    qcow-efi = qcow // {imports = [ezModules.efiboot];};
+    qcow-efi = qcow // {imports = [self.nixosModules.efiboot];};
 
     raw = {
       disko.enableConfig = false;
     };
 
-    raw-efi = raw // {imports = [ezModules.efiboot];};
+    raw-efi = raw // {imports = [self.nixosModules.efiboot];};
 
     sd-aarch64 = {lib, ...}: {
       disko.enableConfig = false;

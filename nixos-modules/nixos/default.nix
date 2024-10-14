@@ -1,12 +1,12 @@
 {
+  self,
   inputs,
-  ezModules,
   ...
 }: let
   inherit (inputs) home-manager;
 in {
   imports =
-    [ezModules.ccache-stdenv]
+    [self.nixosModules.ccache-stdenv]
     ++ [
       ./default-users.nix
       ./environment.nix

@@ -185,9 +185,8 @@
         enable = true;
         justfile = ''
           dd PACKAGE *ARGS: (build PACKAGE ARGS)
-            ${lib.getExe' pkgs.findutils "find"} -L \
-            {{ replace_regex(PACKAGE, flakeref, "$4/$5") }} \
-                  -type f -print0 | ${lib.getExe pkgs.pv} -0
+            ${lib.getExe' pkgs.findutils "find"} -L {{ replace_regex(PACKAGE, flakeref, "$4/$5") }} -type f -print0 | \
+              ${lib.getExe pkgs.pv} -0
         '';
       };
     };

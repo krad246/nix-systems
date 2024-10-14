@@ -1,9 +1,9 @@
 {
-  ezModules,
+  self,
   lib,
   ...
 }: {
-  imports = with ezModules; [
+  imports = with self.nixosModules; [
     agenix
     gnome-desktop
     nixos

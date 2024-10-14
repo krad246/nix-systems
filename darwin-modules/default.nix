@@ -1,3 +1,3 @@
-{ezModules, ...}: {
-  imports = with ezModules; [darwin];
+{self, ...}: {
+  imports = with self.darwinModules; [darwin];
 }

@@ -1,15 +1,15 @@
 {
+  self,
   inputs,
   config,
   lib,
-  ezModules,
   ...
 }: let
   inherit (inputs) nixos-generators;
 in {
   imports =
     [nixos-generators.nixosModules.all-formats]
-    ++ (with ezModules; [
+    ++ (with self.nixosModules; [
       nixos
       wsl
     ]);

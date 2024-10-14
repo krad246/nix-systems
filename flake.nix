@@ -189,10 +189,12 @@
           ez-configs.flakeModule
           pre-commit-hooks-nix.flakeModule
           just-flake.flakeModule
+          flake-parts.flakeModules.modules
         ])
         ++ [
           ./build
-        ];
+        ]
+        ++ [./common];
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 

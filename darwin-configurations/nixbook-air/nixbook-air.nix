@@ -1,9 +1,9 @@
 {
-  ezModules,
+  self,
   config,
   ...
 }: {
-  imports = with ezModules; [
+  imports = with self.darwinModules; [
     darwin
     dock
     finder

@@ -1,3 +1,3 @@
-{ezModules, ...}: {
-  imports = with ezModules; [nixos];
+{self, ...}: {
+  imports = with self.nixosModules; [nixos];
 }

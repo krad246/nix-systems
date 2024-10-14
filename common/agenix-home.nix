@@ -4,12 +4,10 @@
   lib,
   ...
 }: let
-  inherit (inputs) agenix;
-
   hasPubkey = lib.attrsets.hasAttrByPath ["id_ed25519_pub.age"] config.age.secrets;
   hasPrivKey = lib.attrsets.hasAttrByPath ["id_ed25519_priv.age"] config.age.secrets;
 in {
-  imports = [agenix.homeManagerModules.age] ++ [../../secrets];
+  imports = [inputs.agenix.homeManagerModules.age] ++ [./secrets];
 
   age = {
     secretsDir = lib.mkIf (hasPrivKey && hasPubkey) "${config.home.homeDirectory}/.secrets";

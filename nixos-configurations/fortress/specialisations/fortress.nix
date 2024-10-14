@@ -1,5 +1,5 @@
 {
-  ezModules,
+  self,
   inputs,
   config,
   lib,
@@ -12,7 +12,7 @@ in {
     fortress = {
       configuration = {
         imports =
-          (with ezModules; [
+          (with self.nixosModules; [
             avahi
             bluetooth
             efiboot

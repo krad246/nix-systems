@@ -1,19 +1,24 @@
-{inputs, ...}: let
+{
+  inputs,
+  self,
+  lib,
+  ...
+}: let
   inherit (inputs) home-manager;
+  inherit (inputs) agenix;
 in {
   imports =
-    [../../common/unfree.nix]
+    [self.modules.generic.unfree self.modules.generic.agenix self.modules.generic.nix-core]
     ++ [
-      ./agenix.nix
       ./homebrew.nix
       ./linux-builder.nix
       ./mac-app-util.nix
-      ./nix-core.nix
       ./plist-settings.nix
       ./system-packages.nix
     ]
     ++ [
       home-manager.darwinModules.home-manager
+      agenix.darwinModules.age
     ];
 
   home-manager = {
@@ -25,4 +30,13 @@ in {
     sharedModules = [];
     verbose = false;
   };
+
+  nix.settings = {
+    auto-optimise-store = false;
+    sandbox = false;
+  };
+
+  nix.useDaemon = lib.mkForce true;
+  services.nix-daemon.enable = lib.mkForce true;
+  system.stateVersion = 4;
 }
