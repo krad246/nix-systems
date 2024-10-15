@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-set -eux
-
 if ! command -v nix; then
     sh <(curl -L https://nixos.org/nix/install) \
         --daemon --yes \
