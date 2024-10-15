@@ -23,9 +23,6 @@
     # Mandatory input alias, seems to be assumed by lots of packages
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
 
-    # Fork of nix
-    lix.url = "git+https://git.lix.systems/lix-project/lix.git";
-
     # Legacy and flake compatibility shims.
     flake-compat = {
       url = "github:edolstra/flake-compat";
