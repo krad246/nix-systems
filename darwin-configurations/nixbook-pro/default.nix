@@ -1,0 +1,3 @@
+{
+  imports = [./nixbook-pro.nix];
+}
