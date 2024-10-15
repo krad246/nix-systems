@@ -1,0 +1,48 @@
+devshell_state = $(CACHEDIR)
+devshell_cidfile = $(devshell_state)/cidfile
+devshell_json = $(devshell_state)/devcontainer.json
+
+devcontainer_common_args := \
+	--config $(devshell_json) \
+	--workspace-folder $(WORKSPACE)
+
+devcontainer_up_args := \
+	$(devcontainer_common_args) \
+	--secrets-file $(WORKSPACE)/.env \
+	--dotfiles-repository file://$(DEVSHELL_DOTFILES) \
+	--dotfiles-install-command $(DEVSHELL_DOTFILES_ENTRYPOINT) \
+	--dotfiles-target-path $(DEVSHELL_DOTFILES)
+
+.PHONY: container-import
+container-import:
+	docker image inspect @image@ >/dev/null || (@devshell@ | docker load)
+	@loader@
+
+.PHONY: help
+
+.DEFAULT_GOAL := help
+
+help:  ## Show this help
+	@grep -E '^([a-zA-Z_-]+):.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "%-20s %s\n", $$1, $$2}'
+
+container-up: container-import ## Start the container
+	devcontainer up $(devcontainer_up_args)
+
+container-restart: container-import ## Restart the container
+	rm -f $(devshell_cidfile)
+	devcontainer up --remove-existing-container $(devcontainer_up_args)
+
+container-attach: container-up ## Spawn an interactive shell in the container
+	devcontainer exec $(devcontainer_common_args) \
+		bash -il
+
+container-exec: container-up ## Run a command in the container
+	devcontainer exec $(devcontainer_common_args) $(DEVSHELL_EXEC_CMD)
+
+container-stop: ## Stop the container
+	-docker stop "$$(cat $(devshell_cidfile))"
+
+container-clean: container-stop ## Clean up the container and all associated artifacts
+	rm -f $(devshell_cidfile)
+
+.PHONY: container-stop
