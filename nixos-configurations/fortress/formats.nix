@@ -89,6 +89,12 @@ in {
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
       nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
+
+      virtualbox = {
+        baseImageSize = 100 * 1024;
+        baseImageFreeSpace = 60 * 1024;
+        memorySize = 8 * 1024;
+      };
     };
 
     vagrant-virtualbox = args @ {lib, ...}: (virtualbox args) // {sound.enable = lib.mkForce false;};
