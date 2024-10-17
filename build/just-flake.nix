@@ -31,11 +31,7 @@
         "--option inputs-from $FLAKE_ROOT"
         "--option accept-flake-config true"
         "--option builders-use-substitutes true"
-        "--option connect-timeout 60"
-        "--option timeout 60"
-        "--option max-silent-time 60"
         "--option keep-going true"
-        "--option min-free 12884901888"
         "--option preallocate-contents true"
       ];
     in {

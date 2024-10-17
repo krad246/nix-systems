@@ -24,9 +24,9 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "krad246.cachix.org-1:naxMicfqW5ZWr7XNZeLfAT3YHWCDLs3noY0aI3eBfvQ="
       ];
-      connect-timeout = lib.mkDefault 60;
-      timeout = lib.mkDefault 60;
-      max-silent-time = lib.mkDefault 60;
+      connect-timeout = lib.mkDefault 300;
+      timeout = lib.mkDefault 300;
+      max-silent-time = lib.mkDefault 3600;
       keep-going = true;
       min-free = lib.mkDefault 12884901888;
       preallocate-contents = true;
