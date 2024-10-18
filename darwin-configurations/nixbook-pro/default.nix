@@ -1,3 +1,3 @@
 {
-  imports = [./nixbook-pro.nix];
+  imports = [./brew-casks.nix ./nixbook-pro.nix];
 }
