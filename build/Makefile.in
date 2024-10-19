@@ -40,6 +40,8 @@ container-exec: container-up ## Run a command in the container
 container-stop: ## Stop the container
 	-docker stop "$$(cat $(devshell_cidfile))"
 
+.PHONY: container-stop
+
 container-clean: container-stop ## Clean up the container and all associated artifacts
 	rm -f $(devshell_cidfile)
 
@@ -47,4 +49,4 @@ $(devshell_json):
 	mkdir -p $(@D)
 	ln -snvrf @template@ $@
 
-.PHONY: container-stop
+.PHONY: $(devshell_json)

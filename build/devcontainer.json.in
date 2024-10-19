@@ -6,42 +6,15 @@
     "workspaceFolder": "/workdir",
 
     "containerUser": "root",
-    "containerEnv": {
-        "NODE_PATH": "/usr/lib/node_modules",
-        "LOCALE_ARCHIVE": "/usr/lib/locale/locale-archive",
-    },
 
-    "postCreateCommand": {
-        "git-allow": "find ${containerWorkspaceFolder} \
-            -name .git -prune -type d \
-            -exec bash -c 'git config --global --add safe.directory ${0%/.git}' {} \\;",
-    }
-
-    "postAttachCommand": {
-        "direnv-allow": "find ${containerWorkspaceFolder} \
-            -name .envrc -prune -type f \
-            -exec bash -c 'direnv allow ${0%/.envrc}' {} \\;",
-     }
+    "runArgs": [
+        "--cidfile=${localEnv:CACHEDIR}/cidfile"
+    ],
 
    "customizations": {
         "vscode": {
-            // Useful extensions to have
             "extensions": [
-                "marus25.Cortex-Debug", // For debugging purposes
-                "robocorp.robotframework-lsp", // For Robot integraion tests
-                "EditorConfig.EditorConfig", // Editorconfig for file format
-                "ms-vscode.cpptools", // Adds language support for C/C++ to VSCode
-                "ms-vscode.live-server", // HTML to preview robot tests in VSCode
-                "ms-python.python", // Python support in VSCode
-                "jebbs.plantuml", // Plantuml support in VSCode to create diagrams
-                "twxs.cmake", // CMake support in VSCode
-                "ms-vscode.cmake-tools", // CMake tools extension package for further support
-                "ms-python.flake8", // Linting support for python files using `flake8`
-                "cschlosser.doxdocgen", // Doxygen templates and auto-completion
-                "llvm-vs-code-extensions.vscode-clangd", // Lint as you type for C code
-                "nordic-semiconductor.nrf-connect-extension-pack"
             ],
         }
     },
-
 }
