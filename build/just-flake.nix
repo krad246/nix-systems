@@ -3,6 +3,7 @@
     lib,
     pkgs,
     inputs',
+    self',
     ...
   }: let
     # Compose a simple just target from the name of the incoming derivation
@@ -184,6 +185,14 @@
             ${lib.getExe pkgs.pv} < \
               "$(${lib.getExe' pkgs.findutils "find"} \
                 -L {{ replace_regex(ARGS, flakeref, "$4/$5") }} -type f)"
+        '';
+      };
+
+      make = {
+        enable = true;
+        justfile = ''
+          make *ARGS:
+            ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ ARGS }}
         '';
       };
     };
