@@ -19,7 +19,8 @@
           [git]
           ++ [direnv nix-direnv]
           ++ [just]
-          ++ [shellcheck nil];
+          ++ [shellcheck nil]
+          ++ [devcontainer docker];
       };
     };
   };
