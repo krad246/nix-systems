@@ -163,6 +163,7 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
+    nixvim-config.url = "github:mikaelfangel/nixvim-config";
   };
 
   outputs = inputs @ {

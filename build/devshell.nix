@@ -1,9 +1,7 @@
 {
   perSystem = {
     self',
-    inputs',
     config,
-    lib,
     pkgs,
     ...
   }: {
@@ -17,20 +15,11 @@
           config.pre-commit.devShell
         ];
 
-        packages =
-          (with pkgs;
-            [git]
-            ++ [direnv nix-direnv]
-            ++ [just]
-            ++ [nixFlakes nix-tree nil]
-            ++ [inputs'.agenix.packages.agenix])
-          ++ (lib.optionals pkgs.stdenv.isLinux [
-            pkgs.fuse
-            pkgs.fuse3
-            pkgs.bindfs
-            pkgs.procps
-            pkgs.util-linux
-          ]);
+        packages = with pkgs;
+          [git]
+          ++ [direnv nix-direnv]
+          ++ [just]
+          ++ [shellcheck nil];
       };
     };
   };
