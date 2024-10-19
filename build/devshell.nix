@@ -2,6 +2,7 @@
   perSystem = {
     self',
     config,
+    lib,
     pkgs,
     ...
   }: {
@@ -21,6 +22,10 @@
           ++ [just]
           ++ [shellcheck nil]
           ++ [devcontainer docker];
+
+        shellHook = ''
+          ${lib.getExe' pkgs.coreutils "ln"} -snvrf ${self'.packages.makefile} "$FLAKE_ROOT/Makefile"
+        '';
       };
     };
   };

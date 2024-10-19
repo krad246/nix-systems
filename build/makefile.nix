@@ -2,7 +2,6 @@
   perSystem = {
     self',
     pkgs,
-    lib,
     ...
   }: {
     packages = {
@@ -22,14 +21,6 @@
             src = ./devcontainer.json.in;
             inherit image;
           };
-
-          loader = lib.getExe (pkgs.writeShellApplication {
-            name = "loader";
-            text = ''
-              ${lib.getExe' pkgs.coreutils "ln"} -snvrf \
-                 ${template} "$CACHEDIR/devcontainer.json"
-            '';
-          });
         };
     };
   };

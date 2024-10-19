@@ -11,23 +11,7 @@
         "LOCALE_ARCHIVE": "/usr/lib/locale/locale-archive",
     },
 
-    "privileged": true,
-    "mounts": [
-        "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,readonly",
-        "type=bind,source=/dev,target=/dev",
-        "type=bind,source=${localWorkspaceFolder}/dotfiles,target=${localEnv:DEVSHELL_DOTFILES},readonly",
-    ],
-
-    "runArgs": [
-        "--net=host",
-        "--volume=${localEnv:HOME}/.Xauthority:/root/.Xauthority:rw",
-        "--volume=/tmp/.X11-unix/:/tmp/.X11-unix",
-        "-e DISPLAY",
-        "--cidfile=${localEnv:CACHEDIR}/cidfile"
-    ],
-
     "postCreateCommand": {
-        "dotfiles-allow": "git config --global --add safe.directory ${localEnv:DEVSHELL_DOTFILES}/.git",
         "git-allow": "find ${containerWorkspaceFolder} \
             -name .git -prune -type d \
             -exec bash -c 'git config --global --add safe.directory ${0%/.git}' {} \\;",
