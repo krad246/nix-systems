@@ -7,6 +7,7 @@
     ...
   }: {
     packages = {
+      # TODO: consider switching to streamNixShellImage.
       devshell = pkgs.dockerTools.streamLayeredImage {
         name = "devshell";
         fromImage = pkgs.dockerTools.pullImage {
