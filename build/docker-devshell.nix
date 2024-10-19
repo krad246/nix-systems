@@ -1,8 +1,6 @@
 {self, ...}: {
   perSystem = {
-    inputs',
     pkgs,
-    lib,
     config,
     ...
   }: {
@@ -12,11 +10,11 @@
         name = "devshell";
 
         fromImage = pkgs.dockerTools.pullImage {
-          imageName = "nixos/nix";
-          imageDigest = "sha256:85299d86263a3059cf19f419f9d286cc9f06d3c13146a8ebbb21b3437f598357";
-          sha256 = "19fw0n3wmddahzr20mhdqv6jkjn1kanh6n2mrr08ai53dr8ph5n7";
-          finalImageTag = "2.2.1";
-          finalImageName = "nix";
+          imageName = "ubuntu";
+          imageDigest = "sha256:83f0c2a8d6f266d687d55b5cb1cb2201148eb7ac449e4202d9646b9083f1cee0";
+          sha256 = "sha256-5y6ToMw1UGaLafjaN69YabkjyCX61FT3QxU4mtmXMP0=";
+          finalImageName = "ubuntu";
+          finalImageTag = "latest";
         };
 
         contents = let
@@ -41,9 +39,6 @@
                     bat-extras.batgrep
                   ]
                   ++ [glow]
-                  ++ [
-                    inputs'.nixvim-config.packages.default
-                  ]
                   ++ [direnv]
                   ++ [starship]
                   ++ [coreutils]
@@ -60,12 +55,6 @@
 
         config = {
           Env = [
-            "VISUAL=${lib.getExe inputs'.nixvim-config.packages.default}"
-            "EDITOR=${lib.getExe inputs'.nixvim-config.packages.default}"
-            "PAGER=${lib.getExe pkgs.less}"
-            "LESS=$LESS -SXIFRs"
-            "LESSOPEN=|${lib.getExe pkgs.bat-extras.batpipe} %s"
-            "BATPIPE=color"
           ];
         };
       };
