@@ -5,8 +5,6 @@
     ...
   }: {
     packages = {
-      Makefile = self'.packages.makefile;
-
       # Generate a wrapper Makefile handling the container activations.
       makefile = let
         inherit (self'.packages) devshell;

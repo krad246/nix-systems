@@ -1,4 +1,4 @@
-{
+{self, ...}: {
   perSystem = {
     inputs',
     pkgs,
@@ -10,6 +10,7 @@
       # TODO: consider switching to streamNixShellImage.
       devshell = pkgs.dockerTools.streamLayeredImage {
         name = "devshell";
+
         fromImage = pkgs.dockerTools.pullImage {
           imageName = "nixos/nix";
           imageDigest = "sha256:85299d86263a3059cf19f419f9d286cc9f06d3c13146a8ebbb21b3437f598357";
@@ -17,36 +18,45 @@
           finalImageTag = "2.2.1";
           finalImageName = "nix";
         };
-        contents = pkgs.buildEnv {
-          name = "devshell-contents";
-          paths =
-            # seems to be mandatory
-            [pkgs.dockerTools.binSh pkgs.bashInteractive]
-            ++ (with pkgs;
-              [
-                just
-              ]
-              ++ [
-                fd
-                ripgrep
-                zoxide
-              ]
-              ++ [
-                bat
-                (bat-extras.batdiff.override {withDelta = true;})
-                bat-extras.batgrep
-              ]
-              ++ [glow]
-              ++ [
-                inputs'.nixvim-config.packages.default
-              ]
-              ++ [direnv]
-              ++ [starship]
-              ++ [coreutils]
-              ++ [cowsay hello]);
 
-          pathsToLink = ["/bin" "/share"];
-        };
+        contents = let
+          mkEnv = pkgs:
+            pkgs.buildEnv {
+              name = "devshell-contents";
+              paths =
+                # seems to be mandatory
+                [pkgs.dockerTools.binSh pkgs.bashInteractive]
+                ++ (with pkgs;
+                  [
+                    just
+                  ]
+                  ++ [
+                    fd
+                    ripgrep
+                    zoxide
+                  ]
+                  ++ [
+                    bat
+                    (bat-extras.batdiff.override {withDelta = true;})
+                    bat-extras.batgrep
+                  ]
+                  ++ [glow]
+                  ++ [
+                    inputs'.nixvim-config.packages.default
+                  ]
+                  ++ [direnv]
+                  ++ [starship]
+                  ++ [coreutils]
+                  ++ [cowsay hello]);
+
+              pathsToLink = ["/bin" "/share"];
+            };
+        in
+          mkEnv (
+            if pkgs.stdenv.isDarwin
+            then (import self.inputs.nixpkgs {system = "aarch64-linux";})
+            else pkgs
+          );
 
         config = {
           Env = [
