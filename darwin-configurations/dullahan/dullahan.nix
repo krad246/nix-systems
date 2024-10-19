@@ -41,7 +41,7 @@
   };
 
   homebrew = {
-    casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"] ++ ["signal"];
+    casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"];
   };
 
   nixpkgs.hostPlatform = "aarch64-darwin";
