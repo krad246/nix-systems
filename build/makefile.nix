@@ -7,6 +7,7 @@
     withSystem system (mappedCtx: let
       devshell = hostCtx.pkgs.dockerTools.streamLayeredImage {
         name = "devshell";
+        architecture = mappedCtx.pkgs.go.GOARCH;
 
         fromImage = hostCtx.pkgs.dockerTools.pullImage {
           imageName = "ubuntu";
@@ -24,25 +25,27 @@
           }:
             pkgs.buildEnv {
               name = "devshell-contents";
-              paths =
-                # seems to be mandatory
-                [pkgs.dockerTools.binSh pkgs.bashInteractive]
-                ++ (with pkgs;
-                  [git]
-                  ++ [direnv nix-direnv]
-                  ++ [just gnumake]
-                  ++ [shellcheck nil]
-                  ++ [inputs'.nixvim-config.packages.default]);
+              paths = with pkgs;
+                [pkgs.dockerTools.binSh pkgs.dockerTools.usrBinEnv pkgs.dockerTools.fakeNss]
+                ++ [git]
+                ++ [direnv nix-direnv]
+                ++ [just gnumake]
+                ++ [
+                  shellcheck
+                  nil
+                  nix-tree
+                ]
+                ++ [inputs'.nixvim-config.packages.default];
 
               pathsToLink = ["/bin" "/share"];
             };
         in
           mkEnv mappedCtx;
 
-        config = {
-          Env = [
-          ];
-        };
+        fakeRootCommands = ''
+          mkdir -p ./nix/{store,var/nix} ./etc/nix
+          echo 'experimental-features = nix-command flakes' >./etc/nix/nix.conf
+        '';
       };
 
       image = "${devshell.imageName}:${devshell.imageTag}";
@@ -59,13 +62,13 @@
         };
       });
 in {
-  perSystem = {
+  perSystem = args @ {
     lib,
     pkgs,
     ...
   }: {
     packages = lib.mkIf pkgs.stdenv.isLinux {
-      makefile = mkMakefile pkgs;
+      makefile = mkMakefile args;
     };
   };
 
