@@ -28,24 +28,10 @@
                 # seems to be mandatory
                 [pkgs.dockerTools.binSh pkgs.bashInteractive]
                 ++ (with pkgs;
-                  [
-                    just
-                  ]
-                  ++ [
-                    fd
-                    ripgrep
-                    zoxide
-                  ]
-                  ++ [
-                    bat
-                    (bat-extras.batdiff.override {withDelta = true;})
-                    bat-extras.batgrep
-                  ]
-                  ++ [glow]
-                  ++ [direnv]
-                  ++ [starship]
-                  ++ [coreutils]
-                  ++ [cowsay hello]
+                  [git]
+                  ++ [direnv nix-direnv]
+                  ++ [just gnumake]
+                  ++ [shellcheck nil]
                   ++ [inputs'.nixvim-config.packages.default]);
 
               pathsToLink = ["/bin" "/share"];
