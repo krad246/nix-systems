@@ -18,11 +18,7 @@
         };
 
         contents = let
-          mkEnv = {
-            pkgs,
-            inputs',
-            ...
-          }:
+          mkEnv = {pkgs, ...}:
             pkgs.buildEnv {
               name = "devshell-contents";
               paths = with pkgs;
@@ -34,8 +30,7 @@
                   shellcheck
                   nil
                   nix-tree
-                ]
-                ++ [inputs'.nixvim-config.packages.default];
+                ];
 
               pathsToLink = ["/bin" "/share"];
             };
@@ -59,6 +54,7 @@
         template = hostCtx.pkgs.substituteAll {
           src = ./devcontainer.json.in;
           inherit image;
+          platform = "${mappedCtx.pkgs.go.GOOS}/${mappedCtx.pkgs.go.GOARCH}";
         };
       });
 in {

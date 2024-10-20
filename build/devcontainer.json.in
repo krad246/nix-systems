@@ -8,7 +8,8 @@
     "containerUser": "root",
 
     "runArgs": [
-        "--cidfile=${localEnv:CACHEDIR}/cidfile"
+        "--cidfile=${localEnv:CACHEDIR}/cidfile",
+        "--platform=@platform@"
     ],
 
    "customizations": {
