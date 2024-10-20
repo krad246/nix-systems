@@ -64,7 +64,7 @@
       hostCtx.pkgs.substituteAll rec {
         src = ./Makefile.in;
         inherit image;
-        loader = hostCtx.pkgs.lib.getExe devshell;
+        loader = devshell;
 
         # Generate a devcontainer.json with the 'image' parameter set to this flake's devshell.
         template = hostCtx.pkgs.substituteAll {
