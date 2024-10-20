@@ -1,11 +1,12 @@
 {self, ...}: {
   perSystem = {
-    pkgs,
+    self',
     config,
+    lib,
+    pkgs,
     ...
   }: {
-    packages = {
-      # TODO: consider switching to streamNixShellImage.
+    packages = lib.mkIf pkgs.stdenv.isLinux {
       devshell = pkgs.dockerTools.streamLayeredImage {
         name = "devshell";
 
@@ -57,6 +58,10 @@
           Env = [
           ];
         };
+      };
+
+      "docker/nix-shell" = pkgs.dockerTools.streamNixShellImage {
+        drv = self'.devShells.default;
       };
     };
   };

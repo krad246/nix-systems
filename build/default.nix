@@ -1,8 +1,8 @@
 {
   imports = [
     ./bootstrap.nix
+    ./containers.nix
     ./devshell.nix
-    ./docker-devshell.nix
     ./eater.nix
     ./formatter.nix
     ./just-flake.nix

@@ -5,11 +5,10 @@
     ...
   }: {
     apps = rec {
-      default = bootstrap;
       bootstrap = let
         runner = pkgs.writeShellApplication {
           name = "bootstrap";
-          runtimeInputs = with pkgs; [git gum];
+          runtimeInputs = with pkgs; [git];
           text = ''
             allow() {
                 git config --global --add safe.directory "$1"
@@ -20,12 +19,13 @@
                 :
             }
 
-            readme && allow "$PWD" && exec nix develop
+            readme && allow "$PWD" && exec ${lib.getExe pkgs.nix} develop
           '';
         };
       in {
         type = "app";
         program = lib.getExe runner;
+        meta.description = "Run the devShell bootstrap script.";
       };
     };
   };
