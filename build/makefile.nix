@@ -42,7 +42,10 @@
 
         fakeRootCommands = ''
           mkdir -p ./nix/{store,var/nix} ./etc/nix
-          echo 'experimental-features = nix-command flakes' >./etc/nix/nix.conf
+          cat <<- EOF > ./etc/nix/nix.conf
+          experimental-features = nix-command flakes
+          ${mappedCtx.pkgs.lib.strings.optionalString hostCtx.pkgs.stdenv.isDarwin "filter-syscalls = false"}
+          EOF
         '';
       };
 
