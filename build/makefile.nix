@@ -22,7 +22,8 @@
             pkgs.buildEnv {
               name = "devshell-contents";
               paths = with pkgs;
-                [pkgs.dockerTools.binSh pkgs.dockerTools.usrBinEnv pkgs.dockerTools.fakeNss]
+                [bashInteractive]
+                ++ [dockerTools.binSh dockerTools.usrBinEnv dockerTools.fakeNss]
                 ++ [git]
                 ++ [direnv nix-direnv]
                 ++ [just gnumake]
