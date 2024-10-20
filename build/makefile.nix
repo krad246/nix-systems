@@ -15,6 +15,8 @@
           sha256 = "sha256-5y6ToMw1UGaLafjaN69YabkjyCX61FT3QxU4mtmXMP0=";
           finalImageName = "ubuntu";
           finalImageTag = "latest";
+          os = mappedCtx.pkgs.go.GOOS;
+          arch = mappedCtx.pkgs.go.GOARCH;
         };
 
         contents = let
