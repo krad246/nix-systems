@@ -1,7 +1,7 @@
 {withSystem, ...}: let
   # Generate a wrapper Makefile handling the container activations.
   # Given some 'hostCtx' and a mapped 'mappedCtx':
-  # - Grab the devshell package from the mapped system
+  # - Build the devshell package from the mapped system
   # - Create a makefile derivation using 'hostPkgs' but pointing to the mapped devshell.
   mkMakefile = hostCtx: {system ? hostCtx.pkgs.stdenv.system, ...}:
     withSystem system (mappedCtx: let
@@ -17,7 +17,11 @@
         };
 
         contents = let
-          mkEnv = pkgs:
+          mkEnv = {
+            pkgs,
+            inputs',
+            ...
+          }:
             pkgs.buildEnv {
               name = "devshell-contents";
               paths =
@@ -41,18 +45,20 @@
                   ++ [direnv]
                   ++ [starship]
                   ++ [coreutils]
-                  ++ [cowsay hello]);
+                  ++ [cowsay hello]
+                  ++ [inputs'.nixvim-config.packages.default]);
 
               pathsToLink = ["/bin" "/share"];
             };
         in
-          mkEnv mappedCtx.pkgs;
+          mkEnv mappedCtx;
 
         config = {
           Env = [
           ];
         };
       };
+
       image = "${devshell.imageName}:${devshell.imageTag}";
     in
       hostCtx.pkgs.substituteAll rec {
