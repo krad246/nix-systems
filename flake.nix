@@ -203,17 +203,7 @@
         system,
         ...
       }: let
-        nixosHosts = lib.attrsets.attrValues self.nixosConfigurations;
-        withSystem = nixosCfg:
-          nixosCfg.extendModules {
-            modules = [
-              {
-                nixpkgs.hostPlatform = system;
-              }
-            ];
-          };
-        nixosConfigs = lib.lists.forEach nixosHosts withSystem;
-
+        nixosConfigs = lib.attrsets.attrValues self.nixosConfigurations;
         declaredFormats = nixosCfg: let
           formats =
             lib.attrsets.attrByPath ["config" "formats"] {}
@@ -253,9 +243,16 @@
       in {
         packages = let
           mkFormatPackages = nixosCfg: let
-            declared = declaredFormats nixosCfg;
+            machine = nixosCfg.extendModules {
+              modules = [
+                {
+                  nixpkgs.system = pkgs.stdenv.system;
+                }
+              ];
+            };
+            declared = declaredFormats machine;
           in
-            lib.attrsets.mapAttrs' (format: drv: mapHostFormat nixosCfg format drv)
+            lib.attrsets.mapAttrs' (format: drv: mapHostFormat machine format drv)
             declared;
 
           formats = lib.lists.forEach nixosConfigs mkFormatPackages;
