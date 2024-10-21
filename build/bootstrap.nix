@@ -11,8 +11,8 @@
           runtimeInputs = with pkgs; [git];
           text = ''
             allow() {
-                git config --global --add safe.directory "$1"
-                git config --global --add safe.directory "$1/.git"
+                ${lib.getExe pkgs.git} config --global --add safe.directory "$1"
+                ${lib.getExe pkgs.git} config --global --add safe.directory "$1/.git"
             }
 
             readme() {
