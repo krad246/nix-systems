@@ -9,27 +9,18 @@
       ./bash.nix
       ./bat.nix
       ./bottom.nix
-    ]
-    ++ [
-      ./bitwarden.nix
-    ]
-    ++ [
-      ./colima
-    ]
-    ++ [
       ./coreutils.nix
       ./direnv.nix
       ./fd.nix
       ./fzf.nix
       ./git.nix
       ./nix-core.nix
-      ./nvim
       ./ripgrep.nix
-    ]
-    ++ [
       ./starship
       ./zoxide.nix
-      ./zsh.nix
+    ]
+    ++ [
+      ./nvim
     ];
 
   home = {
