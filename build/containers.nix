@@ -67,6 +67,17 @@ in
           arch = "amd64";
         });
 
+      x86_64-linux.nix-flakes = withSystem "x86_64-linux" ({pkgs, ...}:
+        pkgs.dockerTools.pullImage {
+          imageName = "docker.nix-community.org/nixpkgs/nix-flakes";
+          imageDigest = "sha256:a6de74beafbf1d1934e615b98602f1975e146ab7a3154e97139b615cb804d467";
+          sha256 = "1x85sqic4kawqw4f55nfnaqrxgjjnxdy7wp08arl2qh4z4m9f1ff";
+          finalImageName = "docker.nix-community.org/nixpkgs/nix-flakes";
+          finalImageTag = "latest";
+          os = "linux";
+          arch = "amd64";
+        });
+
       aarch64-linux.ubuntu = withSystem "aarch64-linux" ({pkgs, ...}:
         pkgs.dockerTools.pullImage {
           imageName = "ubuntu";
