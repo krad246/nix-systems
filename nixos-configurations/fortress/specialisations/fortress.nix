@@ -1,7 +1,6 @@
 {
   self,
   inputs,
-  config,
   lib,
   pkgs,
   ...
@@ -10,7 +9,16 @@
 in {
   specialisation = {
     fortress = {
-      configuration = {
+      configuration = {config, ...}: let
+        hasPrivKey =
+          lib.attrsets.hasAttrByPath
+          ["id_ed25519_priv.age"]
+          config.age.secrets;
+        hasPubKey =
+          lib.attrsets.hasAttrByPath
+          ["id_ed25519_pub.age"]
+          config.age.secrets;
+      in {
         imports =
           (with self.nixosModules; [
             agenix
@@ -33,11 +41,11 @@ in {
               common-pc-ssd
             ]));
 
-        programs.ssh = {
+        programs.ssh = lib.mkIf (hasPrivKey && hasPubKey) {
           startAgent = true;
         };
 
-        services = {
+        services = lib.mkIf (hasPrivKey && hasPubKey) {
           openssh = {
             enable = true;
             startWhenNeeded = true;
