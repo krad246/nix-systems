@@ -105,9 +105,10 @@
         enable = true;
         justfile = ''
           flakeref := "^(([[:ascii:]]+)\\s)?(([[:ascii:]]+)#([[:ascii:]]+))(\\s([[:ascii:]]))?$"
+          outlink := "$4/result-$5"
           build *ARGS: (nix "build" replace_regex(ARGS, \
                                                     flakeref, \
-                                                    "--out-link $4/$5 $3 $2 $7"))
+                                                    "--out-link " + outlink + " $3 $2 $7"))
         '';
       };
 
@@ -184,7 +185,7 @@
           dd +ARGS: (build ARGS)
             ${lib.getExe pkgs.pv} < \
               "$(${lib.getExe' pkgs.findutils "find"} \
-                -L {{ replace_regex(ARGS, flakeref, "$4/$5") }} -type f)"
+                -L {{ replace_regex(ARGS, flakeref, outlink) }} -type f)"
         '';
       };
 
