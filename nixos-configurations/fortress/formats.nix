@@ -61,7 +61,7 @@ in {
 
     sd-aarch64 = {lib, ...}: {
       disko.enableConfig = false;
-      nixpkgs.hostPlatform = lib.mkForce "aarch64-linux";
+      nixpkgs.hostPlatform = "aarch64-linux";
       hardware.opengl.driSupport32Bit = lib.mkForce false;
       boot.binfmt.emulatedSystems = lib.mkForce ["x86_64-linux"];
       boot.supportedFilesystems = {
@@ -79,16 +79,15 @@ in {
 
     sd-x86_64 = {lib, ...}: {
       disko.enableConfig = false;
-      nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
+      nixpkgs.hostPlatform = "x86_64-linux";
       boot.supportedFilesystems = {
         zfs = lib.mkForce false;
       };
     };
 
-    virtualbox = {lib, ...}: {
+    virtualbox = _: {
       boot.kernelParams = ["nomodeset"];
       disko.enableConfig = false;
-      nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
 
       virtualbox = {
         extraDisk = {

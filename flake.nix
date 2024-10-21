@@ -204,58 +204,62 @@
         ...
       }: let
         nixosConfigs = lib.attrsets.attrValues self.nixosConfigurations;
-        declaredFormats = nixosCfg: let
-          formats =
-            lib.attrsets.attrByPath ["config" "formats"] {}
-            nixosCfg;
-
-          include = [
-            "hyperv"
-            "iso"
-            "install-iso"
-            "install-iso-hyperv"
-            "sd-aarch64"
-            "sd-aarch64-installer"
-            "sd-x86_64"
-            "vagrant-virtualbox"
-            "virtualbox"
-            "vm"
-            "vm-bootloader"
-            "vm-nogui"
-            "vmware"
-          ];
-
-          filtered = let
-            included = name: (builtins.elem name include);
-          in
-            lib.attrsets.filterAttrs (name: _value: included name) formats;
+        nixosMachines = lib.lists.forEach nixosConfigs (nixosCfg: let
+          machine = nixosCfg.extendModules {
+            modules = [
+              {
+                nixpkgs.system = pkgs.stdenv.system;
+              }
+            ];
+          };
         in
-          filtered;
+          machine);
 
-        hostFormatName = nixosCfg: format: let
-          inherit (nixosCfg.config.networking) hostName;
+        hostFormatName = nixosMachine: format: let
+          inherit (nixosMachine.config.networking) hostName;
         in "${hostName}/${format}";
 
-        mapHostFormat = nixosCfg: format: value:
+        mapHostFormat = nixosMachine: format: value:
           lib.attrsets.nameValuePair
-          (hostFormatName nixosCfg format)
+          (hostFormatName nixosMachine format)
           value;
       in {
         packages = let
-          mkFormatPackages = nixosCfg: let
-            machine = nixosCfg.extendModules {
-              modules = [
-                {
-                  nixpkgs.system = pkgs.stdenv.system;
-                }
+          mkFormatPackages = nixosMachine: let
+            declaredFormats = nixosMachine: let
+              formats =
+                lib.attrsets.attrByPath ["config" "formats"] {}
+                nixosMachine;
+
+              include = [
+                "hyperv"
+                "iso"
+                "install-iso"
+                "install-iso-hyperv"
+                "sd-aarch64"
+                "sd-aarch64-installer"
+                "sd-x86_64"
+                "vagrant-virtualbox"
+                "virtualbox"
+                "vm"
+                "vm-bootloader"
+                "vm-nogui"
+                "vmware"
               ];
-            };
-            declared = declaredFormats machine;
+
+              filtered = let
+                included = name: (builtins.elem name include);
+              in
+                lib.attrsets.filterAttrs (name: _value: included name) formats;
+            in
+              filtered;
+
+            declared = declaredFormats nixosMachine;
           in
-            lib.attrsets.mapAttrs' (format: drv: mapHostFormat machine format drv)
+            lib.attrsets.mapAttrs' (format: drv: mapHostFormat nixosMachine format drv)
             declared;
 
-          formats = lib.lists.forEach nixosConfigs mkFormatPackages;
+          formats = lib.lists.forEach nixosMachines mkFormatPackages;
           disko-install = pkgs.writeShellApplication {
             name = "disko-install";
             text = ''

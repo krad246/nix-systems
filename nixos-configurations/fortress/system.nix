@@ -26,5 +26,7 @@
   };
 
   system.stateVersion = lib.trivial.release;
+
+  # Default value to shut the flake checker up. Overridden using extendModules.
   nixpkgs.system = lib.mkDefault "x86_64-linux";
 }
