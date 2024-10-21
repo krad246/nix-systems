@@ -3,7 +3,11 @@
   # Given some 'hostCtx' and a mapped 'mappedCtx':
   # - Build the vscode-devcontainer package from the mapped system
   # - Create a makefile derivation using 'hostPkgs' but pointing to the mapped vscode-devcontainer.
-  mkMakefile = hostCtx: {system ? hostCtx.pkgs.stdenv.system, ...}:
+  mkMakefile = {
+    hostCtx,
+    system ? hostCtx.pkgs.stdenv.system,
+    ...
+  }:
     withSystem system (mappedCtx: let
       inherit (hostCtx.self'.packages) vscode-devcontainer;
       image = "${vscode-devcontainer.imageName}:${vscode-devcontainer.imageTag}";
@@ -22,17 +26,21 @@
       });
 in {
   perSystem = args @ {
+    self',
     lib,
     pkgs,
     ...
   }: {
     packages = lib.mkIf pkgs.stdenv.isLinux {
-      makefile = mkMakefile args;
+      makefile = mkMakefile {hostCtx = args // self';};
     };
   };
 
   flake.packages.aarch64-darwin.makefile = withSystem "aarch64-darwin" (hostCtx: let
-    makefile = mkMakefile hostCtx {system = "aarch64-linux";};
+    makefile = mkMakefile {
+      inherit hostCtx;
+      system = "aarch64-linux";
+    };
   in
     makefile);
 }

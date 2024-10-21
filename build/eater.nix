@@ -9,10 +9,10 @@
     ...
   }: {
     apps = rec {
-      default = build-all;
-      build-all = let
+      default = devour-flake;
+      devour-flake = let
         runner = pkgs.writeShellApplication {
-          name = "build-all";
+          name = "devour-flake";
           text = ''
             set -x
             ${lib.getExe pkgs.nixFlakes} \

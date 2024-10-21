@@ -1,6 +1,5 @@
 {
   perSystem = {
-    inputs',
     config,
     pkgs,
     ...
@@ -19,8 +18,7 @@
           ++ [direnv nix-direnv]
           ++ [just gnumake]
           ++ [shellcheck nil]
-          ++ [devcontainer docker]
-          ++ [inputs'.nixvim-config.packages.default];
+          ++ [devcontainer docker];
       };
     };
   };

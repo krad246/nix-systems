@@ -1,9 +1,9 @@
 {withSystem, ...}: let
-  # Generate a wrapper Makefile handling the container activations.
-  # Given some 'hostCtx' and a mapped 'mappedCtx':
-  # - Build the vscode-devcontainer package from the mapped system
-  # - Create a makefile derivation using 'hostPkgs' but pointing to the mapped vscode-devcontainer.
-  mkContainer = hostCtx: {system ? hostCtx.pkgs.stdenv.system, ...}:
+  mkContainer = {
+    hostCtx,
+    system ? hostCtx.pkgs.stdenv.system,
+    ...
+  }:
     withSystem system (mappedCtx: let
       vscode-devcontainer = hostCtx.pkgs.dockerTools.streamLayeredImage {
         name = "vscode-devcontainer";
@@ -17,7 +17,7 @@
               name = "vscode-devcontainer-contents";
               paths = with pkgs;
                 [bashInteractive]
-                ++ [dockerTools.binSh dockerTools.usrBinEnv dockerTools.fakeNss]
+                ++ [dockerTools.binSh dockerTools.usrBinEnv dockerTools.fakeNss dockerTools.caCertificates]
                 ++ [git]
                 ++ [direnv nix-direnv]
                 ++ [just gnumake]
@@ -27,7 +27,7 @@
                   nix-tree
                 ];
 
-              pathsToLink = ["/bin" "/share"];
+              pathsToLink = ["/bin"];
             };
         in
           mkEnv mappedCtx;
@@ -42,28 +42,48 @@
       };
     in
       vscode-devcontainer);
-in {
-  perSystem = args @ {
-    lib,
-    pkgs,
-    ...
-  }: {
-    packages = lib.mkIf pkgs.stdenv.isLinux {
-      vscode-devcontainer = mkContainer args;
-      ubuntu = pkgs.dockerTools.pullImage {
-        imageName = "ubuntu";
-        imageDigest = "sha256:83f0c2a8d6f266d687d55b5cb1cb2201148eb7ac449e4202d9646b9083f1cee0";
-        sha256 = "sha256-5y6ToMw1UGaLafjaN69YabkjyCX61FT3QxU4mtmXMP0=";
-        finalImageName = "ubuntu";
-        finalImageTag = "latest";
-        os = pkgs.go.GOOS;
-        arch = pkgs.go.GOARCH;
+in
+  {
+    perSystem = args @ {
+      lib,
+      pkgs,
+      ...
+    }: {
+      packages = lib.mkIf pkgs.stdenv.isLinux {
+        vscode-devcontainer = mkContainer {hostCtx = args;};
       };
     };
-  };
+  }
+  // {
+    flake.packages = {
+      x86_64-linux.ubuntu = withSystem "x86_64-linux" ({pkgs, ...}:
+        pkgs.dockerTools.pullImage {
+          imageName = "ubuntu";
+          imageDigest = "sha256:99c35190e22d294cdace2783ac55effc69d32896daaa265f0bbedbcde4fbe3e5";
+          sha256 = "0j32w10gl1p87xj8kll0m2dgfizc3l2jnsdj4n95l960d4a4pmfa";
+          finalImageName = "ubuntu";
+          finalImageTag = "latest";
+          os = "linux";
+          arch = "amd64";
+        });
 
-  flake.packages.aarch64-darwin.vscode-devcontainer = withSystem "aarch64-darwin" (hostCtx: let
-    vscode-devcontainer = mkContainer hostCtx {system = "aarch64-linux";};
-  in
-    vscode-devcontainer);
-}
+      aarch64-linux.ubuntu = withSystem "aarch64-linux" ({pkgs, ...}:
+        pkgs.dockerTools.pullImage {
+          imageName = "ubuntu";
+          imageDigest = "sha256:99c35190e22d294cdace2783ac55effc69d32896daaa265f0bbedbcde4fbe3e5";
+          sha256 = "03srdhmiii3f07rf29k17sipz8f88kydg7hj8awjqsv4jzq7an81";
+          finalImageName = "ubuntu";
+          finalImageTag = "latest";
+          os = "linux";
+          arch = "arm64";
+        });
+
+      aarch64-darwin.vscode-devcontainer = withSystem "aarch64-darwin" (hostCtx @ {self', ...}: let
+        vscode-devcontainer = mkContainer {
+          hostCtx = hostCtx // self';
+          system = "aarch64-linux";
+        };
+      in
+        vscode-devcontainer);
+    };
+  }
