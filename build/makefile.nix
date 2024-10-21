@@ -1,62 +1,19 @@
 {withSystem, ...}: let
   # Generate a wrapper Makefile handling the container activations.
   # Given some 'hostCtx' and a mapped 'mappedCtx':
-  # - Build the devshell package from the mapped system
-  # - Create a makefile derivation using 'hostPkgs' but pointing to the mapped devshell.
+  # - Build the vscode-devcontainer package from the mapped system
+  # - Create a makefile derivation using 'hostPkgs' but pointing to the mapped vscode-devcontainer.
   mkMakefile = hostCtx: {system ? hostCtx.pkgs.stdenv.system, ...}:
     withSystem system (mappedCtx: let
-      devshell = hostCtx.pkgs.dockerTools.streamLayeredImage {
-        name = "devshell";
-        architecture = mappedCtx.pkgs.go.GOARCH;
-
-        fromImage = hostCtx.pkgs.dockerTools.pullImage {
-          imageName = "ubuntu";
-          imageDigest = "sha256:83f0c2a8d6f266d687d55b5cb1cb2201148eb7ac449e4202d9646b9083f1cee0";
-          sha256 = "sha256-5y6ToMw1UGaLafjaN69YabkjyCX61FT3QxU4mtmXMP0=";
-          finalImageName = "ubuntu";
-          finalImageTag = "latest";
-          os = mappedCtx.pkgs.go.GOOS;
-          arch = mappedCtx.pkgs.go.GOARCH;
-        };
-
-        contents = let
-          mkEnv = {pkgs, ...}:
-            pkgs.buildEnv {
-              name = "devshell-contents";
-              paths = with pkgs;
-                [bashInteractive]
-                ++ [dockerTools.binSh dockerTools.usrBinEnv dockerTools.fakeNss]
-                ++ [git]
-                ++ [direnv nix-direnv]
-                ++ [just gnumake]
-                ++ [
-                  shellcheck
-                  nil
-                  nix-tree
-                ];
-
-              pathsToLink = ["/bin" "/share"];
-            };
-        in
-          mkEnv mappedCtx;
-
-        fakeRootCommands = ''
-          mkdir -p ./nix/{store,var/nix} ./etc/nix
-          cat <<- EOF > ./etc/nix/nix.conf
-          experimental-features = nix-command flakes
-          ${mappedCtx.pkgs.lib.strings.optionalString hostCtx.pkgs.stdenv.isDarwin "filter-syscalls = false"}
-          EOF
-        '';
-      };
-
-      image = "${devshell.imageName}:${devshell.imageTag}";
+      inherit (hostCtx.self'.packages) vscode-devcontainer;
+      image = "${vscode-devcontainer.imageName}:${vscode-devcontainer.imageTag}";
     in
       hostCtx.pkgs.substituteAll rec {
         src = ./Makefile.in;
         inherit image;
-        loader = devshell;
+        loader = vscode-devcontainer;
 
-        # Generate a devcontainer.json with the 'image' parameter set to this flake's devshell.
+        # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
         template = hostCtx.pkgs.substituteAll {
           src = ./devcontainer.json.in;
           inherit image;
