@@ -9,7 +9,10 @@
         name = "vscode-devcontainer";
         architecture = mappedCtx.pkgs.go.GOARCH;
 
-        fromImage = mappedCtx.self'.packages.nix-flakes;
+        # FIXME: you'd essentially have to repeat the nixos-vscode-server setup here in
+        # order to completely avoid setup here. Instead, prefer to merge nix-flakes with the
+        # ubuntu container so that this is unnecessary. keeps package environment cleaner.
+        fromImage = mappedCtx.self'.packages.ubuntu;
 
         contents = let
           mkEnv = {pkgs, ...}:
@@ -17,9 +20,6 @@
               name = "vscode-devcontainer-contents";
               paths = with pkgs;
                 [bashInteractive]
-                # FIXME: you'd essentially have to repeat the nixos-vscode-server setup here in
-                # order to completely avoid setup here. Instead, prefer to merge nix-flakes with the
-                # ubuntu container so that this is unnecessary. keeps package environment cleaner.
                 ++ [busybox nodejs]
                 ++ [dockerTools.binSh dockerTools.usrBinEnv dockerTools.fakeNss dockerTools.caCertificates]
                 ++ [git]
@@ -35,24 +35,6 @@
             };
         in
           mkEnv mappedCtx;
-
-        fakeRootCommands = ''
-          mkdir -p ./nix/{store,var/nix} ./etc/nix
-
-          # fake out /etc/os-release for devcontainers.
-          cat <<- EOF >./etc/os-release
-          ANSI_COLOR="1;34"
-          BUG_REPORT_URL="https://github.com/NixOS/nixpkgs/issues"
-          DOCUMENTATION_URL="https://nixos.org/learn.html"
-          HOME_URL="https://nixos.org/"
-          ID=nixos
-          IMAGE_ID=""
-          IMAGE_VERSION=""
-          LOGO="nix-snowflake"
-          NAME=NixOS
-          SUPPORT_URL="https://nixos.org/community.html"
-          EOF
-        '';
       };
     in
       vscode-devcontainer);
