@@ -13,6 +13,7 @@ in {
       configuration = {
         imports =
           (with self.nixosModules; [
+            agenix
             avahi
             bluetooth
             efiboot

@@ -1,52 +1,13 @@
 {
   self,
-  config,
   lib,
   ...
-}: let
-  # found in the minimal profile
-  hasXEnabled =
-    lib.attrsets.attrByPath ["services" "xserver" "enable"] false config; # usually true.
-
-  # WSL instances define this attribute
-  isWSL = lib.attrsets.attrByPath ["wsl" "enable"] false config;
-
-  # docker images set this
-  isContainer = lib.attrsets.attrByPath ["boot" "isContainer"] false config;
-
-  # common for VMs
-  growableRoot = lib.attrsets.attrByPath ["boot" "growPartition"] false config;
-
-  isIso = lib.attrsets.hasAttrByPath ["system" "build" "isoImage"] config;
-
-  isVM =
-    isContainer
-    || growableRoot
-    || (lib.attrsets.hasAttrByPath ["virtualisation" "diskSize"]
-      config);
-  isGraphicalNixOS = let
-    vmGui =
-      lib.attrsets.attrByPath ["virtualisation" "graphics"]
-      true
-      config;
-  in
-    if (isWSL || isContainer || (!hasXEnabled) || !vmGui)
-    then false
-    else hasXEnabled;
-
-  baseModules = isGraphicalNixOS;
-  extendedModules = let
-    rest = baseModules && !isVM && !isIso;
-  in
-    rest;
-in {
-  imports = with self.nixosModules;
-    [
-      gnome-desktop
-      nixos
-      whitesur
-    ]
-    ++ lib.lists.optional extendedModules [self.nixosModules.agenix];
+}: {
+  imports = with self.nixosModules; [
+    gnome-desktop
+    nixos
+    whitesur
+  ];
 
   services.flatpak.enable = lib.mkDefault false;
 
