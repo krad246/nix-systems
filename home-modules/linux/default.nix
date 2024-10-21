@@ -46,16 +46,15 @@
 in {
   imports =
     [nix-flatpak.homeManagerModules.nix-flatpak]
-    ++ [
-      ezModules.nerdfonts
-    ]
     ++ (lib.optionals baseModules [ezModules.chromium ezModules.dconf ezModules.kitty])
-    ++ (lib.optionals extendedModules (with ezModules; [
-      discord
-      kdeconnect
-      vscode
-      vscode-server
-    ]));
+    ++ (lib.optionals extendedModules (with ezModules;
+      [
+        discord
+        kdeconnect
+        vscode
+        vscode-server
+      ]
+      ++ [nerdfonts]));
 
   services = lib.mkIf flatpakModules {
     flatpak = {

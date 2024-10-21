@@ -91,9 +91,10 @@ in {
       nixpkgs.hostPlatform = lib.mkForce "x86_64-linux";
 
       virtualbox = {
-        baseImageSize = 100 * 1024;
-        baseImageFreeSpace = 60 * 1024;
-        memorySize = 8 * 1024;
+        extraDisk = {
+          mountPoint = "/mnt/growable";
+          size = 32 * 1024;
+        };
       };
     };
 
