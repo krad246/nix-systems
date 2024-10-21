@@ -66,10 +66,12 @@
         systems = ["x86_64-linux"];
         protocol = "ssh-ng";
         maxJobs = 64;
-        speedFactor = 4;
+        speedFactor = 3;
         sshUser = "krad246";
         sshKey = config.age.secrets."id_ed25519_priv.age".path;
       }
     ];
+
+    linux-builder.maxJobs = 20;
   };
 }

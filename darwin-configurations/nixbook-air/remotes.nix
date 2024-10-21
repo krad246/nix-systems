@@ -45,7 +45,7 @@
         hostName = "dullahan";
         system = "aarch64-darwin";
         protocol = "ssh-ng";
-        maxJobs = 16;
+        maxJobs = 20;
         speedFactor = 2;
 
         sshUser = "krad246";
@@ -55,7 +55,7 @@
         hostName = "headless-penguin";
         systems = ["aarch64-linux" "x86_64-linux"];
         protocol = "ssh-ng";
-        maxJobs = 16;
+        maxJobs = 20;
         speedFactor = 2;
         sshUser = "builder";
         sshKey = "/etc/nix/builder_ed25519";
@@ -64,8 +64,8 @@
         hostName = "fortress";
         systems = ["x86_64-linux"];
         protocol = "ssh-ng";
-        maxJobs = 128;
-        speedFactor = 8;
+        maxJobs = 64;
+        speedFactor = 4;
         sshUser = "krad246";
         sshKey = config.age.secrets."id_ed25519_priv.age".path;
       }

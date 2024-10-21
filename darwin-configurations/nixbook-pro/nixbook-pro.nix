@@ -25,5 +25,6 @@
   };
 
   nixpkgs.hostPlatform = "aarch64-darwin";
-  nix.settings.keep-outputs = false;
+  nix.settings.keep-derivations = true;
+  nix.linux-builder.maxJobs = 32;
 }
