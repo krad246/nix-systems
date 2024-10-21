@@ -9,7 +9,7 @@
         name = "vscode-devcontainer";
         architecture = mappedCtx.pkgs.go.GOARCH;
 
-        fromImage = mappedCtx.self'.packages.ubuntu;
+        fromImage = mappedCtx.self'.packages.nix-flakes;
 
         contents = let
           mkEnv = {pkgs, ...}:
@@ -34,9 +34,19 @@
 
         fakeRootCommands = ''
           mkdir -p ./nix/{store,var/nix} ./etc/nix
-          cat <<- EOF > ./etc/nix/nix.conf
-          experimental-features = nix-command flakes
-          ${mappedCtx.pkgs.lib.strings.optionalString hostCtx.pkgs.stdenv.isDarwin "filter-syscalls = false"}
+
+          # fake out /etc/os-release for devcontainers.
+          cat <<- EOF >./etc/os-release
+          ANSI_COLOR="1;34"
+          BUG_REPORT_URL="https://github.com/NixOS/nixpkgs/issues"
+          DOCUMENTATION_URL="https://nixos.org/learn.html"
+          HOME_URL="https://nixos.org/"
+          ID=nixos
+          IMAGE_ID=""
+          IMAGE_VERSION=""
+          LOGO="nix-snowflake"
+          NAME=NixOS
+          SUPPORT_URL="https://nixos.org/community.html"
           EOF
         '';
       };
@@ -69,10 +79,10 @@ in
 
       x86_64-linux.nix-flakes = withSystem "x86_64-linux" ({pkgs, ...}:
         pkgs.dockerTools.pullImage {
-          imageName = "docker.nix-community.org/nixpkgs/nix-flakes";
+          imageName = "nixpkgs/nix-flakes";
           imageDigest = "sha256:a6de74beafbf1d1934e615b98602f1975e146ab7a3154e97139b615cb804d467";
-          sha256 = "1x85sqic4kawqw4f55nfnaqrxgjjnxdy7wp08arl2qh4z4m9f1ff";
-          finalImageName = "docker.nix-community.org/nixpkgs/nix-flakes";
+          sha256 = "0fxyvs2sxmfhj9i70wh23m2licx2waj7z1z5iy0gf6nlkm3j72cf";
+          finalImageName = "nixpkgs/nix-flakes";
           finalImageTag = "latest";
           os = "linux";
           arch = "amd64";
@@ -84,6 +94,17 @@ in
           imageDigest = "sha256:99c35190e22d294cdace2783ac55effc69d32896daaa265f0bbedbcde4fbe3e5";
           sha256 = "03srdhmiii3f07rf29k17sipz8f88kydg7hj8awjqsv4jzq7an81";
           finalImageName = "ubuntu";
+          finalImageTag = "latest";
+          os = "linux";
+          arch = "arm64";
+        });
+
+      aarch64-linux.nix-flakes = withSystem "aarch64-linux" ({pkgs, ...}:
+        pkgs.dockerTools.pullImage {
+          imageName = "nixpkgs/nix-flakes";
+          imageDigest = "sha256:a6de74beafbf1d1934e615b98602f1975e146ab7a3154e97139b615cb804d467";
+          sha256 = "1kd83s9y26jsrnwy4gxchl6ir2c8p8h95m2f22p070p32ig3ljxb";
+          finalImageName = "nixpkgs/nix-flakes";
           finalImageTag = "latest";
           os = "linux";
           arch = "arm64";

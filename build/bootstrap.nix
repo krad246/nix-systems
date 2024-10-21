@@ -4,7 +4,7 @@
     lib,
     ...
   }: {
-    apps = rec {
+    apps = {
       bootstrap = let
         runner = pkgs.writeShellApplication {
           name = "bootstrap";

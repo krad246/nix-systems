@@ -5,4 +5,9 @@ set -eux
 SCRIPT="$(realpath "$0")"
 SCRIPTPATH="$(dirname "$SCRIPT")"
 
-exec nix run "$SCRIPTPATH/../#bootstrap"
+allow() {
+    git config --global --add safe.directory "$1"
+    git config --global --add safe.directory "$1/.git"
+}
+
+allow "$SCRIPTPATH/.." && exec nix run "$SCRIPTPATH/../#bootstrap"

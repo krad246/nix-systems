@@ -18,7 +18,8 @@
           ++ [direnv nix-direnv]
           ++ [just gnumake]
           ++ [shellcheck nil]
-          ++ [devcontainer docker];
+          ++ [devcontainer docker]
+          ++ [nix-prefetch-docker];
       };
     };
   };
