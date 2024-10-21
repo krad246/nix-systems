@@ -17,6 +17,10 @@
               name = "vscode-devcontainer-contents";
               paths = with pkgs;
                 [bashInteractive]
+                # FIXME: you'd essentially have to repeat the nixos-vscode-server setup here in
+                # order to completely avoid setup here. Instead, prefer to merge nix-flakes with the
+                # ubuntu container so that this is unnecessary. keeps package environment cleaner.
+                ++ [busybox nodejs]
                 ++ [dockerTools.binSh dockerTools.usrBinEnv dockerTools.fakeNss dockerTools.caCertificates]
                 ++ [git]
                 ++ [direnv nix-direnv]
