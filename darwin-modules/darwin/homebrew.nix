@@ -10,6 +10,7 @@ in {
   nix-homebrew = {
     enable = true;
     enableRosetta = true;
+    autoMigrate = true;
   };
 
   homebrew = {

@@ -27,4 +27,5 @@
   nixpkgs.hostPlatform = "aarch64-darwin";
   nix.settings.keep-derivations = true;
   nix.linux-builder.maxJobs = 32;
+  nix-homebrew.user = "krad246";
 }
