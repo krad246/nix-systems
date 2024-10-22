@@ -40,6 +40,7 @@
     knownUsers = ["krad246"];
   };
 
+  nix-homebrew.user = "krad246";
   homebrew = {
     casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"];
   };
