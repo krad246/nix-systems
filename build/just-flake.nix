@@ -104,13 +104,13 @@
       build = {
         enable = true;
         justfile = ''
-          flakeref := "^(([[:ascii:]]+)\\s)?(([[:ascii:]]+)#([[:ascii:]]+))(\\s([[:ascii:]]))?$"
-          outlink := "$4/outputs/$5"
+          flakeref := "^(?<front>[[:ascii:]]+\\s)?(?<path>(?<flake>[[:ascii:]]+)#(?<ref>[[:ascii:]]+))\\s(?<back>[[:ascii:]]+)?$"
+          outlink := "$flake/outputs/$ref"
           [private]
           _build *ARGS: (nix "build" ARGS)
           build *ARGS: (_build trim(replace_regex(ARGS, \
                                                     flakeref, \
-                                                    "$2 " + "--out-link " + outlink)))
+                                                    "$front $path --out-link " + outlink + " $back")))
         '';
       };
 
