@@ -142,6 +142,14 @@
       url = "github:hraban/mac-app-util";
     };
 
+    nix-homebrew = {
+      url = "github:zhaofengli-wip/nix-homebrew";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        nix-darwin.follows = "darwin";
+      };
+    };
+
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
       inputs.flake-utils.follows = "flake-utils";
@@ -236,6 +244,10 @@
                 "iso"
                 "install-iso"
                 "install-iso-hyperv"
+                "qcow"
+                "qcow-efi"
+                "raw"
+                "raw-efi"
                 "sd-aarch64"
                 "sd-aarch64-installer"
                 "sd-x86_64"

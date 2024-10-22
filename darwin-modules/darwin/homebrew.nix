@@ -1,4 +1,17 @@
-{config, ...}: {
+{
+  inputs,
+  config,
+  ...
+}: let
+  inherit (inputs) nix-homebrew;
+in {
+  imports = [nix-homebrew.darwinModules.nix-homebrew];
+
+  nix-homebrew = {
+    enable = true;
+    enableRosetta = true;
+  };
+
   homebrew = {
     enable = true;
     onActivation = {

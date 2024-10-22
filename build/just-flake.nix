@@ -105,10 +105,12 @@
         enable = true;
         justfile = ''
           flakeref := "^(([[:ascii:]]+)\\s)?(([[:ascii:]]+)#([[:ascii:]]+))(\\s([[:ascii:]]))?$"
-          outlink := "$4/result-$5"
-          build *ARGS: (nix "build" trim(replace_regex(ARGS, \
+          outlink := "$4/outputs/$5"
+          [private]
+          _build *ARGS: (nix "build" ARGS)
+          build *ARGS: (_build trim(replace_regex(ARGS, \
                                                     flakeref, \
-                                                    "--out-link " + outlink + " $3 $2 $7")))
+                                                    "$2 " + "--out-link " + outlink)))
         '';
       };
 
