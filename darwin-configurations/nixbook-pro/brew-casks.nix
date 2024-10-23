@@ -6,6 +6,7 @@
       ++ ["signal"]
       ++ ["spotify"]
       ++ [
+        "crystalfetch"
         "utm"
         "vagrant"
         "vagrant-vmware-utility"
