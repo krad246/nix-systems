@@ -31,18 +31,6 @@
             };
         in
           mkEnv mappedCtx;
-
-        # establishes filesystem structure
-        extraCommands = ''
-          set -ex
-          mkdir -p ./tmp -m 0777
-        '';
-
-        # execute customizations as a fake root user.
-        enableFakechroot = hostCtx.pkgs.stdenv.isLinux;
-        fakeRootCommands = ''
-          chown "$(id -u):$(id -g)" -cv ./tmp
-        '';
       };
     in
       vscode-devcontainer);
