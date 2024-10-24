@@ -1,6 +1,7 @@
 {
   perSystem = {
     config,
+    lib,
     pkgs,
     ...
   }: {
@@ -28,6 +29,9 @@
           if [[ -f /.dockerenv ]]; then
             unset TEMP TMPDIR NIX_BUILD_TOP
           fi
+          ${lib.strings.optionalString pkgs.stdenv.isDarwin ''
+
+          ''}
         '';
       };
     };

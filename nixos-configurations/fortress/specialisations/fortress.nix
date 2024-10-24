@@ -41,6 +41,8 @@ in {
               common-pc-ssd
             ]));
 
+        boot.kernelPackages = pkgs.linuxPackages_latest;
+
         programs.ssh = lib.mkIf (hasPrivKey && hasPubKey) {
           startAgent = true;
         };

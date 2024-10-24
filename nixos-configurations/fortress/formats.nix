@@ -9,11 +9,21 @@ in {
 
   formatConfigs =
     rec {
-      hyperv = {lib, ...}: {
-        disko.enableConfig = false;
-        boot.kernelParams = ["nomodeset"];
-        boot.binfmt.emulatedSystems = lib.mkForce [];
-      };
+      hyperv = {
+        lib,
+        pkgs,
+        ...
+      }:
+        {
+          disko.enableConfig = false;
+        }
+        // {
+          boot = {
+            kernelPackages = lib.mkForce pkgs.linuxPackages;
+            kernelParams = ["nomodeset"];
+            binfmt.emulatedSystems = lib.mkForce [];
+          };
+        };
 
       iso = {lib, ...}: {
         disko.enableConfig = false;

@@ -1,11 +1,9 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }: {
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
     tmp = {
       cleanOnBoot = true;
       useTmpfs = lib.mkDefault true;
