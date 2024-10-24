@@ -7,10 +7,9 @@
     withSystem system (mappedCtx: let
       vscode-devcontainer = hostCtx.pkgs.dockerTools.streamLayeredImage {
         name = "vscode-devcontainer";
-        architecture = mappedCtx.pkgs.go.GOARCH;
         fromImage = mappedCtx.self'.packages.nix-flakes;
-        maxLayers = 128;
 
+        maxLayers = 128;
         contents = let
           mkEnv = {pkgs, ...}:
             pkgs.buildEnv {
@@ -20,6 +19,8 @@
             };
         in
           mkEnv mappedCtx;
+
+        architecture = mappedCtx.pkgs.go.GOARCH;
       };
     in
       vscode-devcontainer);
