@@ -7,20 +7,47 @@
     withSystem system (mappedCtx: let
       vscode-devcontainer = hostCtx.pkgs.dockerTools.streamLayeredImage {
         name = "vscode-devcontainer";
-        fromImage = mappedCtx.self'.packages.nix-flakes;
 
-        maxLayers = 128;
+        fromImage = mappedCtx.self'.packages.ubuntu;
+        architecture = mappedCtx.pkgs.go.GOARCH;
+
         contents = let
           mkEnv = {pkgs, ...}:
             pkgs.buildEnv {
               name = "vscode-devcontainer-env";
-              paths = with pkgs; [toybox less lesspipe util-linux];
+              paths = with pkgs;
+                [bashInteractive git]
+                ++ [toybox less lesspipe util-linux]
+                ++ [nix]
+                ++ [
+                  dockerTools.binSh
+                  dockerTools.usrBinEnv
+                ];
+
               pathsToLink = ["/bin"];
             };
         in
           mkEnv mappedCtx;
 
-        architecture = mappedCtx.pkgs.go.GOARCH;
+        config.Env = mappedCtx.pkgs.lib.mapAttrsToList (name: value: "${name}=${value}") {
+          SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";
+          NIX_SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";
+          NIX_BUILD_CORES = "1";
+          TERM = "xterm-256color";
+        };
+
+        extraCommands = ''
+          mkdir -p ./etc/nix
+
+          cat <<- EOF >./etc/nix/nix.conf
+          build-users-group =
+          experimental-features = nix-command flakes
+          EOF
+        '';
+
+        enableFakechroot = hostCtx.pkgs.stdenv.isLinux;
+        fakeRootCommands = ''
+        '';
       };
     in
       vscode-devcontainer);

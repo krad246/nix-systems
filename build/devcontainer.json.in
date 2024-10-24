@@ -18,6 +18,7 @@
         // - https://docs.docker.com/engine/containers/resource_constraints/
         // - https://stackoverflow.com/questions/68991039/what-is-docker-kernel-memory
         "--memory=8G",
+        "--memory-reservation=7G",
         "--kernel-memory=6G",
 
         // allow the container unlimited swap addressability
