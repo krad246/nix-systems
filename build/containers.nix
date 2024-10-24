@@ -8,7 +8,8 @@
       vscode-devcontainer = hostCtx.pkgs.dockerTools.streamLayeredImage {
         name = "vscode-devcontainer";
         architecture = mappedCtx.pkgs.go.GOARCH;
-        fromImage = mappedCtx.self'.packages.nixos;
+        fromImage = mappedCtx.self'.packages.nix-flakes;
+        maxLayers = 128;
 
         contents = let
           mkEnv = {pkgs, ...}:
@@ -89,10 +90,10 @@ in
           };
 
           nixos = pullImage pkgs {
-            imageName = "nixpkgs/nix-flakes";
-            imageDigest = "sha256:a6de74beafbf1d1934e615b98602f1975e146ab7a3154e97139b615cb804d467";
-            sha256 = "1kd83s9y26jsrnwy4gxchl6ir2c8p8h95m2f22p070p32ig3ljxb";
-            finalImageName = "nixpkgs/nix-flakes";
+            imageName = "nixos/nix";
+            imageDigest = "sha256:fd7a5c67d396fe6bddeb9c10779d97541ab3a1b2a9d744df3754a99add4046f1";
+            sha256 = "0lyjvwkblsyylgdb6hw2iw1rk5nm19znap6hrijnwfy0alk83fjh";
+            finalImageName = "nixos/nix";
             finalImageTag = "latest";
           };
         });

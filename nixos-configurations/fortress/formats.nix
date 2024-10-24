@@ -1,6 +1,7 @@
 {
   self,
   inputs,
+  pkgs,
   ...
 }: let
   inherit (inputs) nixos-generators;
@@ -9,11 +10,7 @@ in {
 
   formatConfigs =
     rec {
-      hyperv = {
-        lib,
-        pkgs,
-        ...
-      }:
+      hyperv = {lib, ...}:
         {
           disko.enableConfig = false;
         }
