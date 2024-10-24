@@ -100,7 +100,7 @@ in
       // {
         aarch64-darwin.vscode-devcontainer = withSystem "aarch64-darwin" (hostCtx @ {self', ...}: let
           vscode-devcontainer = mkContainer {
-            hostCtx = hostCtx // self';
+            hostCtx = hostCtx // self'; # forcibly instantiate self' in hostCtx
             system = "aarch64-linux";
           };
         in
