@@ -1,4 +1,6 @@
 {withSystem, ...}: let
+  # Form a container mapping a streamLayeredImage script from a given 'hostCtx'
+  # to a target 'system'.
   mkContainer = {
     hostCtx,
     system ? hostCtx.pkgs.stdenv.system,
@@ -8,6 +10,7 @@
       vscode-devcontainer = hostCtx.pkgs.dockerTools.streamLayeredImage {
         name = "vscode-devcontainer";
 
+        # Based on Ubuntu 22.04 of the mapped architecture
         fromImage = mappedCtx.self'.packages.ubuntu;
         architecture = mappedCtx.pkgs.go.GOARCH;
 
@@ -29,13 +32,19 @@
         in
           mkEnv mappedCtx;
 
-        config.Env = mappedCtx.pkgs.lib.mapAttrsToList (name: value: "${name}=${value}") {
-          SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";
-          NIX_SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";
-          NIX_BUILD_CORES = "1";
-          TERM = "xterm-256color";
-        };
+        config.Env = mappedCtx.pkgs.lib.mapAttrsToList (name: value: "${name}=${value}") ({
+            # Provide the Nix install certificate paths for internet access.
+            SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";
+            NIX_SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";
+          }
+          // {
+            NIX_BUILD_CORES = "1"; # Seems to reduce the odds of OOM killing (maybe?) by slowing things down...
+          }
+          // {
+            TERM = "xterm-256color";
+          });
 
+        # Reconfigure the Nix install as single-user, but with flake support.
         extraCommands = ''
           mkdir -p ./etc/nix
 
