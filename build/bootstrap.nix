@@ -8,18 +8,12 @@
       bootstrap = let
         runner = pkgs.writeShellApplication {
           name = "bootstrap";
-          runtimeInputs = with pkgs; [git];
+          runtimeInputs = with pkgs; [bashInteractive coreutils direnv git nix];
           text = ''
-            allow() {
-                ${lib.getExe pkgs.git} config --global --add safe.directory "$1"
-                ${lib.getExe pkgs.git} config --global --add safe.directory "$1/.git"
-            }
+            set -x
 
-            readme() {
-                :
-            }
-
-            readme && allow "$PWD" && exec ${lib.getExe pkgs.nix} develop
+            direnv allow "$PWD"
+            exec bash --rcfile <(echo $'source ~/.bashrc; eval "$(direnv hook bash)"')
           '';
         };
       in {
