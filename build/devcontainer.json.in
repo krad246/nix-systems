@@ -14,14 +14,14 @@
         // dmesg access
         "--cap-add=SYSLOG",
 
-        // note: see https://docs.docker.com/engine/containers/resource_constraints/
-        // specifically, --kernel-memory
+        // see:
+        // - https://docs.docker.com/engine/containers/resource_constraints/
+        // - https://stackoverflow.com/questions/68991039/what-is-docker-kernel-memory
+        "--memory=8G",
+        "--kernel-memory=6G",
 
-        // allow the container unlimited swap (unlimited virtual memory)
+        // allow the container unlimited swap addressability
         "--memory-swap=-1",
-
-        // set a hard limit on the physical memory of the container
-        "--kernel-memory=6G"
     ],
 
    "customizations": {
