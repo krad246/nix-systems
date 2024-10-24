@@ -20,6 +20,15 @@
           ++ [shellcheck nil]
           ++ [devcontainer docker]
           ++ [nix-prefetch-docker];
+
+        shellHook = ''
+          # nix-build doesn't play very nice with the sticky bit
+          # and /tmp in a docker environment. unsetting it enables
+          # the container to manage its tmpfs as it pleases.
+          if [[ -f /.dockerenv ]]; then
+            unset TEMP TMPDIR NIX_BUILD_TOP
+          fi
+        '';
       };
     };
   };
