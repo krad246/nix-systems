@@ -13,9 +13,8 @@
         contents = let
           mkEnv = {pkgs, ...}:
             pkgs.buildEnv {
-              name = "vscode-devcontainer-contents";
-              paths = with pkgs; [coreutils util-linux];
-
+              name = "vscode-devcontainer-env";
+              paths = with pkgs; [toybox less lesspipe util-linux];
               pathsToLink = ["/bin"];
             };
         in
