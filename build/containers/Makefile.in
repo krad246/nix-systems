@@ -40,7 +40,7 @@ container-exec: container-up ## Run a command in the container
 container-stop: ## Stop the container
 	-docker stop "$$(cat $(devshell_cidfile))"
 
-.PHONY: container-stop
+.PHONY: container-stop container-restart
 
 container-down: container-stop ## Stop the container
 
