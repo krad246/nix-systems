@@ -21,7 +21,7 @@
               paths = with pkgs;
                 [bashInteractive git]
                 ++ [toybox less lesspipe util-linux]
-                ++ [nix]
+                ++ [nix just]
                 ++ [
                   dockerTools.binSh
                   dockerTools.usrBinEnv
@@ -63,12 +63,14 @@
 in
   {
     perSystem = args @ {
+      self',
       lib,
       pkgs,
       ...
     }: {
       packages = lib.mkIf pkgs.stdenv.isLinux {
-        vscode-devcontainer = mkContainer {hostCtx = args;};
+        vscode-devcontainer = self'.packages."vscode-devcontainer-${pkgs.stdenv.system}";
+        "vscode-devcontainer-${pkgs.stdenv.system}" = mkContainer {hostCtx = args;};
       };
     };
   }
@@ -82,7 +84,11 @@ in
           });
     in
       {
-        x86_64-linux = withSystem "x86_64-linux" ({pkgs, ...}: {
+        x86_64-linux = withSystem "x86_64-linux" (hostCtx @ {
+          self',
+          pkgs,
+          ...
+        }: {
           ubuntu = pullImage pkgs {
             imageName = "ubuntu";
             imageDigest = "sha256:99c35190e22d294cdace2783ac55effc69d32896daaa265f0bbedbcde4fbe3e5";
@@ -106,10 +112,22 @@ in
             finalImageName = "nixos/nix";
             finalImageTag = "latest";
           };
+
+          vscode-devcontainer-aarch64-linux = let
+            vscode-devcontainer = mkContainer {
+              hostCtx = hostCtx // self'; # forcibly instantiate self' in hostCtx
+              system = "aarch64-linux";
+            };
+          in
+            vscode-devcontainer;
         });
       }
       // {
-        aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
+        aarch64-linux = withSystem "aarch64-linux" (hostCtx @ {
+          self',
+          pkgs,
+          ...
+        }: {
           ubuntu = pullImage pkgs {
             imageName = "ubuntu";
             imageDigest = "sha256:99c35190e22d294cdace2783ac55effc69d32896daaa265f0bbedbcde4fbe3e5";
@@ -133,6 +151,14 @@ in
             finalImageName = "nixos/nix";
             finalImageTag = "latest";
           };
+
+          vscode-devcontainer-x86_64-linux = let
+            vscode-devcontainer = mkContainer {
+              hostCtx = hostCtx // self'; # forcibly instantiate self' in hostCtx
+              system = "x86_64-linux";
+            };
+          in
+            vscode-devcontainer;
         });
       }
       // {
