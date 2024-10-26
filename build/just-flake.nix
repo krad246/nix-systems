@@ -198,6 +198,13 @@
             ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ ARGS }}
         '';
       };
+
+      container = {
+        enable = true;
+        justfile = ''
+          container VERB: (make "container" + "-" + VERB)
+        '';
+      };
     };
   };
 }

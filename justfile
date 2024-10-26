@@ -5,3 +5,6 @@ import 'just-flake.just'
 
 default:
     @just --list
+
+setup:
+  exec {{ justfile_directory() / "setup.sh" }}

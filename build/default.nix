@@ -1,12 +1,11 @@
 {
   imports = [
     ./bootstrap.nix
-    ./containers.nix
+    ./containers
     ./devshell.nix
     ./eater.nix
     ./formatter.nix
     ./just-flake.nix
-    ./makefile.nix
     ./multiarch.nix
     ./tests.nix
   ];
