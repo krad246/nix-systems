@@ -59,6 +59,4 @@
       systems = ["i386-linux" "i686-linux" "x86_64-linux" "aarch64-linux"];
     };
   };
-
-  homebrew.casks = ["docker"];
 }

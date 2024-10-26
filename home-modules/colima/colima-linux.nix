@@ -71,7 +71,6 @@
 
   parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
 in {
-  home.packages = with pkgs; [colima];
   imports =
     [
       (mkSystemdService "aarch64")

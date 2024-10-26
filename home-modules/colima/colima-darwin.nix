@@ -7,11 +7,11 @@
 }: let
   vmConfig =
     lib.attrsets.attrByPath ["virtualisation"] {
-      cores = 2;
+      cores = 8;
 
       darwin-builder = {
-        memorySize = 4 * 1024;
-        diskSize = 8 * 1024;
+        memorySize = 8 * 1024;
+        diskSize = 32 * 1024;
       };
     }
     osConfig;
@@ -19,33 +19,34 @@
     pkgs.writeShellApplication {
       name = "colima-${arch}";
       text = ''
-        ${lib.getExe pkgs.colima} start \
+        colima version --verbose
+        colima start \
           -p ${arch} \
           --arch ${arch} \
           --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
           --cpu ${builtins.toString vmConfig.cores} \
           --memory ${builtins.toString (vmConfig.darwin-builder.memorySize / 1024)} \
           --verbose \
-          --foreground --vm-type vz --vz-rosetta
+          --vm-type vz \
+          --vz-rosetta \
+          --foreground
       '';
     };
 
-  darwinPathCfg = lib.attrsets.attrByPath ["environment" "systemPath"] "" osConfig;
-  homePathCfg = lib.strings.concatStringsSep ":" config.home.sessionPath;
-  darwinPath = lib.strings.concatStringsSep ":" ["${homePathCfg}" "${darwinPathCfg}"];
-
   mkLaunchUnit = arch: let
-    script = mkScript arch;
+    script = lib.getExe (mkScript arch);
   in
     lib.mkIf pkgs.stdenv.isDarwin {
       launchd.agents."colima-${arch}" = {
         enable = true;
         config = {
           EnvironmentVariables = {
-            PATH = "${darwinPath}";
+            PATH = lib.strings.concatStringsSep ":" [
+              (lib.makeBinPath [pkgs.colima])
+              osConfig.environment.systemPath
+            ];
           };
           Program = "${script}";
-          ProgramArguments = ["${script}"];
           RunAtLoad = true;
           KeepAlive = true;
 
@@ -57,7 +58,7 @@
 
   parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
 in {
-  home.packages = with pkgs; [colima];
+  # TODO: spawn a colima unit for each architecture in the Nix daemon settings.
   imports = [
     (mkLaunchUnit parse.cpu.name)
   ];

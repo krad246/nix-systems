@@ -19,6 +19,9 @@ in {
     ++ [
       home-manager.darwinModules.home-manager
       agenix.darwinModules.age
+    ]
+    ++ [
+      self.darwinModules.docker-desktop
     ];
 
   home-manager = {
