@@ -1,5 +1,6 @@
 {
   perSystem = {
+    self',
     config,
     lib,
     pkgs,
@@ -23,15 +24,20 @@
           ++ [nix-prefetch-docker];
 
         shellHook = ''
-          # nix-build doesn't play very nice with the sticky bit
-          # and /tmp in a docker environment. unsetting it enables
-          # the container to manage its tmpfs as it pleases.
           if [[ -f /.dockerenv ]]; then
+            # nix-build doesn't play very nice with the sticky bit
+            # and /tmp in a docker environment. unsetting it enables
+            # the container to manage its tmpfs as it pleases.
             unset TEMP TMPDIR NIX_BUILD_TOP
-          fi
-          ${lib.strings.optionalString pkgs.stdenv.isDarwin ''
+          else
+            # link the container makefile to the root of the workspace.
+            ${lib.getExe' pkgs.coreutils "ln"} -snvrf ${self'.packages.makefile} "$FLAKE_ROOT/Makefile"
 
+            # on Darwin environments, start up a Linux container for convenience.
+            ${lib.strings.optionalString pkgs.stdenv.isDarwin ''
+            ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} container-up
           ''}
+          fi
         '';
       };
     };
