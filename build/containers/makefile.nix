@@ -9,13 +9,15 @@
     ...
   }:
     withSystem system (mappedCtx: let
-      inherit (hostCtx.self'.packages) vscode-devcontainer;
-      image = "${vscode-devcontainer.imageName}:${vscode-devcontainer.imageTag}";
+      inherit (hostCtx.self') packages;
+
+      specific = packages."vscode-devcontainer-${system}";
+      image = "${specific.imageName}:${specific.imageTag}";
     in
       hostCtx.pkgs.substituteAll rec {
         src = ./Makefile.in;
         inherit image;
-        loader = vscode-devcontainer;
+        loader = specific;
 
         # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
         template = hostCtx.pkgs.substituteAll {

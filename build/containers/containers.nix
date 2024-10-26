@@ -136,12 +136,24 @@ in
         });
       }
       // {
-        aarch64-darwin.vscode-devcontainer = withSystem "aarch64-darwin" (hostCtx @ {self', ...}: let
-          vscode-devcontainer = mkContainer {
-            hostCtx = hostCtx // self'; # forcibly instantiate self' in hostCtx
-            system = "aarch64-linux";
-          };
-        in
-          vscode-devcontainer);
+        aarch64-darwin = rec {
+          vscode-devcontainer = vscode-devcontainer-aarch64-linux;
+
+          vscode-devcontainer-aarch64-linux = withSystem "aarch64-darwin" (hostCtx @ {self', ...}: let
+            vscode-devcontainer = mkContainer {
+              hostCtx = hostCtx // self'; # forcibly instantiate self' in hostCtx
+              system = "aarch64-linux";
+            };
+          in
+            vscode-devcontainer);
+
+          vscode-devcontainer-x86_64-linux = withSystem "aarch64-darwin" (hostCtx @ {self', ...}: let
+            vscode-devcontainer = mkContainer {
+              hostCtx = hostCtx // self'; # forcibly instantiate self' in hostCtx
+              system = "x86_64-linux";
+            };
+          in
+            vscode-devcontainer);
+        };
       };
   }
