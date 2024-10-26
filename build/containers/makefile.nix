@@ -36,11 +36,50 @@ in {
     };
   };
 
-  flake.packages.aarch64-darwin.makefile = withSystem "aarch64-darwin" (hostCtx: let
-    makefile = mkMakefile {
-      inherit hostCtx;
-      system = "aarch64-linux";
+  flake.packages = {
+    x86_64-linux.makefile-aarch64-linux =
+      withSystem "x86_64-linux"
+      (hostCtx: let
+        makefile =
+          mkMakefile
+          {
+            inherit hostCtx;
+            system = "aarch64-linux";
+          };
+      in
+        makefile);
+
+    aarch64-linux.makefile-x86_64-linux = withSystem "aarch64-linux" (hostCtx: let
+      makefile =
+        mkMakefile
+        {
+          inherit hostCtx;
+          system = "x86_64-linux";
+        };
+    in
+      makefile);
+
+    aarch64-darwin = rec {
+      makefile = makefile-aarch64-linux;
+      makefile-aarch64-linux = withSystem "aarch64-darwin" (hostCtx: let
+        makefile = mkMakefile {
+          inherit hostCtx;
+          system = "aarch64-linux";
+        };
+      in
+        makefile);
+
+      makefile-x86_64-linux =
+        withSystem "aarch64-darwin"
+        (
+          hostCtx: let
+            makefile = mkMakefile {
+              inherit hostCtx;
+              system = "x86_64-linux";
+            };
+          in
+            makefile
+        );
     };
-  in
-    makefile);
+  };
 }
