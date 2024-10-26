@@ -11,6 +11,7 @@ result
 repl-result-*
 .pre-commit-config.yaml
 just-flake.just
+Makefile
 .direnv
 .envrc
 .cache

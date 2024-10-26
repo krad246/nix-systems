@@ -114,13 +114,6 @@
         '';
       };
 
-      develop = {
-        enable = true;
-        justfile = ''
-          develop *ARGS: (nix "develop" ARGS)
-        '';
-      };
-
       run = {
         enable = true;
         justfile = ''
@@ -191,18 +184,14 @@
         '';
       };
 
-      make = {
-        enable = true;
-        justfile = ''
-          make *ARGS:
-            ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ ARGS }}
-        '';
-      };
-
       container = {
         enable = true;
         justfile = ''
-          container VERB: (make "container" + "-" + VERB)
+          [private]
+          _make *ARGS:
+            ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ ARGS }}
+
+          container *VERBS: (_make prepend("container-", VERBS))
         '';
       };
     };

@@ -42,6 +42,8 @@ container-stop: ## Stop the container
 
 .PHONY: container-stop
 
+container-down: container-stop ## Stop the container
+
 container-clean: container-stop ## Clean up the container and all associated artifacts
 	rm -f $(devshell_cidfile)
 
