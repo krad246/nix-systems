@@ -1,25 +1,21 @@
 {
-  config,
   osConfig,
   lib,
   pkgs,
   ...
 }: let
-  vmConfig =
-    lib.attrsets.attrByPath ["virtualisation"] {
-      cores = 8;
+  vmConfig = {
+    cores = 8;
+    darwin-builder = {
+      memorySize = 8 * 1024;
+      diskSize = 80 * 1024;
+    };
+  };
 
-      darwin-builder = {
-        memorySize = 8 * 1024;
-        diskSize = 32 * 1024;
-      };
-    }
-    osConfig;
   mkScript = arch:
     pkgs.writeShellApplication {
       name = "colima-${arch}";
       text = ''
-        colima version --verbose
         colima start \
           -p ${arch} \
           --arch ${arch} \
@@ -37,12 +33,15 @@
     script = lib.getExe (mkScript arch);
   in
     lib.mkIf pkgs.stdenv.isDarwin {
+      home.packages = [pkgs.colima];
       launchd.agents."colima-${arch}" = {
         enable = true;
         config = {
           EnvironmentVariables = {
             PATH = lib.strings.concatStringsSep ":" [
               (lib.makeBinPath [pkgs.colima])
+
+              # required for colima to call macOS commands to enable rosetta.
               osConfig.environment.systemPath
             ];
           };
