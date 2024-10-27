@@ -35,7 +35,7 @@
 
             # on Darwin environments, start up a Linux container for convenience.
             ${lib.strings.optionalString pkgs.stdenv.isDarwin ''
-            ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} container-up
+            ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} container-up || :
           ''}
           fi
         '';
