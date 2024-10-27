@@ -49,16 +49,12 @@
           Program = "${script}";
           RunAtLoad = true;
           KeepAlive = true;
-
-          StandardOutPath = "${config.home.homeDirectory}/Library/Logs/colima-${arch}/stdout";
-          StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/colima-${arch}/stderr";
         };
       };
     };
 
   parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
 in {
-  # TODO: spawn a colima unit for each architecture in the Nix daemon settings.
   imports = [
     (mkLaunchUnit parse.cpu.name)
   ];

@@ -10,7 +10,8 @@ allow() {
     git config --global --add safe.directory "$(realpath $1/.git)"
 }
 
-allow "$SCRIPTPATH/.." && \
-    exec nix \
+allow "$SCRIPTPATH/.."
+
+exec nix \
         --option experimental-features 'nix-command flakes' \
         run "$SCRIPTPATH/../#bootstrap" -- "$@"
