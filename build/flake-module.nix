@@ -1,6 +1,5 @@
-_: _: {
+{withSystem, ...}: _: {
   imports = [
-    ./bootstrap.nix
     ./containers
     ./devshell.nix
     ./eater.nix
@@ -10,7 +9,10 @@ _: _: {
     ./tests.nix
   ];
 
-  perSystem = _: {
+  perSystem = {pkgs, ...}: {
+    apps.bootstrap = withSystem pkgs.stdenv.system (args:
+      import ./bootstrap.nix
+      args);
   };
 
   flake = {
