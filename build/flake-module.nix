@@ -10,6 +10,7 @@
 
   perSystem = {
     config,
+    lib,
     pkgs,
     ...
   }:
@@ -36,7 +37,7 @@
     }
     # Package derivations
     // {
-      packages = {
+      packages = lib.mkIf pkgs.stdenv.isLinux {
         disko-install = let wrapped = import ./packages/disko-install.nix {inherit self;}; in withSystem pkgs.stdenv.system wrapped;
       };
     }
