@@ -1,4 +1,8 @@
-{withSystem, ...}: _: {
+{
+  withSystem,
+  self,
+  ...
+}: _: {
   imports = [
     ./containers
     ./just-flake.nix
@@ -29,6 +33,12 @@
       };
 
       devShells.default = withSystem pkgs.stdenv.system (import ./devshell.nix);
+    }
+    # Package derivations
+    // {
+      packages = {
+        disko-install = let wrapped = import ./packages/disko-install.nix {inherit self;}; in withSystem pkgs.stdenv.system wrapped;
+      };
     }
     # Runnable app targets!
     // {

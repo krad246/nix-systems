@@ -41,8 +41,6 @@ in {
               common-pc-ssd
             ]));
 
-        boot.kernelPackages = pkgs.linuxPackages_latest;
-
         programs.ssh = lib.mkIf (hasPrivKey && hasPubKey) {
           startAgent = true;
         };
@@ -69,6 +67,8 @@ in {
           binfmt.emulatedSystems = lib.lists.remove pkgs.stdenv.system ["aarch64-linux"];
           kernelParams = ["usbcore.old_scheme_first=1"];
         };
+
+        virtualisation.docker.enable = true;
       };
     };
   };

@@ -184,15 +184,19 @@
       inputs.nixpkgs-stable.lib.extend
       (_final: _prev: (import ./lib));
   in
-    flake-parts.lib.mkFlake {
+    flake-parts.lib.mkFlake
+    # Environment
+    {
       inherit inputs;
       specialArgs = {inherit lib;};
-    } (ctx @ {
+    }
+    # Entrypoint
+    ({
       withSystem,
       flake-parts-lib,
       ...
     }: let
-      build = import ./build (ctx // {inherit withSystem flake-parts-lib;});
+      build = import ./build {inherit withSystem flake-parts-lib self;};
     in {
       imports =
         (with inputs; [
@@ -278,30 +282,9 @@
             declared;
 
           formats = lib.lists.forEach nixosMachines mkFormatPackages;
-          disko-install = pkgs.writeShellApplication {
-            name = "disko-install";
-            text = ''
-              disko() {
-                mode="$1"
-                shift
-
-                ${lib.getExe' pkgs.disko "disko-install"} \
-                  --flake "${self}#$HOSTNAME" \
-                  --option inputs-from "${self}" \
-                  --option experimental-features 'nix-command flakes' \
-                  --mode "$mode" \
-                "$@"
-              }
-
-              disko format \
-                --write-efi-boot-entries \
-                "$@"
-            '';
-          };
         in
           lib.attrsets.mergeAttrsList (lib.lists.flatten [
             (lib.lists.optionals pkgs.stdenv.isLinux [formats])
-            (lib.lists.optionals pkgs.stdenv.isLinux [{inherit disko-install;}])
           ]);
 
         apps =
