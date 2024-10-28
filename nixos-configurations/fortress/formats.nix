@@ -31,12 +31,17 @@ in {
         boot.binfmt.emulatedSystems = lib.mkForce [];
       };
 
-      install-iso = args:
+      install-iso = args @ {pkgs, ...}:
         iso args
         // {
           imports =
             [self.nixosModules.efiboot]
             ++ [./disko-install.nix];
+
+          environment.systemPackages = with pkgs; [
+            calamares-nixos
+            calamares-nixos-extensions
+          ];
         };
       install-iso-hyperv = args: let
         hypervOpts = hyperv args;

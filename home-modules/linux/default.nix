@@ -21,7 +21,7 @@
   # common for VMs
   growableRoot = lib.attrsets.attrByPath ["boot" "growPartition"] false osConfig;
 
-  isIso = lib.attrsets.hasAttrByPath ["system" "build" "isoImage"] osConfig;
+  isIso = lib.attrsets.hasAttrByPath ["isoImage"] osConfig;
 
   isVM =
     isContainer

@@ -51,6 +51,10 @@
             # krad246@dullahan
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAINzCjoarVDF5bnWX3SBciYyaiMzGnzTF9uefbja5xLB0"
           ];
+
+        environment.variables = {
+          TERM = "xterm-256color";
+        };
       };
 
       maxJobs = lib.mkDefault 16;
