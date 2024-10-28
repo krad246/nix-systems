@@ -18,7 +18,7 @@
       text = ''
         colima start \
           -p ${arch} \
-          --env TERM=xterm256-color \
+          --env TERM=xterm-256color \
           --arch ${arch} \
           --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
           --cpu ${builtins.toString vmConfig.cores} \
