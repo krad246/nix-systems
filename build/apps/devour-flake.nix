@@ -1,9 +1,8 @@
 {
   self,
   inputs,
-  pkgs,
   ...
-}: let
+}: {pkgs, ...}: let
   inherit (pkgs) lib;
   runner = pkgs.writeShellApplication {
     name = "devour-flake";

@@ -196,7 +196,7 @@
       flake-parts-lib,
       ...
     }: let
-      build = import ./build {inherit withSystem flake-parts-lib self;};
+      build = import ./build {inherit withSystem flake-parts-lib self inputs;};
     in {
       imports =
         (with inputs; [

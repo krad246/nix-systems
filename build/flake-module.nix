@@ -1,6 +1,7 @@
 {
   withSystem,
   self,
+  inputs,
   ...
 }: _: {
   imports = [
@@ -45,7 +46,12 @@
     // {
       apps = {
         bootstrap = withSystem pkgs.stdenv.system (import ./apps/bootstrap.nix);
-        devour-flake = withSystem pkgs.stdenv.system (import ./apps/devour-flake.nix);
+        devour-flake = let
+          wrapped = import ./apps/devour-flake.nix {inherit self inputs;};
+        in
+          withSystem
+          pkgs.stdenv.system
+          wrapped;
       };
     }
     # Runnable tests!
