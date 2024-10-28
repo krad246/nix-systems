@@ -31,7 +31,7 @@ in {
         boot.binfmt.emulatedSystems = lib.mkForce [];
       };
 
-      install-iso = args @ {pkgs, ...}:
+      install-iso = args:
         iso args
         // {
           imports =
