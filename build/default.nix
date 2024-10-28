@@ -1,12 +1,9 @@
 {
-  imports = [
-    ./bootstrap.nix
-    ./containers
-    ./devshell.nix
-    ./eater.nix
-    ./formatter.nix
-    ./just-flake.nix
-    ./multiarch.nix
-    ./tests.nix
-  ];
+  withSystem,
+  flake-parts-lib,
+  ...
+}: let
+  inherit (flake-parts-lib) importApply;
+in {
+  flakeModule = importApply ./flake-module.nix {inherit withSystem;};
 }

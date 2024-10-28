@@ -187,7 +187,13 @@
     flake-parts.lib.mkFlake {
       inherit inputs;
       specialArgs = {inherit lib;};
-    } {
+    } (ctx @ {
+      withSystem,
+      flake-parts-lib,
+      ...
+    }: let
+      build = import ./build (ctx // {inherit withSystem flake-parts-lib;});
+    in {
       imports =
         (with inputs; [
           treefmt-nix.flakeModule
@@ -198,7 +204,7 @@
           flake-parts.flakeModules.modules
         ])
         ++ [
-          ./build
+          build.flakeModule
         ]
         ++ [./common];
 
@@ -345,5 +351,5 @@
           };
         };
       };
-    };
+    });
 }
