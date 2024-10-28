@@ -11,6 +11,9 @@
   }:
     {
       devShells.default = withSystem pkgs.stdenv.system (import ./devshell.nix);
+    }
+    # Linter setup!
+    // {
       formatter = config.treefmt.build.wrapper;
       treefmt = {
         inherit (config.flake-root) projectRootFile;
@@ -28,12 +31,14 @@
         statix.enable = true;
       };
     }
+    # Runnable app targets!
     // {
       apps = {
         bootstrap = withSystem pkgs.stdenv.system (import ./apps/bootstrap.nix);
         devour-flake = withSystem pkgs.stdenv.system (import ./apps/devour-flake.nix);
       };
     }
+    # Runnable tests!
     // {
       checks = {
         hello = pkgs.testers.runNixOSTest {
