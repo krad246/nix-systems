@@ -9,8 +9,8 @@
     pkgs,
     ...
   }:
+  # Linter setup!
     {
-      # Linter setup!
       formatter = config.treefmt.build.wrapper;
       treefmt = {
         inherit (config.flake-root) projectRootFile;
