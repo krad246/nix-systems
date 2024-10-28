@@ -10,10 +10,7 @@
     ...
   }:
     {
-      devShells.default = withSystem pkgs.stdenv.system (import ./devshell.nix);
-    }
-    # Linter setup!
-    // {
+      # Linter setup!
       formatter = config.treefmt.build.wrapper;
       treefmt = {
         inherit (config.flake-root) projectRootFile;
@@ -30,6 +27,8 @@
         alejandra.enable = true;
         statix.enable = true;
       };
+
+      devShells.default = withSystem pkgs.stdenv.system (import ./devshell.nix);
     }
     # Runnable app targets!
     // {
