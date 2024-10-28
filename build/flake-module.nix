@@ -2,7 +2,7 @@
   imports = [
     ./containers
     ./devshell.nix
-    ./eater.nix
+    ./apps/eater.nix
     ./formatter.nix
     ./just-flake.nix
     ./multiarch.nix
@@ -10,9 +10,7 @@
   ];
 
   perSystem = {pkgs, ...}: {
-    apps.bootstrap = withSystem pkgs.stdenv.system (args:
-      import ./bootstrap.nix
-      args);
+    apps.bootstrap = withSystem pkgs.stdenv.system (import ./apps/bootstrap.nix);
   };
 
   flake = {
