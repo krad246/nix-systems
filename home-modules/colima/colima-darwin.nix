@@ -16,17 +16,20 @@
     pkgs.writeShellApplication {
       name = "colima-${arch}";
       text = ''
-        colima start \
-          -p ${arch} \
-          --env TERM=xterm-256color \
-          --arch ${arch} \
-          --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
-          --cpu ${builtins.toString vmConfig.cores} \
-          --memory ${builtins.toString (vmConfig.darwin-builder.memorySize / 1024)} \
-          --verbose \
-          --vm-type vz \
-          --vz-rosetta \
-          --foreground
+        if ! colima status -p ${arch}; then
+          if ! colima restart -p ${arch}; then
+            colima start -p ${arch} \
+              --env TERM=xterm-256color \
+              --arch ${arch} \
+              --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
+              --cpu ${builtins.toString vmConfig.cores} \
+              --memory ${builtins.toString (vmConfig.darwin-builder.memorySize / 1024)} \
+              --verbose \
+              --vm-type vz \
+              --vz-rosetta \
+              --foreground
+          fi
+        fi
       '';
     };
 
