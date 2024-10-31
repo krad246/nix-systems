@@ -65,7 +65,7 @@ in {
 
         boot = {
           binfmt.emulatedSystems = lib.lists.remove pkgs.stdenv.system ["aarch64-linux"];
-          kernelParams = ["usbcore.old_scheme_first=1"];
+          kernelParams = ["usbcore.old_scheme_first=1" "mem_sleep_default=s2idle"];
         };
 
         virtualisation.docker.enable = true;
