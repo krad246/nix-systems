@@ -1,10 +1,16 @@
 {
   self,
+  inputs,
   pkgs,
   ezModules,
   ...
-}: {
-  imports = with ezModules; ([colima] ++ [discord kitty vscode]) ++ [self.modules.generic.agenix-home];
+}: let
+  inherit (inputs) mac-app-util;
+in {
+  imports = with ezModules;
+    ([colima] ++ [discord kitty vscode])
+    ++ [self.modules.generic.agenix-home]
+    ++ [mac-app-util.homeManagerModules.default];
 
   home = {
     packages = with pkgs; [m-cli];
