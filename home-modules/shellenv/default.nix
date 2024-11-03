@@ -1,4 +1,5 @@
 {
+  ezModules,
   config,
   lib,
   pkgs,
@@ -20,7 +21,7 @@
       ./zoxide.nix
     ]
     ++ [
-      ./nvim
+      ezModules.nixvim
     ];
 
   home = {
