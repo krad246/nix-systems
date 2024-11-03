@@ -1,14 +1,23 @@
 {
   withSystem,
-  importApply,
   self,
   inputs,
   ...
-}:
-# Containers module spans all the options declared below; it is a peer to the flake module.
-(importApply ./containers {})
-// {
+}: {
+  # These modules are pretty large but are otherwise structured to merge against
+  # the options layers touched below.
+  imports = [
+    # Sets up container image packages, custom devShell derivation within the container
+    # VSCode *is* supported!
+    ./containers
+
+    # Map a list of valid nixos-generators formats declared by the flake's nixosConfigurations
+    # to package derivations that we can directly build.
+    ./nixos-generators.nix
+  ];
+
   perSystem = {
+    self',
     config,
     lib,
     pkgs,
@@ -44,15 +53,21 @@
     }
     # Runnable app targets!
     // {
-      apps = {
-        bootstrap = withSystem pkgs.stdenv.system (import ./apps/bootstrap.nix);
-        devour-flake = let
-          wrapped = import ./apps/devour-flake.nix {inherit self inputs;};
-        in
-          withSystem
-          pkgs.stdenv.system
-          wrapped;
-      };
+      apps =
+        {
+          bootstrap = withSystem pkgs.stdenv.system (import ./apps/bootstrap.nix);
+          devour-flake = let
+            wrapped = import ./apps/devour-flake.nix {inherit self inputs;};
+          in
+            withSystem
+            pkgs.stdenv.system
+            wrapped;
+        }
+        // lib.attrsets.mapAttrs (_name: value: {
+          type = "app";
+          program = lib.getExe value;
+        })
+        self'.packages;
     }
     # Runnable tests!
     // {
