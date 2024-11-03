@@ -1,14 +1,13 @@
 {
   withSystem,
+  importApply,
   self,
   inputs,
   ...
-}: _: {
-  imports = [
-    ./containers
-    ./just-flake.nix
-  ];
-
+}:
+# Containers module spans all the options declared below; it is a peer to the flake module.
+(importApply ./containers {})
+// {
   perSystem = {
     config,
     lib,
@@ -34,7 +33,8 @@
         statix.enable = true;
       };
 
-      devShells.default = withSystem pkgs.stdenv.system (import ./devshell.nix);
+      devShells.default = withSystem pkgs.stdenv.system (import ./devshell/devshell.nix);
+      just-flake.features = withSystem pkgs.stdenv.system (import ./devshell/just-flake.nix);
     }
     # Package derivations
     // {
