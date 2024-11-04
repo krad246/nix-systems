@@ -202,7 +202,9 @@
       build = import ./build (flakePartsCtx // ourCtx);
       modules = import ./modules (flakePartsCtx // ourCtx);
     in {
-      # Source files pulled in here are combined into this 'layer'.
+      # Source files and other callables pulled in here are combined into this 'layer'.
+      # flake-parts specifies that flake-level functors and other reusable module logic
+      # are captured in flakeModules.
       imports =
         (with inputs; [
           treefmt-nix.flakeModule
@@ -212,6 +214,7 @@
           just-flake.flakeModule
           flake-parts.flakeModules.modules
         ])
+        # TODO: convert these to use the flake.flakeModules attribute.
         ++ [
           build.flakeModule
           modules.flakeModule
