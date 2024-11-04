@@ -1,3 +1,3 @@
 _: {
-  imports = [../common];
+  imports = [./generic];
 }
