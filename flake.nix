@@ -196,9 +196,13 @@
       flake-parts-lib,
       ...
     }: let
-      build = import ./build {inherit withSystem flake-parts-lib self inputs;};
-      modules = import ./modules {inherit withSystem flake-parts-lib self inputs;};
+      flakePartsCtx = {inherit withSystem flake-parts-lib;};
+      ourCtx = {inherit self lib inputs;};
+
+      build = import ./build (flakePartsCtx // ourCtx);
+      modules = import ./modules (flakePartsCtx // ourCtx);
     in {
+      # Source files pulled in here are combined into this 'layer'.
       imports =
         (with inputs; [
           treefmt-nix.flakeModule
