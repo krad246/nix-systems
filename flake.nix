@@ -197,6 +197,7 @@
       ...
     }: let
       build = import ./build {inherit withSystem flake-parts-lib self inputs;};
+      modules = import ./modules {inherit withSystem flake-parts-lib self inputs;};
     in {
       imports =
         (with inputs; [
@@ -209,8 +210,8 @@
         ])
         ++ [
           build.flakeModule
-        ]
-        ++ [./common];
+          modules.flakeModule
+        ];
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
     });
