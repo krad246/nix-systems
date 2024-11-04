@@ -8,6 +8,7 @@ in {
   imports =
     [self.nixosModules.ccache-stdenv]
     ++ [
+      ./aarch64-binfmt.nix
       ./default-users.nix
       ./environment.nix
       ./flake-registry.nix

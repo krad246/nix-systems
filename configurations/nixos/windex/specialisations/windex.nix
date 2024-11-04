@@ -1,13 +1,7 @@
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
   specialisation = {
-    ${config.networking.hostName} = {
+    windex = {
       configuration = {
-        boot.binfmt.emulatedSystems = lib.lists.remove pkgs.stdenv.system ["aarch64-linux"];
       };
     };
   };
