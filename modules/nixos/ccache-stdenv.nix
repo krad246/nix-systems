@@ -1,9 +1,5 @@
-{
-  self,
-  config,
-  ...
-}: {
-  imports = [self.modules.generic.ccache-stdenv];
+{config, ...}: {
+  imports = [../generic/ccache-stdenv.nix];
 
   systemd.tmpfiles.rules = [
     "d ${config.programs.ccache.cacheDir}                        770 root    nixbld  - -"

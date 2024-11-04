@@ -1,24 +1,36 @@
 {
   self,
   inputs,
+  config,
   ...
 }: {
   ezConfigs = {
     root = self;
     globalArgs = {inherit self inputs;};
 
-    nixos.hosts = {
-      windex.userHomeModules = ["keerad" "krad246"];
-      fortress.userHomeModules = ["krad246"];
+    nixos = {
+      configurationsDirectory = "${config.ezConfigs.root}/configurations/nixos";
+      modulesDirectory = "${config.ezConfigs.root}/modules/nixos";
+      hosts = {
+        windex.userHomeModules = ["keerad" "krad246"];
+        fortress.userHomeModules = ["krad246"];
+      };
     };
 
-    darwin.hosts = {
-      nixbook-air.userHomeModules = ["krad246"];
-      nixbook-pro.userHomeModules = ["krad246"];
-      dullahan.userHomeModules = ["krad246"];
+    darwin = {
+      configurationsDirectory = "${config.ezConfigs.root}/configurations/darwin";
+      modulesDirectory = "${config.ezConfigs.root}/modules/darwin";
+      hosts = {
+        nixbook-air.userHomeModules = ["krad246"];
+        nixbook-pro.userHomeModules = ["krad246"];
+        dullahan.userHomeModules = ["krad246"];
+      };
     };
 
     home = {
+      configurationsDirectory = "${config.ezConfigs.root}/configurations/home";
+      modulesDirectory = "${config.ezConfigs.root}/modules/home";
+
       users = {
         keerad = {
           # Generate only one WSL config; requires a matching Windows user

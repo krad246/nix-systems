@@ -193,4 +193,9 @@ in {
       container *VERBS: (_make prepend("container-", VERBS))
     '';
   };
+
+  devour-flake = {
+    enable = true;
+    justfile = ''devour-flake *ARGS: (run "$FLAKE_ROOT#devour-flake -- " ARGS)'';
+  };
 }
