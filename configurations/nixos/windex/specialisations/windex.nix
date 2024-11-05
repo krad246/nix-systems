@@ -1,8 +1,0 @@
-{
-  specialisation = {
-    windex = {
-      configuration = {
-      };
-    };
-  };
-}

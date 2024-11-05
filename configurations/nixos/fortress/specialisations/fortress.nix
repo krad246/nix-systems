@@ -64,7 +64,7 @@ in {
         };
 
         boot = {
-          kernelParams = ["usbcore.old_scheme_first=1" "mem_sleep_default=s2idle"];
+          kernelParams = ["usbcore.old_scheme_first=1"];
         };
 
         virtualisation.docker.enable = true;
