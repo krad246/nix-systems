@@ -11,7 +11,6 @@ in {
       ./aarch64-binfmt.nix
       ./default-users.nix
       ./environment.nix
-      ./flake-registry.nix
       ./kernel.nix
       ./nix-daemon.nix
       ./nix-ld.nix
@@ -21,7 +20,8 @@ in {
     ]
     ++ [
       home-manager.nixosModules.home-manager
-    ];
+    ]
+    ++ [self.modules.generic.flake-registry];
 
   home-manager = {
     useUserPackages = true;

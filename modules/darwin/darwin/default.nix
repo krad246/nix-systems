@@ -8,7 +8,7 @@
   inherit (inputs) agenix;
 in {
   imports =
-    [self.modules.generic.unfree self.modules.generic.agenix self.modules.generic.nix-core]
+    [self.modules.generic.unfree self.modules.generic.agenix self.modules.generic.nix-core self.modules.generic.flake-registry]
     ++ [
       ./homebrew.nix
       ./linux-builder.nix
