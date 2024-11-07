@@ -45,7 +45,8 @@
     @${pname} *ARGS: (add)
       #!${lib.meta.getExe pkgs.bash}
       ${lib.meta.getExe' drv pname} \
-        ${lib.strings.concatStringsSep " \\\n    " extraArgs} {{ ARGS }}
+        {{ ARGS}} \
+        ${lib.strings.concatStringsSep " \\\n    " extraArgs}
   '';
 
   # Extra args to tack onto the invocation wrappers below...
