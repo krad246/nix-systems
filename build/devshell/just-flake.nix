@@ -198,23 +198,25 @@ in
       justfile = ''devour-flake *ARGS: (run "$FLAKE_ROOT#devour-flake -- " ARGS)'';
     };
   }
-  // {
-    rekey = {
-      enable = true;
-      justfile = ''
-        rekey *ARGS:
-          ${lib.getExe' pkgs.coreutils "env"} --chdir "$FLAKE_ROOT/common/secrets" \
-            ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
-      '';
-    };
+  // mkJustRecipeGroup {
+    group = "misc";
+    recipes = {
+      rekey = {
+        comment = "Run `agenix --rekey`";
+        justfile = ''
+          rekey *ARGS:
+            ${lib.getExe' pkgs.coreutils "env"} --chdir "$FLAKE_ROOT/common/secrets" \
+              ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
+        '';
+      };
 
-    dd = {
-      enable = true;
-      justfile = ''
-        dd +ARGS: (build ARGS)
-          ${lib.getExe pkgs.pv} < \
-            "$(${lib.getExe' pkgs.findutils "find"} \
-              -L {{ ARGS }} -type f)"
-      '';
+      dd = {
+        justfile = ''
+          dd *ARGS: (build ARGS)
+            ${lib.getExe pkgs.pv} < \
+              "$(${lib.getExe' pkgs.findutils "find"} \
+                -L {{ ARGS }} -type f)"
+        '';
+      };
     };
   }
