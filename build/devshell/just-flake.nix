@@ -14,11 +14,49 @@
   }: {
     enable = true;
     justfile = ''
-      # ${lib.strings.optionalString (comment != null) comment}
+      ${lib.strings.optionalString (comment != null) "#${comment}"}
       ${lib.strings.optionalString (group != null) "[group('${group}')]"}
       ${justfile}
     '';
   };
+
+  mkJustRecipeGroup = {
+    group,
+    recipes,
+    ...
+  }:
+    lib.attrsets.mapAttrs (_key: recipe: let
+      args =
+        recipe
+        // {inherit group;};
+    in
+      mkJustRecipe args)
+    recipes;
+
+  # Compose a simple just target from the name of the incoming derivation
+  mkSystemRecipe = {
+    drv,
+    pname ? lib.getName drv,
+    os,
+    extraArgs,
+    ...
+  }: ''
+    [${os}]
+    @${pname} *ARGS: (add)
+      #!${lib.meta.getExe pkgs.bash}
+      ${lib.meta.getExe' drv pname} \
+        ${lib.strings.concatStringsSep " \\\n    " extraArgs} {{ ARGS }}
+  '';
+
+  # Extra args to tack onto the invocation wrappers below...
+  builderArgs = [
+    "--option experimental-features 'nix-command flakes'"
+    "--option inputs-from $FLAKE_ROOT"
+    "--option accept-flake-config true"
+    "--option builders-use-substitutes true"
+    "--option keep-going true"
+    "--option preallocate-contents true"
+  ];
 in
   {
     treefmt = {
@@ -26,167 +64,127 @@ in
     };
   }
   # Git commands
-  // {
-    git = mkJustRecipe {
-      group = "git";
-      comment = "Wraps `git`. Pass arguments as normal.";
-      justfile = ''
-        [no-exit-message]
-        git *ARGS:
-            ${lib.getExe pkgs.git} {{ ARGS }}
-      '';
-    };
+  // mkJustRecipeGroup {
+    group = "git";
 
-    add = mkJustRecipe {
-      group = "git";
-      comment = "Equivalent to `git add -u` by default, unless other args are passed.";
-      justfile = ''
-        add +ARGS="-u": (git "add" "--chmod=+x" ARGS)
-      '';
-    };
+    recipes = {
+      git = {
+        comment = "Wraps `git`. Pass arguments as normal.";
+        justfile = ''
+          [no-exit-message]
+          git *ARGS:
+              ${lib.getExe pkgs.git} {{ ARGS }}
+        '';
+      };
 
-    commit = mkJustRecipe {
-      group = "git";
-      comment = "Equivalent to `git add -u` followed by `git commit --dry-run`, unless other args are passed.";
-      justfile = ''
-        commit +ARGS="--dry-run": (add "-u") (git "commit" ARGS)
-      '';
-    };
+      add = {
+        comment = "Equivalent to `git add -u` by default, unless other args are passed.";
+        justfile = ''
+          add +ARGS="-u": (git "add" "--chmod=+x" ARGS)
+        '';
+      };
 
-    amend = mkJustRecipe {
-      group = "git";
-      comment = "Equivalent to `git add -u` followed by `git commit --amend`, with other args passed to its invocation.";
-      justfile = ''
-        amend +ARGS="--dry-run": (add "-u") (commit "--amend" ARGS)
-      '';
+      commit = {
+        comment = "Equivalent to `git add -u` followed by `git commit --dry-run`, unless other args are passed.";
+        justfile = ''
+          commit +ARGS="--dry-run": (add "-u") (git "commit" ARGS)
+        '';
+      };
+
+      amend = {
+        comment = "Equivalent to `git add -u` followed by `git commit --amend`, with other args passed to its invocation.";
+        justfile = ''
+          amend +ARGS="--dry-run": (add "-u") (commit "--amend" ARGS)
+        '';
+      };
     };
   }
   # nixos-rebuild and other system management tools.
-  // (let
-    # Compose a simple just target from the name of the incoming derivation
-    mkSystemRecipe = {
-      drv,
-      pname ? lib.getName drv,
-      os,
-      extraArgs,
-      argFmt ? "{{ ARGS }}",
-      ...
-    }: ''
-      # `${pname}` related subcommands. Syntax: just ${pname} ARGS
-      [${os}]
-      [no-exit-message]
-      @${pname} *ARGS: (add)
-        #!${lib.meta.getExe pkgs.bash}
-        ${lib.meta.getExe' drv pname} \
-          ${lib.strings.concatStringsSep " \\\n    " extraArgs} \
-          ${argFmt}
-    '';
+  // mkJustRecipeGroup {
+    group = "system";
 
-    # Extra args to tack onto the invocation wrappers below...
-    builderArgs = [
-      "--option experimental-features 'nix-command flakes'"
-      "--option inputs-from $FLAKE_ROOT"
-      "--option accept-flake-config true"
-      "--option builders-use-substitutes true"
-      "--option keep-going true"
-      "--option preallocate-contents true"
-    ];
-  in {
-    # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
-    nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-      enable = true;
-      justfile = mkSystemRecipe {
-        drv = pkgs.nixos-rebuild;
-        os = "linux";
-        extraArgs =
-          builderArgs
-          ++ [
-            "--use-remote-sudo"
-            "--flake $FLAKE_ROOT"
-          ];
-      };
-    };
+    recipes =
+      (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+        # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
+        nixos-rebuild = {
+          comment = "Wraps `nixos-rebuild`.";
+          justfile = mkSystemRecipe {
+            drv = pkgs.nixos-rebuild;
+            os = "linux";
+            extraArgs =
+              builderArgs
+              ++ [
+                "--use-remote-sudo"
+                "--flake $FLAKE_ROOT"
+              ];
+          };
+        };
+      })
+      // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
+        # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
+        darwin-rebuild = {
+          comment = "Wraps `darwin-rebuild`.";
+          justfile = mkSystemRecipe {
+            drv = inputs'.darwin.packages.darwin-rebuild;
+            os = "macos";
+            extraArgs =
+              builderArgs
+              ++ [
+                "--flake $FLAKE_ROOT"
+              ];
+          };
+        };
+      })
+      // {
+        # Home configs work on all *nix systems
+        home-manager = {
+          comment = "Wraps `home-manager`.";
 
-    # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
-    darwin-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
-      enable = true;
-      justfile = mkSystemRecipe {
-        drv = inputs'.darwin.packages.darwin-rebuild;
-        os = "macos";
-        extraArgs =
-          builderArgs
-          ++ [
-            "--flake $FLAKE_ROOT"
-          ];
+          justfile = mkSystemRecipe {
+            drv = pkgs.home-manager;
+            os = "unix";
+            extraArgs =
+              builderArgs
+              ++ [
+                "-b bak"
+                "--flake $FLAKE_ROOT"
+              ];
+          };
+        };
       };
-    };
-
-    # Home configs work on all *nix systems
-    home-manager = {
-      enable = true;
-      justfile = mkSystemRecipe {
-        drv = pkgs.home-manager;
-        os = "unix";
-        extraArgs =
-          builderArgs
-          ++ [
-            "-b bak"
-            "--flake $FLAKE_ROOT"
-          ];
-      };
-    };
-
-    # nix works on all *nix systems
-    nix = {
-      enable = true;
-      justfile = mkSystemRecipe {
-        drv = pkgs.nixFlakes;
-        os = "unix";
-        extraArgs = builderArgs;
-      };
-    };
-  })
+  }
   # Helper command aliases
+  // mkJustRecipeGroup {
+    group = "nix";
+
+    recipes = {
+      build = {
+        comment = "Wraps `nix build`.";
+        justfile = ''
+          build *ARGS: (add) (nix "build" ARGS)
+        '';
+      };
+
+      run = {
+        comment = "Wraps `nix run`.";
+        justfile = ''
+          run *ARGS: (add) (nix "run" ARGS)
+        '';
+      };
+
+      # nix works on all *nix systems
+      nix = {
+        comment = "Wraps `nix`. Pass arguments as normal.";
+        justfile = mkSystemRecipe {
+          drv = pkgs.nixFlakes;
+          os = "unix";
+          extraArgs = builderArgs;
+        };
+      };
+    };
+  }
   // {
-    flake = {
-      enable = true;
-      justfile = ''
-        flake *ARGS: (nix "flake" ARGS)
-      '';
-    };
-
-    build = {
-      enable = true;
-      justfile = ''
-        [private]
-        _build *ARGS: (add) (nix "build" ARGS)
-        build *ARGS: (_build ARGS)
-      '';
-    };
-
-    run = {
-      enable = true;
-      justfile = ''
-        run *ARGS: (add) (nix "run" ARGS)
-      '';
-    };
-
-    show = {
-      enable = true;
-      justfile = ''
-        show *ARGS: (add) (nix "flake" "show" ARGS)
-      '';
-    };
-
-    check = {
-      enable = true;
-      justfile = ''
-        check *ARGS: (fmt) (add) (nix "flake" "check" ARGS)
-      '';
-    };
-
     container = {
-      enable = true;
       justfile = ''
         [private]
         _make *ARGS:
@@ -197,7 +195,6 @@ in
     };
 
     devour-flake = {
-      enable = true;
       justfile = ''devour-flake *ARGS: (run "$FLAKE_ROOT#devour-flake -- " ARGS)'';
     };
   }
