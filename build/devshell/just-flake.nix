@@ -5,6 +5,20 @@
   ...
 }: let
   inherit (pkgs) lib;
+
+  mkJustRecipe = {
+    justfile,
+    comment ? null,
+    group ? null,
+    ...
+  }: {
+    enable = true;
+    justfile = ''
+      # ${lib.strings.optionalString (comment != null) comment}
+      ${lib.strings.optionalString (group != null) "[group('${group}')]"}
+      ${justfile}
+    '';
+  };
 in
   {
     treefmt = {
@@ -13,37 +27,36 @@ in
   }
   # Git commands
   // {
-    git = {
-      enable = true;
+    git = mkJustRecipe {
+      group = "git";
+      comment = "Wraps `git`. Pass arguments as normal.";
       justfile = ''
-
-        # Wraps `git`. Pass arguments as normal.
         [no-exit-message]
         git *ARGS:
             ${lib.getExe pkgs.git} {{ ARGS }}
       '';
     };
 
-    add = {
-      enable = true;
+    add = mkJustRecipe {
+      group = "git";
+      comment = "Equivalent to `git add -u` by default, unless other args are passed.";
       justfile = ''
-        # Equivalent to `git add -u` by default, unless other args are passed.
         add +ARGS="-u": (git "add" "--chmod=+x" ARGS)
       '';
     };
 
-    commit = {
-      enable = true;
+    commit = mkJustRecipe {
+      group = "git";
+      comment = "Equivalent to `git add -u` followed by `git commit --dry-run`, unless other args are passed.";
       justfile = ''
-        # Equivalent to `git add -u` followed by `git commit --dry-run`, unless other args are passed.
         commit +ARGS="--dry-run": (add "-u") (git "commit" ARGS)
       '';
     };
 
-    amend = {
-      enable = true;
+    amend = mkJustRecipe {
+      group = "git";
+      comment = "Equivalent to `git add -u` followed by `git commit --amend`, with other args passed to its invocation.";
       justfile = ''
-        # Equivalent to `git add -u` followed by `git commit --amend`, with other args passed to its invocation.
         amend +ARGS="--dry-run": (add "-u") (commit "--amend" ARGS)
       '';
     };
@@ -51,7 +64,7 @@ in
   # nixos-rebuild and other system management tools.
   // (let
     # Compose a simple just target from the name of the incoming derivation
-    mkJustRecipe = {
+    mkSystemRecipe = {
       drv,
       pname ? lib.getName drv,
       os,
@@ -59,7 +72,7 @@ in
       argFmt ? "{{ ARGS }}",
       ...
     }: ''
-      # `${pname}` related subcommands. Syntax: just ${pname} <subcommand>
+      # `${pname}` related subcommands. Syntax: just ${pname} ARGS
       [${os}]
       [no-exit-message]
       @${pname} *ARGS: (add)
@@ -82,7 +95,7 @@ in
     # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
     nixos-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
       enable = true;
-      justfile = mkJustRecipe {
+      justfile = mkSystemRecipe {
         drv = pkgs.nixos-rebuild;
         os = "linux";
         extraArgs =
@@ -97,7 +110,7 @@ in
     # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
     darwin-rebuild = lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
       enable = true;
-      justfile = mkJustRecipe {
+      justfile = mkSystemRecipe {
         drv = inputs'.darwin.packages.darwin-rebuild;
         os = "macos";
         extraArgs =
@@ -111,7 +124,7 @@ in
     # Home configs work on all *nix systems
     home-manager = {
       enable = true;
-      justfile = mkJustRecipe {
+      justfile = mkSystemRecipe {
         drv = pkgs.home-manager;
         os = "unix";
         extraArgs =
@@ -126,7 +139,7 @@ in
     # nix works on all *nix systems
     nix = {
       enable = true;
-      justfile = mkJustRecipe {
+      justfile = mkSystemRecipe {
         drv = pkgs.nixFlakes;
         os = "unix";
         extraArgs = builderArgs;
