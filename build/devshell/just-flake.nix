@@ -1,4 +1,4 @@
-{
+{self, ...}: {
   inputs',
   self',
   pkgs,
@@ -51,7 +51,7 @@
   # Extra args to tack onto the invocation wrappers below...
   builderArgs = [
     "--option experimental-features 'nix-command flakes'"
-    "--option inputs-from $FLAKE_ROOT"
+    "--option inputs-from ${self}"
     "--option accept-flake-config true"
     "--option builders-use-substitutes true"
     "--option keep-going true"
@@ -115,7 +115,7 @@ in
               builderArgs
               ++ [
                 "--use-remote-sudo"
-                "--flake $FLAKE_ROOT"
+                "--flake ${self}"
               ];
           };
         };
@@ -130,7 +130,7 @@ in
             extraArgs =
               builderArgs
               ++ [
-                "--flake $FLAKE_ROOT"
+                "--flake ${self}"
               ];
           };
         };
@@ -147,7 +147,7 @@ in
               builderArgs
               ++ [
                 "-b bak"
-                "--flake $FLAKE_ROOT"
+                "--flake ${self}"
               ];
           };
         };
@@ -195,7 +195,7 @@ in
     };
 
     devour-flake = {
-      justfile = ''devour-flake *ARGS: (run "$FLAKE_ROOT#devour-flake -- " ARGS)'';
+      justfile = ''devour-flake *ARGS: (run "${self}#devour-flake -- " ARGS)'';
     };
   }
   // mkJustRecipeGroup {
@@ -205,7 +205,7 @@ in
         comment = "Run `agenix --rekey`";
         justfile = ''
           rekey *ARGS:
-            ${lib.getExe' pkgs.coreutils "env"} --chdir "$FLAKE_ROOT/common/secrets" \
+            ${lib.getExe' pkgs.coreutils "env"} --chdir "${self}/modules/generic/secrets" \
               ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
         '';
       };

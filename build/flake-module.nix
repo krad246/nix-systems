@@ -46,12 +46,15 @@
       };
 
       devShells.default = withSystem pkgs.stdenv.system (import ./devshell/devshell.nix);
-      just-flake.features = withSystem pkgs.stdenv.system (import ./devshell/just-flake.nix);
+      just-flake.features = withSystem pkgs.stdenv.system (import ./devshell/just-flake.nix {
+        inherit self;
+      });
     }
     # Package derivations
     // {
       packages = lib.mkIf pkgs.stdenv.isLinux {
-        disko-install = let wrapped = import ./packages/disko-install.nix {inherit self;}; in withSystem pkgs.stdenv.system wrapped;
+        disko-install =
+          withSystem pkgs.stdenv.system (import ./packages/disko-install.nix {inherit self;});
       };
     }
     # Runnable app targets!
