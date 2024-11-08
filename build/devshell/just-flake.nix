@@ -59,13 +59,8 @@
     "--option preallocate-contents true"
   ];
 in
-  {
-    treefmt = {
-      enable = true;
-    };
-  }
   # Git commands
-  // mkJustRecipeGroup {
+  mkJustRecipeGroup {
     group = "git";
 
     recipes = {
@@ -184,19 +179,31 @@ in
       };
     };
   }
-  // {
-    container = {
-      justfile = ''
-        [private]
-        _make *ARGS:
-          ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ ARGS }}
+  // mkJustRecipeGroup {
+    group = "dev";
+    recipes = {
+      container = {
+        comment = "Container commands. Syntax: `just container ARGS`";
+        justfile = ''
+          container *ARGS:
+            ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ prepend("container-", ARGS) }}
+        '';
+      };
 
-        container *VERBS: (_make prepend("container-", VERBS))
-      '';
-    };
+      devour-flake = {
+        comment = "Build all outputs in the repository.";
+        justfile = ''
+          devour-flake *ARGS: (run "${self}#devour-flake -- " ARGS)
+        '';
+      };
 
-    devour-flake = {
-      justfile = ''devour-flake *ARGS: (run "${self}#devour-flake -- " ARGS)'';
+      fmt = {
+        comment = "Format the repository.";
+        justfile = ''
+          fmt: add
+            treefmt
+        '';
+      };
     };
   }
   // mkJustRecipeGroup {
@@ -206,17 +213,16 @@ in
         comment = "Run `agenix --rekey`.";
         justfile = ''
           rekey *ARGS:
-            ${lib.getExe' pkgs.coreutils "env"} --chdir "${self}/modules/generic/secrets" \
+            ${lib.getExe' pkgs.coreutils "env"} --chdir "$FLAKE_ROOT/modules/generic/secrets" \
               ${lib.getExe' inputs'.agenix.packages.default "agenix"} -r {{ ARGS }}
         '';
       };
 
       dd = {
+        comment = "Write flake output to stdout. Must be piped to a file. Syntax: `just dd ARGS`.";
         justfile = ''
           dd *ARGS: (build ARGS)
-            ${lib.getExe pkgs.pv} < \
-              "$(${lib.getExe' pkgs.findutils "find"} \
-                -L {{ ARGS }} -type f)"
+            ${lib.getExe pkgs.pv} < "$(${lib.getExe' pkgs.findutils "find"} -L {{ ARGS }} -type f)"
         '';
       };
     };

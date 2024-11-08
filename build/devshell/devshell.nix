@@ -30,7 +30,8 @@ in
         unset TEMP TMPDIR NIX_BUILD_TOP
       else
         # link the container makefile to the root of the workspace.
-        ${lib.getExe' pkgs.coreutils "ln"} -snvrf ${self'.packages.makefile} "$FLAKE_ROOT/Makefile"
+        ${lib.getExe' pkgs.coreutils "ln"} -snvrf \
+          ${self'.packages.makefile} "$FLAKE_ROOT/Makefile"
 
         # on Darwin environments, start up a Linux container for convenience.
         ${lib.strings.optionalString pkgs.stdenv.isDarwin ''

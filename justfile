@@ -1,12 +1,16 @@
 #!/usr/bin/env just --justfile
 
+flake := env_var_or_default('FLAKE_ROOT', justfile_directory())
+
+#  List all of the recipes and groups.
+[group('summary')]
+default:
+    @just --list --unsorted
+
 # Pull in justfile bindings
 import? 'just-flake.just'
-
-default:
-    @just --list
 
 # Enter a `nix` devShell in this repository.
 [group('dev')]
 setup:
-  exec {{ justfile_directory() / "setup.sh" }}
+    exec {{ flake / "setup.sh" }}
