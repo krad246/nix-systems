@@ -203,7 +203,7 @@ in
     group = "misc";
     recipes = {
       rekey = {
-        comment = "Run `agenix --rekey`";
+        comment = "Run `agenix --rekey`.";
         justfile = ''
           rekey *ARGS:
             ${lib.getExe' pkgs.coreutils "env"} --chdir "${self}/modules/generic/secrets" \
