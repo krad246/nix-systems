@@ -68,6 +68,10 @@ in {
         };
 
         virtualisation.docker.enable = true;
+
+        networking.interfaces.enp10s0.wakeOnLan = {
+          enable = true;
+        };
       };
     };
   };
