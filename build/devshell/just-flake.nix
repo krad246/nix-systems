@@ -41,32 +41,6 @@
     in
       mkJustRecipe args)
     recipes;
-
-  # Compose a simple just recipe from the name of the incoming derivation
-  mkSystemRecipe = {
-    drv,
-    pname ? lib.getName drv,
-    os,
-    extraArgs,
-    ...
-  }: ''
-    [${os}]
-    @${pname} *ARGS: (add)
-      #!${lib.meta.getExe pkgs.bash}
-      ${lib.meta.getExe' drv pname} \
-        {{ ARGS }} \
-        ${lib.strings.concatStringsSep " \\\n    " extraArgs}
-  '';
-
-  # Extra args to tack onto the invocation wrappers below...
-  builderArgs = [
-    "--option experimental-features 'nix-command flakes'"
-    "--option inputs-from ${self}"
-    "--option accept-flake-config true"
-    "--option builders-use-substitutes true"
-    "--option keep-going true"
-    "--option preallocate-contents true"
-  ];
 in
   # Git commands
   mkJustRecipeGroup {
@@ -113,16 +87,21 @@ in
         # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
         nixos-rebuild = {
           comment = "Wraps `nixos-rebuild`.";
-          justfile = mkSystemRecipe {
-            drv = pkgs.nixos-rebuild;
-            os = "linux";
-            extraArgs =
-              builderArgs
-              ++ [
-                "--use-remote-sudo"
-                "--flake ${self}"
-              ];
-          };
+          justfile = ''
+            [linux]
+            @nixos-rebuild *ARGS: (add)
+              #!${lib.meta.getExe pkgs.bash}
+              ${lib.meta.getExe pkgs.nixos-rebuild} \
+                --option experimental-features 'nix-command flakes' \
+                --option inputs-from ${self} \
+                --option accept-flake-config true \
+                --option builders-use-substitutes true \
+                --option keep-going true \
+                --option preallocate-contents true \
+                --flake ${self} \
+                --use-remote-sudo \
+                {{ ARGS }}
+          '';
         };
 
         upgrade-system = {
@@ -136,15 +115,20 @@ in
         # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
         darwin-rebuild = {
           comment = "Wraps `darwin-rebuild`.";
-          justfile = mkSystemRecipe {
-            drv = inputs'.darwin.packages.darwin-rebuild;
-            os = "macos";
-            extraArgs =
-              builderArgs
-              ++ [
-                "--flake ${self}"
-              ];
-          };
+          justfile = ''
+            [macos]
+            @darwin-rebuild *ARGS: (add)
+              #!${lib.meta.getExe pkgs.bash}
+              ${lib.meta.getExe pkgs.darwin-rebuild} \
+                --option experimental-features 'nix-command flakes' \
+                --option inputs-from ${self} \
+                --option accept-flake-config true \
+                --option builders-use-substitutes true \
+                --option keep-going true \
+                --option preallocate-contents true \
+                --flake ${self} \
+                {{ ARGS }}
+          '';
         };
 
         upgrade-system = {
@@ -159,16 +143,21 @@ in
         home-manager = {
           comment = "Wraps `home-manager`.";
 
-          justfile = mkSystemRecipe {
-            drv = pkgs.home-manager;
-            os = "unix";
-            extraArgs =
-              builderArgs
-              ++ [
-                "-b bak"
-                "--flake ${self}"
-              ];
-          };
+          justfile = ''
+            [unix]
+            @home-manager *ARGS: (add)
+              #!${lib.meta.getExe pkgs.bash}
+              ${lib.meta.getExe pkgs.home-manager} \
+                --option experimental-features 'nix-command flakes' \
+                --option inputs-from ${self} \
+                --option accept-flake-config true \
+                --option builders-use-substitutes true \
+                --option keep-going true \
+                --option preallocate-contents true \
+                --flake ${self} \
+                -b bak \
+                {{ ARGS }}
+          '';
         };
       };
   }
@@ -194,11 +183,19 @@ in
       # nix works on all *nix systems
       nix = {
         comment = "Wraps `nix`. Pass arguments as normal.";
-        justfile = mkSystemRecipe {
-          drv = pkgs.nixFlakes;
-          os = "unix";
-          extraArgs = builderArgs;
-        };
+        justfile = ''
+          [unix]
+          @nix VERB *ARGS: (add)
+            #!${lib.meta.getExe pkgs.bash}
+            ${lib.meta.getExe pkgs.nixFlakes} {{ VERB }} \
+              --option experimental-features 'nix-command flakes' \
+              --option inputs-from ${self} \
+              --option accept-flake-config true \
+              --option builders-use-substitutes true \
+              --option keep-going true \
+              --option preallocate-contents true \
+              {{ ARGS }}
+        '';
       };
     };
   }
