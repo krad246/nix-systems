@@ -6,6 +6,10 @@
 }: let
   inherit (pkgs) lib;
 
+  # Create a justfile fragment from a:
+  # 1. documentation comment
+  # 2. recipe group
+  # 3. justfile recipe (mandatory)
   mkJustRecipe = {
     justfile,
     comment ? null,
@@ -13,6 +17,9 @@
     ...
   }: {
     enable = true;
+
+    # format the comment and group above the justfile so that
+    # the writer of the justfile can put more modifiers on the recipe they define
     justfile = ''
       ${lib.strings.optionalString (comment != null) "#${comment}"}
       ${lib.strings.optionalString (group != null) "[group('${group}')]"}
@@ -20,12 +27,14 @@
     '';
   };
 
+  # create a 'group' of recipes where the user can pass a list of recipes to bind to a given group
   mkJustRecipeGroup = {
     group,
     recipes,
     ...
   }:
     lib.attrsets.mapAttrs (_key: recipe: let
+      # slap the 'group' field on each recipe attrset
       args =
         recipe
         // {inherit group;};
@@ -33,7 +42,7 @@
       mkJustRecipe args)
     recipes;
 
-  # Compose a simple just target from the name of the incoming derivation
+  # Compose a simple just recipe from the name of the incoming derivation
   mkSystemRecipe = {
     drv,
     pname ? lib.getName drv,
@@ -45,7 +54,7 @@
     @${pname} *ARGS: (add)
       #!${lib.meta.getExe pkgs.bash}
       ${lib.meta.getExe' drv pname} \
-        {{ ARGS}} \
+        {{ ARGS }} \
         ${lib.strings.concatStringsSep " \\\n    " extraArgs}
   '';
 
@@ -115,6 +124,12 @@ in
               ];
           };
         };
+
+        upgrade-system = {
+          justfile = ''
+            upgrade-system *ARGS: (nix "flake" "update") (nixos-rebuild "check" ARGS) (nixos-rebuild "switch" ARGS)
+          '';
+        };
       })
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
         # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
@@ -129,6 +144,12 @@ in
                 "--flake ${self}"
               ];
           };
+        };
+
+        upgrade-system = {
+          justfile = ''
+            upgrade-system *ARGS: (nix "flake" "update") (darwin-rebuild "check" ARGS) (darwin-rebuild "switch" ARGS)
+          '';
         };
       })
       // {
