@@ -119,7 +119,7 @@ in
             [macos]
             @darwin-rebuild *ARGS: (add)
               #!${lib.meta.getExe pkgs.bash}
-              ${lib.meta.getExe pkgs.darwin-rebuild} \
+              ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} \
                 --option experimental-features 'nix-command flakes' \
                 --option inputs-from ${self} \
                 --option accept-flake-config true \
