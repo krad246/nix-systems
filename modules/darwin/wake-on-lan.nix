@@ -1,0 +1,3 @@
+{
+  networking.wakeOnLan.enable = true;
+}

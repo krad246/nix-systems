@@ -2,18 +2,25 @@
   system.defaults = {
     NSGlobalDomain.AppleShowAllFiles = true;
     finder = {
-      AppleShowAllFiles = true;
-      ShowStatusBar = true;
-      ShowPathbar = true;
       AppleShowAllExtensions = true;
-
-      _FXShowPosixPathInTitle = true;
-      FXEnableExtensionChangeWarning = false;
-
-      FXDefaultSearchScope = "SCcf";
-      FXPreferredViewStyle = "icnv";
+      AppleShowAllFiles = true;
 
       CreateDesktop = true;
+
+      FXDefaultSearchScope = "SCcf";
+      FXEnableExtensionChangeWarning = false;
+      FXPreferredViewStyle = "icnv";
+
+      NewWindowTarget = null;
+      NewWindowTargetPath = null;
+
+      QuitMenuItem = true;
+
+      ShowPathbar = true;
+      ShowStatusBar = true;
+
+      _FXShowPosixPathInTitle = true;
+      _FXSortFoldersFirst = true;
     };
   };
 }
