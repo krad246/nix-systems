@@ -126,8 +126,9 @@ in
         };
 
         upgrade-system = {
+          comment = "Update the flake and run `nixos-rebuild switch` to upgrade the system derivation.";
           justfile = ''
-            upgrade-system *ARGS: (nix "flake" "update") (nixos-rebuild "check" ARGS) (nixos-rebuild "switch" ARGS)
+            upgrade-system *ARGS: (nix "flake" "update") (nixos-rebuild "switch" ARGS)
           '';
         };
       })
@@ -147,8 +148,9 @@ in
         };
 
         upgrade-system = {
+          comment = "Update the flake and run `darwin-rebuild switch` to upgrade the system derivation.";
           justfile = ''
-            upgrade-system *ARGS: (nix "flake" "update") (darwin-rebuild "check" ARGS) (darwin-rebuild "switch" ARGS)
+            upgrade-system *ARGS: (nix "flake" "update") (darwin-rebuild "switch" ARGS)
           '';
         };
       })
