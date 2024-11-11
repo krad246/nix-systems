@@ -42,6 +42,7 @@
 
   nix-homebrew.user = "krad246";
   homebrew = {
+    brews = ["wakeonlan"];
     casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"];
   };
 
