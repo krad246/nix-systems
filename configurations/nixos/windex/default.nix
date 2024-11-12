@@ -48,4 +48,7 @@ in {
       formatAttr = "tarballBuilder";
     };
   };
+
+  # Doesn't make sense on WSL's network stack
+  systemd.services.NetworkManager-wait-online.enable = false;
 }
