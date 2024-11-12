@@ -87,7 +87,6 @@ in {
           size = "5%VG";
           content = {
             type = "swap";
-            randomEncryption = true;
             priority = 100;
             resumeDevice = true;
           };
