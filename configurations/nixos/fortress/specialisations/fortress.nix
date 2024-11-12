@@ -29,6 +29,7 @@ in {
             kdeconnect
             pipewire
             system76-scheduler
+            wireshark
           ])
           ++ lib.optionals pkgs.stdenv.isx86_64 ([./hardware-configuration.nix]
             ++ (with nixos-hardware.nixosModules; [
