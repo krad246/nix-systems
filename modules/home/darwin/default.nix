@@ -8,7 +8,7 @@
   inherit (inputs) mac-app-util;
 in {
   imports = with ezModules;
-    ([colima] ++ [discord kitty vscode])
+    ([colima] ++ [discord vscode])
     ++ [self.modules.generic.agenix-home]
     ++ [mac-app-util.homeManagerModules.default];
 

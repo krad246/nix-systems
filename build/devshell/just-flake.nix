@@ -104,10 +104,10 @@ in
           '';
         };
 
-        upgrade-system = {
-          comment = "Update the flake and run `nixos-rebuild switch` to upgrade the system derivation.";
+        switch = {
+          comment = "Recreate the lockfile and run `nixos-rebuild switch` to switch the system derivation.";
           justfile = ''
-            upgrade-system *ARGS: (nix "flake" "update") (nixos-rebuild "switch" ARGS)
+            switch *ARGS: (nix "flake" "lock") (nixos-rebuild "switch" ARGS)
           '';
         };
       })
@@ -129,10 +129,10 @@ in
           '';
         };
 
-        upgrade-system = {
-          comment = "Update the flake and run `darwin-rebuild switch` to upgrade the system derivation.";
+        switch = {
+          comment = "Recreate the lockfile and run `darwin-rebuild switch` to switch the system derivation.";
           justfile = ''
-            upgrade-system *ARGS: (nix "flake" "update") (darwin-rebuild "switch" ARGS)
+            switch *ARGS: (nix "flake" "lock") (darwin-rebuild "switch" ARGS)
           '';
         };
       })
