@@ -160,7 +160,8 @@ in
         upgrade = {
           comment = "Update the flake and reload the system derivation.";
           justfile = ''
-            upgrade *ARGS: (nix "flake" "update") (switch ARGS)
+            upgrade *ARGS: && (switch ARGS)
+              -exec just nix flake update
           '';
         };
       };
