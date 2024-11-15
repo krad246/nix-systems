@@ -156,6 +156,13 @@ in
                 {{ ARGS }}
           '';
         };
+
+        upgrade = {
+          comment = "Update the flake and reload the system derivation.";
+          justfile = ''
+            upgrade *ARGS: (nix "flake" "update") (switch ARGS)
+          '';
+        };
       };
   }
   # Helper command aliases
