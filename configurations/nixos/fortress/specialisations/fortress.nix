@@ -62,6 +62,19 @@ in {
             cachixTokenFile = config.age.secrets."cachix.age".path;
             verbose = true;
           };
+
+          gnome.gnome-remote-desktop.enable = true;
+
+          xrdp = {
+            enable = true;
+            defaultWindowManager = " gnome-remote-desktop";
+            openFirewall = true;
+          };
+        };
+
+        networking.firewall = {
+          allowedTCPPorts = [3389];
+          allowedUDPPorts = [3389];
         };
 
         boot = {
