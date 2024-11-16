@@ -67,14 +67,9 @@ in {
 
           xrdp = {
             enable = true;
-            defaultWindowManager = " gnome-remote-desktop";
+            defaultWindowManager = "gnome-remote-desktop";
             openFirewall = true;
           };
-        };
-
-        networking.firewall = {
-          allowedTCPPorts = [3389];
-          allowedUDPPorts = [3389];
         };
 
         boot = {
