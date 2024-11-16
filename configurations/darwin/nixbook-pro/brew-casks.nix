@@ -12,6 +12,7 @@
         "vagrant-vmware-utility"
         "virtualbox"
         "vmware-fusion"
+        "windows-app"
       ]
       ++ ["zoom"];
   };

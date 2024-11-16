@@ -43,7 +43,7 @@
   nix-homebrew.user = "krad246";
   homebrew = {
     brews = ["wakeonlan"];
-    casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"] ++ ["wireshark"];
+    casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"] ++ ["windows-app"] ++ ["wireshark"];
   };
 
   nixpkgs.hostPlatform = "aarch64-darwin";

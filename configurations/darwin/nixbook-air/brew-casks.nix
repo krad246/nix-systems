@@ -1,6 +1,13 @@
 {
   nix-homebrew.user = "krad246";
   homebrew = {
-    casks = ["arc"] ++ ["bluesnooze"] ++ ["launchcontrol"] ++ ["signal"] ++ ["spotify"] ++ ["virtualbox"];
+    casks =
+      ["arc"]
+      ++ ["bluesnooze"]
+      ++ ["launchcontrol"]
+      ++ ["signal"]
+      ++ ["spotify"]
+      ++ ["virtualbox"]
+      ++ ["windows-app"];
   };
 }
