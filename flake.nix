@@ -13,15 +13,37 @@
     ];
   };
 
-  inputs = {
-    # Package distributions
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    nixos-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs = rec {
+    # Package branches
 
-    # Mandatory input alias, seems to be assumed by lots of packages
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    # system specific channels
+    nixos-2405.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs-2405-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
+    nixos-2411-small.url = "github:NixOS/nixpkgs/nixos-24.11-small";
+
+    # generic rolling release branches
+    # they're always tracking the latest release
+    nixos-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+    # stable nixos points at 24.05
+    # generic stable nixpkgs also points to it but can move ahead if desired
+    nixos-stable = nixos-2405;
+
+    # specifically use stable NixOS for WSL, but otherwise flexible
+    nixpkgs-wsl = nixos-stable;
+
+    # nixpkgs for home has to be in the same release 'family'
+    # as the system channels
+    nixpkgs-nixos = nixos-2411-small;
+    nixpkgs-darwin = nixos-unstable;
+    nixpkgs-home = nixos-unstable;
+
+    # the flake input 'nixpkgs' is the channel we are using in our flake for the evaluation, as
+    # we've overridden the nixpkgs inputs to all of our output derivations.
+    # thus nixpkgs is approximately the same thing as nixpkgs-lib for our purpose.
+    nixpkgs = nixos-stable;
+    nixpkgs-lib = nixpkgs;
 
     # Legacy and flake compatibility shims.
     flake-compat = {
@@ -46,7 +68,7 @@
     # An opinionated Nix flake library (see flake-utils)
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs";
+      inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
 
     # Glue logic between just and Nix (replacement to mission-control)
@@ -66,7 +88,7 @@
       inputs = {
         flake-compat.follows = "flake-compat";
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixpkgs-stable";
+        nixpkgs-stable.follows = "nixos-stable";
       };
     };
 
@@ -74,7 +96,7 @@
     nixos-wsl = {
       url = "github:nix-community/nixos-wsl/main";
       inputs = {
-        nixpkgs.follows = "nixpkgs-stable";
+        nixpkgs.follows = "nixpkgs-wsl";
         flake-compat.follows = "flake-compat";
       };
     };
@@ -88,7 +110,7 @@
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
-      inputs.nixpkgs.follows = "nixpkgs-stable";
+      inputs.nixpkgs.follows = "nixpkgs-home";
     };
 
     # Flake-Parts module gluing it together
@@ -160,7 +182,7 @@
       url = "github:lilyinstarlight/nixos-cosmic";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixpkgs-stable";
+        nixpkgs-stable.follows = "nixos-stable";
         flake-compat.follows = "flake-compat";
       };
     };
@@ -182,7 +204,7 @@
     ...
   }: let
     lib =
-      inputs.nixpkgs-stable.lib.extend
+      inputs.nixpkgs.lib.extend
       (_final: _prev: (import ./lib));
   in
     flake-parts.lib.mkFlake

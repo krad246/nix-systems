@@ -194,7 +194,7 @@ in
           [unix]
           @nix VERB *ARGS: (add)
             #!${lib.meta.getExe pkgs.bash}
-            ${lib.meta.getExe pkgs.nixFlakes} {{ VERB }} \
+            ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
               --option experimental-features 'nix-command flakes' \
               --option inputs-from ${self} \
               --option accept-flake-config true \

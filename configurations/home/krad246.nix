@@ -1,6 +1,7 @@
 {
   ezModules,
   config,
+  lib,
   osConfig,
   ...
 }: {
@@ -10,7 +11,7 @@
 
   home = {
     username = osConfig.users.users.krad246.name;
-    stateVersion = "24.05";
+    stateVersion = lib.trivial.release;
     homeDirectory =
       osConfig.users.users.krad246.home;
 

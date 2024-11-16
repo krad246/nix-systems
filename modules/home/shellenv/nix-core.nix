@@ -5,7 +5,7 @@
   ...
 }: {
   nix = {
-    package = lib.mkDefault pkgs.nixFlakes;
+    package = lib.mkDefault pkgs.nixVersions.stable;
 
     checkConfig = true;
     gc.automatic = true;
