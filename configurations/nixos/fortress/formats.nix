@@ -16,7 +16,6 @@ in {
         }
         // {
           boot = {
-            kernelPackages = lib.mkForce pkgs.linuxPackages;
             kernelParams = ["nomodeset"];
             binfmt.emulatedSystems = lib.mkForce [];
           };
