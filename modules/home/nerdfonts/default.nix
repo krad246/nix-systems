@@ -1,3 +1,8 @@
-{
-  imports = [./nerdfonts-darwin.nix ./nerdfonts-linux.nix];
+{pkgs, ...}: {
+  fonts.fontconfig.enable = true;
+  home.packages = with pkgs; [
+    (nerdfonts.override {
+      fonts = ["Meslo" "NerdFontsSymbolsOnly"];
+    })
+  ];
 }

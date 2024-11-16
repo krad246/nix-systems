@@ -2,11 +2,13 @@
   inputs,
   pkgs,
   lib,
+  ezModules,
   ...
 }: let
   inherit (pkgs.stdenv) system;
   nixvim = inputs.nixvim-config.packages.${system}.default;
 in {
+  imports = [ezModules.nerdfonts];
   home = {
     packages = [nixvim];
     shellAliases = {

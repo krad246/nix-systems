@@ -82,7 +82,9 @@ in
   // mkJustRecipeGroup {
     group = "system";
 
-    recipes =
+    recipes = let
+      flakeArg = lib.strings.concatStringsSep " " ["--flake" "$FLAKE_ROOT"];
+    in
       (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
         nixos-rebuild = {
@@ -98,7 +100,7 @@ in
                 --option builders-use-substitutes true \
                 --option keep-going true \
                 --option preallocate-contents true \
-                --flake ${self} \
+                ${flakeArg} \
                 --use-remote-sudo \
                 {{ ARGS }}
           '';
@@ -124,7 +126,7 @@ in
                 --option accept-flake-config true \
                 --option keep-going true \
                 --option preallocate-contents true \
-                --flake ${self} \
+                ${flakeArg} \
                 {{ ARGS }}
           '';
         };
@@ -151,7 +153,7 @@ in
                 --option accept-flake-config true \
                 --option keep-going true \
                 --option preallocate-contents true \
-                --flake ${self} \
+                ${flakeArg} \
                 -b bak \
                 {{ ARGS }}
           '';

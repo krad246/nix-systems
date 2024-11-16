@@ -28,6 +28,7 @@ in {
             flatpak
             kdeconnect
             pipewire
+            rdp
             system76-scheduler
             wireshark
           ])
@@ -61,14 +62,6 @@ in {
             cacheName = "krad246";
             cachixTokenFile = config.age.secrets."cachix.age".path;
             verbose = true;
-          };
-
-          gnome.gnome-remote-desktop.enable = true;
-
-          xrdp = {
-            enable = true;
-            defaultWindowManager = "gnome-remote-desktop";
-            openFirewall = true;
           };
         };
 
