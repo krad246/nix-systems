@@ -47,7 +47,12 @@
 in {
   imports =
     [nix-flatpak.homeManagerModules.nix-flatpak]
-    ++ (lib.optionals baseModules [ezModules.chromium ezModules.dconf ezModules.kitty])
+    ++ (lib.optionals baseModules [
+      ezModules.chromium
+      ezModules.dconf
+      ezModules.kitty
+      ezModules.zen-browser
+    ])
     ++ (lib.optionals extendedModules ((with ezModules; [
         discord
         kdeconnect
