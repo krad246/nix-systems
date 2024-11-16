@@ -166,6 +166,13 @@ in
               -exec just nix flake update
           '';
         };
+
+        rollback = {
+          comment = "Rollback the system derivation.";
+          justfile = ''
+            rollback *ARGS: (switch "--rollback" ARGS)
+          '';
+        };
       };
   }
   # Helper command aliases

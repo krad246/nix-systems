@@ -35,14 +35,14 @@
 
     # nixpkgs for home has to be in the same release 'family'
     # as the system channels
-    nixpkgs-nixos = nixos-2411-small;
-    nixpkgs-darwin = nixos-unstable;
-    nixpkgs-home = nixos-unstable;
+    nixpkgs-nixos = nixos-2405;
+    nixpkgs-darwin = nixpkgs-2405-darwin;
+    nixpkgs-home = nixos-2405;
 
     # the flake input 'nixpkgs' is the channel we are using in our flake for the evaluation, as
     # we've overridden the nixpkgs inputs to all of our output derivations.
     # thus nixpkgs is approximately the same thing as nixpkgs-lib for our purpose.
-    nixpkgs = nixos-stable;
+    nixpkgs = nixpkgs-home;
     nixpkgs-lib = nixpkgs;
 
     # Legacy and flake compatibility shims.
