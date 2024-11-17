@@ -9,7 +9,8 @@
 
       FXDefaultSearchScope = "SCcf";
       FXEnableExtensionChangeWarning = false;
-      FXPreferredViewStyle = "icnv";
+      FXPreferredViewStyle = "Nlsv";
+      FXRemoveOldTrashItems = true;
 
       NewWindowTarget = null;
       NewWindowTargetPath = null;

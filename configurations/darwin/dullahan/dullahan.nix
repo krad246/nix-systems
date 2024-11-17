@@ -48,16 +48,19 @@
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 
-  # add SSH access for remote building
-  environment.etc."ssh/ssh_config.d/101-fortress.conf".text = ''
-    Host fortress
-      HostName fortress.local
-      User krad246
+  environment.etc = {
+    # add SSH access for remote building
 
-      IdentitiesOnly yes
-      IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
-      StrictHostKeyChecking no
-  '';
+    "ssh/ssh_config.d/101-fortress.conf".text = ''
+      Host fortress
+        HostName fortress.local
+        User krad246
+
+        IdentitiesOnly yes
+        IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
+        StrictHostKeyChecking no
+    '';
+  };
 
   # add a remote builder!
   nix = {
