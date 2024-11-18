@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  self,
+  pkgs,
+  ...
+}: let
   inherit (pkgs) lib;
 in
   pkgs.writeShellApplication {
@@ -9,8 +13,8 @@ in
         shift
 
         ${lib.getExe' pkgs.disko "disko-install"} \
-          --flake "$FLAKE_ROOT#$HOSTNAME" \
-          --option inputs-from "$FLAKE_ROOT" \
+          --flake "${self}#$HOSTNAME" \
+          --option inputs-from "${self}" \
           --option experimental-features 'nix-command flakes' \
           --mode "$mode" \
         "$@"

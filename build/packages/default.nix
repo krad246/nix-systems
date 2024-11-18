@@ -1,9 +1,13 @@
-{pkgs, ...}: let
+{
+  self,
+  pkgs,
+  ...
+}: let
   inherit (pkgs) lib;
 in {
   packages =
     (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-      disko-install = import ./disko-install.nix {inherit pkgs;};
+      disko-install = import ./disko-install.nix {inherit self pkgs;};
     })
     // (let
       targetPkgs = tpkgs:
@@ -24,16 +28,19 @@ in {
         fi
       '';
     in
-      (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        devshell-bwrapenv = pkgs.buildFHSEnvBubblewrap {
-          name = "devshell-bwrapenv";
+      lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+        devshell-bwrap = pkgs.buildFHSEnvBubblewrap {
+          name = "devshell";
+          inherit targetPkgs profile;
+        };
+        devshell-chroot = pkgs.buildFHSEnvChroot {
+          name = "devshell";
           inherit targetPkgs profile;
         };
       })
-      // {
-        devshell-chrootenv = pkgs.buildFHSEnvChroot {
-          name = "devshell-chrootenv";
-          inherit targetPkgs profile;
-        };
-      });
+    // {
+      devshell-env = pkgs.buildEnv {
+        name = "devshell";
+      };
+    };
 }

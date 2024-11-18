@@ -20,6 +20,7 @@
   ];
 
   perSystem = {
+    self',
     inputs',
     config,
     pkgs,
@@ -44,12 +45,12 @@
         statix.enable = true;
       };
 
-      devShells.default = withSystem pkgs.stdenv.system (import ./devshell/devshell.nix);
+      devShells.default = import ./devshell/devshell.nix {inherit self' config pkgs;};
       just-flake.features = withSystem pkgs.stdenv.system (import ./devshell/just-flake.nix {
         inherit self;
       });
     }
-    // (import ./packages {inherit pkgs;})
+    // (import ./packages {inherit self pkgs;})
     // (importApply ./apps {inherit self inputs inputs' pkgs;})
     # Runnable tests!
     // {
