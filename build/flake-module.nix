@@ -46,7 +46,6 @@
     }
     // (import ./packages {inherit self config pkgs;})
     // (importApply ./apps {inherit self inputs inputs' pkgs;})
-    # Runnable tests!
     // {
       checks = {
         hello = pkgs.testers.runNixOSTest {

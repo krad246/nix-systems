@@ -126,6 +126,7 @@ in
               #!${lib.meta.getExe pkgs.bash}
               ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} \
                 --option experimental-features 'nix-command flakes' \
+                ${inputArg} \
                 --option accept-flake-config true \
                 --option keep-going true \
                 --option preallocate-contents true \
@@ -206,7 +207,7 @@ in
             #!${lib.meta.getExe pkgs.bash}
             ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
               --option experimental-features 'nix-command flakes' \
-                ${inputArg} \
+              ${inputArg} \
               --option accept-flake-config true \
               --option builders-use-substitutes true \
               --option keep-going true \
