@@ -44,7 +44,7 @@
         statix.enable = true;
       };
     }
-    // (import ./packages {inherit self pkgs;})
+    // (import ./packages {inherit self config pkgs;})
     // (importApply ./apps {inherit self inputs inputs' pkgs;})
     # Runnable tests!
     // {
