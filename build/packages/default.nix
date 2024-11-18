@@ -10,6 +10,7 @@ in {
       disko-install = import ./disko-install.nix {inherit self pkgs;};
     })
     // (let
+      # TODO: must port devShell inputsFrom.
       targetPkgs = tpkgs:
         with tpkgs;
           [git]
@@ -29,18 +30,13 @@ in {
       '';
     in
       lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        devshell-bwrap = pkgs.buildFHSEnvBubblewrap {
+        devshell-bwrapenv = pkgs.buildFHSEnvBubblewrap {
           name = "devshell";
           inherit targetPkgs profile;
         };
-        devshell-chroot = pkgs.buildFHSEnvChroot {
+        devshell-chrootenv = pkgs.buildFHSEnvChroot {
           name = "devshell";
           inherit targetPkgs profile;
         };
-      })
-    // {
-      devshell-env = pkgs.buildEnv {
-        name = "devshell";
-      };
-    };
+      });
 }
