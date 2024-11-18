@@ -1,6 +1,5 @@
 {
   importApply,
-  withSystem,
   self,
   inputs,
   ...
@@ -46,9 +45,9 @@
       };
 
       devShells.default = import ./devshell/devshell.nix {inherit self' config pkgs;};
-      just-flake.features = withSystem pkgs.stdenv.system (import ./devshell/just-flake.nix {
-        inherit self;
-      });
+      just-flake.features = importApply ./devshell/just-flake.nix {
+        inherit self self' inputs' pkgs;
+      };
     }
     // (import ./packages {inherit self pkgs;})
     // (importApply ./apps {inherit self inputs inputs' pkgs;})

@@ -1,6 +1,7 @@
-{self, ...}: {
-  inputs',
+{
+  self,
   self',
+  inputs',
   pkgs,
   ...
 }: let
