@@ -41,11 +41,11 @@ in {
         '';
       };
     }
-    // {
+    // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
       # linux has first class support for namespacing, the backend of docker
       # this means that we have a slightly simpler container interface available
       # with more capabilities on linux environments
-      bwrapenv = lib.mkIf pkgs.stdenv.isLinux self'.packages.devshell-bwrapenv.env;
+      bwrapenv = self'.packages.devshell-bwrapenv.env;
     };
 
   # set up devshell commands
