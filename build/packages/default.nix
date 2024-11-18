@@ -40,18 +40,6 @@ in {
             ++ [just gnumake]
             ++ [shellcheck nil];
 
-        # Initial bashrc, equivalent to shellHook on mkShell
-        profile = ''
-          if [[ -f /.dockerenv ]]; then
-            # nix-build doesn't play very nice with the sticky bit
-            # and /tmp in a docker environment. unsetting it enables
-            # the container to manage its tmpfs as it pleases.
-            unset TEMP TMPDIR NIX_BUILD_TOP
-          else
-            :
-          fi
-        '';
-
         unshareUser = true;
         unshareIpc = true;
         unsharePid = true;
