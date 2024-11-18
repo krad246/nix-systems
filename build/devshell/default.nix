@@ -10,6 +10,7 @@
 in {
   devShells =
     {
+      # prefer an interpreter-level venv by default
       default = self'.devShells.nix-shell;
 
       nix-shell = pkgs.mkShell {
@@ -41,9 +42,13 @@ in {
       };
     }
     // {
+      # linux has first class support for namespacing, the backend of docker
+      # this means that we have a slightly simpler container interface available
+      # with more capabilities on linux environments
       bwrapenv = lib.mkIf pkgs.stdenv.isLinux self'.packages.devshell-bwrapenv.env;
     };
 
+  # set up devshell commands
   just-flake.features = import ./just-flake.nix {
     inherit self self' inputs' pkgs;
   };
