@@ -25,8 +25,8 @@
     pkgs,
     ...
   }:
-  # Linter setup!
-    {
+    (import ./devshell {inherit self self' inputs' config pkgs;})
+    // {
       formatter = config.treefmt.build.wrapper;
       treefmt = {
         inherit (config.flake-root) projectRootFile;
@@ -42,11 +42,6 @@
         deadnix.enable = true;
         alejandra.enable = true;
         statix.enable = true;
-      };
-
-      devShells.default = import ./devshell/devshell.nix {inherit self' config pkgs;};
-      just-flake.features = importApply ./devshell/just-flake.nix {
-        inherit self self' inputs' pkgs;
       };
     }
     // (import ./packages {inherit self pkgs;})
