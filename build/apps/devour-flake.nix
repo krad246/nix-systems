@@ -1,21 +1,21 @@
 {
-  self,
-  inputs,
+  pkgs,
+  inputs',
   ...
-}: {pkgs, ...}: let
+}: let
   inherit (pkgs) lib;
   runner = pkgs.writeShellApplication {
     name = "devour-flake";
 
-    # FIXME: devour-flake does not work with recursive flake inputs, must handle; breaks devour-flake
+    # FIXME: devour-flake does not work with recursive flake inputs', must handle; breaks devour-flake
     text = ''
       set -x
       ${lib.getExe pkgs.nixVersions.stable} \
         --option experimental-features 'nix-command flakes' \
-        flake lock --no-update-lock-file "${self}" && \
-      ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" \
+        flake lock --no-update-lock-file "$FLAKE_ROOT" && \
+      ${lib.getExe (pkgs.callPackage inputs'.devour-flake {})} "$FLAKE_ROOT" \
         --option preallocate-contents true \
-        --option inputs-from ${self} \
+        --option inputs-from $FLAKE_ROOT \
         --option keep-going true \
         --option show-trace true \
       "$@"

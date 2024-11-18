@@ -1,7 +1,7 @@
 {
+  importApply,
   withSystem,
   self,
-  inputs,
   ...
 }: {
   # These modules are pretty large but are otherwise structured to merge against
@@ -20,7 +20,7 @@
   ];
 
   perSystem = {
-    self',
+    inputs',
     config,
     lib,
     pkgs,
@@ -57,24 +57,7 @@
           withSystem pkgs.stdenv.system (import ./packages/disko-install.nix {inherit self;});
       };
     }
-    # Runnable app targets!
-    // {
-      apps =
-        {
-          bootstrap = withSystem pkgs.stdenv.system (import ./apps/bootstrap.nix);
-          devour-flake = let
-            wrapped = import ./apps/devour-flake.nix {inherit self inputs;};
-          in
-            withSystem
-            pkgs.stdenv.system
-            wrapped;
-        }
-        // lib.attrsets.mapAttrs (_name: value: {
-          type = "app";
-          program = lib.getExe value;
-        })
-        self'.packages;
-    }
+    // (importApply ./apps {inherit pkgs inputs';})
     # Runnable tests!
     // {
       checks = {
@@ -89,7 +72,4 @@
         };
       };
     };
-
-  flake = {
-  };
 }
