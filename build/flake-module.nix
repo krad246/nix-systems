@@ -2,6 +2,7 @@
   importApply,
   withSystem,
   self,
+  inputs,
   ...
 }: {
   # These modules are pretty large but are otherwise structured to merge against
@@ -48,8 +49,8 @@
         inherit self;
       });
     }
-    // (importApply ./packages {inherit pkgs;})
-    // (importApply ./apps {inherit pkgs inputs';})
+    // (import ./packages {inherit pkgs;})
+    // (importApply ./apps {inherit self inputs inputs' pkgs;})
     # Runnable tests!
     // {
       checks = {

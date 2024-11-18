@@ -1,6 +1,7 @@
 {
+  self,
+  inputs,
   pkgs,
-  inputs',
   ...
 }: let
   inherit (pkgs) lib;
@@ -12,10 +13,10 @@
       set -x
       ${lib.getExe pkgs.nixVersions.stable} \
         --option experimental-features 'nix-command flakes' \
-        flake lock --no-update-lock-file "$FLAKE_ROOT" && \
-      ${lib.getExe (pkgs.callPackage inputs'.devour-flake {})} "$FLAKE_ROOT" \
+        flake lock --no-update-lock-file "${self}" && \
+      ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" \
         --option preallocate-contents true \
-        --option inputs-from $FLAKE_ROOT \
+        --option inputs-from ${self} \
         --option keep-going true \
         --option show-trace true \
       "$@"

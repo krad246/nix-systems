@@ -1,10 +1,12 @@
 {
-  pkgs,
+  self,
+  inputs,
   inputs',
+  pkgs,
   ...
 }: {
   apps = {
-    bootstrap = import ./bootstrap.nix;
-    devour-flake = import ./devour-flake.nix {inherit pkgs inputs';};
+    bootstrap = import ./bootstrap.nix {inherit inputs' pkgs;};
+    devour-flake = import ./devour-flake.nix {inherit self inputs pkgs;};
   };
 }
