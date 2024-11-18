@@ -1,3 +1,4 @@
+# outer / 'flake' scope
 {
   importApply,
   self,
