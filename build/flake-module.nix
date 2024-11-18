@@ -16,13 +16,11 @@
 
     # Map a list of valid nixos-generators formats declared by the flake's nixosConfigurations
     # to package derivations that we can directly build.
-    ./nixos-generators.nix
   ];
 
   perSystem = {
     inputs',
     config,
-    lib,
     pkgs,
     ...
   }:
@@ -50,13 +48,7 @@
         inherit self;
       });
     }
-    # Package derivations
-    // {
-      packages = lib.mkIf pkgs.stdenv.isLinux {
-        disko-install =
-          withSystem pkgs.stdenv.system (import ./packages/disko-install.nix {inherit self;});
-      };
-    }
+    // (importApply ./packages {inherit pkgs;})
     // (importApply ./apps {inherit pkgs inputs';})
     # Runnable tests!
     // {
