@@ -39,14 +39,6 @@ in {
             ++ [direnv nix-direnv]
             ++ [just gnumake]
             ++ [shellcheck nil];
-
-        unshareUser = true;
-        unshareIpc = true;
-        unsharePid = true;
-        unshareNet = true;
-        unshareUts = true;
-        unshareCgroup = true;
-        privateTmp = true;
       };
     });
 }

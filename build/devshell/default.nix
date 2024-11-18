@@ -11,6 +11,7 @@ in {
   devShells =
     {
       default = self'.devShells.nix-shell;
+
       nix-shell = pkgs.mkShell {
         inputsFrom = [
           config.flake-root.devShell

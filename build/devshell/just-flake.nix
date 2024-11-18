@@ -7,6 +7,8 @@
 }: let
   inherit (pkgs) lib;
 
+  inputArg = lib.strings.concatStringsSep " " ["--option" "inputs-from" self];
+
   # Create a justfile fragment from a:
   # 1. documentation comment
   # 2. recipe group
@@ -84,7 +86,7 @@ in
     group = "system";
 
     recipes = let
-      flakeArg = lib.strings.concatStringsSep " " ["--flake" "$FLAKE_ROOT"];
+      flakeArg = lib.strings.concatStringsSep " " ["--flake" self];
     in
       (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
@@ -96,7 +98,7 @@ in
               #!${lib.meta.getExe pkgs.bash}
               ${lib.meta.getExe pkgs.nixos-rebuild} \
                 --option experimental-features 'nix-command flakes' \
-                --option inputs-from ${self} \
+                ${inputArg} \
                 --option accept-flake-config true \
                 --option builders-use-substitutes true \
                 --option keep-going true \
@@ -150,7 +152,7 @@ in
               #!${lib.meta.getExe pkgs.bash}
               ${lib.meta.getExe pkgs.home-manager} \
                 --option experimental-features 'nix-command flakes' \
-                --option inputs-from ${self} \
+                ${inputArg} \
                 --option accept-flake-config true \
                 --option keep-going true \
                 --option preallocate-contents true \
@@ -204,7 +206,7 @@ in
             #!${lib.meta.getExe pkgs.bash}
             ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
               --option experimental-features 'nix-command flakes' \
-              --option inputs-from ${self} \
+                ${inputArg} \
               --option accept-flake-config true \
               --option builders-use-substitutes true \
               --option keep-going true \
