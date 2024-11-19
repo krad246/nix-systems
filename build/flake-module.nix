@@ -5,7 +5,8 @@
   inputs,
   ...
 }: let
-  x = import ./devshell {inherit importApply self;};
+  devshell = import ./devshell {inherit importApply self;};
+  apps = import ./apps {inherit importApply self inputs;};
 in {
   # These modules are pretty large but are otherwise structured to merge against
   # the options layers touched below.
@@ -20,11 +21,11 @@ in {
     # Map a list of valid nixos-generators formats declared by the flake's nixosConfigurations
     # to package derivations that we can directly build.
 
-    x.flakeModule
+    devshell.flakeModule
+    apps.flakeModule
   ];
 
   perSystem = {
-    inputs',
     config,
     pkgs,
     ...
@@ -48,7 +49,6 @@ in {
       };
     }
     // (import ./packages {inherit self config pkgs;})
-    // (importApply ./apps {inherit self inputs inputs' pkgs;})
     // {
       checks = {
         hello = pkgs.testers.runNixOSTest {

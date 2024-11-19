@@ -1,12 +1,10 @@
 {
+  importApply,
   self,
   inputs,
-  inputs',
-  pkgs,
   ...
 }: {
-  apps = {
-    bootstrap = import ./bootstrap.nix {inherit inputs' pkgs;};
-    devour-flake = import ./devour-flake.nix {inherit self inputs pkgs;};
-  };
+  # importApply basically curries / partially applies some extra arguments to the existing argument
+  # list of a module
+  flakeModule = importApply ./flake-module.nix {inherit importApply self inputs;};
 }
