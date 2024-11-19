@@ -219,10 +219,10 @@
       flake-parts-lib,
       ...
     }: let
-      flakePartsCtx = {inherit withSystem flake-parts-lib;};
-      ourCtx = {inherit self lib inputs;};
-
-      modules = import ./modules (flakePartsCtx // ourCtx);
+      args = {
+        inherit withSystem flake-parts-lib;
+        inherit self lib inputs;
+      };
     in {
       # Source files and other callables pulled in here are combined into this 'layer'.
       # flake-parts specifies that flake-level functors and other reusable module logic
@@ -238,8 +238,8 @@
           flake-parts.flakeModules.flakeModules
         ])
         ++ [
-          modules.flakeModule
-          self.modules.flake.default
+          (import ./modules args).flakeModule
+          (import ./modules/flake args).flakeModule
         ];
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];

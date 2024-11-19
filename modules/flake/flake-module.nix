@@ -31,6 +31,7 @@ in {
   flake = rec {
     flakeModules = {
       default = ./.;
+
       apps = apps.flakeModule;
       containers = containers.flakeModule;
       devShells = devShells.flakeModule;
