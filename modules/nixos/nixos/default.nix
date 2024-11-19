@@ -6,7 +6,10 @@
   inherit (inputs) home-manager;
 in {
   imports =
-    [self.nixosModules.ccache-stdenv]
+    [
+      self.nixosModules.ccache-stdenv
+      self.nixosModules.darling
+    ]
     ++ [
       ./aarch64-binfmt.nix
       ./default-users.nix
