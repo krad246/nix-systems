@@ -222,7 +222,6 @@
       flakePartsCtx = {inherit withSystem flake-parts-lib;};
       ourCtx = {inherit self lib inputs;};
 
-      build = import ./build (flakePartsCtx // ourCtx);
       modules = import ./modules (flakePartsCtx // ourCtx);
     in {
       # Source files and other callables pulled in here are combined into this 'layer'.
@@ -238,10 +237,9 @@
           flake-parts.flakeModules.modules
           flake-parts.flakeModules.flakeModules
         ])
-        # TODO: convert these to use the flake.flakeModules attribute.
         ++ [
-          build.flakeModule
           modules.flakeModule
+          self.modules.flake.default
         ];
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];

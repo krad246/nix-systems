@@ -30,6 +30,7 @@ in {
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
     flakeModules = {
+      default = ./.;
       apps = apps.flakeModule;
       containers = containers.flakeModule;
       devShells = devShells.flakeModule;

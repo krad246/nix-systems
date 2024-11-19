@@ -17,5 +17,6 @@ in {
     darwin = mkModules ./darwin;
     nixos = mkModules ./nixos;
     home = mkModules ./home;
+    flake = mkModules ./flake;
   };
 }
