@@ -14,6 +14,12 @@
         ++ [just gnumake]
         ++ [shellcheck nil];
 
+    inputsFrom = [
+      config.flake-root.devShell
+      config.just-flake.outputs.devShell
+      config.treefmt.build.devShell
+      config.pre-commit.devShell
+    ];
     # equivalent of mkShell inputsFrom
     # append devShell dependencies to nativeBuildInputs
     nativeBuildInputs = let
@@ -23,20 +29,14 @@
       # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
       mergeInputs = inputs: name: (lib.subtractLists inputs (lib.flatten (lib.catAttrs name inputs)));
     in
-      mergeInputs [
-        config.flake-root.devShell
-        config.just-flake.outputs.devShell
-        config.treefmt.build.devShell
-        config.pre-commit.devShell
-      ] "nativeBuildInputs";
+      mergeInputs inputsFrom "nativeBuildInputs";
   in {
     packages =
       {
         nix-shell-env = import ./nix-shell-env.nix {
           inherit config pkgs;
           inherit targetPkgs;
-
-          inputsFrom = nativeBuildInputs;
+          inherit inputsFrom;
           shellHook = ''
             if [[ -f /.dockerenv ]]; then
               # nix-build doesn't play very nice with the sticky bit
