@@ -236,6 +236,7 @@
           pre-commit-hooks-nix.flakeModule
           just-flake.flakeModule
           flake-parts.flakeModules.modules
+          flake-parts.flakeModules.flakeModules
         ])
         # TODO: convert these to use the flake.flakeModules attribute.
         ++ [
