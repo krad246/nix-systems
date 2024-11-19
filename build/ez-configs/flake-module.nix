@@ -1,9 +1,8 @@
 {
   self,
   inputs,
-  config,
   ...
-}: {
+}: {config, ...}: {
   ezConfigs = {
     root = self;
     globalArgs = {inherit self inputs;};
