@@ -5,7 +5,10 @@
   inputs,
   ...
 }: let
+  # standard outputs
   apps = import ./apps {inherit importApply self inputs;};
+  devShells = import ./devshell {inherit importApply self;};
+  packages = import ./packages {inherit importApply self;};
 
   # Sets up container image packages, custom devShell derivation within the container
   # VSCode *is* supported!
@@ -13,19 +16,29 @@
 
   # Module that streamlines tying together system and home configurations.
   ezConfigs = import ./ez-configs {inherit importApply self inputs;};
-
-  devShell = import ./devshell {inherit importApply self;};
-  packages = import ./packages {inherit importApply self;};
 in {
-  # These modules are pretty large but are otherwise structured to merge against
-  # the options layers touched below.
+  # the rest of our options perSystem, etc. are set through the flakeModules.
+  # keeps code localized per directory
   imports = [
-    containers.flakeModule
-    ezConfigs.flakeModule
-    devShell.flakeModule
     apps.flakeModule
+    containers.flakeModule
+    devShells.flakeModule
+    ezConfigs.flakeModule
     packages.flakeModule
   ];
+
+  # export the flake modules we loaded to this context for user consumption
+  flake = rec {
+    flakeModules = {
+      apps = apps.flakeModule;
+      containers = containers.flakeModule;
+      devShells = devShells.flakeModule;
+      ezConfigs = ezConfigs.flakeModule;
+      packages = packages.flakeModule;
+    };
+
+    modules.flake = flakeModules;
+  };
 
   perSystem = {
     config,
