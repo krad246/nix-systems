@@ -7,6 +7,7 @@
 }: let
   devshell = import ./devshell {inherit importApply self;};
   apps = import ./apps {inherit importApply self inputs;};
+  packages = import ./packages {inherit importApply self;};
 in {
   # These modules are pretty large but are otherwise structured to merge against
   # the options layers touched below.
@@ -23,6 +24,7 @@ in {
 
     devshell.flakeModule
     apps.flakeModule
+    packages.flakeModule
   ];
 
   perSystem = {
@@ -48,7 +50,6 @@ in {
         statix.enable = true;
       };
     }
-    // (import ./packages {inherit self config pkgs;})
     // {
       checks = {
         hello = pkgs.testers.runNixOSTest {
