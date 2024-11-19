@@ -34,7 +34,19 @@
       {
         nix-shell-env = import ./nix-shell-env.nix {
           inherit config pkgs;
-          inherit targetPkgs nativeBuildInputs;
+          inherit targetPkgs;
+
+          inputsFrom = nativeBuildInputs;
+          shellHook = ''
+            if [[ -f /.dockerenv ]]; then
+              # nix-build doesn't play very nice with the sticky bit
+              # and /tmp in a docker environment. unsetting it enables
+              # the container to manage its tmpfs as it pleases.
+              unset TEMP TMPDIR NIX_BUILD_TOP
+            else
+              :
+            fi
+          '';
         };
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
