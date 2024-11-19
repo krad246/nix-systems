@@ -22,11 +22,6 @@ in {
   imports = [
     containers.flakeModule
     ezConfigs.flakeModule
-
-    # Map a list of valid nixos-generators formats declared by the flake's nixosConfigurations
-    # to package derivations that we can directly build.
-    ./nixos-generators.nix
-
     devShell.flakeModule
     apps.flakeModule
     packages.flakeModule
