@@ -25,6 +25,8 @@ in {
     devShells.flakeModule
     ezConfigs.flakeModule
     packages.flakeModule
+
+    ./nixos-generators.nix
   ];
 
   # export the flake modules we loaded to this context for user consumption

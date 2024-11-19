@@ -223,6 +223,8 @@
         inherit withSystem flake-parts-lib;
         inherit self lib inputs;
       };
+
+      entrypoint = import ./modules args;
     in {
       # Source files and other callables pulled in here are combined into this 'layer'.
       # flake-parts specifies that flake-level functors and other reusable module logic
@@ -238,8 +240,7 @@
           flake-parts.flakeModules.flakeModules
         ])
         ++ [
-          (import ./modules args).flakeModule
-          (import ./modules/flake args).flakeModule
+          entrypoint.flakeModule
         ];
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
