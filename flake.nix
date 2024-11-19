@@ -13,7 +13,7 @@
     ];
   };
 
-  inputs = rec {
+  inputs = {
     # Package branches
 
     # system specific channels
@@ -28,22 +28,22 @@
 
     # stable nixos points at 24.05
     # generic stable nixpkgs also points to it but can move ahead if desired
-    nixos-stable = nixos-2405;
+    nixos-stable = {url = "github:NixOS/nixpkgs/nixos-24.05";};
 
     # specifically use stable NixOS for WSL, but otherwise flexible
-    nixpkgs-wsl = nixos-stable;
+    nixpkgs-wsl = {url = "github:NixOS/nixpkgs/nixos-24.05";};
 
     # nixpkgs for home has to be in the same release 'family'
     # as the system channels
-    nixpkgs-nixos = nixos-2405;
-    nixpkgs-darwin = nixpkgs-2405-darwin;
-    nixpkgs-home = nixos-2405;
+    nixpkgs-nixos = {url = "github:NixOS/nixpkgs/nixos-24.05";};
+    nixpkgs-darwin = {url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";};
+    nixpkgs-home = {url = "github:NixOS/nixpkgs/nixos-24.05";};
 
     # the flake input 'nixpkgs' is the channel we are using in our flake for the evaluation, as
     # we've overridden the nixpkgs inputs to all of our output derivations.
     # thus nixpkgs is approximately the same thing as nixpkgs-lib for our purpose.
-    nixpkgs = nixpkgs-home;
-    nixpkgs-lib = nixpkgs;
+    nixpkgs = {url = "github:NixOS/nixpkgs/nixos-24.05";};
+    nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-24.05";};
 
     # Legacy and flake compatibility shims.
     flake-compat = {
