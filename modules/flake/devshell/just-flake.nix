@@ -7,7 +7,7 @@
 }: let
   inherit (pkgs) lib;
 
-  inputArg = lib.strings.concatStringsSep " " ["--option" "inputs-from" self];
+  inputArg = lib.strings.concatStringsSep " " ["--option" "inputs-from" "$FLAKE_ROOT"];
 
   # Create a justfile fragment from a:
   # 1. documentation comment
@@ -86,7 +86,7 @@ in
     group = "system";
 
     recipes = let
-      flakeArg = lib.strings.concatStringsSep " " ["--flake" self];
+      flakeArg = lib.strings.concatStringsSep " " ["--flake" "$FLAKE_ROOT"];
     in
       (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux

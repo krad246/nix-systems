@@ -10,7 +10,8 @@
 in {
   imports = [ezModules.nerdfonts];
   home = {
-    packages = [nixvim];
+    packages = [nixvim] ++ (with pkgs; [nil nixd nixpkgs-fmt]);
+
     shellAliases = {
       vi = lib.getExe nixvim;
       vim = lib.getExe nixvim;
