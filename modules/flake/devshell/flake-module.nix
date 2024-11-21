@@ -4,14 +4,14 @@
   self,
   ...
 }: let
-  just-flake = import ./just-flake {inherit importApply self;};
+  justfile = import ./just-flake {inherit importApply self;};
 in {
-  imports = [just-flake.flakeModule];
+  imports = [justfile.flakeModule];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
     flakeModules = {
-      just-flake = just-flake.flakeModule;
+      justfile = justfile.flakeModule;
     };
 
     modules.flake = flakeModules;

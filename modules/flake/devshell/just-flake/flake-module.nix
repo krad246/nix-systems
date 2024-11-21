@@ -152,7 +152,7 @@ in {
           repl = {
             comment = "Wraps `nix repl .`";
             justfile = ''
-              repl *ARGS: (nix "repl" "--file" "$FLAKE_ROOT")
+              repl *ARGS: (add "-A") (nix "repl" "--file" "$FLAKE_ROOT")
             '';
           };
         };

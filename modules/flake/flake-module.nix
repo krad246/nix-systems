@@ -15,7 +15,7 @@
   containers = import ./containers {inherit importApply self;};
 
   # Module that streamlines tying together system and home configurations.
-  ezConfigs = import ./ez-configs {inherit importApply self inputs;};
+  ez-configs = import ./ez-configs {inherit importApply self inputs;};
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
@@ -23,7 +23,7 @@ in {
     apps.flakeModule
     containers.flakeModule
     devShells.flakeModule
-    ezConfigs.flakeModule
+    ez-configs.flakeModule
     packages.flakeModule
   ];
 
@@ -35,7 +35,7 @@ in {
       apps = apps.flakeModule;
       containers = containers.flakeModule;
       devShells = devShells.flakeModule;
-      ezConfigs = ezConfigs.flakeModule;
+      ez-configs = ez-configs.flakeModule;
       packages = packages.flakeModule;
     };
 
