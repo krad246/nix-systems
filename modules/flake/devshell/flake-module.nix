@@ -1,8 +1,15 @@
 # outer / 'flake' scope
-{self, ...}: {
+{
+  importApply,
+  self,
+  ...
+}: let
+  just-flake = import ./just-flake {inherit importApply self;};
+in {
+  imports = [just-flake.flakeModule];
+
   perSystem = {
     self',
-    inputs',
     pkgs,
     ...
   }: let
@@ -20,10 +27,5 @@
         # with more capabilities on linux environments
         bwrapenv = self'.packages.devshell-bwrapenv.env;
       };
-
-    # set up devshell commands
-    just-flake.features = import ./just-flake.nix {
-      inherit self self' inputs' pkgs;
-    };
   };
 }
