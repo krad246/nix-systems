@@ -138,14 +138,21 @@ in {
           show = {
             comment = "Wraps `nix flake show`.";
             justfile = ''
-              show *ARGS: (add "-A") (flake "show" ARGS)
+              show *ARGS: (flake "show" ARGS)
             '';
           };
 
           check = {
             comment = "Wraps `nix flake check`.";
             justfile = ''
-              check *ARGS: (add "-A") (flake "check" ARGS)
+              check *ARGS: (flake "check" ARGS)
+            '';
+          };
+
+          repl = {
+            comment = "Wraps `nix repl .`";
+            justfile = ''
+              repl *ARGS: (nix "repl" "--file" "$FLAKE_ROOT")
             '';
           };
         };
