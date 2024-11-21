@@ -45,12 +45,33 @@ in {
     };
 
     pre-commit.settings.hooks = {
-      nil.enable = true;
-      deadnix.enable = true;
       alejandra.enable = true;
-      statix.enable = true;
+      check-added-large-files.enable = true;
+      check-case-conflicts.enable = true;
+      check-executables-have-shebangs.enable = false;
+      check-merge-conflicts.enable = true;
+      check-shebang-scripts-are-executable.enable = true;
+      check-symlinks.enable = true;
+      checkmake.enable = true;
+      cspell = {
+        enable = false;
+      };
+      deadnix.enable = true;
+      detect-private-keys.enable = true;
+      end-of-file-fixer.enable = true;
+      flake-checker.enable = true;
+      markdownlint.enable = false;
+      mdl.enable = false;
+      mixed-line-endings.enable = true;
+      mkdocs-linkcheck.enable = true;
+      nil.enable = true;
+      ripsecrets.enable = false;
       shellcheck.enable = true;
       shfmt.enable = true;
+      statix.enable = true;
+      treefmt.enable = true;
+      trim-trailing-whitespace.enable = true;
+      trufflehog.enable = false;
     };
 
     devShells =
