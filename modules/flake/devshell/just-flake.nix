@@ -250,14 +250,14 @@ in
       show = {
         comment = "Wraps `nix flake show`.";
         justfile = ''
-          show *ARGS: (add) (nix "show" ARGS)
+          show *ARGS: (add) (flake "show" ARGS)
         '';
       };
 
       check = {
         comment = "Wraps `nix flake check`.";
         justfile = ''
-          check *ARGS: (add) (nix "check" ARGS)
+          check *ARGS: (add) (flake "check" ARGS)
         '';
       };
     };
