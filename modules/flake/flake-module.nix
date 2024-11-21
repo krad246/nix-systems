@@ -36,20 +36,17 @@ in {
     modules.flake = flakeModules;
   };
 
-  perSystem = {pkgs, ...}:
-    {
-    }
-    // {
-      checks = {
-        hello = pkgs.testers.runNixOSTest {
-          name = "hello";
-          nodes.machine = {pkgs, ...}: {
-            environment.systemPackages = [pkgs.hello];
-          };
-          testScript = ''
-            machine.succeed("hello")
-          '';
+  perSystem = {pkgs, ...}: {
+    checks = {
+      hello = pkgs.testers.runNixOSTest {
+        name = "hello";
+        nodes.machine = {pkgs, ...}: {
+          environment.systemPackages = [pkgs.hello];
         };
+        testScript = ''
+          machine.succeed("hello")
+        '';
       };
     };
+  };
 }

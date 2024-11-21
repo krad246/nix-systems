@@ -1,12 +1,9 @@
 {
-  inputs,
   self,
+  inputs,
   lib,
   ...
-}: let
-  inherit (inputs) home-manager;
-  inherit (inputs) agenix;
-in {
+}: {
   imports =
     (with self.modules.generic; [
       agenix
@@ -15,7 +12,7 @@ in {
       nix-core
       unfree
     ])
-    ++ (with self.modules.darwin; [
+    ++ (with self.darwinModules; [
       docker-desktop
       homebrew
       linux-builder
@@ -23,10 +20,10 @@ in {
       plist-settings
       system-packages
     ])
-    ++ [
+    ++ (with inputs; [
       home-manager.darwinModules.home-manager
       agenix.darwinModules.age
-    ];
+    ]);
 
   nix.settings = {
     auto-optimise-store = false;

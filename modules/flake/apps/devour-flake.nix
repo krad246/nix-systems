@@ -8,7 +8,6 @@
   runner = pkgs.writeShellApplication {
     name = "devour-flake";
 
-    # FIXME: devour-flake does not work with recursive flake inputs', must handle; breaks devour-flake
     text = ''
       set -x
       ${lib.getExe pkgs.nixVersions.stable} \
