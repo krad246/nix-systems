@@ -2,12 +2,13 @@
 
 flake := env_var_or_default('FLAKE_ROOT', justfile_directory())
 
-#  List all of the recipes and groups.
+# List all of the recipes and groups.
 [group('summary')]
 default:
     @just --list
 
 # Pull in justfile bindings
+
 import? 'just-flake.just'
 
 # Enter a `nix` devShell in this repository.

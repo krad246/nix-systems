@@ -10,7 +10,7 @@
       };
 
       extraConfig = {
-        aply.whitespace = "fix";
+        apply.whitespace = "fix";
         branch.sort = "-committerdate";
 
         core = {

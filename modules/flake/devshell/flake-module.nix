@@ -36,11 +36,18 @@ in {
     treefmt = {
       inherit (config.flake-root) projectRootFile;
       programs = {
-        deadnix.enable = true;
         alejandra.enable = true;
-        statix.enable = true;
+        deadnix = {
+          enable = true;
+          no-underscore = true;
+        };
+        dos2unix.enable = false;
+        just.enable = false;
+        keep-sorted.enable = true;
         shellcheck.enable = true;
         shfmt.enable = true;
+        statix.enable = true;
+        typos.enable = false;
       };
     };
 
