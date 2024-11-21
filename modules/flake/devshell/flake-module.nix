@@ -39,6 +39,7 @@ in {
         deadnix.enable = true;
         alejandra.enable = true;
         statix.enable = true;
+        shellcheck.enable = true;
       };
     };
 
@@ -47,6 +48,7 @@ in {
       deadnix.enable = true;
       alejandra.enable = true;
       statix.enable = true;
+      shellcheck.enable = true;
     };
 
     devShells =
