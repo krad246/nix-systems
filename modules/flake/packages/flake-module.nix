@@ -1,4 +1,23 @@
-{self, ...}: {
+{
+  importApply,
+  self,
+  ...
+}: let
+  # Sets up container image packages, custom devShell derivation within the container
+  # VSCode *is* supported!
+  containers = import ./containers {inherit importApply self;};
+in {
+  imports = [containers.flakeModule];
+
+  # export the flake modules we loaded to this context for user consumption
+  flake = rec {
+    flakeModules = {
+      containers = containers.flakeModule;
+    };
+
+    modules.flake = flakeModules;
+  };
+
   perSystem = {
     config,
     pkgs,

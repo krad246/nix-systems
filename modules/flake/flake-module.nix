@@ -10,10 +10,6 @@
   devShells = import ./devshell {inherit importApply self inputs;};
   packages = import ./packages {inherit importApply self;};
 
-  # Sets up container image packages, custom devShell derivation within the container
-  # VSCode *is* supported!
-  containers = import ./containers {inherit importApply self;};
-
   # Module that streamlines tying together system and home configurations.
   ez-configs = import ./ez-configs {inherit importApply self inputs;};
 in {
@@ -21,7 +17,6 @@ in {
   # keeps code localized per directory
   imports = [
     apps.flakeModule
-    containers.flakeModule
     devShells.flakeModule
     ez-configs.flakeModule
     packages.flakeModule
@@ -33,7 +28,6 @@ in {
       default = ./.;
 
       apps = apps.flakeModule;
-      containers = containers.flakeModule;
       devShells = devShells.flakeModule;
       ez-configs = ez-configs.flakeModule;
       packages = packages.flakeModule;
