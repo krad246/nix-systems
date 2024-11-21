@@ -6,9 +6,14 @@
   ...
 }: {lib, ...}: {
   # pull in the default flake module so that we can, y'know, build stuff...
-  imports = let
-    entrypoint = import ./flake {inherit withSystem importApply self inputs;};
-  in [entrypoint.flakeModule];
+  imports =
+    (with inputs; [
+      flake-parts.flakeModules.modules
+      flake-parts.flakeModules.flakeModules
+    ])
+    ++ (let
+      entrypoint = import ./flake {inherit withSystem importApply self inputs;};
+    in [entrypoint.flakeModule]);
 
   # scan subdirs for other modules
   flake.modules = let

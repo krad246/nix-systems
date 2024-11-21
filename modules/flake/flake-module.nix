@@ -7,7 +7,7 @@
 }: let
   # standard outputs
   apps = import ./apps {inherit importApply self inputs;};
-  devShells = import ./devshell {inherit importApply self;};
+  devShells = import ./devshell {inherit importApply self inputs;};
   packages = import ./packages {inherit importApply self;};
 
   # Sets up container image packages, custom devShell derivation within the container
@@ -42,28 +42,8 @@ in {
     modules.flake = flakeModules;
   };
 
-  perSystem = {
-    config,
-    pkgs,
-    ...
-  }:
+  perSystem = {pkgs, ...}:
     {
-      formatter = config.treefmt.build.wrapper;
-      treefmt = {
-        inherit (config.flake-root) projectRootFile;
-        programs = {
-          deadnix.enable = true;
-          alejandra.enable = true;
-          statix.enable = true;
-        };
-      };
-
-      pre-commit.settings.hooks = {
-        nil.enable = true;
-        deadnix.enable = true;
-        alejandra.enable = true;
-        statix.enable = true;
-      };
     }
     // {
       checks = {

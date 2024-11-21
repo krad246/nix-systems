@@ -2,6 +2,7 @@
 {
   importApply,
   self,
+  inputs,
   ...
 }: let
   # Create a justfile fragment from a:
@@ -42,7 +43,7 @@
   justfile-misc = importApply ./commands/misc.nix {inherit mkJustRecipeGroup;};
   justfile-system = importApply ./commands/system.nix {inherit mkJustRecipeGroup;};
 in {
-  imports = [justfile-dev justfile-git justfile-misc justfile-system];
+  imports = [inputs.just-flake.flakeModule] ++ [justfile-dev justfile-git justfile-misc justfile-system];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {

@@ -2,11 +2,18 @@
 {
   importApply,
   self,
+  inputs,
   ...
 }: let
-  justfile = import ./just-flake {inherit importApply self;};
+  justfile = import ./just-flake {inherit importApply self inputs;};
 in {
-  imports = [justfile.flakeModule];
+  imports =
+    (with inputs; [
+      treefmt-nix.flakeModule
+      flake-root.flakeModule
+      pre-commit-hooks-nix.flakeModule
+    ])
+    ++ [justfile.flakeModule];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
@@ -19,11 +26,29 @@ in {
 
   perSystem = {
     self',
+    config,
     pkgs,
     ...
   }: let
     inherit (pkgs) lib;
   in {
+    formatter = config.treefmt.build.wrapper;
+    treefmt = {
+      inherit (config.flake-root) projectRootFile;
+      programs = {
+        deadnix.enable = true;
+        alejandra.enable = true;
+        statix.enable = true;
+      };
+    };
+
+    pre-commit.settings.hooks = {
+      nil.enable = true;
+      deadnix.enable = true;
+      alejandra.enable = true;
+      statix.enable = true;
+    };
+
     devShells =
       {
         # prefer an interpreter-level venv by default

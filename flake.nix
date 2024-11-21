@@ -200,7 +200,6 @@
   outputs = inputs @ {
     self,
     flake-parts,
-    ez-configs,
     ...
   }: let
     lib =
@@ -229,19 +228,9 @@
       # Source files and other callables pulled in here are combined into this 'layer'.
       # flake-parts specifies that flake-level functors and other reusable module logic
       # are captured in flakeModules.
-      imports =
-        (with inputs; [
-          treefmt-nix.flakeModule
-          flake-root.flakeModule
-          ez-configs.flakeModule
-          pre-commit-hooks-nix.flakeModule
-          just-flake.flakeModule
-          flake-parts.flakeModules.modules
-          flake-parts.flakeModules.flakeModules
-        ])
-        ++ [
-          entrypoint.flakeModule
-        ];
+      imports = [
+        entrypoint.flakeModule
+      ];
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
     });

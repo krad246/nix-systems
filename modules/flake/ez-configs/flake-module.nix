@@ -3,7 +3,7 @@
   inputs,
   ...
 }: {...}: {
-  imports = [./nixos.nix ./darwin.nix ./home.nix];
+  imports = [inputs.ez-configs.flakeModule] ++ [./nixos.nix ./darwin.nix ./home.nix];
 
   ezConfigs = {
     root = self;
