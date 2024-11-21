@@ -8,6 +8,15 @@
 in {
   imports = [just-flake.flakeModule];
 
+  # export the flake modules we loaded to this context for user consumption
+  flake = rec {
+    flakeModules = {
+      just-flake = just-flake.flakeModule;
+    };
+
+    modules.flake = flakeModules;
+  };
+
   perSystem = {
     self',
     pkgs,
