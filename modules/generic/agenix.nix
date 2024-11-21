@@ -8,13 +8,8 @@
 in {
   imports = [./secrets];
 
-  options = {
-  };
-
-  config = {
-    environment.etc = lib.mkIf (hasPrivKey && hasPubkey) {
-      "ssh/id_ed25519.pub".source = config.age.secrets."id_ed25519_pub.age".path;
-      "ssh/id_ed25519".source = config.age.secrets."id_ed25519_priv.age".path;
-    };
+  environment.etc = lib.mkIf (hasPrivKey && hasPubkey) {
+    "ssh/id_ed25519.pub".source = config.age.secrets."id_ed25519_pub.age".path;
+    "ssh/id_ed25519".source = config.age.secrets."id_ed25519_priv.age".path;
   };
 }

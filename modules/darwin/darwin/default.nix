@@ -12,7 +12,7 @@
       nix-core
       unfree
     ])
-    ++ (with self.darwinModules; [
+    ++ (with self.modules.darwin; [
       docker-desktop
       homebrew
       linux-builder
