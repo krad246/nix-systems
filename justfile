@@ -5,7 +5,7 @@ flake := env_var_or_default('FLAKE_ROOT', justfile_directory())
 #  List all of the recipes and groups.
 [group('summary')]
 default:
-    @just --list --unsorted
+    @just --list
 
 # Pull in justfile bindings
 import? 'just-flake.just'

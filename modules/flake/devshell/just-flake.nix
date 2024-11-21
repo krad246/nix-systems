@@ -184,21 +184,6 @@ in
     group = "nix";
 
     recipes = {
-      build = {
-        comment = "Wraps `nix build`.";
-        justfile = ''
-          build *ARGS: (add) (nix "build" ARGS)
-        '';
-      };
-
-      run = {
-        comment = "Wraps `nix run`.";
-        justfile = ''
-          run *ARGS: (add) (nix "run" ARGS)
-        '';
-      };
-
-      # nix works on all *nix systems
       nix = {
         comment = "Wraps `nix`. Pass arguments as normal.";
         justfile = ''
@@ -213,6 +198,66 @@ in
               --option keep-going true \
               --option preallocate-contents true \
               {{ ARGS }}
+        '';
+      };
+
+      build = {
+        comment = "Wraps `nix build`.";
+        justfile = ''
+          build *ARGS: (add) (nix "build" ARGS)
+        '';
+      };
+
+      develop = {
+        comment = "Wraps `nix develop`.";
+        justfile = ''
+          develop *ARGS: (add) (nix "develop" ARGS)
+        '';
+      };
+
+      flake = {
+        comment = "Wraps `nix flake`.";
+        justfile = ''
+          flake *ARGS: (add) (nix "flake" ARGS)
+        '';
+      };
+
+      run = {
+        comment = "Wraps `nix run`.";
+        justfile = ''
+          run *ARGS: (add) (nix "run" ARGS)
+        '';
+      };
+
+      search = {
+        comment = "Wraps `nix search`.";
+        justfile = ''
+          search *ARGS: (add) (nix "search" ARGS)
+        '';
+      };
+
+      shell = {
+        comment = "Wraps `nix shell`.";
+        justfile = ''
+          shell *ARGS: (add) (nix "shell" ARGS)
+        '';
+      };
+    };
+  }
+  // mkJustRecipeGroup {
+    group = "flake";
+    recipes = {
+      show = {
+        comment = "Wraps `nix flake show`.";
+        justfile = ''
+          show *ARGS: (add) (nix "show" ARGS)
+        '';
+      };
+
+      check = {
+        comment = "Wraps `nix flake check`.";
+        justfile = ''
+          check *ARGS: (add) (nix "check" ARGS)
         '';
       };
     };
