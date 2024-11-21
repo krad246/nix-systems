@@ -40,6 +40,7 @@ in {
         alejandra.enable = true;
         statix.enable = true;
         shellcheck.enable = true;
+        shfmt.enable = true;
       };
     };
 
@@ -49,6 +50,7 @@ in {
       alejandra.enable = true;
       statix.enable = true;
       shellcheck.enable = true;
+      shfmt.enable = true;
     };
 
     devShells =

@@ -8,31 +8,25 @@
   inherit (inputs) agenix;
 in {
   imports =
-    [self.modules.generic.unfree self.modules.generic.agenix self.modules.generic.nix-core self.modules.generic.flake-registry]
-    ++ [
-      ./homebrew.nix
-      ./linux-builder.nix
-      ./mac-app-util.nix
-      ./plist-settings.nix
-      ./system-packages.nix
-    ]
+    (with self.modules.generic; [
+      agenix
+      flake-registry
+      hm-compat
+      nix-core
+      unfree
+    ])
+    ++ (with self.modules.darwin; [
+      docker-desktop
+      homebrew
+      linux-builder
+      mac-app-util
+      plist-settings
+      system-packages
+    ])
     ++ [
       home-manager.darwinModules.home-manager
       agenix.darwinModules.age
-    ]
-    ++ [
-      self.darwinModules.docker-desktop
     ];
-
-  home-manager = {
-    useUserPackages = true;
-    useGlobalPkgs = true;
-    backupFileExtension = "bak";
-    extraSpecialArgs = {
-    };
-    sharedModules = [];
-    verbose = false;
-  };
 
   nix.settings = {
     auto-optimise-store = false;
