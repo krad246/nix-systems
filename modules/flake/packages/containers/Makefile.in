@@ -14,7 +14,7 @@ devcontainer_up_args := \
 
 .PHONY: container-import
 container-import: $(devshell_json)
-	docker image inspect @image@ >/dev/null || (@loader@ | docker load)
+	@docker@ image inspect @image@ >/dev/null || (@loader@ | @docker@ load)
 
 .PHONY: help
 
@@ -24,21 +24,21 @@ help:  ## Show this help
 	@grep -E '^([a-zA-Z_-]+):.*## ' $(MAKEFILE_LIST) | awk -F ':.*## ' '{printf "%-20s %s\n", $$1, $$2}'
 
 container-up: container-import ## Start the container
-	CACHEDIR=$(CACHEDIR) devcontainer up $(devcontainer_up_args)
+	CACHEDIR=$(CACHEDIR) @devcontainer@ up $(devcontainer_up_args)
 
 container-restart: container-import ## Restart the container
 	rm -f $(devshell_cidfile)
-	CACHEDIR=$(CACHEDIR) devcontainer up --remove-existing-container $(devcontainer_up_args)
+	CACHEDIR=$(CACHEDIR) @devcontainer@ up --remove-existing-container $(devcontainer_up_args)
 
 container-attach: container-up ## Spawn an interactive shell in the container
-	devcontainer exec $(devcontainer_common_args) \
+	@devcontainer@ exec $(devcontainer_common_args) \
 		bash -il
 
 container-exec: container-up ## Run a command in the container
-	devcontainer exec $(devcontainer_common_args) $(DEVSHELL_EXEC_CMD)
+	@devcontainer@ exec $(devcontainer_common_args) $(DEVSHELL_EXEC_CMD)
 
 container-stop: ## Stop the container
-	-docker stop "$$(cat $(devshell_cidfile))"
+	-@docker@ stop "$$(cat $(devshell_cidfile))"
 
 .PHONY: container-stop container-restart
 
