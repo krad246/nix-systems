@@ -65,9 +65,6 @@ in {
             else
               :
             fi
-
-            export WORKSPACE="$PWD"
-            export CACHE="$WORKSPACE/.cache"
           '';
         };
       }

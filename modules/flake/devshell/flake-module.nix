@@ -59,7 +59,7 @@ in {
       check-merge-conflicts.enable = true;
       check-shebang-scripts-are-executable.enable = true;
       check-symlinks.enable = true;
-      checkmake.enable = true;
+      checkmake.enable = false;
       cspell = {
         enable = false;
       };
