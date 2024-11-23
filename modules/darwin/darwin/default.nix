@@ -12,14 +12,13 @@
       nix-core
       unfree
     ])
-    ++ (with self.modules.darwin; [
-      docker-desktop
-      homebrew
-      linux-builder
-      mac-app-util
-      plist-settings
-      system-packages
-    ])
+    ++ [
+      ./homebrew.nix
+      ./linux-builder.nix
+      ./mac-app-util.nix
+      ./plist-settings.nix
+      ./system-packages.nix
+    ]
     ++ (with inputs; [
       home-manager.darwinModules.home-manager
       agenix.darwinModules.age

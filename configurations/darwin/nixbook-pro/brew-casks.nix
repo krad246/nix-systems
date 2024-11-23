@@ -3,6 +3,7 @@
     casks =
       ["arc"]
       ++ ["bluesnooze"]
+      ++ ["launchcontrol"]
       ++ ["signal"]
       ++ ["spotify"]
       ++ [
