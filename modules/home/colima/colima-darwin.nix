@@ -37,13 +37,14 @@
     script = lib.getExe (mkScript arch);
   in
     lib.mkIf pkgs.stdenv.isDarwin {
-      home.packages = [pkgs.colima];
+      home.packages = [pkgs.colima pkgs.docker];
+
       launchd.agents."colima-${arch}" = {
         enable = true;
         config = {
           EnvironmentVariables = {
             PATH = lib.strings.concatStringsSep ":" [
-              (lib.makeBinPath [pkgs.colima])
+              (lib.makeBinPath [pkgs.colima pkgs.docker])
 
               # required for colima to call macOS commands to enable rosetta.
               osConfig.environment.systemPath
