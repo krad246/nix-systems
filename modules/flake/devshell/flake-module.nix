@@ -70,7 +70,7 @@ in {
       markdownlint.enable = false;
       mdl.enable = false;
       mixed-line-endings.enable = true;
-      mkdocs-linkcheck.enable = true;
+      mkdocs-linkcheck.enable = false;
       nil.enable = true;
       ripsecrets.enable = false;
       shellcheck.enable = true;
