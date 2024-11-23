@@ -1,4 +1,5 @@
-{
+{self, ...}: {
+  imports = with self.darwinModules; [groupme magnet];
   homebrew = {
     casks =
       ["arc"]
