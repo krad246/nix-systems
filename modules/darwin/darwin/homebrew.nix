@@ -1,6 +1,7 @@
 {
   inputs,
   config,
+  pkgs,
   ...
 }: let
   inherit (inputs) nix-homebrew;
@@ -29,4 +30,5 @@ in {
   };
 
   environment.systemPath = ["${config.homebrew.brewPrefix}"];
+  home.packages = [pkgs.mas];
 }
