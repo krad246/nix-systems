@@ -41,9 +41,10 @@
   justfile-dev = importApply ./commands/dev.nix {inherit mkJustRecipeGroup self;};
   justfile-git = importApply ./commands/git.nix {inherit mkJustRecipeGroup;};
   justfile-misc = importApply ./commands/misc.nix {inherit mkJustRecipeGroup;};
-  justfile-system = importApply ./commands/system.nix {inherit mkJustRecipeGroup;};
+  justfile-nix = importApply ./commands/nix {inherit mkJustRecipeGroup;};
+  justfile-system = importApply ./commands/system.nix {inherit mkJustRecipeGroup self;};
 in {
-  imports = [inputs.just-flake.flakeModule] ++ [justfile-dev justfile-git justfile-misc justfile-system];
+  imports = [inputs.just-flake.flakeModule] ++ [justfile-dev justfile-git justfile-misc justfile-system justfile-nix];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
@@ -53,110 +54,10 @@ in {
         justfile-git
         justfile-misc
         justfile-system
+        justfile-nix
         ;
     };
 
     modules.flake = flakeModules;
-  };
-
-  perSystem = {pkgs, ...}: {
-    # set up devshell commands
-    just-flake.features = let
-      inherit (pkgs) lib;
-
-      inputArg = lib.strings.concatStringsSep " " ["--option" "inputs-from" "$FLAKE_ROOT"];
-    in
-      # Helper command aliases
-      mkJustRecipeGroup {
-        inherit lib;
-        group = "nix";
-
-        recipes = {
-          nix = {
-            comment = "Wraps `nix`. Pass arguments as normal.";
-            justfile = ''
-              [unix]
-              @nix VERB *ARGS: (add)
-                #!${lib.meta.getExe pkgs.bash}
-                ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
-                  --option experimental-features 'nix-command flakes' \
-                  ${inputArg} \
-                  --option accept-flake-config true \
-                  --option builders-use-substitutes true \
-                  --option keep-going true \
-                  --option preallocate-contents true \
-                  {{ ARGS }}
-            '';
-          };
-
-          build = {
-            comment = "Wraps `nix build`.";
-            justfile = ''
-              build *ARGS: (add) (nix "build" ARGS)
-            '';
-          };
-
-          develop = {
-            comment = "Wraps `nix develop`.";
-            justfile = ''
-              develop *ARGS: (add) (nix "develop" ARGS)
-            '';
-          };
-
-          flake = {
-            comment = "Wraps `nix flake`.";
-            justfile = ''
-              flake *ARGS: (fmt) (nix "flake" ARGS)
-            '';
-          };
-
-          run = {
-            comment = "Wraps `nix run`.";
-            justfile = ''
-              run *ARGS: (add) (nix "run" ARGS)
-            '';
-          };
-
-          search = {
-            comment = "Wraps `nix search`.";
-            justfile = ''
-              search *ARGS: (add) (nix "search" ARGS)
-            '';
-          };
-
-          shell = {
-            comment = "Wraps `nix shell`.";
-            justfile = ''
-              shell *ARGS: (add) (nix "shell" ARGS)
-            '';
-          };
-        };
-      }
-      // mkJustRecipeGroup {
-        inherit lib;
-        group = "flake";
-        recipes = {
-          show = {
-            comment = "Wraps `nix flake show`.";
-            justfile = ''
-              show *ARGS: (flake "show" ARGS)
-            '';
-          };
-
-          check = {
-            comment = "Wraps `nix flake check`.";
-            justfile = ''
-              check *ARGS: (flake "check" ARGS)
-            '';
-          };
-
-          repl = {
-            comment = "Wraps `nix repl .`";
-            justfile = ''
-              repl *ARGS: (add "-A") (nix "repl" "--file" "$FLAKE_ROOT")
-            '';
-          };
-        };
-      };
   };
 }

@@ -39,10 +39,10 @@
               '';
             };
 
-            switch = {
-              comment = "Recreate the lockfile and run `nixos-rebuild switch` to switch the system derivation.";
+            _apply_system = {
               justfile = ''
-                switch *ARGS: (nix "flake" "lock") (nixos-rebuild "switch" ARGS)
+                [private]
+                _apply_system *ARGS=("--specialisation" "$HOSTNAME"): (nixos-rebuild "switch" ARGS)
               '';
             };
           })
@@ -65,10 +65,10 @@
               '';
             };
 
-            switch = {
-              comment = "Recreate the lockfile and run `darwin-rebuild switch` to switch the system derivation.";
+            _apply_system = {
               justfile = ''
-                switch *ARGS: (nix "flake" "lock") (darwin-rebuild "switch" ARGS)
+                [private]
+                _apply_system *ARGS: (darwin-rebuild "switch" ARGS)
               '';
             };
           })
@@ -93,18 +93,31 @@
               '';
             };
 
-            upgrade = {
-              comment = "Update the flake and reload the system derivation.";
+            apply-system = {
+              comment = "Wraps `[darwin-rebuild | nixos-rebuild] switch`.";
               justfile = ''
-                upgrade *ARGS: && (switch ARGS)
-                  -exec just nix flake update
+                apply-system *ARGS: (lock) (_apply_system ARGS)
               '';
             };
 
-            rollback = {
-              comment = "Rollback the system derivation.";
+            upgrade-system = {
+              comment = "Update the flake and then run `apply-system`.";
               justfile = ''
-                rollback *ARGS: (switch "--rollback" ARGS)
+                upgrade-system *ARGS: (update) (_apply_system ARGS)
+              '';
+            };
+
+            rollback-system = {
+              comment = "Thin wrapper around `switch --rollback`.";
+              justfile = ''
+                rollback-system *ARGS: (apply-system "--rollback" ARGS)
+              '';
+            };
+
+            apply-home = {
+              comment = "Wraps `home-manager switch`.";
+              justfile = ''
+                apply-home *ARGS: (lock) (home-manager "switch" ARGS)
               '';
             };
           };

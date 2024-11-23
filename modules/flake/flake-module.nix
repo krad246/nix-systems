@@ -2,6 +2,7 @@
 {
   importApply,
   self,
+  lib,
   inputs,
   ...
 }: let
@@ -33,7 +34,35 @@ in {
       packages = packages.flakeModule;
     };
 
-    modules.flake = flakeModules;
+    modules = {
+      flake = flakeModules;
+
+      # ez-configs does the heavy lifting of figuring these out for us
+
+      nixos = self.nixosModules;
+      darwin = self.darwinModules;
+      home = self.homeModules;
+
+      # we follow the same methodology to pull in generic, use-anywhere modules below...
+
+      generic = let
+        # get all nix files in generic
+        filterNix = path: lib.fileset.fileFilter (file: file.hasExt "nix") path;
+        hits = filterNix ../generic;
+
+        # for each file, make a key-value pair where the key is the basename of the file
+        # and the value is a trivial attrset / module file that needs to be exported as a callable
+        toModule = path: let
+          moduleName = lib.strings.removeSuffix ".nix" (builtins.baseNameOf path);
+          body = import path;
+        in
+          lib.attrsets.nameValuePair moduleName body;
+
+        importList = builtins.map toModule (lib.fileset.toList hits);
+        modules = builtins.listToAttrs importList;
+      in
+        modules;
+    };
   };
 
   perSystem = {pkgs, ...}: {
