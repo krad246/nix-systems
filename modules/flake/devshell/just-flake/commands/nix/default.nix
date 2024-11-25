@@ -1,10 +1,12 @@
-{mkJustRecipeGroup, ...}: {
+{
+  mkJustRecipeGroup,
+  self,
+  ...
+}: {
   perSystem = {pkgs, ...}: {
     # set up devshell commands
     just-flake.features = let
       inherit (pkgs) lib;
-
-      inputArg = lib.strings.concatStringsSep " " ["--option" "inputs-from" "$FLAKE_ROOT"];
     in
       # Helper command aliases
       mkJustRecipeGroup {
@@ -19,7 +21,7 @@
               nix VERB *ARGS: (add)
                 ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
                   --option experimental-features 'nix-command flakes' \
-                  ${inputArg} \
+                  --option inputs-from ${self} \
                   --option accept-flake-config true \
                   --option builders-use-substitutes true \
                   --option keep-going true \

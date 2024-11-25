@@ -41,7 +41,7 @@
   justfile-dev = importApply ./commands/dev.nix {inherit mkJustRecipeGroup self;};
   justfile-git = importApply ./commands/git.nix {inherit mkJustRecipeGroup;};
   justfile-misc = importApply ./commands/misc.nix {inherit mkJustRecipeGroup;};
-  justfile-nix = importApply ./commands/nix {inherit mkJustRecipeGroup;};
+  justfile-nix = importApply ./commands/nix {inherit mkJustRecipeGroup self;};
   justfile-system = importApply ./commands/system.nix {inherit mkJustRecipeGroup self;};
 in {
   imports = [inputs.just-flake.flakeModule] ++ [justfile-dev justfile-git justfile-misc justfile-system justfile-nix];
