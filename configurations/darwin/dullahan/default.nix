@@ -1,3 +1,3 @@
 {
-  imports = [./dullahan.nix];
+  imports = [./dullahan.nix ./remotes.nix];
 }

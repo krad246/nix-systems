@@ -48,35 +48,9 @@
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 
-  environment.etc = {
-    # add SSH access for remote building
-
-    "ssh/ssh_config.d/101-fortress.conf".text = ''
-      Host fortress
-        HostName fortress.local
-        User krad246
-
-        IdentitiesOnly yes
-        IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
-        StrictHostKeyChecking no
-    '';
-  };
-
   # add a remote builder!
   nix = {
     distributedBuilds = true;
-    buildMachines = [
-      {
-        hostName = "fortress";
-        systems = ["x86_64-linux"];
-        protocol = "ssh-ng";
-        maxJobs = 64;
-        speedFactor = 3;
-        sshUser = "krad246";
-        sshKey = config.age.secrets."id_ed25519_priv.age".path;
-      }
-    ];
-
     linux-builder.maxJobs = 20;
   };
 }

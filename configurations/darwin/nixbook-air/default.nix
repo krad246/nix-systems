@@ -1,3 +1,7 @@
 {
-  imports = [./brew-casks.nix ./nixbook-air.nix ./remotes.nix];
+  imports = [
+    ./brew-casks.nix
+    ./nixbook-air.nix
+    ./remotes.nix
+  ];
 }
