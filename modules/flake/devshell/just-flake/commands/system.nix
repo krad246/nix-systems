@@ -1,5 +1,9 @@
 # outer / 'flake' scope
-{mkJustRecipeGroup, ...}: {
+{
+  mkJustRecipeGroup,
+  self,
+  ...
+}: {
   perSystem = {
     inputs',
     pkgs,
@@ -8,7 +12,6 @@
     # set up devshell commands
     just-flake.features = let
       inherit (pkgs) lib;
-      inputArg = lib.strings.concatStringsSep " " ["--option" "inputs-from" "$FLAKE_ROOT"];
     in
       mkJustRecipeGroup {
         inherit lib;
@@ -28,7 +31,7 @@
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe pkgs.nixos-rebuild} \
                     --option experimental-features 'nix-command flakes' \
-                    ${inputArg} \
+                    --option inputs-from ${self} \
                     --option accept-flake-config true \
                     --option builders-use-substitutes true \
                     --option keep-going true \
@@ -56,7 +59,7 @@
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} \
                     --option experimental-features 'nix-command flakes' \
-                    ${inputArg} \
+                    --option inputs-from ${self} \
                     --option accept-flake-config true \
                     --option keep-going true \
                     --option preallocate-contents true \
@@ -83,7 +86,7 @@
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe pkgs.home-manager} \
                     --option experimental-features 'nix-command flakes' \
-                    ${inputArg} \
+                    --option inputs-from ${self} \
                     --option accept-flake-config true \
                     --option keep-going true \
                     --option preallocate-contents true \
