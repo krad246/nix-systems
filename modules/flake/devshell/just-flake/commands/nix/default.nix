@@ -109,7 +109,7 @@
             comment = "Wraps `nix flake update`.";
             justfile = ''
               update *ARGS:
-                -exec just nix flake update {{ ARGS }}
+                -exec {{ just_executable() }} nix flake update {{ ARGS }}
             '';
           };
         };
