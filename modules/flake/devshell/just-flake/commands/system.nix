@@ -45,7 +45,8 @@
             _apply_system = {
               justfile = ''
                 [private]
-                _apply_system *ARGS=("--specialisation $HOSTNAME"): (nixos-rebuild "switch" ARGS)
+                _apply_system *ARGS: (nixos-rebuild "switch" ARGS)
+                  -exec {{ just_executable() }} nixos-rebuild switch --specialisation "$HOSTNAME" {{ ARGS }}
               '';
             };
           })
