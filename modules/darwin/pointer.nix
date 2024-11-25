@@ -1,5 +1,7 @@
 {
   system.defaults = {
+    ".GlobalPreferences"."com.apple.mouse.scaling" = -1.0;
+
     trackpad = {
       TrackpadRightClick = true;
     };

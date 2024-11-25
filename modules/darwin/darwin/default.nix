@@ -1,7 +1,9 @@
 {
   self,
   inputs,
+  config,
   lib,
+  pkgs,
   ...
 }: {
   imports =
@@ -13,14 +15,13 @@
       unfree
     ])
     ++ (with self.darwinModules; [homebrew linux-builder mac-app-util])
-    ++ [
-      ./plist-settings.nix
-      ./system-packages.nix
-    ]
     ++ (with inputs; [
       home-manager.darwinModules.home-manager
       agenix.darwinModules.age
-    ]);
+    ])
+    ++ [
+      ./settings
+    ];
 
   nix.settings = {
     auto-optimise-store = false;
@@ -30,4 +31,15 @@
   nix.useDaemon = lib.mkForce true;
   services.nix-daemon.enable = lib.mkForce true;
   system.stateVersion = 4;
+
+  homebrew = {
+    brews = ["bash" "zsh"];
+  };
+
+  environment = {
+    shells = let
+      brewRoot = "${config.homebrew.brewPrefix}";
+    in ["${brewRoot}/bash" "${brewRoot}/zsh"];
+    systemPackages = with pkgs; ([m-cli] ++ [coreutils just tldr safe-rm] ++ [dust]);
+  };
 }

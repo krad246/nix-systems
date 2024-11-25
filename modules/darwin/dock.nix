@@ -3,7 +3,20 @@
     dock = {
       appswitcher-all-displays = true;
       autohide = false;
+      dashboard-in-overlay = true;
+
+      minimize-to-application = true;
+
+      mouse-over-hilite-stack = true;
+
+      persistent-apps = [];
+      persistent-others = [];
+
+      scroll-to-open = true;
+      show-process-indicators = true;
       show-recents = true;
+      showhidden = false;
+      static-only = false;
       tilesize = 64;
 
       # Disable all hot corners

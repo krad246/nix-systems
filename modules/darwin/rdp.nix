@@ -1,0 +1,5 @@
+{
+  homebrew = {
+    casks = ["windows-app"];
+  };
+}
