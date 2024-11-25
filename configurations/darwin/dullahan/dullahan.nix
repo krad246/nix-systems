@@ -3,19 +3,21 @@
   config,
   ...
 }: {
-  imports = with self.darwinModules; [
-    darwin
-    dock
-    finder
-    pointer
-    single-user
-    ui-ux
-  ];
-
-  # add nix to sshd path so nix store is pingable
-  environment.etc."ssh/sshd_config.d/102-sshd-nix-env-on-path".text = ''
-    SetEnv PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-  '';
+  imports = with self.darwinModules;
+    [
+      arc
+      bluesnooze
+      sshd
+      wake-on-lan
+    ]
+    ++ [
+      darwin
+      dock
+      finder
+      pointer
+      single-user
+      ui-ux
+    ];
 
   users = {
     users = {
@@ -41,10 +43,6 @@
   };
 
   nix-homebrew.user = "krad246";
-  homebrew = {
-    brews = ["wakeonlan"];
-    casks = ["arc"] ++ ["bluesnooze"] ++ ["docker"] ++ ["windows-app"] ++ ["wireshark"];
-  };
 
   nixpkgs.hostPlatform = "aarch64-darwin";
 
