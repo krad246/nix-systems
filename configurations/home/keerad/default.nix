@@ -1,20 +1,19 @@
 {
-  pkgs,
-  lib,
-  ezModules,
-  config,
+  self,
   osConfig,
+  config,
+  lib,
+  pkgs,
   ...
 }: {
-  imports = with ezModules;
-    [
-      shellenv
-    ]
-    ++ (lib.optionals (lib.attrsets.attrByPath ["wsl" "enable"] false osConfig) [vscode-server]);
+  imports =
+    [self.homeModules.shellenv]
+    ++ [
+      ./specialisations/linux
+    ];
 
   home = {
     username = osConfig.users.users.keerad.name or "keerad";
-    stateVersion = lib.trivial.release;
     homeDirectory =
       osConfig.users.users.keerad.home
       or (
@@ -22,7 +21,8 @@
         then "/Users/keerad"
         else "/home/keerad"
       );
-    packages = with pkgs; [nodejs jq];
+
+    stateVersion = lib.trivial.release;
   };
 
   nix.settings = {
