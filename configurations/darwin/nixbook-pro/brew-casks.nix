@@ -1,10 +1,8 @@
 {self, ...}: {
-  imports = with self.darwinModules; [groupme magnet];
+  imports = with self.darwinModules; [arc bluesnooze groupme magnet rdp];
   homebrew = {
     casks =
-      ["arc"]
-      ++ ["bluesnooze"]
-      ++ ["launchcontrol"]
+      ["launchcontrol"]
       ++ ["signal"]
       ++ ["spotify"]
       ++ [
@@ -14,7 +12,6 @@
         "vagrant-vmware-utility"
         "virtualbox"
         "vmware-fusion"
-        "windows-app"
       ]
       ++ ["zoom"];
   };
