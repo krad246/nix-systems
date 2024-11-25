@@ -9,7 +9,12 @@
 
       mouse-over-hilite-stack = true;
 
-      persistent-apps = [];
+      persistent-apps = [
+        /Applications/Arc.app
+        /System/Applications/Utilities/Terminal.app
+        "/System/Applications/iPhone Mirroring.app"
+      ];
+
       persistent-others = [];
 
       scroll-to-open = true;

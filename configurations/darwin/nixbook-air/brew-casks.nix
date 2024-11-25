@@ -1,13 +1,10 @@
-{
+{self, ...}: {
+  imports = with self.darwinModules; [arc bluesnooze rdp];
   nix-homebrew.user = "krad246";
   homebrew = {
     casks =
-      ["arc"]
-      ++ ["bluesnooze"]
-      ++ ["launchcontrol"]
+      ["launchcontrol"]
       ++ ["signal"]
-      ++ ["spotify"]
-      ++ ["virtualbox"]
-      ++ ["windows-app"];
+      ++ ["spotify"];
   };
 }
