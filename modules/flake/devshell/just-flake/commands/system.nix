@@ -42,7 +42,7 @@
             _apply_system = {
               justfile = ''
                 [private]
-                _apply_system *ARGS=("--specialisation" "$HOSTNAME"): (nixos-rebuild "switch" ARGS)
+                _apply_system *ARGS=("--specialisation $HOSTNAME"): (nixos-rebuild "switch" ARGS)
               '';
             };
           })
