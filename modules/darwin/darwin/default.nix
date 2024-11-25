@@ -12,10 +12,8 @@
       nix-core
       unfree
     ])
+    ++ (with self.darwinModules; [homebrew linux-builder mac-app-util])
     ++ [
-      ./homebrew.nix
-      ./linux-builder.nix
-      ./mac-app-util.nix
       ./plist-settings.nix
       ./system-packages.nix
     ]
