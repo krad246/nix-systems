@@ -1,11 +1,15 @@
-{config, ...}: {
-  imports = [
-    ./auto-update.nix
-    ./dark-mode.nix
-    ./keyboard.nix
-    ./menubar.nix
-    ./touch-id.nix
-    ./window-manager.nix
+{
+  self,
+  config,
+  ...
+}: {
+  imports = with self.darwinModules; [
+    auto-update
+    dark-mode
+    keyboard
+    menubar
+    touch-id
+    window-manager
   ];
 
   system.defaults = {
