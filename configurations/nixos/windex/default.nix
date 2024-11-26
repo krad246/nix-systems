@@ -12,7 +12,8 @@ in {
     ++ (with self.nixosModules; [
       nixos
       wsl
-    ]);
+    ])
+    ++ [./specialisations];
 
   # NixOS is going to get the first user ID
   # It'll own this distro as the default user

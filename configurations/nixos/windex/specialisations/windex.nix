@@ -1,0 +1,7 @@
+_: {
+  specialisation = {
+    windex = {
+      configuration = {};
+    };
+  };
+}
