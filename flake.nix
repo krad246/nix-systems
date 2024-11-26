@@ -19,7 +19,8 @@
     # system specific channels
     nixos-2405.url = "github:NixOS/nixpkgs/nixos-24.05";
     nixpkgs-2405-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
-    nixos-2411-small.url = "github:NixOS/nixpkgs/nixos-24.11-small";
+    nixos-2411.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs-2411-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.11-darwin";
 
     # generic rolling release branches
     # they're always tracking the latest release
@@ -28,22 +29,22 @@
 
     # stable nixos points at 24.05
     # generic stable nixpkgs also points to it but can move ahead if desired
-    nixos-stable = {url = "github:NixOS/nixpkgs/nixos-24.05";};
+    nixos-stable = {url = "github:NixOS/nixpkgs/nixos-24.11";};
 
     # specifically use stable NixOS for WSL, but otherwise flexible
-    nixpkgs-wsl = {url = "github:NixOS/nixpkgs/nixos-24.05";};
+    nixpkgs-wsl = {url = "github:NixOS/nixpkgs/nixos-24.11";};
 
     # nixpkgs for home has to be in the same release 'family'
     # as the system channels
-    nixpkgs-nixos = {url = "github:NixOS/nixpkgs/nixos-24.05";};
-    nixpkgs-darwin = {url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";};
-    nixpkgs-home = {url = "github:NixOS/nixpkgs/nixos-24.05";};
+    nixpkgs-nixos = {url = "github:NixOS/nixpkgs/nixos-24.11";};
+    nixpkgs-darwin = {url = "github:NixOS/nixpkgs/nixpkgs-24.11-darwin";};
+    nixpkgs-home = {url = "github:NixOS/nixpkgs/nixos-24.11";};
 
     # the flake input 'nixpkgs' is the channel we are using in our flake for the evaluation, as
     # we've overridden the nixpkgs inputs to all of our output derivations.
     # thus nixpkgs is approximately the same thing as nixpkgs-lib for our purpose.
-    nixpkgs = {url = "github:NixOS/nixpkgs/nixos-24.05";};
-    nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-24.05";};
+    nixpkgs = {url = "github:NixOS/nixpkgs/nixos-24.11";};
+    nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-24.11";};
 
     # Legacy and flake compatibility shims.
     flake-compat = {
@@ -109,7 +110,7 @@
 
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs-home";
     };
 
