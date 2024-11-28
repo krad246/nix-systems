@@ -42,7 +42,7 @@ in {
           no-underscore = true;
         };
         dos2unix.enable = false;
-        just.enable = true;
+        just.enable = false;
         keep-sorted.enable = true;
         shellcheck.enable = true;
         shfmt.enable = true;
@@ -65,7 +65,7 @@ in {
       };
       deadnix.enable = true;
       detect-private-keys.enable = true;
-      end-of-file-fixer.enable = true;
+      end-of-file-fixer.enable = false;
       flake-checker.enable = false;
       markdownlint.enable = false;
       mdl.enable = false;
@@ -80,7 +80,7 @@ in {
         enable = true;
         settings = {fail-on-change = true;};
       };
-      trim-trailing-whitespace.enable = true;
+      trim-trailing-whitespace.enable = false;
       trufflehog.enable = false;
     };
 

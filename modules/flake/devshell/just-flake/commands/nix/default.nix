@@ -18,7 +18,7 @@
             comment = "Wraps `nix`. Pass arguments as normal.";
             justfile = ''
               [unix]
-              nix VERB *ARGS: (add)
+              nix VERB *ARGS:
                 ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
                   --option experimental-features 'nix-command flakes' \
                   --option inputs-from ${self} \
@@ -101,7 +101,7 @@
           lock = {
             comment = "Wraps `nix flake lock`.";
             justfile = ''
-              lock *ARGS: (nix "flake" "lock" ARGS)
+              lock *ARGS: (add "-A") (nix "flake" "lock" ARGS)
             '';
           };
 

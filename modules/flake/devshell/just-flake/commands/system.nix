@@ -27,7 +27,7 @@
               comment = "Wraps `nixos-rebuild`.";
               justfile = ''
                 [linux]
-                @nixos-rebuild *ARGS: (add)
+                @nixos-rebuild *ARGS:
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe pkgs.nixos-rebuild} \
                     --option experimental-features 'nix-command flakes' \
@@ -56,7 +56,7 @@
               comment = "Wraps `darwin-rebuild`.";
               justfile = ''
                 [macos]
-                @darwin-rebuild *ARGS: (add)
+                @darwin-rebuild *ARGS:
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} \
                     --option experimental-features 'nix-command flakes' \
@@ -83,7 +83,7 @@
 
               justfile = ''
                 [unix]
-                @home-manager *ARGS: (add)
+                @home-manager *ARGS:
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe pkgs.home-manager} \
                     --option experimental-features 'nix-command flakes' \

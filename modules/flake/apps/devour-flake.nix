@@ -10,9 +10,6 @@
 
     text = ''
       set -x
-      ${lib.getExe pkgs.nixVersions.stable} \
-        --option experimental-features 'nix-command flakes' \
-        flake lock --no-update-lock-file "${self}" && \
       ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" \
         --option preallocate-contents true \
         --option inputs-from "${self}" \
