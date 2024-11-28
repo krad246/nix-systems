@@ -1,0 +1,3 @@
+_: {
+  disko.enableConfig = false;
+}

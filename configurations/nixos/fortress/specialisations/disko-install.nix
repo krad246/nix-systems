@@ -6,8 +6,7 @@
   pkgs,
   ...
 }: let
-  inherit (config.networking) hostName;
-  machine = self.nixosConfigurations."${hostName}";
+  machine = self.nixosConfigurations.fortress;
   inherit (machine.config.system) build;
 
   dependencies =
