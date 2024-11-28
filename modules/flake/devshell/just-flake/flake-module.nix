@@ -13,11 +13,12 @@
   mkJustRecipe = {
     lib,
     justfile,
+    enable ? true,
     comment ? null,
     group ? null,
     ...
   }: {
-    enable = true;
+    inherit enable;
 
     # format the comment and group above the justfile so that
     # the writer of the justfile can put more modifiers on the recipe they define

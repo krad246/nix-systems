@@ -17,6 +17,7 @@
         group = "dev";
         recipes = {
           container = {
+            enable = false;
             comment = "Container commands. Syntax: `just container ARGS`";
             justfile = ''
               container *ARGS:
@@ -27,14 +28,14 @@
           devour-flake = {
             comment = "Build all outputs in the repository.";
             justfile = ''
-              devour-flake *ARGS: (run "${self}#devour-flake -- " ARGS)
+              devour-flake *ARGS: (lock) (run "${self}#devour-flake -- " ARGS)
             '';
           };
 
           fmt = {
             comment = "Format the repository.";
             justfile = ''
-              fmt: (add "-A")
+              fmt: (lock)
                 treefmt
             '';
           };
