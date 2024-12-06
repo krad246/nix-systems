@@ -1,6 +1,9 @@
 #!/usr/bin/env just --justfile
 
 flake := env_var_or_default('FLAKE_ROOT', justfile_directory())
+hostname := env_var_or_default('HOSTNAME', shell('hostname'))
+tmpdir := shell('mktemp -d')
+whoami := shell('whoami')
 
 # List all of the recipes and groups.
 [group('summary')]
