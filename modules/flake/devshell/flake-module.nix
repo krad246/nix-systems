@@ -5,7 +5,7 @@
   inputs,
   ...
 }: let
-  justfile = import ./just-flake {inherit importApply self inputs;};
+  justfile = import ./just-flake {inherit importApply inputs self;};
 in {
   imports =
     (with inputs; [

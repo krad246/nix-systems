@@ -7,6 +7,6 @@
 
   ezConfigs = {
     root = self;
-    globalArgs = {inherit self inputs;};
+    globalArgs = {inherit inputs self;};
   };
 }

@@ -1,25 +1,9 @@
 {
-  self,
-  inputs,
-  pkgs,
+  lib,
+  self',
   ...
-}: let
-  inherit (pkgs) lib;
-  runner = pkgs.writeShellApplication {
-    name = "devour-flake";
-
-    text = ''
-      set -x
-      ${lib.meta.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" \
-        --option preallocate-contents true \
-        --option inputs-from "${self}" \
-        --option keep-going true \
-        --option show-trace true \
-      "$@"
-    '';
-  };
-in {
+}: {
   type = "app";
-  program = lib.meta.getExe runner;
+  program = lib.meta.getExe self'.packages.devour-flake;
   meta.description = "Build all flake outputs in parallel.";
 }

@@ -1,18 +1,18 @@
 # outer / 'flake' scope
 {
   importApply,
+  inputs,
   self,
   lib,
-  inputs,
   ...
 }: let
   # standard outputs
-  apps = import ./apps {inherit importApply self inputs;};
-  devShells = import ./devshell {inherit importApply self inputs;};
-  packages = import ./packages {inherit importApply self;};
+  apps = import ./apps {inherit importApply inputs self lib;};
+  devShells = import ./devshell {inherit importApply inputs self;};
+  packages = import ./packages {inherit importApply inputs self lib;};
 
   # Module that streamlines tying together system and home configurations.
-  ez-configs = import ./ez-configs {inherit importApply self inputs;};
+  ez-configs = import ./ez-configs {inherit importApply inputs self;};
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory

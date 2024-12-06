@@ -19,7 +19,18 @@
         group = "system";
 
         recipes = let
-          flakeArg = lib.strings.concatStringsSep " " ["--flake" "$FLAKE_ROOT"];
+          args = lib.cli.toGNUCommandLine {} {
+            option = [
+              "inputs-from ${self}"
+              "experimental-features 'nix-command flakes'"
+              "keep-going true"
+              "show-trace true"
+              "accept-flake-config true"
+              "builders-use-substitutes true"
+              "preallocate-contents true"
+            ];
+            flake = "$FLAKE_ROOT";
+          };
         in
           (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
             # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
@@ -30,13 +41,7 @@
                 @nixos-rebuild *ARGS:
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe pkgs.nixos-rebuild} \
-                    --option experimental-features 'nix-command flakes' \
-                    --option inputs-from ${self} \
-                    --option accept-flake-config true \
-                    --option builders-use-substitutes true \
-                    --option keep-going true \
-                    --option preallocate-contents true \
-                    ${flakeArg} \
+                    ${lib.strings.concatStringsSep " " args} \
                     --use-remote-sudo \
                     {{ ARGS }}
               '';
@@ -58,13 +63,7 @@
                 [macos]
                 @darwin-rebuild *ARGS:
                   #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} \
-                    --option experimental-features 'nix-command flakes' \
-                    --option inputs-from ${self} \
-                    --option accept-flake-config true \
-                    --option keep-going true \
-                    --option preallocate-contents true \
-                    ${flakeArg} \
+                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"}                     ${lib.strings.concatStringsSep " " args} \
                     {{ ARGS }}
               '';
             };
@@ -86,12 +85,7 @@
                 @home-manager *ARGS:
                   #!${lib.meta.getExe pkgs.bash}
                   ${lib.meta.getExe pkgs.home-manager} \
-                    --option experimental-features 'nix-command flakes' \
-                    --option inputs-from ${self} \
-                    --option accept-flake-config true \
-                    --option keep-going true \
-                    --option preallocate-contents true \
-                    ${flakeArg} \
+                    ${lib.strings.concatStringsSep " " args} \
                     -b bak \
                     {{ ARGS }}
               '';

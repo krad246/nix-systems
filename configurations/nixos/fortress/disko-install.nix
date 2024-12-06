@@ -1,4 +1,5 @@
 {
+  withSystem,
   self,
   config,
   lib,
@@ -24,10 +25,15 @@
 
   disko-install = pkgs.writeShellApplication {
     name = "disko-install";
+
     text = let
-      installer = self.packages.${pkgs.stdenv.system}.disko-install;
+      installer = withSystem pkgs.stdenv.system ({self', ...}: self'.packages.disko-install);
+      bin = lib.meta.getExe installer;
+      args = lib.cli.toGNUCommandLine {} {
+        system-config = builtins.toJSON {};
+      };
     in ''
-      ${lib.meta.getExe installer} --system-config '${builtins.toJSON {}}' "$@"
+      ${bin} ${lib.strings.concatStringsSep " " args} "$@"
     '';
   };
 in {
