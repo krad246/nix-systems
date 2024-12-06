@@ -46,7 +46,7 @@ in {
       # 2. since that is a list of lists, `flatten` that into a regular list
       # 3. filter out of the result everything that's in `inputsFrom` itself
       # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
-      mergeInputs = inputs: name: (lib.subtractLists inputs (lib.flatten (lib.catAttrs name inputs)));
+      mergeInputs = inputs: name: (lib.lists.subtractLists inputs (lib.flatten (lib.attrsets.catAttrs name inputs)));
     in
       mergeInputs inputsFrom "nativeBuildInputs";
   in {

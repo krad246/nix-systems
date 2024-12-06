@@ -12,17 +12,17 @@
 
   home = {
     shellAliases = rec {
-      cat = lib.getExe config.programs.bat.package;
-      bag = lib.getExe pkgs.bat-extras.batgrep;
-      man = lib.getExe pkgs.bat-extras.batman;
-      watch = lib.getExe (pkgs.bat-extras.batwatch.override {withEntr = true;});
+      cat = lib.meta.getExe config.programs.bat.package;
+      bag = lib.meta.getExe pkgs.bat-extras.batgrep;
+      man = lib.meta.getExe pkgs.bat-extras.batman;
+      watch = lib.meta.getExe (pkgs.bat-extras.batwatch.override {withEntr = true;});
       tail = watch;
-      diff = lib.getExe (pkgs.bat-extras.batdiff.override {withDelta = true;});
+      diff = lib.meta.getExe (pkgs.bat-extras.batdiff.override {withDelta = true;});
     };
 
     sessionVariables = {
       BATDIFF_USE_DELTA = lib.trivial.boolToString true;
-      LESSOPEN = "|${lib.getExe pkgs.bat-extras.batpipe} %s";
+      LESSOPEN = "|${lib.meta.getExe pkgs.bat-extras.batpipe} %s";
       LESS = "$LESS -R";
       BATPIPE = "color";
     };

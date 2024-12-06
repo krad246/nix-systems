@@ -12,7 +12,7 @@ in
         mode="$1"
         shift
 
-        ${lib.getExe' pkgs.disko "disko-install"} \
+        ${lib.meta.getExe' pkgs.disko "disko-install"} \
           --flake "${self}#$HOSTNAME" \
           --option inputs-from "${self}" \
           --option experimental-features 'nix-command flakes' \

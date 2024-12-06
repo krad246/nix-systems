@@ -27,7 +27,7 @@
     text = let
       installer = self.packages.${pkgs.stdenv.system}.disko-install;
     in ''
-      ${lib.getExe installer} --system-config '${builtins.toJSON {}}' "$@"
+      ${lib.meta.getExe installer} --system-config '${builtins.toJSON {}}' "$@"
     '';
   };
 in {

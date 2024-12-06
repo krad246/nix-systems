@@ -10,7 +10,7 @@
 
     text = ''
       set -x
-      ${lib.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" \
+      ${lib.meta.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" \
         --option preallocate-contents true \
         --option inputs-from "${self}" \
         --option keep-going true \
@@ -20,6 +20,6 @@
   };
 in {
   type = "app";
-  program = lib.getExe runner;
+  program = lib.meta.getExe runner;
   meta.description = "Build all flake outputs in parallel.";
 }

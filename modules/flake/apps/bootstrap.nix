@@ -11,6 +11,6 @@
   };
 in {
   type = "app";
-  program = pkgs.lib.getExe runner;
+  program = pkgs.lib.meta.getExe runner;
   meta.description = "Run the devShell bootstrap script.";
 }

@@ -17,7 +17,7 @@
           "Illegal platform for this module!"
       );
   exec = ''
-    ${lib.getExe pkgs.gh} auth login -p ssh --with-token ${redirect} ${config.age.secrets.gh.path}
+    ${lib.meta.getExe pkgs.gh} auth login -p ssh --with-token ${redirect} ${config.age.secrets.gh.path}
   '';
 in {
   systemd.user.services."${name}" = lib.modules.mkIf (pkgs.stdenv.isLinux && (config.age.secrets ? gh)) {
@@ -29,7 +29,7 @@ in {
       WantedBy = ["default.target"];
     };
     Service = {
-      ExecStart = "${lib.getExe pkgs.bash} -c '${exec}'";
+      ExecStart = "${lib.meta.getExe pkgs.bash} -c '${exec}'";
       Environment = ["XDG_RUNTIME_DIR=%t"];
       StandardOutput = "journal";
       StandardError = "journal";
@@ -39,7 +39,7 @@ in {
   launchd.agents."${name}" = lib.modules.mkIf (pkgs.stdenv.isDarwin && (config.age.secrets ? gh)) {
     enable = true;
     config = {
-      ProgramArguments = ["${lib.getExe pkgs.bash}" "-c" "${exec}"];
+      ProgramArguments = ["${lib.meta.getExe pkgs.bash}" "-c" "${exec}"];
       RunAtLoad = true;
       StandardOutPath = "${config.home.homeDirectory}/Library/Logs/${name}/stdout";
       StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/${name}/stderr";

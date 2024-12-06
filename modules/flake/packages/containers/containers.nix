@@ -32,7 +32,7 @@
         in
           mkEnv mappedCtx;
 
-        config.Env = mappedCtx.pkgs.lib.mapAttrsToList (name: value: "${name}=${value}") ({
+        config.Env = mappedCtx.pkgs.lib.attrsets.mapAttrsToList (name: value: "${name}=${value}") ({
             # Provide the Nix install certificate paths for internet access.
             SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";
             NIX_SSL_CERT_FILE = "${mappedCtx.pkgs.dockerTools.caCertificates}/etc/ssl/certs/ca-bundle.crt";

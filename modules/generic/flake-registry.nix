@@ -9,9 +9,9 @@
     # This will add each flake input as a registry
     # To make nix3 commands consistent with your flake
     registry = let
-      isFlake = _: lib.isType "flake";
-      flakes = lib.filterAttrs isFlake inputs;
-      mkRegistry = flakes: lib.mapAttrs (_key: flake: {inherit flake;}) flakes;
+      isFlake = _: lib.types.isType "flake";
+      flakes = lib.attrsets.filterAttrs isFlake inputs;
+      mkRegistry = flakes: lib.attrsets.mapAttrs (_key: flake: {inherit flake;}) flakes;
     in
       mkRegistry flakes;
 
