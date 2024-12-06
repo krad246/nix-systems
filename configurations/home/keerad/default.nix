@@ -7,9 +7,11 @@
   ...
 }: {
   imports =
-    [self.homeModules.shellenv]
+    [
+      self.homeModules.shellenv
+    ]
     ++ [
-      ./specialisations/linux
+      ./specialisations
     ];
 
   home = {
