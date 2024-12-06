@@ -1,5 +1,6 @@
 {
   importApply,
+  inputs,
   self,
   ...
 }: let
@@ -20,11 +21,10 @@ in {
 
   perSystem = {
     config,
+    lib,
     pkgs,
     ...
   }: let
-    inherit (pkgs) lib;
-
     # Core package list for the host
     targetPkgs = tpkgs:
       with tpkgs;
@@ -67,6 +67,10 @@ in {
             fi
           '';
         };
+
+        devour-flake = import ./devour-flake.nix {
+          inherit inputs self lib pkgs;
+        };
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         # containerized / bwrap-ified devshell environment
@@ -78,7 +82,7 @@ in {
         in
           result;
 
-        disko-install = import ./disko-install.nix {inherit self pkgs;};
+        disko-install = import ./disko-install.nix {inherit self lib pkgs;};
       });
   };
 }

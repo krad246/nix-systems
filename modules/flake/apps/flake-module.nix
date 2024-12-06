@@ -1,17 +1,15 @@
 # outer / 'flake' scope
-{
-  self,
-  inputs,
-  ...
-}: {
+_: {
   perSystem = {
-    inputs',
+    lib,
     pkgs,
+    inputs',
+    self',
     ...
   }: {
     apps = {
-      bootstrap = import ./bootstrap.nix {inherit inputs' pkgs;};
-      devour-flake = import ./devour-flake.nix {inherit self inputs pkgs;};
+      bootstrap = import ./bootstrap.nix {inherit pkgs inputs';};
+      devour-flake = import ./devour-flake.nix {inherit lib self';};
     };
   };
 }

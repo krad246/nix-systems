@@ -14,20 +14,24 @@
 
   mkScript = arch:
     pkgs.writeShellApplication {
+      runtimeInputs = [pkgs.colima pkgs.docker];
       name = "colima-${arch}";
-      text = ''
+      text = let
+        args = lib.cli.toGNUCommandLine {} {
+          env = "TERM=xterm-256color";
+          inherit arch;
+          disk = vmConfig.darwin-builder.diskSize / 1024;
+          cpu = vmConfig.cores;
+          memory = vmConfig.darwin-builder.memorySize;
+          verbose = true;
+          vm-type = "vz";
+          vz-rosetta = true;
+          foreground = true;
+        };
+      in ''
         if ! colima status -p ${arch}; then
           if ! colima restart -p ${arch}; then
-            colima start -p ${arch} \
-              --env TERM=xterm-256color \
-              --arch ${arch} \
-              --disk ${builtins.toString (vmConfig.darwin-builder.diskSize / 1024)} \
-              --cpu ${builtins.toString vmConfig.cores} \
-              --memory ${builtins.toString (vmConfig.darwin-builder.memorySize / 1024)} \
-              --verbose \
-              --vm-type vz \
-              --vz-rosetta \
-              --foreground
+            colima start -p ${arch} ${lib.strings.concatStringsSep " " args}
           fi
         fi
       '';

@@ -14,18 +14,25 @@
         group = "nix";
 
         recipes = {
-          nix = {
+          nix = let
+            args = lib.cli.toGNUCommandLine {} {
+              option = [
+                "inputs-from ${self}"
+                "experimental-features 'nix-command flakes'"
+                "keep-going true"
+                "show-trace true"
+                "accept-flake-config true"
+                "builders-use-substitutes true"
+                "preallocate-contents true"
+              ];
+            };
+          in {
             comment = "Wraps `nix`. Pass arguments as normal.";
             justfile = ''
               [unix]
-              nix VERB *ARGS:
-                ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
-                  --option experimental-features 'nix-command flakes' \
-                  --option inputs-from ${self} \
-                  --option accept-flake-config true \
-                  --option builders-use-substitutes true \
-                  --option keep-going true \
-                  --option preallocate-contents true \
+              nix *ARGS:
+                ${lib.meta.getExe pkgs.nixVersions.stable} \
+                  ${lib.strings.concatStringsSep " " args} \
                   {{ ARGS }}
             '';
           };

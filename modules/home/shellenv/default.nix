@@ -29,7 +29,13 @@
     preferXdgDirectories = true;
 
     shellAliases = rec {
-      l = "${lib.meta.getExe pkgs.lsd} --hyperlink auto --group-dirs first --icon-theme unicode";
+      l = let
+        args = lib.cli.toGNUCommandLine {} {
+          hyperlink = "auto";
+          group-dirs = "first";
+          icon-theme = "unicode";
+        };
+      in "${lib.meta.getExe pkgs.lsd} ${lib.strings.concatStringsSep " " args}";
 
       ls = l;
       ll = "${ls} -gl";
