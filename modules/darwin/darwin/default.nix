@@ -28,8 +28,8 @@
     sandbox = false;
   };
 
-  nix.useDaemon = lib.mkForce true;
-  services.nix-daemon.enable = lib.mkForce true;
+  nix.useDaemon = lib.modules.mkForce true;
+  services.nix-daemon.enable = lib.modules.mkForce true;
   system.stateVersion = 4;
 
   homebrew = {

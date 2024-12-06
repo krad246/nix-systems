@@ -21,7 +21,7 @@ in {
 
   # Shared home with Windows; handled via overlayFS mount
   users.users.keerad = {
-    uid = lib.mkForce 1001;
+    uid = lib.modules.mkForce 1001;
     isNormalUser = true;
     home = "/home/keerad";
     description = "Keerthi Radhakrishnan";
@@ -40,7 +40,7 @@ in {
 
   nixpkgs.hostPlatform = lib.modules.mkDefault "x86_64-linux";
 
-  formats = lib.mkForce {
+  formats = lib.modules.mkForce {
     tarball = config.system.build.tarballBuilder;
   };
 
