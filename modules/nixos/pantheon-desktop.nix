@@ -54,12 +54,12 @@
     };
   };
 
-  sound.enable = lib.mkDefault true;
+  sound.enable = lib.modules.mkDefault true;
   security.rtkit.enable = true;
   services = {
     system76-scheduler.enable = true;
     pipewire = {
-      enable = lib.mkDefault true;
+      enable = lib.modules.mkDefault true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;
