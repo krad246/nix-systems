@@ -1,6 +1,10 @@
 {self, ...}: {
-  imports = with self.darwinModules; [arc bluesnooze rdp];
-  nix-homebrew.user = "krad246";
+  imports = with self.darwinModules; [
+    arc
+    bluesnooze
+    rdp
+  ];
+
   homebrew = {
     casks =
       ["launchcontrol"]
