@@ -19,8 +19,8 @@
         inherit image;
 
         loader = specific;
-        devcontainer = hostCtx.pkgs.lib.getExe hostCtx.pkgs.devcontainer;
-        docker = hostCtx.pkgs.lib.getExe hostCtx.pkgs.docker;
+        devcontainer = hostCtx.pkgs.lib.meta.getExe hostCtx.pkgs.devcontainer;
+        docker = hostCtx.pkgs.lib.meta.getExe hostCtx.pkgs.docker;
 
         # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
         template = hostCtx.pkgs.substituteAll {

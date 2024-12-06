@@ -21,7 +21,7 @@
             comment = "Container commands. Syntax: `just container ARGS`";
             justfile = ''
               container *ARGS:
-                ${lib.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ prepend("container-", ARGS) }}
+                ${lib.meta.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ prepend("container-", ARGS) }}
             '';
           };
 

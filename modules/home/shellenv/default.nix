@@ -29,7 +29,7 @@
     preferXdgDirectories = true;
 
     shellAliases = rec {
-      l = "${lib.getExe pkgs.lsd} --hyperlink auto --group-dirs first --icon-theme unicode";
+      l = "${lib.meta.getExe pkgs.lsd} --hyperlink auto --group-dirs first --icon-theme unicode";
 
       ls = l;
       ll = "${ls} -gl";
@@ -37,12 +37,12 @@
       lal = la;
 
       reload = ''
-        exec ${lib.getExe pkgs.bashInteractive} \
-          --rcfile <(${lib.getExe' pkgs.coreutils "echo"} \
+        exec ${lib.meta.getExe pkgs.bashInteractive} \
+          --rcfile <(${lib.meta.getExe' pkgs.coreutils "echo"} \
               'source ${config.home.homeDirectory}/.bashrc; \
-              ${lib.getExe pkgs.direnv} reload')
+              ${lib.meta.getExe pkgs.direnv} reload')
       '';
-      tldr = "${lib.getExe pkgs.tldr}";
+      tldr = "${lib.meta.getExe pkgs.tldr}";
     };
   };
 

@@ -13,12 +13,12 @@ in {
     packages = [nixvim] ++ (with pkgs; [nil nixd nixpkgs-fmt]);
 
     shellAliases = {
-      vi = lib.getExe nixvim;
-      vim = lib.getExe nixvim;
-      vimdiff = "${lib.getExe nixvim} -d";
+      vi = lib.meta.getExe nixvim;
+      vim = lib.meta.getExe nixvim;
+      vimdiff = "${lib.meta.getExe nixvim} -d";
     };
     sessionVariables = {
-      EDITOR = lib.getExe nixvim;
+      EDITOR = lib.meta.getExe nixvim;
     };
   };
 }

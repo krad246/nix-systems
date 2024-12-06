@@ -10,6 +10,6 @@
   };
 
   home.shellAliases = {
-    ripgrep = lib.getExe config.programs.ripgrep.package;
+    ripgrep = lib.meta.getExe config.programs.ripgrep.package;
   };
 }
