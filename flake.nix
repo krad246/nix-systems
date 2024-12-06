@@ -203,9 +203,7 @@
     flake-parts,
     ...
   }: let
-    lib =
-      inputs.nixpkgs.lib.extend
-      (_final: _prev: (import ./lib));
+    inherit (inputs.nixpkgs) lib;
   in
     flake-parts.lib.mkFlake
     # Environment
