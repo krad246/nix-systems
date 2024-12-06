@@ -1,6 +1,6 @@
 {
-  self,
   inputs,
+  self,
   osConfig,
   pkgs,
   ...
@@ -8,8 +8,7 @@
   inherit (inputs) mac-app-util;
 in {
   imports = with self.homeModules;
-    ([colima] ++ [discord kitty vscode])
-    ++ [self.modules.generic.agenix-home]
+    ([agenix] ++ [colima] ++ [discord kitty vscode])
     ++ [mac-app-util.homeManagerModules.default];
 
   home = {
