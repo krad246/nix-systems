@@ -6,9 +6,15 @@
   imports = with self.darwinModules; [
     auto-update
     dark-mode
+    dock
+    finder
+    firewall
     keyboard
     menubar
+    pointer
+    single-user
     touch-id
+    ui-ux
     window-manager
   ];
 
