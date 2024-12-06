@@ -1,3 +1,3 @@
-{ezModules, ...}: {
-  imports = with ezModules; [shellenv];
+{self, ...}: {
+  imports = with self.homeModules; [shellenv];
 }

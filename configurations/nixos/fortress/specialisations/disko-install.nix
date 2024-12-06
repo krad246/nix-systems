@@ -4,10 +4,12 @@
   config,
   lib,
   pkgs,
+  specialArgs,
   ...
 }: let
   machine = self.nixosConfigurations.fortress;
   inherit (machine.config.system) build;
+  inherit (specialArgs) krad246;
 
   dependencies =
     [
@@ -28,11 +30,10 @@
     text = let
       installer = withSystem pkgs.stdenv.system ({self', ...}: self'.packages.disko-install);
       bin = lib.meta.getExe installer;
-      args = lib.cli.toGNUCommandLine {} {
-        system-config = builtins.toJSON {};
-      };
     in ''
-      ${bin} ${lib.strings.concatStringsSep " " args} "$@"
+      ${krad246.cli.toGNUCommandLineShell bin {
+        system-config = builtins.toJSON {};
+      }}
     '';
   };
 in {

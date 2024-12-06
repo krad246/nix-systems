@@ -16,6 +16,14 @@ args @ {
         stemValuePair = key: value: lib.attrsets.nameValuePair (strings.stem key) value;
       };
 
+      cli = {
+        toGNUCommandLineShell = bin: args: let
+          formatted = lib.cli.toGNUCommandLine {} args;
+        in ''
+          ${bin} ${lib.strings.concatStringsSep " " formatted}
+        '';
+      };
+
       fileset = {
         filterExt = ext: dir: lib.fileset.toList (lib.fileset.fileFilter (file: file.hasExt ext) dir);
       };
