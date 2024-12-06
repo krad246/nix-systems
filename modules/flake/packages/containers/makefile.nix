@@ -36,7 +36,7 @@ in {
     pkgs,
     ...
   }: {
-    packages = lib.mkIf pkgs.stdenv.isLinux {
+    packages = lib.modules.mkIf pkgs.stdenv.isLinux {
       makefile = mkMakefile {hostCtx = args // self';};
     };
   };

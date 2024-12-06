@@ -9,7 +9,7 @@
     launchCfg,
     ...
   }: {
-    launchd.agents."${name}" = lib.mkIf pkgs.stdenv.isDarwin {
+    launchd.agents."${name}" = lib.modules.mkIf pkgs.stdenv.isDarwin {
       enable = true;
       config =
         launchCfg

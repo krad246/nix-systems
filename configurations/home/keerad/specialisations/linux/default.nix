@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: {
-  specialisation = lib.mkIf pkgs.stdenv.isLinux {
+  specialisation = lib.modules.mkIf pkgs.stdenv.isLinux {
     wsl.configuration = import ./wsl.nix;
   };
 }

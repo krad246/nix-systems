@@ -36,7 +36,7 @@
   mkLaunchUnit = arch: let
     script = lib.getExe (mkScript arch);
   in
-    lib.mkIf pkgs.stdenv.isDarwin {
+    lib.modules.mkIf pkgs.stdenv.isDarwin {
       home.packages = [pkgs.colima pkgs.docker];
 
       launchd.agents."colima-${arch}" = {

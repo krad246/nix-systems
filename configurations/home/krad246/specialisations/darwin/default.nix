@@ -3,7 +3,7 @@
   pkgs,
   ...
 }: {
-  specialisation = lib.mkIf pkgs.stdenv.isDarwin {
+  specialisation = lib.modules.mkIf pkgs.stdenv.isDarwin {
     darwin.configuration = import ./darwin.nix;
   };
 }

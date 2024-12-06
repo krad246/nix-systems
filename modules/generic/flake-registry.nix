@@ -21,7 +21,7 @@
   };
 
   # nix-darwin manually sets up the flake registry with nixpkgs for us.
-  nixpkgs.flake = lib.mkIf pkgs.stdenv.isDarwin rec {
+  nixpkgs.flake = lib.modules.mkIf pkgs.stdenv.isDarwin rec {
     setFlakeRegistry = false;
     setNixPath = setFlakeRegistry;
   };
