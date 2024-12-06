@@ -1,9 +1,4 @@
-{
-  lib,
-  pkgs,
-  ...
-}: {
-  specialisation = lib.modules.mkIf pkgs.stdenv.isLinux {
-    wsl.configuration = import ./wsl.nix;
-  };
+rec {
+  default.configuration = windex.configuration;
+  windex.configuration = import ./windex.nix;
 }
