@@ -38,7 +38,7 @@ in {
     extraGroups = ["wheel" "NetworkManager" "docker"];
   };
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  nixpkgs.hostPlatform = lib.modules.mkDefault "x86_64-linux";
 
   formats = lib.mkForce {
     tarball = config.system.build.tarballBuilder;

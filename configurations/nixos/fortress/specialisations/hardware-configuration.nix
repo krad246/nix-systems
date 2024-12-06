@@ -19,7 +19,7 @@
     kernelModules = ["kvm-amd"];
     extraModulePackages = [];
   };
-  networking.useDHCP = lib.mkDefault true;
+  networking.useDHCP = lib.modules.mkDefault true;
 
   networking.interfaces.enp10s0 = {
     useDHCP = false;
@@ -39,5 +39,5 @@
     };
   };
 
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode = lib.modules.mkDefault config.hardware.enableRedistributableFirmware;
 }

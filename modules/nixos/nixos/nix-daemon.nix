@@ -8,8 +8,8 @@
     checkConfig = true;
     gc.automatic = true;
     settings = {
-      auto-optimise-store = lib.mkDefault true;
-      sandbox = lib.mkDefault "relaxed";
+      auto-optimise-store = lib.modules.mkDefault true;
+      sandbox = lib.modules.mkDefault "relaxed";
 
       substituters = [
         "https://cache.nixos.org"
@@ -31,8 +31,8 @@
 
       experimental-features = ["nix-command" "flakes"];
 
-      keep-outputs = lib.mkDefault true;
-      keep-derivations = lib.mkDefault true;
+      keep-outputs = lib.modules.mkDefault true;
+      keep-derivations = lib.modules.mkDefault true;
     };
   };
 }

@@ -6,7 +6,7 @@
   boot = {
     tmp = {
       cleanOnBoot = true;
-      useTmpfs = lib.mkDefault true;
+      useTmpfs = lib.modules.mkDefault true;
     };
   };
 

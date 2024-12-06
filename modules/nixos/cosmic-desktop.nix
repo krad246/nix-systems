@@ -12,7 +12,7 @@ in {
   };
 
   # Enable sound with pipewire.
-  sound.enable = lib.mkDefault true;
+  sound.enable = lib.modules.mkDefault true;
   hardware.bluetooth.enable = true;
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -23,7 +23,7 @@ in {
       cosmic-greeter.enable = true;
     };
     pipewire = {
-      enable = lib.mkDefault true;
+      enable = lib.modules.mkDefault true;
       alsa.enable = true;
       alsa.support32Bit = true;
       pulse.enable = true;

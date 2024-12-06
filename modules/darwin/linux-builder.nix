@@ -58,7 +58,7 @@
         };
       };
 
-      maxJobs = lib.mkDefault 16;
+      maxJobs = lib.modules.mkDefault 16;
       protocol = "ssh-ng";
       ephemeral = true; # NOTE: seems to be mandatory for deterministic Darwin builds.
       systems = ["i386-linux" "i686-linux" "x86_64-linux" "aarch64-linux"];

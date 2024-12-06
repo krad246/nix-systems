@@ -9,7 +9,7 @@
     whitesur
   ];
 
-  services.flatpak.enable = lib.mkDefault false;
+  services.flatpak.enable = lib.modules.mkDefault false;
 
   users.users.krad246 = {
     isNormalUser = true;
@@ -27,5 +27,5 @@
   system.stateVersion = lib.trivial.release;
 
   # Default value to shut the flake checker up. Overridden using extendModules.
-  nixpkgs.system = lib.mkDefault "x86_64-linux";
+  nixpkgs.system = lib.modules.mkDefault "x86_64-linux";
 }
