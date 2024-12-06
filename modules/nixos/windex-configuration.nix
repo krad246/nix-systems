@@ -1,0 +1,1 @@
+../../configurations/nixos/windex/windex.nix

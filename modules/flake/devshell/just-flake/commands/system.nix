@@ -1,9 +1,10 @@
-# outer / 'flake' scope
 {
-  mkJustRecipeGroup,
   self,
+  specialArgs,
   ...
-}: {
+}: let
+  inherit (specialArgs) mkJustRecipeGroup;
+in {
   perSystem = {
     inputs',
     pkgs,
@@ -29,7 +30,7 @@
               "builders-use-substitutes true"
               "preallocate-contents true"
             ];
-            flake = "$FLAKE_ROOT";
+            flake = "{{ flake }}";
           };
         in
           (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
@@ -50,8 +51,21 @@
             _apply_system = {
               justfile = ''
                 [private]
-                _apply_system *ARGS: (nixos-rebuild "boot" ARGS)
-                  {{ just_executable() }} nixos-rebuild switch --specialisation "$HOSTNAME" {{ ARGS }}
+                _apply_system *ARGS: (_test_system ARGS) && (_boot_system ARGS)
+              '';
+            };
+
+            _test_system = {
+              justfile = ''
+                [private]
+                _test_system *ARGS: (nixos-rebuild "test" replace(ARGS, hostname, "--specialisation" + " " + hostname))
+              '';
+            };
+
+            _boot_system = {
+              justfile = ''
+                [private]
+                _boot_system *ARGS: (nixos-rebuild "boot" replace(ARGS, hostname, ""))
               '';
             };
           })
@@ -72,6 +86,13 @@
               justfile = ''
                 [private]
                 _apply_system *ARGS: (darwin-rebuild "switch" ARGS)
+              '';
+            };
+
+            _test_system = {
+              justfile = ''
+                [private]
+                _test_system *ARGS: (darwin-rebuild "check" ARGS)
               '';
             };
           })
@@ -98,6 +119,13 @@
               '';
             };
 
+            test-system = {
+              comment = "Wraps `[darwin-rebuild | nixos-rebuild] test`.";
+              justfile = ''
+                test-system *ARGS: (lock) (_test_system ARGS)
+              '';
+            };
+
             upgrade-system = {
               comment = "Update the flake and then run `apply-system`.";
               justfile = ''
@@ -112,10 +140,36 @@
               '';
             };
 
+            _build_home = {
+              justfile = ''
+                [private]
+                _build_home *ARGS:
+                  exec {{ just_executable() }} build \
+                    --out-link {{ (tmpdir / "result") }} \
+                    {{ ARGS }} \
+                    {{ flake }}#homeConfigurations.{{ whoami }}@{{ hostname }}.activationPackage
+              '';
+            };
+
+            _activate_home = {
+              justfile = ''
+                [private]
+                _activate_home PROFILE=(""):
+                  {{ (tmpdir / "result") / (prepend("specialisation/", PROFILE)) / "activate" }}
+              '';
+            };
+
+            _apply_home = {
+              justfile = ''
+                [private]
+                _apply_home PROFILE=("") +ARGS=(""): (_build_home ARGS) && (_activate_home PROFILE)
+              '';
+            };
+
             apply-home = {
               comment = "Wraps `home-manager switch`.";
               justfile = ''
-                apply-home *ARGS: (lock) (home-manager "switch" ARGS)
+                apply-home *ARGS: (lock) (_apply_home ARGS)
               '';
             };
           };

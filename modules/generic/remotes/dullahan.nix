@@ -6,7 +6,7 @@
         User krad246
 
         IdentitiesOnly yes
-        IdentityFile ${config.age.secrets."id_ed25519_priv.age".path}
+        IdentityFile ${config.age.secrets.id_ed25519_priv.path}
 
         ConnectTimeout 60
     '';
@@ -36,7 +36,7 @@
         speedFactor = 2;
 
         sshUser = "krad246";
-        sshKey = config.age.secrets."id_ed25519_priv.age".path;
+        sshKey = config.age.secrets.id_ed25519_priv.path;
       }
       {
         hostName = "headless-penguin";

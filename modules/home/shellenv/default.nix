@@ -1,10 +1,13 @@
 {
-  ezModules,
+  self,
   config,
   lib,
   pkgs,
+  specialArgs,
   ...
-}: {
+}: let
+  inherit (specialArgs) krad246;
+in {
   imports =
     [
       ./bash.nix
@@ -21,7 +24,7 @@
       ./zoxide.nix
     ]
     ++ [
-      ezModules.nixvim
+      self.homeModules.nixvim
     ];
 
   home = {
@@ -29,13 +32,13 @@
     preferXdgDirectories = true;
 
     shellAliases = rec {
-      l = let
-        args = lib.cli.toGNUCommandLine {} {
+      l = ''
+        ${krad246.cli.toGNUCommandLineShell (lib.meta.getExe pkgs.lsd) {
           hyperlink = "auto";
           group-dirs = "first";
           icon-theme = "unicode";
-        };
-      in "${lib.meta.getExe pkgs.lsd} ${lib.strings.concatStringsSep " " args}";
+        }}
+      '';
 
       ls = l;
       ll = "${ls} -gl";

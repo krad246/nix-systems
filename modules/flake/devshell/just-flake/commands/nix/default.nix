@@ -1,8 +1,10 @@
 {
-  mkJustRecipeGroup,
   self,
+  specialArgs,
   ...
-}: {
+}: let
+  inherit (specialArgs) mkJustRecipeGroup;
+in {
   perSystem = {pkgs, ...}: {
     # set up devshell commands
     just-flake.features = let
@@ -101,7 +103,7 @@
           repl = {
             comment = "Wraps `nix repl .`";
             justfile = ''
-              repl *ARGS: (nix "repl" "--file" "$FLAKE_ROOT")
+              repl *ARGS: (nix "repl" "--file" "${self}")
             '';
           };
 

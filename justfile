@@ -18,3 +18,7 @@ import? 'just-flake.just'
 [group('dev')]
 setup:
     exec {{ flake / "setup.sh" }}
+
+[group('dev')]
+clean *ARGS:
+    git clean -fdx {{ ARGS }}

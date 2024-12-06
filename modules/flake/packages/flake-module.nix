@@ -1,19 +1,25 @@
 {
+  withSystem,
   importApply,
   inputs,
   self,
+  specialArgs,
   ...
 }: let
   # Sets up container image packages, custom devShell derivation within the container
   # VSCode *is* supported!
   containers = import ./containers {inherit importApply self;};
-  nixos-generators = import ./nixos-generators {inherit importApply self;};
+  nixos-generators = import ./nixos-generators {inherit withSystem importApply inputs self specialArgs;};
+  disko-config = import ./disko {inherit importApply;};
 in {
+  imports = [disko-config.flakeModule nixos-generators.flakeModule];
+
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
     flakeModules = {
       containers = containers.flakeModule;
       nixos-generators = nixos-generators.flakeModule;
+      disko-config = disko-config.flakeModule;
     };
 
     modules.flake = flakeModules;
@@ -23,6 +29,7 @@ in {
     config,
     lib,
     pkgs,
+    self',
     ...
   }: let
     # Core package list for the host
@@ -41,14 +48,6 @@ in {
     ];
     # equivalent of mkShell inputsFrom
     # append devShell dependencies to nativeBuildInputs
-    nativeBuildInputs = let
-      # 1. get all `{build,nativeBuild,...}Inputs` from the elements of `inputs`
-      # 2. since that is a list of lists, `flatten` that into a regular list
-      # 3. filter out of the result everything that's in `inputsFrom` itself
-      # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
-      mergeInputs = inputs: name: (lib.lists.subtractLists inputs (lib.flatten (lib.attrsets.catAttrs name inputs)));
-    in
-      mergeInputs inputsFrom "nativeBuildInputs";
   in {
     packages =
       {
@@ -73,16 +72,33 @@ in {
         };
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        # containerized / bwrap-ified devshell environment
-        devshell-bwrapenv = let
-          result = pkgs.buildFHSEnvBubblewrap {
+        disko-install = import ./disko-install.nix {inherit self pkgs;};
+
+        # linux has first class support for namespacing, the backend of docker
+        # this means that we have a slightly simpler container interface available
+        # with more capabilities on linux environments
+        bwrapenv = let
+          inputsFrom = [
+            self'.devShells.nix-shell
+          ];
+
+          # equivalent of mkShell inputsFrom
+          # append devShell dependencies to nativeBuildInputs
+          nativeBuildInputs = let
+            # 1. get all `{build,nativeBuild,...}Inputs` from the elements of `inputs`
+            # 2. since that is a list of lists, `flatten` that into a regular list
+            # 3. filter out of the result everything that's in `inputsFrom` itself
+            # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
+            mergeInputs = inputs: name: (lib.subtractLists inputs (lib.flatten (lib.catAttrs name inputs)));
+          in
+            mergeInputs inputsFrom "nativeBuildInputs";
+
+          bwrap = pkgs.buildFHSEnvBubblewrap {
             name = "bwrapenv";
-            inherit targetPkgs nativeBuildInputs;
+            inherit nativeBuildInputs;
           };
         in
-          result;
-
-        disko-install = import ./disko-install.nix {inherit self lib pkgs;};
+          bwrap;
       });
   };
 }
