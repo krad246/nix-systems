@@ -1,19 +1,38 @@
-# outer / 'flake' scope
-{
+args @ {
   withSystem,
-  importApply,
   inputs,
   self,
   lib,
   ...
 }: let
+  # hijacking specialArgs convention for both importApply as well as passing directly to ez-configs
+  specialArgs = {
+    inherit withSystem;
+    inherit inputs self;
+    krad246 = rec {
+      attrsets = {
+        genAttrs' = keys: f: builtins.listToAttrs (builtins.map f keys);
+
+        stemValuePair = key: value: lib.attrsets.nameValuePair (strings.stem key) value;
+      };
+
+      fileset = {
+        filterExt = ext: dir: lib.fileset.toList (lib.fileset.fileFilter (file: file.hasExt ext) dir);
+      };
+
+      strings = {
+        stem = path: lib.strings.nameFromURL (builtins.baseNameOf path) ".";
+      };
+    };
+  };
+
   # standard outputs
-  apps = import ./apps {inherit importApply inputs self lib;};
-  devShells = import ./devshell {inherit importApply inputs self;};
-  packages = import ./packages {inherit importApply inputs self lib;};
+  apps = import ./apps args;
+  devShells = import ./devshell args;
+  packages = import ./packages (args // {inherit specialArgs;});
 
   # Module that streamlines tying together system and home configurations.
-  ez-configs = import ./ez-configs {inherit withSystem importApply inputs self;};
+  ez-configs = import ./ez-configs (args // {inherit specialArgs;});
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
@@ -44,39 +63,25 @@ in {
       darwin = self.darwinModules;
       home = self.homeModules;
 
-      # we follow the same methodology to pull in generic, use-anywhere modules below...
-
       generic = let
-        # get all nix files in generic
-        filterNix = path: lib.fileset.fileFilter (file: file.hasExt "nix") path;
-        hits = filterNix ../generic;
-
-        # for each file, make a key-value pair where the key is the basename of the file
-        # and the value is a trivial attrset / module file that needs to be exported as a callable
-        toModule = path: let
-          moduleName = lib.strings.removeSuffix ".nix" (builtins.baseNameOf path);
-          body = import path;
-        in
-          lib.attrsets.nameValuePair moduleName body;
-
-        importList = builtins.map toModule (lib.fileset.toList hits);
-        modules = builtins.listToAttrs importList;
+        inherit (specialArgs) krad246;
+        paths = krad246.fileset.filterExt "nix" ../generic;
       in
-        modules;
+        krad246.attrsets.genAttrs' paths (path: krad246.attrsets.stemValuePair path (import path));
     };
-  };
 
-  perSystem = {pkgs, ...}: {
     checks = {
-      hello = pkgs.testers.runNixOSTest {
-        name = "hello";
-        nodes.machine = {pkgs, ...}: {
-          environment.systemPackages = [pkgs.hello];
+      aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
+        hello = pkgs.testers.runNixOSTest {
+          name = "hello";
+          nodes.machine = {pkgs, ...}: {
+            environment.systemPackages = [pkgs.hello];
+          };
+          testScript = ''
+            machine.succeed("hello")
+          '';
         };
-        testScript = ''
-          machine.succeed("hello")
-        '';
-      };
+      });
     };
   };
 }

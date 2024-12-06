@@ -1,74 +1,59 @@
-{self, ...}: {
+{
+  withSystem,
+  inputs,
+  self,
+  specialArgs,
+  ...
+}: let
+  mkFormat = pkgs: host: format:
+    inputs.nixos-generators.nixosGenerate {
+      inherit format;
+      inherit (pkgs.stdenv) system;
+      inherit specialArgs;
+      modules = [
+        {nixpkgs.system = pkgs.stdenv.system;}
+
+        inputs.agenix.nixosModules.age
+        inputs.disko.nixosModules.disko
+        inputs.impermanence.nixosModules.impermanence
+        inputs.home-manager.nixosModules.home-manager
+        inputs.nixos-generators.nixosModules.all-formats
+
+        self.nixosModules.${host}
+        self.nixosConfigurations.${host}.config.formatConfigs.${format}
+      ];
+    };
+in {
+  flake.packages.aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
+    fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
+    fortress-sd-aarch64-installer = mkFormat pkgs "fortress" "sd-aarch64-installer";
+  });
+
+  flake.packages.x86_64-linux = withSystem "x86_64-linux" ({pkgs, ...}: {
+    fortress-sd-x86_64 = mkFormat pkgs "fortress" "sd-x86_64";
+
+    fortress-virtualbox = mkFormat pkgs "fortress" "virtualbox";
+    fortress-vagrant-virtualbox = mkFormat pkgs "fortress" "vagrant-virtualbox";
+
+    fortress-vmware = mkFormat pkgs "fortress" "vmware";
+  });
+
   perSystem = {
-    pkgs,
     lib,
-    system,
+    pkgs,
     ...
-  }: let
-    nixosConfigs = lib.attrsets.attrValues self.nixosConfigurations;
-    nixosMachines = lib.lists.forEach nixosConfigs (nixosCfg: let
-      machine = nixosCfg.extendModules {
-        modules = [
-          {
-            nixpkgs.system = pkgs.stdenv.system;
-          }
-        ];
-      };
-    in
-      machine);
+  }: {
+    packages = lib.modules.mkIf pkgs.stdenv.isLinux {
+      fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
+      fortress-iso = mkFormat pkgs "fortress" "iso";
+      fortress-install-iso = mkFormat pkgs "fortress" "install-iso";
+      fortress-install-iso-hyperv = mkFormat pkgs "fortress" "install-iso-hyperv";
 
-    hostFormatName = nixosMachine: format: let
-      inherit (nixosMachine.config.networking) hostName;
-    in "${hostName}/${format}";
+      fortress-qcow = mkFormat pkgs "fortress" "qcow";
+      fortress-qcow-efi = mkFormat pkgs "fortress" "qcow-efi";
 
-    mapHostFormat = nixosMachine: format: value:
-      lib.attrsets.nameValuePair
-      (hostFormatName nixosMachine format)
-      value;
-  in {
-    packages = let
-      mkFormatPackages = nixosMachine: let
-        declaredFormats = nixosMachine: let
-          formats =
-            lib.attrsets.attrByPath ["config" "formats"] {}
-            nixosMachine;
-
-          include = [
-            "hyperv"
-            "iso"
-            "install-iso"
-            "install-iso-hyperv"
-            "qcow"
-            "qcow-efi"
-            "raw"
-            "raw-efi"
-            "sd-aarch64"
-            "sd-aarch64-installer"
-            "sd-x86_64"
-            "vagrant-virtualbox"
-            "virtualbox"
-            "vm"
-            "vm-bootloader"
-            "vm-nogui"
-            "vmware"
-          ];
-
-          filtered = let
-            included = name: (builtins.elem name include);
-          in
-            lib.attrsets.filterAttrs (name: _value: included name) formats;
-        in
-          filtered;
-
-        declared = declaredFormats nixosMachine;
-      in
-        lib.attrsets.mapAttrs' (format: drv: mapHostFormat nixosMachine format drv)
-        declared;
-
-      formats = lib.lists.forEach nixosMachines mkFormatPackages;
-    in
-      lib.attrsets.mergeAttrsList (lib.lists.flatten [
-        (lib.lists.optionals pkgs.stdenv.isLinux [formats])
-      ]);
+      fortress-raw = mkFormat pkgs "fortress" "raw";
+      fortress-raw-efi = mkFormat pkgs "fortress" "raw-efi";
+    };
   };
 }

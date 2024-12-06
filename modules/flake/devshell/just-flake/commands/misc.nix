@@ -1,5 +1,6 @@
-# outer / 'flake' scope
-{mkJustRecipeGroup, ...}: {
+{specialArgs, ...}: let
+  inherit (specialArgs) mkJustRecipeGroup;
+in {
   perSystem = {
     inputs',
     pkgs,

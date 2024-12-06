@@ -1,8 +1,8 @@
 # outer / 'flake' scope
 {
   importApply,
-  self,
   inputs,
+  self,
   ...
 }: let
   justfile = import ./just-flake {inherit importApply inputs self;};
@@ -27,14 +27,12 @@ in {
   perSystem = {
     self',
     config,
-    pkgs,
     ...
-  }: let
-    inherit (pkgs) lib;
-  in {
+  }: {
     formatter = config.treefmt.build.wrapper;
     treefmt = {
       inherit (config.flake-root) projectRootFile;
+      flakeCheck = false;
       programs = {
         alejandra.enable = true;
         deadnix = {
@@ -51,50 +49,46 @@ in {
       };
     };
 
-    pre-commit.settings.hooks = {
-      alejandra.enable = true;
-      check-added-large-files.enable = true;
-      check-case-conflicts.enable = true;
-      check-executables-have-shebangs.enable = false;
-      check-merge-conflicts.enable = true;
-      check-shebang-scripts-are-executable.enable = true;
-      check-symlinks.enable = true;
-      checkmake.enable = false;
-      cspell = {
-        enable = false;
+    pre-commit = {
+      settings.hooks = {
+        alejandra.enable = true;
+        check-added-large-files.enable = true;
+        check-case-conflicts.enable = true;
+        check-executables-have-shebangs.enable = false;
+        check-merge-conflicts.enable = true;
+        check-shebang-scripts-are-executable.enable = true;
+        check-symlinks.enable = true;
+        checkmake.enable = false;
+        cspell = {
+          enable = false;
+        };
+        deadnix.enable = true;
+        detect-private-keys.enable = true;
+        end-of-file-fixer.enable = false;
+        flake-checker.enable = false;
+        markdownlint.enable = false;
+        mdl.enable = false;
+        mixed-line-endings.enable = true;
+        mkdocs-linkcheck.enable = false;
+        nil.enable = true;
+        ripsecrets.enable = false;
+        shellcheck.enable = true;
+        shfmt.enable = true;
+        statix.enable = true;
+        treefmt = {
+          enable = true;
+          settings = {fail-on-change = true;};
+        };
+        trim-trailing-whitespace.enable = false;
+        trufflehog.enable = false;
       };
-      deadnix.enable = true;
-      detect-private-keys.enable = true;
-      end-of-file-fixer.enable = false;
-      flake-checker.enable = false;
-      markdownlint.enable = false;
-      mdl.enable = false;
-      mixed-line-endings.enable = true;
-      mkdocs-linkcheck.enable = false;
-      nil.enable = true;
-      ripsecrets.enable = false;
-      shellcheck.enable = true;
-      shfmt.enable = true;
-      statix.enable = true;
-      treefmt = {
-        enable = true;
-        settings = {fail-on-change = true;};
-      };
-      trim-trailing-whitespace.enable = false;
-      trufflehog.enable = false;
+      check.enable = false;
     };
 
-    devShells =
-      {
-        # prefer an interpreter-level venv by default
-        default = self'.devShells.nix-shell;
-        nix-shell = self'.packages.nix-shell-env;
-      }
-      // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        # linux has first class support for namespacing, the backend of docker
-        # this means that we have a slightly simpler container interface available
-        # with more capabilities on linux environments
-        bwrapenv = self'.packages.devshell-bwrapenv.env;
-      };
+    devShells = {
+      # prefer an interpreter-level venv by default
+      default = self'.devShells.nix-shell;
+      nix-shell = self'.packages.nix-shell-env;
+    };
   };
 }

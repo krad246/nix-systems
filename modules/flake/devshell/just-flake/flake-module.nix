@@ -1,49 +1,70 @@
 # outer / 'flake' scope
 {
   importApply,
-  self,
   inputs,
+  self,
   ...
 }: let
-  # Create a justfile fragment from a:
-  # 0. (also need support lib)
-  # 1. documentation comment
-  # 2. recipe group
-  # 3. justfile recipe (mandatory)
-  mkJustRecipe = {
-    lib,
-    justfile,
-    enable ? true,
-    comment ? null,
-    group ? null,
-    ...
-  }: {
-    inherit enable;
+  # hijacking the nixos specialArgs convention to pass some custom functions down.
+  specialArgs = rec {
+    # Create a justfile fragment from a:
+    # 0. (also need support lib)
+    # 1. documentation comment
+    # 2. recipe group
+    # 3. justfile recipe (mandatory)
+    mkJustRecipe = inner @ {
+      lib,
+      justfile,
+      enable ? true,
+      comment ? null,
+      group ? null,
+      ...
+    }: {
+      inherit enable;
 
-    # format the comment and group above the justfile so that
-    # the writer of the justfile can put more modifiers on the recipe they define
-    justfile = ''
-      ${lib.strings.optionalString (comment != null) "#${comment}"}
-      ${lib.strings.optionalString (group != null) "[group('${group}')]"}
-      ${justfile}
-    '';
+      # format the comment and group above the justfile so that
+      # the writer of the justfile can put more modifiers on the recipe they define
+      justfile = ''
+        ${inner.lib.strings.optionalString (comment != null) "# ${comment}"}
+        ${inner.lib.strings.optionalString (group != null) "[group('${group}')]"}
+        ${justfile}
+      '';
+    };
+
+    # create a 'group' of recipes where the user can pass a list of recipes to bind to a given group
+    mkJustRecipeGroup = inner @ {
+      lib,
+      group,
+      recipes,
+      ...
+    }:
+      inner.lib.attrsets.mapAttrs (_key: recipe: mkJustRecipe (recipe // {inherit (inner) lib group;}))
+      recipes;
+
+    nixArgs = inner @ {lib, ...}:
+      inner.lib.cli.toGNUCommandLine {} {
+      };
   };
 
-  # create a 'group' of recipes where the user can pass a list of recipes to bind to a given group
-  mkJustRecipeGroup = {
-    lib,
-    group,
-    recipes,
-    ...
-  }:
-    lib.attrsets.mapAttrs (_key: recipe: mkJustRecipe (recipe // {inherit lib group;}))
-    recipes;
+  justfile-dev = importApply ./commands/dev.nix {
+    inherit self specialArgs;
+  };
 
-  justfile-dev = importApply ./commands/dev.nix {inherit mkJustRecipeGroup self;};
-  justfile-git = importApply ./commands/git.nix {inherit mkJustRecipeGroup;};
-  justfile-misc = importApply ./commands/misc.nix {inherit mkJustRecipeGroup;};
-  justfile-nix = importApply ./commands/nix {inherit mkJustRecipeGroup self;};
-  justfile-system = importApply ./commands/system.nix {inherit mkJustRecipeGroup self;};
+  justfile-git = importApply ./commands/git.nix {
+    inherit self specialArgs;
+  };
+
+  justfile-misc = importApply ./commands/misc.nix {
+    inherit self specialArgs;
+  };
+
+  justfile-nix = importApply ./commands/nix {
+    inherit self specialArgs;
+  };
+
+  justfile-system = importApply ./commands/system.nix {
+    inherit self specialArgs;
+  };
 in {
   imports = [inputs.just-flake.flakeModule] ++ [justfile-dev justfile-git justfile-misc justfile-system justfile-nix];
 

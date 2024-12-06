@@ -1,7 +1,7 @@
 {pkgs, ...}: let
   runner = pkgs.writeShellApplication {
     name = "bootstrap";
-    runtimeInputs = with pkgs; [bashInteractive coreutils direnv git nix];
+    runtimeInputs = with pkgs; [bashInteractive coreutils direnv nix-direnv git nixVersions.stable];
     text = ''
       set -x
 

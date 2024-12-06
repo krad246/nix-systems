@@ -1,12 +1,26 @@
-args @ {
+{
+  getSystem,
+  moduleWithSystem,
+  withSystem,
   inputs,
   self,
+  specialArgs,
   ...
 }: {...}: {
-  imports = [inputs.ez-configs.flakeModule] ++ [./nixos.nix ./darwin.nix ./home.nix];
+  imports =
+    [inputs.ez-configs.flakeModule]
+    ++ [
+      ./nixos.nix
+      ./darwin.nix
+      ./home.nix
+    ];
 
   ezConfigs = {
     root = self;
-    globalArgs = args;
+    globalArgs = {
+      inherit getSystem moduleWithSystem withSystem;
+      inherit inputs self;
+      inherit (specialArgs) krad246;
+    };
   };
 }

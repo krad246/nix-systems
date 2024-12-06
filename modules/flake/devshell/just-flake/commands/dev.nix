@@ -1,9 +1,10 @@
-# outer / 'flake' scope
 {
-  mkJustRecipeGroup,
   self,
+  specialArgs,
   ...
-}: {
+}: let
+  inherit (specialArgs) mkJustRecipeGroup;
+in {
   perSystem = {
     self',
     pkgs,
@@ -35,8 +36,8 @@
           fmt = {
             comment = "Format the repository.";
             justfile = ''
-              fmt: (lock)
-                treefmt
+              fmt *ARGS: (lock)
+                treefmt {{ ARGS }}
             '';
           };
         };

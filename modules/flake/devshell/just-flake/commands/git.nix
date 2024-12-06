@@ -1,5 +1,6 @@
-# outer / 'flake' scope
-{mkJustRecipeGroup, ...}: {
+{specialArgs, ...}: let
+  inherit (specialArgs) mkJustRecipeGroup;
+in {
   perSystem = {pkgs, ...}: {
     just-flake.features = let
       inherit (pkgs) lib;
@@ -32,9 +33,9 @@
           };
 
           amend = {
-            comment = "Equivalent to `git add -u` followed by `git commit --amend`, with other args passed to its invocation.";
+            comment = "Equivalent to `git add -u` followed by `git commit -a --amend`, with other args passed to its invocation.";
             justfile = ''
-              amend +ARGS="--dry-run": (add "-u") (commit "--amend" ARGS)
+              amend +ARGS="--dry-run": (add "-u") (commit "-a" "--amend" ARGS)
             '';
           };
         };
