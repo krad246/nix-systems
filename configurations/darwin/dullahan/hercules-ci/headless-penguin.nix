@@ -18,7 +18,7 @@ outer @ {
         settings = {
           clusterJoinTokenPath = config.age.secrets.headless-penguin-cluster-join-token.path;
           binaryCachesPath = config.age.secrets.headless-penguin-binary-caches.path;
-          concurrentTasks = 4;
+          concurrentTasks = 6;
         };
       };
 
@@ -46,7 +46,7 @@ outer @ {
 
       virtualisation = {
         darwin-builder = {
-          diskSize = 128 * 1024;
+          diskSize = 256 * 1024;
         };
       };
 
@@ -57,7 +57,7 @@ outer @ {
       swapDevices = lib.mkOverride 9 [
         {
           device = "/swapfile";
-          size = 96 * 1024;
+          size = 128 * 1024;
         }
       ];
     };

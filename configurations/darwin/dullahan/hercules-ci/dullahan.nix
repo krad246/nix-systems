@@ -1,5 +1,7 @@
 {specialArgs, ...}: {
-  services.hercules-ci-agent.enable = true;
+  services.hercules-ci-agent = {
+    enable = true;
+  };
 
   age.secrets = let
     inherit (specialArgs) krad246;

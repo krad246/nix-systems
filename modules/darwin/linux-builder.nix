@@ -86,6 +86,10 @@ in {
           environment.variables = {
             TERM = "xterm-256color";
           };
+
+          systemd.coredump.enable = false;
+
+          environment.systemPackages = with pkgs; [bottom];
         };
 
         inherit (cfg) maxJobs;
