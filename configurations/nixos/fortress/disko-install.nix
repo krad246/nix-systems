@@ -5,6 +5,8 @@
   pkgs,
   ...
 }: let
+  inherit (lib) meta;
+
   inherit (config.networking) hostName;
   machine = self.nixosConfigurations."${hostName}";
   inherit (machine.config.system) build;
@@ -27,7 +29,7 @@
     text = let
       installer = self.packages.${pkgs.stdenv.system}.disko-install;
     in ''
-      ${lib.meta.getExe installer} --system-config '${builtins.toJSON {}}' "$@"
+      ${meta.getExe installer} --system-config '${builtins.toJSON {}}' "$@"
     '';
   };
 in {

@@ -2,8 +2,10 @@
   lib,
   pkgs,
   ...
-}: {
-  specialisation = lib.modules.mkIf pkgs.stdenv.isLinux {
+}: let
+  inherit (lib) modules;
+in {
+  specialisation = modules.mkIf pkgs.stdenv.isLinux {
     wsl.configuration = import ./wsl.nix;
   };
 }

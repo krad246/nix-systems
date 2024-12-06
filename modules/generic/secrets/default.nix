@@ -4,13 +4,14 @@ args @ {
   ...
 }: let
   inherit (inputs) agenix;
-  hasHomeCtx = lib.attrsets.hasAttrByPath ["osConfig"] args;
-  hasSystemCtx = lib.attrsets.hasAttrByPath ["config"] args;
+  inherit (lib) attrsets fileset lists;
+  hasHomeCtx = attrsets.hasAttrByPath ["osConfig"] args;
+  hasSystemCtx = attrsets.hasAttrByPath ["config"] args;
   hasCtx = hasHomeCtx || hasSystemCtx;
 in
-  lib.attrsets.optionalAttrs hasCtx {
+  attrsets.optionalAttrs hasCtx {
     imports =
-      lib.lists.optionals hasHomeCtx [agenix.homeManagerModules.age];
+      lists.optionals hasHomeCtx [agenix.homeManagerModules.age];
 
     age = let
       # determine if there is a supported host
@@ -23,14 +24,14 @@ in
             then args.config
             else {}
           );
-      hasHostName = lib.attrsets.hasAttrByPath ["networking" "hostName"] configSrc;
+      hasHostName = attrsets.hasAttrByPath ["networking" "hostName"] configSrc;
 
-      maybeHostDir = lib.fileset.maybeMissing ./hosts/${configSrc.networking.hostName};
+      maybeHostDir = fileset.maybeMissing ./hosts/${configSrc.networking.hostName};
 
       # pull in the secrets bound to the host
-      findAgeFiles = path: lib.fileset.fileFilter (file: file.hasExt "age") path;
+      findAgeFiles = path: fileset.fileFilter (file: file.hasExt "age") path;
       ageFiles = findAgeFiles ./hosts;
-      hits = lib.fileset.toList (lib.fileset.intersection maybeHostDir ageFiles);
+      hits = fileset.toList (fileset.intersection maybeHostDir ageFiles);
 
       # for a given secret path, convert it into an agenix compatible attrset.
       mkSecret = path: let
@@ -42,9 +43,11 @@ in
         };
       };
 
-      hostSecrets = lib.lists.forEach hits mkSecret;
+      hostSecrets = lists.forEach hits mkSecret;
+
+      inherit (lib) modules;
     in
-      lib.modules.mkIf hasHostName {
-        secrets = lib.attrsets.mergeAttrsList hostSecrets;
+      modules.mkIf hasHostName {
+        secrets = attrsets.mergeAttrsList hostSecrets;
       };
   }

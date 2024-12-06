@@ -1,12 +1,16 @@
 {
   mkJustRecipeGroup,
-  self,
+  nixArgs,
   ...
 }: {
-  perSystem = {pkgs, ...}: {
+  perSystem = {
+    lib,
+    pkgs,
+    ...
+  }: {
     # set up devshell commands
     just-flake.features = let
-      inherit (pkgs) lib;
+      inherit (lib) cli meta strings;
     in
       # Helper command aliases
       mkJustRecipeGroup {
@@ -14,18 +18,15 @@
         group = "nix";
 
         recipes = {
-          nix = {
+          nix = let
+            args = strings.concatStringsSep " " (cli.toGNUCommandLine {} (nixArgs lib));
+          in {
             comment = "Wraps `nix`. Pass arguments as normal.";
             justfile = ''
               [unix]
-              nix VERB *ARGS:
-                ${lib.meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
-                  --option experimental-features 'nix-command flakes' \
-                  --option inputs-from ${self} \
-                  --option accept-flake-config true \
-                  --option builders-use-substitutes true \
-                  --option keep-going true \
-                  --option preallocate-contents true \
+              nix VERB *ARGS: (add)
+                ${meta.getExe pkgs.nixVersions.stable} {{ VERB }} \
+                  ${args} \
                   {{ ARGS }}
             '';
           };

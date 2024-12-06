@@ -4,7 +4,9 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) meta;
+in {
   imports =
     [
       ./bash.nix
@@ -29,7 +31,7 @@
     preferXdgDirectories = true;
 
     shellAliases = rec {
-      l = "${lib.meta.getExe pkgs.lsd} --hyperlink auto --group-dirs first --icon-theme unicode";
+      l = "${meta.getExe pkgs.lsd} --hyperlink auto --group-dirs first --icon-theme unicode";
 
       ls = l;
       ll = "${ls} -gl";
@@ -37,12 +39,12 @@
       lal = la;
 
       reload = ''
-        exec ${lib.meta.getExe pkgs.bashInteractive} \
-          --rcfile <(${lib.meta.getExe' pkgs.coreutils "echo"} \
+        exec ${meta.getExe pkgs.bashInteractive} \
+          --rcfile <(${meta.getExe' pkgs.coreutils "echo"} \
               'source ${config.home.homeDirectory}/.bashrc; \
-              ${lib.meta.getExe pkgs.direnv} reload')
+              ${meta.getExe pkgs.direnv} reload')
       '';
-      tldr = "${lib.meta.getExe pkgs.tldr}";
+      tldr = "${meta.getExe pkgs.tldr}";
     };
   };
 

@@ -1,11 +1,12 @@
 # outer / 'flake' scope
 {
+  nixArgs,
   importApply,
   self,
   inputs,
   ...
 }: let
-  justfile = import ./just-flake {inherit importApply self inputs;};
+  justfile = import ./just-flake {inherit nixArgs importApply self inputs;};
 in {
   imports =
     (with inputs; [
@@ -27,10 +28,11 @@ in {
   perSystem = {
     self',
     config,
+    lib,
     pkgs,
     ...
   }: let
-    inherit (pkgs) lib;
+    inherit (lib) attrsets;
   in {
     formatter = config.treefmt.build.wrapper;
     treefmt = {
@@ -90,7 +92,7 @@ in {
         default = self'.devShells.nix-shell;
         nix-shell = self'.packages.nix-shell-env;
       }
-      // lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+      // attrsets.optionalAttrs pkgs.stdenv.isLinux {
         # linux has first class support for namespacing, the backend of docker
         # this means that we have a slightly simpler container interface available
         # with more capabilities on linux environments

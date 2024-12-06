@@ -6,11 +6,12 @@
 }: {
   perSystem = {
     self',
+    lib,
     pkgs,
     ...
   }: {
     just-flake.features = let
-      inherit (pkgs) lib;
+      inherit (lib) meta;
     in
       mkJustRecipeGroup {
         inherit lib;
@@ -21,7 +22,7 @@
             comment = "Container commands. Syntax: `just container ARGS`";
             justfile = ''
               container *ARGS:
-                ${lib.meta.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ prepend("container-", ARGS) }}
+                ${meta.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ prepend("container-", ARGS) }}
             '';
           };
 

@@ -1,7 +1,6 @@
 {
   self,
   inputs,
-  lib,
   pkgs,
   ...
 }: let
@@ -9,13 +8,19 @@
 in {
   specialisation = {
     fortress = {
-      configuration = {config, ...}: let
+      configuration = {
+        config,
+        lib,
+        ...
+      }: let
+        inherit (lib) attrsets lists modules;
+
         hasPrivKey =
-          lib.attrsets.hasAttrByPath
+          attrsets.hasAttrByPath
           ["id_ed25519_priv.age"]
           config.age.secrets;
         hasPubKey =
-          lib.attrsets.hasAttrByPath
+          attrsets.hasAttrByPath
           ["id_ed25519_pub.age"]
           config.age.secrets;
       in {
@@ -32,7 +37,7 @@ in {
             system76-scheduler
             wireshark
           ])
-          ++ lib.lists.optionals pkgs.stdenv.isx86_64 ([./hardware-configuration.nix]
+          ++ lists.optionals pkgs.stdenv.isx86_64 ([./hardware-configuration.nix]
             ++ (with nixos-hardware.nixosModules; [
               common-cpu-amd
               common-cpu-amd-pstate
@@ -43,11 +48,11 @@ in {
               common-pc-ssd
             ]));
 
-        programs.ssh = lib.modules.mkIf (hasPrivKey && hasPubKey) {
+        programs.ssh = modules.mkIf (hasPrivKey && hasPubKey) {
           startAgent = true;
         };
 
-        services = lib.modules.mkIf (hasPrivKey && hasPubKey) {
+        services = modules.mkIf (hasPrivKey && hasPubKey) {
           openssh = {
             enable = true;
             startWhenNeeded = true;
@@ -56,7 +61,7 @@ in {
             };
           };
 
-          cachix-watch-store = lib.modules.mkIf (lib.attrsets.hasAttrByPath ["cachix.age"]
+          cachix-watch-store = modules.mkIf (attrsets.hasAttrByPath ["cachix.age"]
             config.age.secrets) {
             enable = true;
             cacheName = "krad246";

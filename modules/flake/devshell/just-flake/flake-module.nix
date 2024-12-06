@@ -1,5 +1,6 @@
 # outer / 'flake' scope
 {
+  nixArgs,
   importApply,
   self,
   inputs,
@@ -17,14 +18,16 @@
     comment ? null,
     group ? null,
     ...
-  }: {
+  }: let
+    inherit (lib) strings;
+  in {
     inherit enable;
 
     # format the comment and group above the justfile so that
     # the writer of the justfile can put more modifiers on the recipe they define
     justfile = ''
-      ${lib.strings.optionalString (comment != null) "#${comment}"}
-      ${lib.strings.optionalString (group != null) "[group('${group}')]"}
+      ${strings.optionalString (comment != null) "# ${comment}"}
+      ${strings.optionalString (group != null) "[group('${group}')]"}
       ${justfile}
     '';
   };
@@ -35,15 +38,17 @@
     group,
     recipes,
     ...
-  }:
-    lib.attrsets.mapAttrs (_key: recipe: mkJustRecipe (recipe // {inherit lib group;}))
+  }: let
+    inherit (lib) attrsets;
+  in
+    attrsets.mapAttrs (_key: recipe: mkJustRecipe (recipe // {inherit lib group;}))
     recipes;
 
-  justfile-dev = importApply ./commands/dev.nix {inherit mkJustRecipeGroup self;};
+  justfile-dev = importApply ./commands/dev.nix {inherit mkJustRecipeGroup nixArgs self;};
   justfile-git = importApply ./commands/git.nix {inherit mkJustRecipeGroup;};
   justfile-misc = importApply ./commands/misc.nix {inherit mkJustRecipeGroup;};
-  justfile-nix = importApply ./commands/nix {inherit mkJustRecipeGroup self;};
-  justfile-system = importApply ./commands/system.nix {inherit mkJustRecipeGroup self;};
+  justfile-nix = importApply ./commands/nix {inherit mkJustRecipeGroup nixArgs self;};
+  justfile-system = importApply ./commands/system.nix {inherit mkJustRecipeGroup nixArgs self;};
 in {
   imports = [inputs.just-flake.flakeModule] ++ [justfile-dev justfile-git justfile-misc justfile-system justfile-nix];
 

@@ -4,13 +4,16 @@
   pkgs,
   ...
 }: let
+  inherit (lib) meta strings;
   name = "agenix-cachix-authtoken";
   exec = ''
-    ${lib.meta.getExe pkgs.cachix} authtoken --stdin < ${config.age.secrets.cachix.path}
+    ${meta.getExe pkgs.cachix} authtoken --stdin < ${config.age.secrets.cachix.path}
   '';
   hasCachix = config.age.secrets ? cachix;
+
+  inherit (lib) modules;
 in {
-  systemd.user.services."${name}" = lib.modules.mkIf (pkgs.stdenv.isLinux && hasCachix) {
+  systemd.user.services."${name}" = modules.mkIf (pkgs.stdenv.isLinux && hasCachix) {
     Unit = {
       Description = "Cachix login after secrets mounting";
       Requires = ["agenix.service"];
@@ -19,17 +22,17 @@ in {
       WantedBy = ["default.target"];
     };
     Service = {
-      ExecStart = "${lib.meta.getExe pkgs.bash} -c '${exec}'";
+      ExecStart = "${meta.getExe pkgs.bash} -c '${exec}'";
       Environment = ["XDG_RUNTIME_DIR=%t"];
       StandardOutput = "journal";
       StandardError = "journal";
     };
   };
 
-  launchd.agents."${name}" = lib.modules.mkIf (pkgs.stdenv.isDarwin && hasCachix) {
+  launchd.agents."${name}" = modules.mkIf (pkgs.stdenv.isDarwin && hasCachix) {
     enable = true;
     config = {
-      ProgramArguments = ["${lib.meta.getExe pkgs.bash}" "-c" "${lib.strings.escapeXML exec}"];
+      ProgramArguments = ["${meta.getExe pkgs.bash}" "-c" "${strings.escapeXML exec}"];
       RunAtLoad = true;
       StandardOutPath = "${config.home.homeDirectory}/Library/Logs/${name}/stdout";
       StandardErrorPath = "${config.home.homeDirectory}/Library/Logs/${name}/stderr";

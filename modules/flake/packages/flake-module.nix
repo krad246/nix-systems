@@ -20,10 +20,11 @@ in {
 
   perSystem = {
     config,
+    lib,
     pkgs,
     ...
   }: let
-    inherit (pkgs) lib;
+    inherit (lib) attrsets lists;
 
     # Core package list for the host
     targetPkgs = tpkgs:
@@ -46,7 +47,7 @@ in {
       # 2. since that is a list of lists, `flatten` that into a regular list
       # 3. filter out of the result everything that's in `inputsFrom` itself
       # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
-      mergeInputs = inputs: name: (lib.lists.subtractLists inputs (lib.flatten (lib.attrsets.catAttrs name inputs)));
+      mergeInputs = inputs: name: (lists.subtractLists inputs (lists.flatten (attrsets.catAttrs name inputs)));
     in
       mergeInputs inputsFrom "nativeBuildInputs";
   in {
@@ -68,7 +69,7 @@ in {
           '';
         };
       }
-      // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+      // (attrsets.optionalAttrs pkgs.stdenv.isLinux {
         # containerized / bwrap-ified devshell environment
         devshell-bwrapenv = let
           result = pkgs.buildFHSEnvBubblewrap {
@@ -78,7 +79,7 @@ in {
         in
           result;
 
-        disko-install = import ./disko-install.nix {inherit self pkgs;};
+        disko-install = import ./disko-install.nix {inherit self lib pkgs;};
       });
   };
 }

@@ -1,9 +1,10 @@
 {
   self,
+  lib,
   pkgs,
   ...
 }: let
-  inherit (pkgs) lib;
+  inherit (lib) meta;
 in
   pkgs.writeShellApplication {
     name = "disko-install";
@@ -12,7 +13,7 @@ in
         mode="$1"
         shift
 
-        ${lib.meta.getExe' pkgs.disko "disko-install"} \
+        ${meta.getExe' pkgs.disko "disko-install"} \
           --flake "${self}#$HOSTNAME" \
           --option inputs-from "${self}" \
           --option experimental-features 'nix-command flakes' \

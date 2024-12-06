@@ -1,17 +1,18 @@
 # outer / 'flake' scope
 {
+  nixArgs,
   mkJustRecipeGroup,
-  self,
   ...
 }: {
   perSystem = {
     inputs',
+    lib,
     pkgs,
     ...
   }: {
     # set up devshell commands
     just-flake.features = let
-      inherit (pkgs) lib;
+      inherit (lib) attrsets cli meta strings;
     in
       mkJustRecipeGroup {
         inherit lib;
@@ -19,24 +20,17 @@
         group = "system";
 
         recipes = let
-          flakeArg = lib.strings.concatStringsSep " " ["--flake" "$FLAKE_ROOT"];
+          args = strings.concatStringsSep " " (cli.toGNUCommandLine {} ((nixArgs lib) // {flake = "$FLAKE_ROOT";}));
         in
-          (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+          (attrsets.optionalAttrs pkgs.stdenv.isLinux {
             # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
             nixos-rebuild = {
               comment = "Wraps `nixos-rebuild`.";
               justfile = ''
                 [linux]
-                @nixos-rebuild *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe pkgs.nixos-rebuild} \
-                    --option experimental-features 'nix-command flakes' \
-                    --option inputs-from ${self} \
-                    --option accept-flake-config true \
-                    --option builders-use-substitutes true \
-                    --option keep-going true \
-                    --option preallocate-contents true \
-                    ${flakeArg} \
+                nixos-rebuild *ARGS:
+                  ${meta.getExe pkgs.nixos-rebuild} \
+                    ${args} \
                     --use-remote-sudo \
                     {{ ARGS }}
               '';
@@ -50,21 +44,15 @@
               '';
             };
           })
-          // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
+          // (attrsets.optionalAttrs pkgs.stdenv.isDarwin {
             # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
             darwin-rebuild = {
               comment = "Wraps `darwin-rebuild`.";
               justfile = ''
                 [macos]
-                @darwin-rebuild *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} \
-                    --option experimental-features 'nix-command flakes' \
-                    --option inputs-from ${self} \
-                    --option accept-flake-config true \
-                    --option keep-going true \
-                    --option preallocate-contents true \
-                    ${flakeArg} \
+                darwin-rebuild *ARGS:
+                  ${meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} \
+                    ${args} \
                     {{ ARGS }}
               '';
             };
@@ -84,14 +72,9 @@
               justfile = ''
                 [unix]
                 @home-manager *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe pkgs.home-manager} \
-                    --option experimental-features 'nix-command flakes' \
-                    --option inputs-from ${self} \
-                    --option accept-flake-config true \
-                    --option keep-going true \
-                    --option preallocate-contents true \
-                    ${flakeArg} \
+                  #!${meta.getExe pkgs.bash}
+                  ${meta.getExe pkgs.home-manager} \
+                    ${args} \
                     -b bak \
                     {{ ARGS }}
               '';

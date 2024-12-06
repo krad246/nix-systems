@@ -8,10 +8,11 @@
   inherit (config.disko) enableConfig;
 
   persistPath = "/nix/persist";
+  inherit (lib) modules;
 in {
   imports = [disko.nixosModules.disko] ++ [impermanence.nixosModules.impermanence];
 
-  disko.devices = lib.modules.mkIf enableConfig {
+  disko.devices = modules.mkIf enableConfig {
     disk = {
       main = {
         device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23026J804343";
@@ -100,13 +101,13 @@ in {
     };
   };
 
-  fileSystems = lib.modules.mkIf enableConfig {
+  fileSystems = modules.mkIf enableConfig {
     "${persistPath}" = {
       neededForBoot = true;
     };
   };
 
-  environment.persistence = lib.modules.mkIf enableConfig {
+  environment.persistence = modules.mkIf enableConfig {
     "${persistPath}" = {
       hideMounts = true;
       directories = [

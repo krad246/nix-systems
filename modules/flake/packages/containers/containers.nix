@@ -67,8 +67,10 @@ in
       lib,
       pkgs,
       ...
-    }: {
-      packages = lib.modules.mkIf pkgs.stdenv.isLinux {
+    }: let
+      inherit (lib) modules;
+    in {
+      packages = modules.mkIf pkgs.stdenv.isLinux {
         vscode-devcontainer = self'.packages."vscode-devcontainer-${pkgs.stdenv.system}";
         "vscode-devcontainer-${pkgs.stdenv.system}" = mkContainer {hostCtx = args;};
       };

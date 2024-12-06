@@ -1,8 +1,12 @@
 # outer / 'flake' scope
 {mkJustRecipeGroup, ...}: {
-  perSystem = {pkgs, ...}: {
+  perSystem = {
+    lib,
+    pkgs,
+    ...
+  }: {
     just-flake.features = let
-      inherit (pkgs) lib;
+      inherit (lib) meta;
     in
       mkJustRecipeGroup {
         inherit lib;
@@ -13,7 +17,7 @@
             justfile = ''
               [no-exit-message]
               git *ARGS:
-                  ${lib.meta.getExe pkgs.git} {{ ARGS }}
+                  ${meta.getExe pkgs.git} {{ ARGS }}
             '';
           };
 

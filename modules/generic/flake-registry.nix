@@ -4,14 +4,16 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) attrsets modules types;
+in {
   nix = {
     # This will add each flake input as a registry
     # To make nix3 commands consistent with your flake
     registry = let
-      isFlake = _: lib.types.isType "flake";
-      flakes = lib.attrsets.filterAttrs isFlake inputs;
-      mkRegistry = flakes: lib.attrsets.mapAttrs (_key: flake: {inherit flake;}) flakes;
+      isFlake = _: types.isType "flake";
+      flakes = attrsets.filterAttrs isFlake inputs;
+      mkRegistry = flakes: attrsets.mapAttrs (_key: flake: {inherit flake;}) flakes;
     in
       mkRegistry flakes;
 
@@ -21,7 +23,7 @@
   };
 
   # nix-darwin manually sets up the flake registry with nixpkgs for us.
-  nixpkgs.flake = lib.modules.mkIf pkgs.stdenv.isDarwin rec {
+  nixpkgs.flake = modules.mkIf pkgs.stdenv.isDarwin rec {
     setFlakeRegistry = false;
     setNixPath = setFlakeRegistry;
   };
@@ -33,7 +35,7 @@
       name = "nix/path/${name}";
       value.source = value.flake;
     };
-    mapRegistryPaths = registry: lib.mapAttrs' mapFlakePath registry;
+    mapRegistryPaths = registry: attrsets.mapAttrs' mapFlakePath registry;
   in
     mapRegistryPaths
     config.nix.registry;

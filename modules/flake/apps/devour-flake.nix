@@ -1,25 +1,25 @@
 {
+  nixArgs,
   self,
   inputs,
+  lib,
   pkgs,
   ...
 }: let
-  inherit (pkgs) lib;
+  inherit (lib) cli meta strings;
   runner = pkgs.writeShellApplication {
     name = "devour-flake";
 
-    text = ''
+    text = let
+      runner = pkgs.callPackage inputs.devour-flake {};
+      args = strings.concatStringsSep " " (cli.toGNUCommandLine {} (nixArgs lib));
+    in ''
       set -x
-      ${lib.meta.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" \
-        --option preallocate-contents true \
-        --option inputs-from "${self}" \
-        --option keep-going true \
-        --option show-trace true \
-      "$@"
+      ${meta.getExe runner} "${self}" ${args} "$@"
     '';
   };
 in {
   type = "app";
-  program = lib.meta.getExe runner;
+  program = meta.getExe runner;
   meta.description = "Build all flake outputs in parallel.";
 }

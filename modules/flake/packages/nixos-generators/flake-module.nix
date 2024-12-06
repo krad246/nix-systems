@@ -1,12 +1,13 @@
 {self, ...}: {
   perSystem = {
-    pkgs,
     lib,
+    pkgs,
     system,
     ...
   }: let
-    nixosConfigs = lib.attrsets.attrValues self.nixosConfigurations;
-    nixosMachines = lib.lists.forEach nixosConfigs (nixosCfg: let
+    inherit (lib) attrsets lists;
+    nixosConfigs = attrsets.attrValues self.nixosConfigurations;
+    nixosMachines = lists.forEach nixosConfigs (nixosCfg: let
       machine = nixosCfg.extendModules {
         modules = [
           {
@@ -22,7 +23,7 @@
     in "${hostName}/${format}";
 
     mapHostFormat = nixosMachine: format: value:
-      lib.attrsets.nameValuePair
+      attrsets.nameValuePair
       (hostFormatName nixosMachine format)
       value;
   in {
@@ -30,7 +31,7 @@
       mkFormatPackages = nixosMachine: let
         declaredFormats = nixosMachine: let
           formats =
-            lib.attrsets.attrByPath ["config" "formats"] {}
+            attrsets.attrByPath ["config" "formats"] {}
             nixosMachine;
 
           include = [
@@ -56,19 +57,19 @@
           filtered = let
             included = name: (builtins.elem name include);
           in
-            lib.attrsets.filterAttrs (name: _value: included name) formats;
+            attrsets.filterAttrs (name: _value: included name) formats;
         in
           filtered;
 
         declared = declaredFormats nixosMachine;
       in
-        lib.attrsets.mapAttrs' (format: drv: mapHostFormat nixosMachine format drv)
+        attrsets.mapAttrs' (format: drv: mapHostFormat nixosMachine format drv)
         declared;
 
-      formats = lib.lists.forEach nixosMachines mkFormatPackages;
+      formats = lists.forEach nixosMachines mkFormatPackages;
     in
-      lib.attrsets.mergeAttrsList (lib.lists.flatten [
-        (lib.lists.optionals pkgs.stdenv.isLinux [formats])
+      attrsets.mergeAttrsList (lists.flatten [
+        (lists.optionals pkgs.stdenv.isLinux [formats])
       ]);
   };
 }
