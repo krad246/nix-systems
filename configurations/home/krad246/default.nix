@@ -6,7 +6,13 @@
   pkgs,
   ...
 }: {
-  imports = [self.homeModules.shellenv] ++ [./specialisations];
+  imports =
+    [
+      self.homeModules.shellenv
+    ]
+    ++ [
+      ./specialisations
+    ];
 
   home = {
     username = osConfig.users.users.krad246.name or "krad246";

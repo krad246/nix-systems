@@ -1,3 +1,6 @@
 {
-  imports = [./darwin ./linux];
+  imports = [
+    ./darwin
+    ./linux
+  ];
 }

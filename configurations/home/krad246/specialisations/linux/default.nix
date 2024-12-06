@@ -2,9 +2,20 @@
   lib,
   pkgs,
   ...
-}: {
-  specialisation = lib.modules.mkIf pkgs.stdenv.isLinux {
-    base-graphical.configuration = import ./base-graphical.nix;
-    nixos-system.configuration = import ./nixos-system.nix;
+}: let
+  inherit (lib) modules;
+in {
+  specialisation = {
+    default = modules.mkIf pkgs.stdenv.isLinux {
+      configuration = import ./generic-linux.nix;
+    };
+
+    generic-linux = modules.mkIf pkgs.stdenv.isLinux {
+      configuration = import ./generic-linux.nix;
+    };
+
+    fortress = modules.mkIf pkgs.stdenv.isLinux {
+      configuration = import ./fortress.nix;
+    };
   };
 }
