@@ -11,8 +11,10 @@
 
       persistent-apps = [
         /Applications/Arc.app
-        /System/Applications/Utilities/Terminal.app
+        /Applications/kitty.app
+        "/Applications/Visual Studio Code.app"
         "/System/Applications/iPhone Mirroring.app"
+        /System/Applications/Launchpad.app
       ];
 
       persistent-others = [];
