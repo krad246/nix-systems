@@ -1,14 +1,14 @@
 {
-  inputs,
-  pkgs,
+  withSystem,
+  self,
   lib,
-  ezModules,
+  pkgs,
   ...
 }: let
-  inherit (pkgs.stdenv) system;
-  nixvim = inputs.nixvim-config.packages.${system}.default;
+  nixvim = withSystem pkgs.stdenv.system ({inputs', ...}: inputs'.nixvim-config.packages.default);
 in {
-  imports = [ezModules.nerdfonts];
+  imports = [self.homeModules.nerdfonts];
+
   home = {
     packages = [nixvim] ++ (with pkgs; [nil nixd nixpkgs-fmt]);
 

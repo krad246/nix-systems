@@ -9,6 +9,6 @@ in {
 
   services.vscode-server = {
     enable = true;
-    extraRuntimeDependencies = with pkgs; [nodejs jq];
+    extraRuntimeDependencies = with pkgs; [nodejs jq wget];
   };
 }

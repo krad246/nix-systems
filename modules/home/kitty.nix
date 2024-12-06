@@ -1,7 +1,11 @@
 {pkgs, ...}: {
   programs.kitty = {
     enable = true;
-    shellIntegration.mode = "enabled";
+    darwinLaunchOptions = ["--single-instance"];
+    shellIntegration = {
+      mode = "enabled";
+      enableBashIntegration = true;
+    };
     theme = "Gruvbox Material Dark Soft";
     font = {
       name = "meslo-lg";
@@ -13,6 +17,8 @@
         ];
       };
     };
+    keybindings = {};
+    environment = {};
     extraConfig = ''
       confirm_os_window_close 0
     '';

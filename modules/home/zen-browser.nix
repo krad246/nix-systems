@@ -1,9 +1,7 @@
 {
-  inputs,
+  withSystem,
   pkgs,
   ...
-}: let
-  inherit (inputs) zen-browser;
-in {
-  home.packages = [zen-browser.packages.${pkgs.stdenv.system}.default];
+}: {
+  home.packages = [(withSystem pkgs.stdenv.system ({inputs', ...}: inputs'.zen-browser.packages.default))];
 }
