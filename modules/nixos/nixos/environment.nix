@@ -25,4 +25,8 @@
   time.timeZone = "America/New_York";
 
   system.stateVersion = lib.trivial.release;
+
+  environment.variables = {
+    TERM = "xterm-256color";
+  };
 }

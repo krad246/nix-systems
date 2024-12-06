@@ -1,38 +1,18 @@
-{
-  self,
-  inputs,
-  ...
-}: let
-  inherit (inputs) home-manager;
-in {
+{self, ...}: {
   imports =
     [
       self.nixosModules.ccache-stdenv
       self.nixosModules.darling
+      self.nixosModules.hm-compat
+      self.nixosModules.zram
     ]
     ++ [
       ./aarch64-binfmt.nix
       ./default-users.nix
       ./environment.nix
       ./kernel.nix
-      ./nix-daemon.nix
       ./nix-ld.nix
       ./packages.nix
-      ./unfree.nix
-      ./zram.nix
     ]
-    ++ [
-      home-manager.nixosModules.home-manager
-    ]
-    ++ [self.modules.generic.flake-registry];
-
-  home-manager = {
-    useUserPackages = true;
-    useGlobalPkgs = true;
-    backupFileExtension = "bak";
-    extraSpecialArgs = {
-    };
-    sharedModules = [];
-    verbose = false;
-  };
+    ++ (with self.modules.generic; [flake-registry nix-core unfree]);
 }
