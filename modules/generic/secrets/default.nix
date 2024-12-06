@@ -44,7 +44,7 @@ in
 
       hostSecrets = lib.lists.forEach hits mkSecret;
     in
-      lib.mkIf hasHostName {
+      lib.modules.mkIf hasHostName {
         secrets = lib.attrsets.mergeAttrsList hostSecrets;
       };
   }

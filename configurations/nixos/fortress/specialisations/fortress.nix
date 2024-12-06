@@ -43,11 +43,11 @@ in {
               common-pc-ssd
             ]));
 
-        programs.ssh = lib.mkIf (hasPrivKey && hasPubKey) {
+        programs.ssh = lib.modules.mkIf (hasPrivKey && hasPubKey) {
           startAgent = true;
         };
 
-        services = lib.mkIf (hasPrivKey && hasPubKey) {
+        services = lib.modules.mkIf (hasPrivKey && hasPubKey) {
           openssh = {
             enable = true;
             startWhenNeeded = true;
@@ -56,7 +56,7 @@ in {
             };
           };
 
-          cachix-watch-store = lib.mkIf (lib.attrsets.hasAttrByPath ["cachix.age"]
+          cachix-watch-store = lib.modules.mkIf (lib.attrsets.hasAttrByPath ["cachix.age"]
             config.age.secrets) {
             enable = true;
             cacheName = "krad246";

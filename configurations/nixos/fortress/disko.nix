@@ -11,7 +11,7 @@
 in {
   imports = [disko.nixosModules.disko] ++ [impermanence.nixosModules.impermanence];
 
-  disko.devices = lib.mkIf enableConfig {
+  disko.devices = lib.modules.mkIf enableConfig {
     disk = {
       main = {
         device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23026J804343";
@@ -100,13 +100,13 @@ in {
     };
   };
 
-  fileSystems = lib.mkIf enableConfig {
+  fileSystems = lib.modules.mkIf enableConfig {
     "${persistPath}" = {
       neededForBoot = true;
     };
   };
 
-  environment.persistence = lib.mkIf enableConfig {
+  environment.persistence = lib.modules.mkIf enableConfig {
     "${persistPath}" = {
       hideMounts = true;
       directories = [

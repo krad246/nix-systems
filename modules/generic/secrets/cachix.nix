@@ -10,7 +10,7 @@
   '';
   hasCachix = config.age.secrets ? cachix;
 in {
-  systemd.user.services."${name}" = lib.mkIf (pkgs.stdenv.isLinux && hasCachix) {
+  systemd.user.services."${name}" = lib.modules.mkIf (pkgs.stdenv.isLinux && hasCachix) {
     Unit = {
       Description = "Cachix login after secrets mounting";
       Requires = ["agenix.service"];
@@ -26,7 +26,7 @@ in {
     };
   };
 
-  launchd.agents."${name}" = lib.mkIf (pkgs.stdenv.isDarwin && hasCachix) {
+  launchd.agents."${name}" = lib.modules.mkIf (pkgs.stdenv.isDarwin && hasCachix) {
     enable = true;
     config = {
       ProgramArguments = ["${lib.getExe pkgs.bash}" "-c" "${lib.strings.escapeXML exec}"];
