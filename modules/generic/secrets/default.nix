@@ -10,7 +10,7 @@ args @ {
 in
   lib.attrsets.optionalAttrs hasCtx {
     imports =
-      lib.optionals hasHomeCtx [agenix.homeManagerModules.age];
+      lib.lists.optionals hasHomeCtx [agenix.homeManagerModules.age];
 
     age = let
       # determine if there is a supported host

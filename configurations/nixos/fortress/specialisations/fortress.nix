@@ -32,7 +32,7 @@ in {
             system76-scheduler
             wireshark
           ])
-          ++ lib.optionals pkgs.stdenv.isx86_64 ([./hardware-configuration.nix]
+          ++ lib.lists.optionals pkgs.stdenv.isx86_64 ([./hardware-configuration.nix]
             ++ (with nixos-hardware.nixosModules; [
               common-cpu-amd
               common-cpu-amd-pstate

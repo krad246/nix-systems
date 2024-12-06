@@ -17,17 +17,17 @@ in {
         // {
           boot = {
             kernelParams = ["nomodeset"];
-            binfmt.emulatedSystems = lib.mkForce [];
+            binfmt.emulatedSystems = lib.modules.mkForce [];
           };
         };
 
       iso = {lib, ...}: {
         disko.enableConfig = false;
         boot.supportedFilesystems = {
-          zfs = lib.mkForce false;
+          zfs = lib.modules.mkForce false;
         };
 
-        boot.binfmt.emulatedSystems = lib.mkForce [];
+        boot.binfmt.emulatedSystems = lib.modules.mkForce [];
       };
 
       install-iso = args:
@@ -51,10 +51,10 @@ in {
     }
     // rec {
       kexec = {lib, ...}: {
-        networking.hostName = lib.mkForce "kexec";
+        networking.hostName = lib.modules.mkForce "kexec";
 
         boot.supportedFilesystems = {
-          zfs = lib.mkForce false;
+          zfs = lib.modules.mkForce false;
         };
       };
 
@@ -78,10 +78,10 @@ in {
       sd-aarch64 = {lib, ...}: {
         disko.enableConfig = false;
         nixpkgs.hostPlatform = "aarch64-linux";
-        hardware.opengl.driSupport32Bit = lib.mkForce false;
-        boot.binfmt.emulatedSystems = lib.mkForce ["x86_64-linux"];
+        hardware.opengl.driSupport32Bit = lib.modules.mkForce false;
+        boot.binfmt.emulatedSystems = lib.modules.mkForce ["x86_64-linux"];
         boot.supportedFilesystems = {
-          zfs = lib.mkForce false;
+          zfs = lib.modules.mkForce false;
         };
       };
 
@@ -98,7 +98,7 @@ in {
         disko.enableConfig = false;
         nixpkgs.hostPlatform = "x86_64-linux";
         boot.supportedFilesystems = {
-          zfs = lib.mkForce false;
+          zfs = lib.modules.mkForce false;
         };
       };
 
@@ -114,12 +114,12 @@ in {
         };
       };
 
-      vagrant-virtualbox = args @ {lib, ...}: (virtualbox args) // {sound.enable = lib.mkForce false;};
+      vagrant-virtualbox = args @ {lib, ...}: (virtualbox args) // {sound.enable = lib.modules.mkForce false;};
     }
     // rec {
       vm = {lib, ...}: {
         disko.enableConfig = false;
-        boot.binfmt.emulatedSystems = lib.mkForce [];
+        boot.binfmt.emulatedSystems = lib.modules.mkForce [];
       };
 
       vm-bootloader = vm;
@@ -127,21 +127,21 @@ in {
       vm-nogui = args @ {lib, ...}:
         vm args
         // {
-          services.xserver = lib.mkForce {
+          services.xserver = lib.modules.mkForce {
             enable = false;
             displayManager.gdm.enable = false;
             desktopManager.gnome.enable = false;
             displayManager.startx.enable = false;
           };
-          xdg.portal.enable = lib.mkForce false;
-          services.flatpak.enable = lib.mkForce false;
+          xdg.portal.enable = lib.modules.mkForce false;
+          services.flatpak.enable = lib.modules.mkForce false;
         };
     }
     // {
       vmware = {lib, ...}: {
         boot.kernelParams = ["nomodeset"];
         disko.enableConfig = false;
-        boot.binfmt.emulatedSystems = lib.mkForce [];
+        boot.binfmt.emulatedSystems = lib.modules.mkForce [];
       };
     };
 }
