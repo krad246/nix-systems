@@ -7,7 +7,7 @@
   vmConfig = {
     cores = 8;
     darwin-builder = {
-      memorySize = 8 * 1024;
+      memorySize = 6 * 1024;
       diskSize = 80 * 1024;
     };
   };
