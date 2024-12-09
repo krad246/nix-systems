@@ -5,7 +5,6 @@ outer @ {
   ...
 }: {
   krad246.darwin.linux-builder = {
-    maxJobs = 20;
     ephemeral = false;
 
     extraConfig = {config, ...}: {
@@ -43,23 +42,13 @@ outer @ {
         in
           lib.lists.forEach paths (path: builtins.readFile path);
       };
-
-      virtualisation = {
-        darwin-builder = {
-          diskSize = 256 * 1024;
-        };
-      };
-
-      # setting priorirty of swap devices to 1 less than mkVMOverride
-      # this makes it take precedence over the default behavior of no swap devices
-      # alternatively, you *could* reimplement everything via the defaultFileSystems argument
-      # but that stinks.
-      swapDevices = lib.mkOverride 9 [
-        {
-          device = "/swapfile";
-          size = 128 * 1024;
-        }
-      ];
     };
+
+    maxJobs = 20;
+    cores = 8;
+
+    memorySize = 6 * 1024;
+    diskSize = 256 * 1024;
+    swapSize = 128 * 1024;
   };
 }

@@ -15,7 +15,7 @@
     gc.automatic = true;
     settings = {
       experimental-features = ["nix-command" "flakes"];
-      keep-outputs = lib.attrsets.attrByPath ["nix" "settings" "keep-outputs"] false osConfig;
+      keep-outputs = lib.attrsets.attrByPath ["nix" "settings" "keep-outputs"] true osConfig;
       keep-derivations = lib.attrsets.attrByPath ["nix" "settings" "keep-derivations"] false osConfig;
       sandbox = lib.attrsets.attrByPath ["nix" "settings" "sandbox"] "relaxed" osConfig;
     };

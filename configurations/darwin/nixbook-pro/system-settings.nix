@@ -12,6 +12,16 @@
     username = "krad246";
   };
 
+  krad246.darwin.linux-builder = {
+    ephemeral = true;
+
+    maxJobs = 128;
+    cores = 8;
+
+    memorySize = 16 * 1024;
+    diskSize = 256 * 1024;
+  };
+
   users = {
     users.krad246 = {
       uid = 501;
@@ -20,7 +30,6 @@
   };
 
   nix = {
-    linux-builder.maxJobs = 32;
     settings.keep-derivations = true;
   };
 

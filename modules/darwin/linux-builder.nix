@@ -33,6 +33,37 @@ in {
         '';
       };
 
+      cores = lib.options.mkOption {
+        type = lib.types.ints.positive;
+        default = 8;
+        description = ''
+          Specify the number of cores the guest is permitted to use.
+          The number can be higher than the available cores on the
+          host system.
+        '';
+      };
+
+      memorySize = lib.options.mkOption {
+        default = 6 * 1024;
+        type = lib.types.ints.positive;
+        example = 8192;
+        description = "The runner's memory in MB";
+      };
+
+      diskSize = lib.options.mkOption {
+        default = 32 * 1024;
+        type = lib.types.ints.positive;
+        example = 30720;
+        description = "The maximum disk space allocated to the runner in MB";
+      };
+
+      swapSize = lib.options.mkOption {
+        default = 16 * 1024;
+        type = lib.types.ints.positive;
+        example = 30720;
+        description = "The maximum disk space allocated to the runner's swapfile in MB";
+      };
+
       systems = lib.options.mkOption {
         type = lib.types.listOf lib.types.str;
         default = ["i386-linux" "i686-linux" "x86_64-linux" "aarch64-linux"];
@@ -76,20 +107,31 @@ in {
           boot.binfmt.emulatedSystems = lib.lists.remove system linux-builder.systems;
 
           virtualisation = {
+            inherit (cfg) cores;
             darwin-builder = {
-              memorySize = 1024 * 6;
+              inherit (cfg) diskSize memorySize;
             };
-
-            cores = 8;
           };
 
-          environment.variables = {
-            TERM = "xterm-256color";
+          environment = {
+            systemPackages = with pkgs; [bottom];
+            variables = {
+              TERM = "xterm-256color";
+            };
           };
 
           systemd.coredump.enable = false;
 
-          environment.systemPackages = with pkgs; [bottom];
+          # setting priorirty of swap devices to 1 less than mkVMOverride
+          # this makes it take precedence over the default behavior of no swap devices
+          # alternatively, you *could* reimplement everything via the defaultFileSystems argument
+          # but that stinks.
+          swapDevices = lib.mkOverride 9 [
+            {
+              device = "/swapfile";
+              size = cfg.swapSize;
+            }
+          ];
         };
 
         inherit (cfg) maxJobs;
