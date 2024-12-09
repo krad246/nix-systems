@@ -34,24 +34,15 @@ in {
           };
         in
           (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-            # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
             nixos-rebuild = {
               comment = "Wraps `nixos-rebuild`.";
               justfile = ''
                 [linux]
-                @nixos-rebuild *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
+                nixos-rebuild *ARGS:
                   ${lib.meta.getExe pkgs.nixos-rebuild} \
                     ${lib.strings.concatStringsSep " " args} \
                     --use-remote-sudo \
                     {{ ARGS }}
-              '';
-            };
-
-            _apply_system = {
-              justfile = ''
-                [private]
-                _apply_system *ARGS: (_test_system ARGS) && (_boot_system ARGS)
               '';
             };
 
@@ -70,22 +61,12 @@ in {
             };
           })
           // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
-            # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
             darwin-rebuild = {
               comment = "Wraps `darwin-rebuild`.";
               justfile = ''
                 [macos]
-                @darwin-rebuild *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"}                     ${lib.strings.concatStringsSep " " args} \
-                    {{ ARGS }}
-              '';
-            };
-
-            _apply_system = {
-              justfile = ''
-                [private]
-                _apply_system *ARGS: (darwin-rebuild "switch" ARGS)
+                darwin-rebuild *ARGS:
+                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} ${lib.strings.concatStringsSep " " args} {{ ARGS }}
               '';
             };
 
@@ -93,6 +74,13 @@ in {
               justfile = ''
                 [private]
                 _test_system *ARGS: (darwin-rebuild "check" ARGS)
+              '';
+            };
+
+            _boot_system = {
+              justfile = ''
+                [private]
+                _boot_system *ARGS: (darwin-rebuild "switch" ARGS)
               '';
             };
           })
@@ -103,12 +91,23 @@ in {
 
               justfile = ''
                 [unix]
-                @home-manager *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe pkgs.home-manager} \
-                    ${lib.strings.concatStringsSep " " args} \
-                    -b bak \
-                    {{ ARGS }}
+                home-manager *ARGS:
+                  ${lib.meta.getExe pkgs.home-manager} ${lib.strings.concatStringsSep " " args} -b bak {{ ARGS }}
+              '';
+            };
+
+            apply-home = {
+              comment = "Wraps `home-manager switch`.";
+              justfile = ''
+                apply-home *ARGS: (lock) (home-manager "switch" ARGS)
+              '';
+            };
+          }
+          // {
+            _apply_system = {
+              justfile = ''
+                [private]
+                _apply_system *ARGS: (_test_system ARGS) && (_boot_system ARGS)
               '';
             };
 
@@ -137,39 +136,6 @@ in {
               comment = "Thin wrapper around `switch --rollback`.";
               justfile = ''
                 rollback-system *ARGS: (apply-system "--rollback" ARGS)
-              '';
-            };
-
-            _build_home = {
-              justfile = ''
-                [private]
-                _build_home *ARGS:
-                  exec {{ just_executable() }} build \
-                    --out-link {{ (tmpdir / "result") }} \
-                    {{ ARGS }} \
-                    {{ flake }}#homeConfigurations.{{ whoami }}@{{ hostname }}.activationPackage
-              '';
-            };
-
-            _activate_home = {
-              justfile = ''
-                [private]
-                _activate_home PROFILE=(""):
-                  {{ (tmpdir / "result") / (prepend("specialisation/", PROFILE)) / "activate" }}
-              '';
-            };
-
-            _apply_home = {
-              justfile = ''
-                [private]
-                _apply_home PROFILE=("") +ARGS=(""): (_build_home ARGS) && (_activate_home PROFILE)
-              '';
-            };
-
-            apply-home = {
-              comment = "Wraps `home-manager switch`.";
-              justfile = ''
-                apply-home *ARGS: (lock) (_apply_home ARGS)
               '';
             };
           };

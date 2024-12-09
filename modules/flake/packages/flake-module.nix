@@ -23,6 +23,55 @@ in {
     };
 
     modules.flake = flakeModules;
+
+    packages = {
+      aarch64-darwin = {
+        "krad246@nixbook-pro" = self.homeConfigurations."krad246@nixbook-pro".activationPackage;
+        "krad246@dullahan" = self.homeConfigurations."krad246@dullahan".activationPackage;
+        "krad246@nixbook-air" = self.homeConfigurations."krad246@nixbook-air".activationPackage;
+      };
+
+      x86_64-linux = {
+        "krad246@fortress" = self.homeConfigurations."krad246@fortress".activationPackage;
+        "krad246@windex" = self.homeConfigurations."krad246@windex".activationPackage;
+        "keerad@windex" = self.homeConfigurations."keerad@windex".activationPackage;
+      };
+
+      aarch64-linux = {
+        "krad246@fortress" = let
+          extended = self.homeConfigurations."krad246@fortress".extendModules {
+            modules = [
+              {
+                nixpkgs.system = "aarch64-linux";
+              }
+            ];
+          };
+        in
+          extended.activationPackage;
+
+        "krad246@windex" = let
+          extended = self.homeConfigurations."krad246@windex".extendModules {
+            modules = [
+              {
+                nixpkgs.system = "aarch64-linux";
+              }
+            ];
+          };
+        in
+          extended.activationPackage;
+
+        "keerad@windex" = let
+          extended = self.homeConfigurations."keerad@windex".extendModules {
+            modules = [
+              {
+                nixpkgs.system = "aarch64-linux";
+              }
+            ];
+          };
+        in
+          extended.activationPackage;
+      };
+    };
   };
 
   perSystem = {
