@@ -9,6 +9,10 @@
         neofetch
         nodePackages.undollar
         has
+      ]
+      ++ [
+        gnumake
+        just
       ];
   };
 }
