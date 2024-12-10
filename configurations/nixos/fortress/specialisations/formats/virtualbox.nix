@@ -1,10 +1,10 @@
 {config, ...}: {
   disko.enableConfig = false;
 
-  virtualisation.diskSize = config.virtualbox.baseImageSize;
+  virtualisation.diskSize = 32 * 1024;
 
   virtualbox = {
-    baseImageSize = 64 * 1024;
+    baseImageSize = config.virtualisation.diskSize;
     memorySize = 6 * 1024;
     extraDisk = {
       mountPoint = "/growable";

@@ -1,28 +1,10 @@
 {
   withSystem,
-  inputs,
   self,
-  specialArgs,
   ...
 }: let
-  mkFormat = pkgs: host: format:
-    inputs.nixos-generators.nixosGenerate {
-      inherit format;
-      inherit (pkgs.stdenv) system;
-      inherit specialArgs;
-      modules = [
-        {nixpkgs.system = pkgs.stdenv.system;}
-
-        inputs.agenix.nixosModules.age
-        inputs.disko.nixosModules.disko
-        inputs.impermanence.nixosModules.impermanence
-        inputs.home-manager.nixosModules.home-manager
-        inputs.nixos-generators.nixosModules.all-formats
-
-        self.nixosModules.${host}
-        self.nixosConfigurations.${host}.config.formatConfigs.${format}
-      ];
-    };
+  mkFormat = _pkgs: host: format:
+    self.nixosConfigurations.${host}.config.formats.${format};
 in {
   flake.packages.aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
     fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
