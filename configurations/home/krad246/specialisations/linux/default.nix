@@ -5,6 +5,9 @@
 }: let
   inherit (lib) modules;
 in {
+  disabledModules = [../darwin/darwin.nix];
+  imports = [./generic-linux.nix];
+
   specialisation = {
     default = modules.mkIf pkgs.stdenv.isLinux {
       configuration = import ./generic-linux.nix;

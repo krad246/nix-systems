@@ -22,7 +22,7 @@
           inherit arch;
           disk = vmConfig.darwin-builder.diskSize / 1024;
           cpu = vmConfig.cores;
-          memory = vmConfig.darwin-builder.memorySize;
+          memory = vmConfig.darwin-builder.memorySize / 1024;
           verbose = true;
           vm-type = "vz";
           vz-rosetta = true;

@@ -1,12 +1,19 @@
 {
+  getSystem,
+  moduleWithSystem,
   withSystem,
-  flake-parts-lib,
+  importApply,
+  inputs,
   self,
   lib,
-  inputs,
   ...
 }: let
-  inherit (flake-parts-lib) importApply;
+  forwarded = {
+    inherit getSystem moduleWithSystem withSystem;
+    inherit importApply;
+    inherit inputs self;
+    inherit lib;
+  };
 in {
-  flakeModule = importApply ./flake-module.nix {inherit withSystem importApply self lib inputs;};
+  flakeModule = importApply ./flake-module.nix forwarded;
 }

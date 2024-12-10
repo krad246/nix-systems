@@ -1,9 +1,10 @@
-# outer / 'flake' scope
 {
-  mkJustRecipeGroup,
   self,
+  specialArgs,
   ...
-}: {
+}: let
+  inherit (specialArgs) mkJustRecipeGroup;
+in {
   perSystem = {
     inputs',
     pkgs,
@@ -29,17 +30,15 @@
               "builders-use-substitutes true"
               "preallocate-contents true"
             ];
-            flake = "$FLAKE_ROOT";
+            flake = "{{ flake }}";
           };
         in
           (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-            # Add a wrapper around nixos-rebuild to devShell instances if we're on Linux
             nixos-rebuild = {
               comment = "Wraps `nixos-rebuild`.";
               justfile = ''
                 [linux]
-                @nixos-rebuild *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
+                nixos-rebuild *ARGS:
                   ${lib.meta.getExe pkgs.nixos-rebuild} \
                     ${lib.strings.concatStringsSep " " args} \
                     --use-remote-sudo \
@@ -47,31 +46,41 @@
               '';
             };
 
-            _apply_system = {
+            _test_system = {
               justfile = ''
                 [private]
-                _apply_system *ARGS: (nixos-rebuild "boot" ARGS)
-                  {{ just_executable() }} nixos-rebuild switch --specialisation "$HOSTNAME" {{ ARGS }}
+                _test_system *ARGS: (nixos-rebuild "test" replace(ARGS, hostname, "--specialisation" + " " + hostname))
+              '';
+            };
+
+            _boot_system = {
+              justfile = ''
+                [private]
+                _boot_system *ARGS: (nixos-rebuild "boot" replace(ARGS, hostname, ""))
               '';
             };
           })
           // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
-            # Add a wrapper around nixos-rebuild to devShell instances if we're on Darwin
             darwin-rebuild = {
               comment = "Wraps `darwin-rebuild`.";
               justfile = ''
                 [macos]
-                @darwin-rebuild *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"}                     ${lib.strings.concatStringsSep " " args} \
-                    {{ ARGS }}
+                darwin-rebuild *ARGS:
+                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} ${lib.strings.concatStringsSep " " args} {{ ARGS }}
               '';
             };
 
-            _apply_system = {
+            _test_system = {
               justfile = ''
                 [private]
-                _apply_system *ARGS: (darwin-rebuild "switch" ARGS)
+                _test_system *ARGS: (darwin-rebuild "check" ARGS)
+              '';
+            };
+
+            _boot_system = {
+              justfile = ''
+                [private]
+                _boot_system *ARGS: (darwin-rebuild "switch" ARGS)
               '';
             };
           })
@@ -82,12 +91,26 @@
 
               justfile = ''
                 [unix]
-                @home-manager *ARGS:
-                  #!${lib.meta.getExe pkgs.bash}
-                  ${lib.meta.getExe pkgs.home-manager} \
-                    ${lib.strings.concatStringsSep " " args} \
-                    -b bak \
-                    {{ ARGS }}
+                home-manager *ARGS:
+                  ${lib.meta.getExe pkgs.home-manager} ${lib.strings.concatStringsSep " " args} -b bak {{ ARGS }}
+              '';
+            };
+
+            apply-home = {
+              justfile = ''
+                apply-home PROFILE="default" +ARGS="": (lock)
+                  exec {{ just_executable() }} build --print-out-paths \
+                    {{ ARGS }} "{{ flake }}#{{ whoami }}@{{ hostname }}" | \
+                    ${lib.meta.getExe' pkgs.findutils "xargs"} -I {drv} \
+                    ${lib.meta.getExe pkgs.bashInteractive} {drv}/specialisation/{{ PROFILE }}/activate
+              '';
+            };
+          }
+          // {
+            _apply_system = {
+              justfile = ''
+                [private]
+                _apply_system *ARGS: (_test_system ARGS) && (_boot_system ARGS)
               '';
             };
 
@@ -95,6 +118,13 @@
               comment = "Wraps `[darwin-rebuild | nixos-rebuild] switch`.";
               justfile = ''
                 apply-system *ARGS: (lock) (_apply_system ARGS)
+              '';
+            };
+
+            test-system = {
+              comment = "Wraps `[darwin-rebuild | nixos-rebuild] test`.";
+              justfile = ''
+                test-system *ARGS: (lock) (_test_system ARGS)
               '';
             };
 
@@ -109,13 +139,6 @@
               comment = "Thin wrapper around `switch --rollback`.";
               justfile = ''
                 rollback-system *ARGS: (apply-system "--rollback" ARGS)
-              '';
-            };
-
-            apply-home = {
-              comment = "Wraps `home-manager switch`.";
-              justfile = ''
-                apply-home *ARGS: (lock) (home-manager "switch" ARGS)
               '';
             };
           };
