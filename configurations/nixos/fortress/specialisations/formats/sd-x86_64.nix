@@ -6,5 +6,7 @@ in {
     generic-extlinux-compatible.enable = modules.mkForce true;
   };
 
+  virtualisation.diskSize = 64 * 1024;
+
   disko.enableConfig = false;
 }

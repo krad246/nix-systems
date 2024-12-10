@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   specialArgs,
   ...
@@ -18,7 +19,7 @@ in {
   disko.devices = modules.mkDefault {
     disk = {
       main = {
-        device = "/dev/vdb";
+        device = "/dev/vda";
         type = "disk";
         content = {
           type = "gpt";
@@ -48,4 +49,6 @@ in {
       };
     };
   };
+
+  boot.loader.grub.device = lib.modules.mkDefault config.disko.devices.disk.main.device;
 }

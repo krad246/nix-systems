@@ -2,6 +2,7 @@
   imports = with self.nixosModules; [
     avahi
     bluetooth
+    efiboot
     kdeconnect
     pipewire
     rdp
