@@ -58,7 +58,7 @@
     inherit self specialArgs;
   };
 
-  justfile-nix = importApply ./commands/nix {
+  justfile-nix = importApply ./commands/nix-flakes.nix {
     inherit self specialArgs;
   };
 

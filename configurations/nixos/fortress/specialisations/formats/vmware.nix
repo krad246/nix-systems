@@ -4,5 +4,7 @@
     kernelParams = ["nomodeset"];
   };
 
+  virtualisation.diskSize = 32 * 1024;
+
   disko.enableConfig = false;
 }
