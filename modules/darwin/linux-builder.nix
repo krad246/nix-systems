@@ -5,22 +5,23 @@
   ...
 }: let
   cfg = config.krad246.darwin.linux-builder;
+  inherit (lib) options types;
 in {
   options = {
     krad246.darwin.linux-builder = {
-      ephemeral = lib.options.mkEnableOption "ephemeral";
+      ephemeral = options.mkEnableOption "ephemeral";
 
-      extraConfig = lib.options.mkOption {
-        type = lib.types.deferredModule;
+      extraConfig = options.mkOption {
+        type = types.deferredModule;
         default = {};
-        example = lib.options.literalExpression ''{}'';
+        example = options.literalExpression ''{}'';
         description = ''
           This option specifies extra NixOS configuration for the builder.
         '';
       };
 
-      maxJobs = lib.options.mkOption {
-        type = lib.types.ints.positive;
+      maxJobs = options.mkOption {
+        type = types.ints.positive;
         default = 16;
         example = 4;
         description = ''
@@ -33,8 +34,8 @@ in {
         '';
       };
 
-      cores = lib.options.mkOption {
-        type = lib.types.ints.positive;
+      cores = options.mkOption {
+        type = types.ints.positive;
         default = 8;
         description = ''
           Specify the number of cores the guest is permitted to use.
@@ -43,35 +44,35 @@ in {
         '';
       };
 
-      memorySize = lib.options.mkOption {
+      memorySize = options.mkOption {
         default = 6 * 1024;
-        type = lib.types.ints.positive;
+        type = types.ints.positive;
         example = 8192;
         description = "The runner's memory in MB";
       };
 
-      diskSize = lib.options.mkOption {
+      diskSize = options.mkOption {
         default = 32 * 1024;
-        type = lib.types.ints.positive;
+        type = types.ints.positive;
         example = 30720;
         description = "The maximum disk space allocated to the runner in MB";
       };
 
-      swapSize = lib.options.mkOption {
+      swapSize = options.mkOption {
         default = 16 * 1024;
-        type = lib.types.ints.positive;
+        type = types.ints.positive;
         example = 30720;
         description = "The maximum disk space allocated to the runner's swapfile in MB";
       };
 
-      systems = lib.options.mkOption {
-        type = lib.types.listOf lib.types.str;
+      systems = options.mkOption {
+        type = types.listOf types.str;
         default = ["i386-linux" "i686-linux" "x86_64-linux" "aarch64-linux"];
 
         defaultText = ''
           The `nixpkgs.hostPlatform.system` of the build machine's final NixOS configuration.
         '';
-        example = lib.options.literalExpression ''
+        example = options.literalExpression ''
           [
             "x86_64-linux"
             "aarch64-linux"

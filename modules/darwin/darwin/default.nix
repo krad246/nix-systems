@@ -4,7 +4,9 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) modules;
+in {
   imports =
     (with self.modules.generic; [
       flake-registry
@@ -21,8 +23,8 @@
     sandbox = false;
   };
 
-  nix.useDaemon = lib.modules.mkForce true;
-  services.nix-daemon.enable = lib.modules.mkForce true;
+  nix.useDaemon = modules.mkForce true;
+  services.nix-daemon.enable = modules.mkForce true;
   system.stateVersion = 4;
 
   homebrew = {

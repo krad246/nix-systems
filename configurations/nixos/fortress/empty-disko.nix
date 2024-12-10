@@ -3,18 +3,19 @@
   specialArgs,
   ...
 }: let
+  inherit (lib) attrsets modules;
   disko = rec {
     pinned = builtins.fetchTarball {
       url = "https://github.com/nix-community/disko/archive/master.tar.gz";
       sha256 = "1ayxw37arc92frzq0080w7kixdmqbq4jm8a19nrgivb70ra1mqys";
     };
 
-    repo = lib.attrsets.attrByPath ["inputs" "disko"] pinned specialArgs;
+    repo = attrsets.attrByPath ["inputs" "disko"] pinned specialArgs;
   };
 in {
   imports = ["${disko.repo}/module.nix"];
 
-  disko.devices = lib.modules.mkDefault {
+  disko.devices = modules.mkDefault {
     disk = {
       main = {
         device = "/dev/vdb";
@@ -48,5 +49,5 @@ in {
     };
   };
 
-  boot.loader.grub.device = lib.modules.mkDefault "nodev";
+  boot.loader.grub.device = modules.mkDefault "nodev";
 }

@@ -1,11 +1,13 @@
-{lib, ...}: {
+{lib, ...}: let
+  inherit (lib) modules;
+in {
   boot = {
-    binfmt.emulatedSystems = lib.modules.mkForce [];
+    binfmt.emulatedSystems = modules.mkForce [];
     supportedFilesystems = {
-      zfs = lib.modules.mkForce false;
+      zfs = modules.mkForce false;
     };
 
-    loader.grub.enable = lib.modules.mkForce false;
+    loader.grub.enable = modules.mkForce false;
   };
 
   disko.enableConfig = false;

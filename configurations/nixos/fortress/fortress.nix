@@ -3,11 +3,16 @@
   lib,
   ...
 }: {
-  imports = with self.nixosModules; [
-    gnome-desktop
-    nixos
-    whitesur
-  ];
+  imports =
+    [self.modules.generic.unfree]
+    ++ (with self.nixosModules; [
+      efiboot
+      flatpak
+      gnome-desktop
+      nixos
+      system76-scheduler
+      whitesur
+    ]);
 
   xdg.portal = {
     enable = true;

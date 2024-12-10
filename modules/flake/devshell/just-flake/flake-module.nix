@@ -19,14 +19,16 @@
       comment ? null,
       group ? null,
       ...
-    }: {
+    }: let
+      inherit (inner.lib) strings;
+    in {
       inherit enable;
 
       # format the comment and group above the justfile so that
       # the writer of the justfile can put more modifiers on the recipe they define
       justfile = ''
-        ${inner.lib.strings.optionalString (comment != null) "# ${comment}"}
-        ${inner.lib.strings.optionalString (group != null) "[group('${group}')]"}
+        ${strings.optionalString (comment != null) "# ${comment}"}
+        ${strings.optionalString (group != null) "[group('${group}')]"}
         ${justfile}
       '';
     };
@@ -37,12 +39,16 @@
       group,
       recipes,
       ...
-    }:
-      inner.lib.attrsets.mapAttrs (_key: recipe: mkJustRecipe (recipe // {inherit (inner) lib group;}))
+    }: let
+      inherit (inner.lib) attrsets;
+    in
+      attrsets.mapAttrs (_key: recipe: mkJustRecipe (recipe // {inherit (inner) lib group;}))
       recipes;
 
-    nixArgs = inner @ {lib, ...}:
-      inner.lib.cli.toGNUCommandLine {} {
+    nixArgs = {lib, ...}: let
+      inherit (lib) cli;
+    in
+      cli.toGNUCommandLine {} {
       };
   };
 

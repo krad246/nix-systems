@@ -6,7 +6,9 @@
   lib,
   modulesPath,
   ...
-}: {
+}: let
+  inherit (lib) modules;
+in {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
@@ -23,7 +25,7 @@
     extraModulePackages = [];
   };
 
-  networking.useDHCP = lib.modules.mkDefault true;
+  networking.useDHCP = modules.mkDefault true;
 
   networking.interfaces.enp10s0 = {
     useDHCP = false;
@@ -45,5 +47,5 @@
     };
   };
 
-  hardware.cpu.amd.updateMicrocode = lib.modules.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode = modules.mkDefault config.hardware.enableRedistributableFirmware;
 }
