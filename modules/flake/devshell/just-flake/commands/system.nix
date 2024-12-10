@@ -97,9 +97,12 @@ in {
             };
 
             apply-home = {
-              comment = "Wraps `home-manager switch`.";
               justfile = ''
-                apply-home *ARGS: (lock) (home-manager "switch" ARGS)
+                apply-home PROFILE="default" +ARGS="": (lock)
+                  exec {{ just_executable() }} build --print-out-paths \
+                    {{ ARGS }} "{{ flake }}#{{ whoami }}@{{ hostname }}" | \
+                    ${lib.meta.getExe' pkgs.findutils "xargs"} -I {drv} \
+                    ${lib.meta.getExe pkgs.bashInteractive} {drv}/specialisation/{{ PROFILE }}/activate
               '';
             };
           }
