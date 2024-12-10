@@ -2,16 +2,28 @@
 # and may be overwritten by future invocations.  Please make changes
 # to /etc/nixos/configuration.nix instead.
 {
+  inputs,
   config,
   lib,
   modulesPath,
   ...
 }: let
   inherit (lib) modules;
+  inherit (inputs) nixos-hardware;
 in {
-  imports = [
-    (modulesPath + "/installer/scan/not-detected.nix")
-  ];
+  imports =
+    [
+      (modulesPath + "/installer/scan/not-detected.nix")
+    ]
+    ++ (with nixos-hardware.nixosModules; [
+      common-cpu-amd
+      common-cpu-amd-pstate
+      common-cpu-amd-zenpower
+      common-gpu-amd
+      common-hidpi
+      common-pc
+      common-pc-ssd
+    ]);
 
   boot = {
     initrd = {

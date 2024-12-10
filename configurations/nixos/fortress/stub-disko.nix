@@ -48,6 +48,4 @@ in {
       };
     };
   };
-
-  boot.loader.grub.device = modules.mkDefault "nodev";
 }
