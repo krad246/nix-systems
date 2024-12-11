@@ -11,7 +11,6 @@
     configuration = _: {
       imports = with self.homeModules; [
         chromium
-        dconf
         kitty
       ];
 

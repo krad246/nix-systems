@@ -34,6 +34,7 @@ in {
     fortress = modules.mkIf pkgs.stdenv.isLinux {
       configuration = _: {
         imports = with self.homeModules; [
+          dconf
           discord
           kdeconnect
           vscode
