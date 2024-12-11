@@ -37,11 +37,23 @@ in {
   perSystem = {
     lib,
     pkgs,
+    self',
     ...
   }: {
-    apps =
-      lib.modules.mkIf pkgs.stdenv.isLinux {
+    apps = lib.modules.mkIf pkgs.stdenv.isLinux {
+      fortress-vm = let
+        wrapper = pkgs.writeShellApplication {
+          name = "fortress-vm";
+
+          text = ''
+            exec ${self'.packages.fortress-vm}/run-fortress-vm
+          '';
+        };
+      in {
+        type = "app";
+        program = lib.meta.getExe wrapper;
       };
+    };
 
     packages = lib.modules.mkIf pkgs.stdenv.isLinux {
       fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
@@ -54,6 +66,8 @@ in {
 
       fortress-raw = mkFormat pkgs "fortress" "raw";
       fortress-raw-efi = mkFormat pkgs "fortress" "raw-efi";
+
+      fortress-vm = mkFormat pkgs "fortress" "vm";
     };
   };
 }
