@@ -8,6 +8,4 @@
     calamares-nixos
     calamares-nixos-extensions
   ];
-
-  disko.enableConfig = false;
 }
