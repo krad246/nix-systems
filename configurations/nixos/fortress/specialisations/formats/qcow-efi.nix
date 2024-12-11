@@ -1,6 +1,4 @@
-{self, ...}: {
-  imports =
-    [./qcow.nix] ++ [self.nixosModules.efiboot];
-
+_: {
   disko.enableConfig = false;
+  virtualisation.diskSize = 64 * 1024;
 }

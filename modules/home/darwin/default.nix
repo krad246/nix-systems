@@ -53,4 +53,12 @@ in {
 
     search = "Google";
   };
+
+  specialisation = {
+    default = {
+      configuration = _: {
+        imports = [self.darwinModules.darwin];
+      };
+    };
+  };
 }

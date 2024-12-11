@@ -1,3 +1,3 @@
 _: {
-  disko.enableConfig = false;
+  imports = [./sd-aarch64.nix] ++ [../disko-install.nix];
 }

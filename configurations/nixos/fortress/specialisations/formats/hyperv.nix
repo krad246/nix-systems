@@ -1,10 +1,5 @@
-{lib, ...}: {
-  boot = {
-    kernelParams = ["nomodeset"];
-    binfmt.emulatedSystems = lib.modules.mkForce [];
-  };
-
+_: {
+  boot.kernelParams = ["nomodeset"];
   virtualisation.diskSize = 64 * 1024;
-
   disko.enableConfig = false;
 }

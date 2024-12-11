@@ -1,11 +1,8 @@
-{
-  self,
-  pkgs,
-  ...
-}: {
-  imports =
-    [./iso.nix]
-    ++ [self.nixosModules.efiboot];
+{pkgs, ...}: {
+  imports = [
+    ./iso.nix
+    ../disko-install.nix
+  ];
 
   environment.systemPackages = with pkgs; [
     calamares-nixos

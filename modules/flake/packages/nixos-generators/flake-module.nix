@@ -3,8 +3,22 @@
   self,
   ...
 }: let
-  mkFormat = _pkgs: host: format:
-    self.nixosConfigurations.${host}.config.formats.${format};
+  mkFormat = pkgs: host: format: let
+    inherit (pkgs) lib;
+    inherit (lib) modules;
+    e = self.nixosConfigurations.${host}.extendModules {
+      modules = [
+        {
+          nixpkgs.system = pkgs.lib.modules.mkForce pkgs.stdenv.system;
+          hardware = pkgs.lib.modules.mkIf pkgs.stdenv.isx86_64 rec {
+            opengl.driSupport32Bit = modules.mkForce false;
+            graphics.enable32Bit = opengl.driSupport32Bit;
+          };
+        }
+      ];
+    };
+  in
+    e.config.formats.${format};
 in {
   flake.packages.aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
     fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
@@ -35,7 +49,7 @@ in {
       fortress-install-iso = mkFormat pkgs "fortress" "install-iso";
       fortress-install-iso-hyperv = mkFormat pkgs "fortress" "install-iso-hyperv";
 
-      fortress-qcow = mkFormat pkgs "fortress" "qcow";
+      # fortress-qcow = mkFormat pkgs "fortress" "qcow";
       fortress-qcow-efi = mkFormat pkgs "fortress" "qcow-efi";
 
       fortress-raw = mkFormat pkgs "fortress" "raw";

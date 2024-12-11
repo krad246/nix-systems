@@ -3,12 +3,12 @@
 # to /etc/nixos/configuration.nix instead.
 {
   inputs,
-  config,
   lib,
+  pkgs,
   modulesPath,
   ...
 }: let
-  inherit (lib) modules;
+  inherit (lib) lists modules;
   inherit (inputs) nixos-hardware;
 in {
   imports =
@@ -16,13 +16,15 @@ in {
       (modulesPath + "/installer/scan/not-detected.nix")
     ]
     ++ (with nixos-hardware.nixosModules; [
-      common-cpu-amd
-      common-cpu-amd-pstate
-      common-cpu-amd-zenpower
-      common-gpu-amd
       common-hidpi
       common-pc
       common-pc-ssd
+    ])
+    ++ lists.optionals pkgs.stdenv.isx86_64 (with nixos-hardware.nixosModules; [
+      # common-cpu-amd
+      # common-cpu-amd-pstate
+      # common-cpu-amd-zenpower
+      # common-gpu-amd
     ]);
 
   boot = {
@@ -59,5 +61,5 @@ in {
     };
   };
 
-  hardware.cpu.amd.updateMicrocode = modules.mkDefault config.hardware.enableRedistributableFirmware;
+  # hardware.cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
 }

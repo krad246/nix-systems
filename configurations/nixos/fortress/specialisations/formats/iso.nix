@@ -1,14 +1,4 @@
-{lib, ...}: let
-  inherit (lib) modules;
-in {
-  boot = {
-    binfmt.emulatedSystems = modules.mkForce [];
-    supportedFilesystems = {
-      zfs = modules.mkForce false;
-    };
-
-    loader.grub.enable = modules.mkForce false;
-  };
-
+_: {
+  disabledModules = [../efiboot.nix];
   disko.enableConfig = false;
 }

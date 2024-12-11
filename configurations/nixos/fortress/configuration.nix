@@ -6,13 +6,15 @@
   imports =
     [self.modules.generic.unfree]
     ++ (with self.nixosModules; [
-      efiboot
       flatpak
       gnome-desktop
       nixos
-      system76-scheduler
+      opengl
       whitesur
-    ]);
+    ])
+    ++ [
+      ./specialisations/efiboot.nix
+    ];
 
   xdg.portal = {
     enable = true;

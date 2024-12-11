@@ -7,7 +7,6 @@
       self.nixosModules.zram
     ]
     ++ [
-      ./aarch64-binfmt.nix
       ./default-users.nix
       ./environment.nix
       ./kernel.nix

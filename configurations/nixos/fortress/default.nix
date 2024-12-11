@@ -26,7 +26,7 @@
     };
 
     specialisation = import ./specialisations {
-      inherit self lib;
+      inherit inputs self config lib pkgs modulesPath specialArgs;
     };
 
     nixpkgs.system = lib.modules.mkDefault system;

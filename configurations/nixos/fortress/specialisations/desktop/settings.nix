@@ -1,12 +1,13 @@
 {self, ...}: {
   imports = with self.nixosModules; [
+    aarch64-binfmt
     avahi
     bluetooth
-    efiboot
     kdeconnect
     pipewire
     rdp
     sshd
+    system76-scheduler
   ];
 
   programs.ssh = {
