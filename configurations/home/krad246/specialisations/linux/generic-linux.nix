@@ -3,6 +3,7 @@
     chromium
     dconf
     kitty
+    zen-browser
   ];
 
   services = {

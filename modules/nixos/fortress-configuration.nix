@@ -1,1 +1,1 @@
-../../configurations/nixos/fortress/fortress.nix
+../../configurations/nixos/fortress/configuration.nix

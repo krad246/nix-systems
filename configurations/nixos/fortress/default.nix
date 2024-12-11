@@ -3,6 +3,7 @@
   inputs,
   self,
   lib,
+  modulesPath,
   specialArgs,
   ...
 }: let
@@ -21,7 +22,7 @@
       ];
 
     formatConfigs = import ./specialisations/formats {
-      inherit self config lib pkgs specialArgs;
+      inherit self config lib pkgs modulesPath specialArgs;
     };
 
     specialisation = import ./specialisations {

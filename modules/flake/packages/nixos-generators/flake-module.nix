@@ -25,6 +25,10 @@ in {
     pkgs,
     ...
   }: {
+    apps =
+      lib.modules.mkIf pkgs.stdenv.isLinux {
+      };
+
     packages = lib.modules.mkIf pkgs.stdenv.isLinux {
       fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
       fortress-iso = mkFormat pkgs "fortress" "iso";

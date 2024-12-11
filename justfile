@@ -22,3 +22,4 @@ setup:
 [group('dev')]
 clean *ARGS:
     git clean -fdx {{ ARGS }}
+    @touch {{ flake / ".envrc" }}
