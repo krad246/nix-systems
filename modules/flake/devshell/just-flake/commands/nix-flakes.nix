@@ -42,7 +42,7 @@ in {
           build = {
             comment = "Wraps `nix build`.";
             justfile = ''
-              build *ARGS: (nix "build" ARGS)
+              build *ARGS: lock && (nix "build" ARGS)
             '';
           };
 
@@ -56,14 +56,14 @@ in {
           flake = {
             comment = "Wraps `nix flake`.";
             justfile = ''
-              flake *ARGS: (fmt) (nix "flake" ARGS)
+              flake *ARGS: lock && (nix "flake" ARGS)
             '';
           };
 
           run = {
             comment = "Wraps `nix run`.";
             justfile = ''
-              run *ARGS: (nix "run" ARGS)
+              run *ARGS: lock && (nix "run" ARGS)
             '';
           };
 
@@ -103,7 +103,7 @@ in {
           repl = {
             comment = "Wraps `nix repl .`";
             justfile = ''
-              repl *ARGS: (nix "repl" "--file" "${self}")
+              repl *ARGS: lock && (nix "repl" "--file" "${self}")
             '';
           };
 
@@ -111,6 +111,7 @@ in {
             comment = "Wraps `nix flake lock`.";
             justfile = ''
               lock *ARGS: (add "-A") (nix "flake" "lock" ARGS)
+                exec {{ direnv_dir }}/bin/nix-direnv-reload
             '';
           };
 
@@ -118,7 +119,7 @@ in {
             comment = "Wraps `nix flake update`.";
             justfile = ''
               update *ARGS:
-                -exec {{ just_executable() }} nix flake update {{ ARGS }}
+                -exec {{ just_executable() }} flake update {{ ARGS }}
             '';
           };
         };

@@ -13,7 +13,7 @@ in {
       mkJustRecipeGroup {
         inherit lib;
 
-        group = "system";
+        group = "home";
 
         recipes = let
           args = lib.cli.toGNUCommandLine {} {
