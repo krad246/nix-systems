@@ -8,5 +8,6 @@ in {
     useGlobalPkgs = true;
     backupFileExtension = "bak";
     verbose = true;
+    sharedModules = [];
   };
 }

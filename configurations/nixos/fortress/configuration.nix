@@ -16,6 +16,8 @@
       ./specialisations/efiboot.nix
     ];
 
+  programs.dconf.enable = true;
+
   xdg.portal = {
     enable = true;
     config.common.default = "*";

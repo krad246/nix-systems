@@ -1,4 +1,4 @@
-{
+args @ {
   inputs,
   self,
   lib,
@@ -11,9 +11,11 @@
     configuration = _: {
       imports = with self.homeModules; [
         chromium
-        dconf
+        dconf # conditionally enabled if the system dconf is enabled
         kitty
       ];
+
+      dconf.enable = lib.attrsets.attrByPath ["osConfig" "programs" "dconf" "enable"] false args;
 
       services = {
         flatpak = {
