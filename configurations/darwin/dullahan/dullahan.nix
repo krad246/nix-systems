@@ -7,7 +7,6 @@
     [
       arc
       bluesnooze
-      wake-on-lan
     ]
     ++ [
       darwin

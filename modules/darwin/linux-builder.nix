@@ -9,17 +9,6 @@
 in {
   options = {
     krad246.darwin.linux-builder = {
-      ephemeral = options.mkEnableOption "ephemeral";
-
-      extraConfig = options.mkOption {
-        type = types.deferredModule;
-        default = {};
-        example = options.literalExpression ''{}'';
-        description = ''
-          This option specifies extra NixOS configuration for the builder.
-        '';
-      };
-
       maxJobs = options.mkOption {
         type = types.ints.positive;
         default = 16;
@@ -65,6 +54,17 @@ in {
         description = "The maximum disk space allocated to the runner's swapfile in MB";
       };
 
+      ephemeral = options.mkEnableOption "ephemeral";
+
+      extraConfig = options.mkOption {
+        type = types.deferredModule;
+        default = {};
+        example = options.literalExpression ''{}'';
+        description = ''
+          This option specifies extra NixOS configuration for the builder.
+        '';
+      };
+
       systems = options.mkOption {
         type = types.listOf types.str;
         default = ["i386-linux" "i686-linux" "x86_64-linux" "aarch64-linux"];
@@ -100,8 +100,7 @@ in {
           inherit (config.nix) linux-builder;
         in {
           imports =
-            [self.modules.generic.nix-core]
-            ++ (with self.nixosModules; [ccache-stdenv zram])
+            (with self; [modules.generic.nix-core nixosModules.ccache-stdenv nixosModules.zram])
             ++ [cfg.extraConfig];
 
           # Emulate all of the linux-builder systems
@@ -121,9 +120,10 @@ in {
             };
           };
 
+          # crashed processes aren't worth debugging in this environment tbh
           systemd.coredump.enable = false;
 
-          # setting priorirty of swap devices to 1 less than mkVMOverride
+          # setting priority of swap devices to 1 less than mkVMOverride
           # this makes it take precedence over the default behavior of no swap devices
           # alternatively, you *could* reimplement everything via the defaultFileSystems argument
           # but that stinks.
