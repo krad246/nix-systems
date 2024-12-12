@@ -18,10 +18,9 @@ args @ {
 
       cli = {
         toGNUCommandLineShell = bin: args: let
-          formatted = lib.cli.toGNUCommandLine {} args;
-        in ''
-          ${bin} ${lib.strings.concatStringsSep " " formatted}
-        '';
+          formatted = [bin] ++ (lib.cli.toGNUCommandLine {} args);
+        in
+          lib.strings.concatStringsSep " " formatted;
       };
 
       fileset = {
