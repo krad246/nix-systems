@@ -7,7 +7,6 @@
     [
       arc
       bluesnooze
-      sshd
       wake-on-lan
     ]
     ++ [
