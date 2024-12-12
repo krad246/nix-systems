@@ -13,5 +13,6 @@ let
 in {
   "id_ed25519_priv.age".publicKeys = [krad246.rsa system.ed25519];
   "cachix.age".publicKeys = [krad246.rsa system.ed25519];
-  "hercules-token.age".publicKeys = [krad246.rsa system.ed25519];
+  "cluster-join-token.age".publicKeys = [krad246.rsa system.ed25519];
+  "binary-caches.age".publicKeys = [krad246.rsa system.ed25519];
 }
