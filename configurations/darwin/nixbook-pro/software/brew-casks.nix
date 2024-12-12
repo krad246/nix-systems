@@ -4,6 +4,7 @@
     bluesnooze
     groupme
     magnet
+    quickemu
     rdp
   ];
 

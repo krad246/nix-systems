@@ -7,7 +7,6 @@
   imports = with self.darwinModules;
     [
       arc
-      bluesnooze
     ]
     ++ [
       darwin
