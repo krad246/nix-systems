@@ -18,6 +18,7 @@
       in [
         (desktop + "/authorized-keys.nix")
         (desktop + "/cachix-agent.nix")
+        (desktop + "/hercules-ci-agent.nix")
         (import (desktop + "/hardware-configuration.nix") {inherit inputs self config lib pkgs modulesPath;}) # pre-apply args
         (desktop + "/secrets.nix")
         (desktop + "/settings.nix")
