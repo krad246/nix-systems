@@ -49,6 +49,15 @@
       inherit (lib) cli;
     in
       cli.toGNUCommandLine {} {
+        option = [
+          "inputs-from ${self}"
+          "experimental-features 'nix-command flakes'"
+          "keep-going true"
+          "show-trace true"
+          "accept-flake-config true"
+          "builders-use-substitutes true"
+          "preallocate-contents true"
+        ];
       };
   };
 

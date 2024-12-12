@@ -3,7 +3,7 @@
   specialArgs,
   ...
 }: let
-  inherit (specialArgs) mkJustRecipeGroup;
+  inherit (specialArgs) mkJustRecipeGroup nixArgs;
 in {
   perSystem = {pkgs, ...}: {
     # set up devshell commands
@@ -17,17 +17,7 @@ in {
 
         recipes = {
           nix = let
-            args = lib.cli.toGNUCommandLine {} {
-              option = [
-                "inputs-from ${self}"
-                "experimental-features 'nix-command flakes'"
-                "keep-going true"
-                "show-trace true"
-                "accept-flake-config true"
-                "builders-use-substitutes true"
-                "preallocate-contents true"
-              ];
-            };
+            args = nixArgs {inherit lib;};
           in {
             comment = "Wraps `nix`. Pass arguments as normal.";
             justfile = ''

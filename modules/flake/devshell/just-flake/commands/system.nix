@@ -3,7 +3,7 @@
   specialArgs,
   ...
 }: let
-  inherit (specialArgs) mkJustRecipeGroup;
+  inherit (specialArgs) mkJustRecipeGroup nixArgs;
 in {
   perSystem = {
     inputs',
@@ -20,18 +20,7 @@ in {
         group = "system";
 
         recipes = let
-          args = lib.cli.toGNUCommandLine {} {
-            option = [
-              "inputs-from ${self}"
-              "experimental-features 'nix-command flakes'"
-              "keep-going true"
-              "show-trace true"
-              "accept-flake-config true"
-              "builders-use-substitutes true"
-              "preallocate-contents true"
-            ];
-            flake = "{{ flake }}";
-          };
+          args = nixArgs {inherit lib;};
         in
           (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
             nixos-rebuild = {
@@ -39,8 +28,7 @@ in {
               justfile = ''
                 [linux]
                 nixos-rebuild *ARGS:
-                  ${lib.meta.getExe pkgs.nixos-rebuild} \
-                    ${lib.strings.concatStringsSep " " args} \
+                  ${lib.meta.getExe pkgs.nixos-rebuild} ${lib.strings.concatStringsSep " " args} --flake ${self} \
                     --use-remote-sudo \
                     {{ ARGS }}
               '';
@@ -66,7 +54,7 @@ in {
               justfile = ''
                 [macos]
                 darwin-rebuild *ARGS:
-                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} ${lib.strings.concatStringsSep " " args} {{ ARGS }}
+                  ${lib.meta.getExe' inputs'.darwin.packages.darwin-rebuild "darwin-rebuild"} ${lib.strings.concatStringsSep " " args} --flake ${self} {{ ARGS }}
               '';
             };
 

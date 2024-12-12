@@ -3,7 +3,7 @@
   specialArgs,
   ...
 }: let
-  inherit (specialArgs) mkJustRecipeGroup;
+  inherit (specialArgs) mkJustRecipeGroup nixArgs;
 in {
   perSystem = {pkgs, ...}: {
     # set up devshell commands
@@ -16,18 +16,7 @@ in {
         group = "home";
 
         recipes = let
-          args = lib.cli.toGNUCommandLine {} {
-            option = [
-              "inputs-from ${self}"
-              "experimental-features 'nix-command flakes'"
-              "keep-going true"
-              "show-trace true"
-              "accept-flake-config true"
-              "builders-use-substitutes true"
-              "preallocate-contents true"
-            ];
-            flake = "{{ flake }}";
-          };
+          args = nixArgs {inherit lib;};
         in {
           # Home configs work on all *nix systems
           home-manager = {
@@ -36,7 +25,7 @@ in {
             justfile = ''
               [unix]
               home-manager *ARGS:
-                ${lib.meta.getExe pkgs.home-manager} ${lib.strings.concatStringsSep " " args} -b bak {{ ARGS }}
+                ${lib.meta.getExe pkgs.home-manager} ${lib.strings.concatStringsSep " " args} --flake ${self} -b bak {{ ARGS }}
             '';
           };
 
@@ -44,7 +33,7 @@ in {
             justfile = ''
               apply-home PROFILE="default" +ARGS="": (lock)
                 exec {{ just_executable() }} build --print-out-paths \
-                  {{ ARGS }} "{{ flake }}#homeConfigurations.{{ whoami }}@{{ hostname }}.activationPackage" | \
+                  {{ ARGS }} "${self}#homeConfigurations.{{ whoami }}@{{ hostname }}.activationPackage" | \
                   ${lib.meta.getExe' pkgs.findutils "xargs"} -I {drv} \
                   ${lib.meta.getExe pkgs.bashInteractive} {drv}/specialisation/{{ PROFILE }}/activate
             '';
