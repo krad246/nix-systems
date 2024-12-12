@@ -1,5 +1,6 @@
 {
   self,
+  config,
   specialArgs,
   ...
 }: {
@@ -19,15 +20,15 @@
 
   krad246.darwin.masterUser = {
     enable = true;
-    username = "krad246";
-  };
+    owner = rec {
+      name = "krad246";
+      home = "/Users" + "/" + name;
 
-  users = {
-    users = {
-      krad246 = {
-        uid = 501;
-        gid = 20;
-      };
+      uid = 501;
+      gid = 20;
+
+      shell = "${config.homebrew.brewPrefix}/bash";
+      createHome = true;
     };
   };
 

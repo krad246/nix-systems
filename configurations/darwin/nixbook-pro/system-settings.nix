@@ -1,5 +1,6 @@
 {
   self,
+  config,
   specialArgs,
   ...
 }: {
@@ -9,7 +10,16 @@
 
   krad246.darwin.masterUser = {
     enable = true;
-    username = "krad246";
+    owner = rec {
+      name = "krad246";
+      home = "/Users" + "/" + name;
+
+      uid = 501;
+      gid = 20;
+
+      shell = "${config.homebrew.brewPrefix}/bash";
+      createHome = true;
+    };
   };
 
   krad246.darwin.linux-builder = {
@@ -20,13 +30,6 @@
 
     memorySize = 16 * 1024;
     diskSize = 256 * 1024;
-  };
-
-  users = {
-    users.krad246 = {
-      uid = 501;
-      gid = 20;
-    };
   };
 
   nix = {
