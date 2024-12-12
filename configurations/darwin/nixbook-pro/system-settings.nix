@@ -26,7 +26,7 @@
     ephemeral = true;
 
     maxJobs = 128;
-    cores = 8;
+    cores = 10;
 
     memorySize = 16 * 1024;
     diskSize = 256 * 1024;
