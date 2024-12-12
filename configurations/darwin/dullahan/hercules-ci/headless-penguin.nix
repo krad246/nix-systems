@@ -44,11 +44,11 @@ outer @ {
       };
     };
 
-    maxJobs = 20;
-    cores = 8;
+    maxJobs = 24;
+    cores = 6;
 
     memorySize = 6 * 1024;
-    diskSize = 256 * 1024;
-    swapSize = 128 * 1024;
+    diskSize = 320 * 1024;
+    swapSize = 192 * 1024;
   };
 }

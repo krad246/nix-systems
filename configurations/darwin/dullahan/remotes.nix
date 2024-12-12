@@ -12,7 +12,7 @@
     enable = true;
     sshUser = "krad246";
     sshKey = config.age.secrets.id_ed25519_priv.path;
-    maxJobs = 80;
-    speedFactor = 4;
+    maxJobs = 72;
+    speedFactor = 3;
   };
 }

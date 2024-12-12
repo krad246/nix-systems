@@ -25,7 +25,7 @@
   krad246.darwin.linux-builder = {
     ephemeral = true;
 
-    maxJobs = 128;
+    maxJobs = 60;
     cores = 8;
 
     memorySize = 16 * 1024;

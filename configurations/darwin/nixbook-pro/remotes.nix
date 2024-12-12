@@ -12,13 +12,14 @@
     enable = true;
     sshUser = "krad246";
     sshKey = config.age.secrets.id_ed25519_priv.path;
+    maxJobs = 24;
   };
 
   krad246.remotes.fortress = {
     enable = true;
     sshUser = "krad246";
     sshKey = config.age.secrets.id_ed25519_priv.path;
-    maxJobs = 128;
-    speedFactor = 4;
+    maxJobs = 144;
+    speedFactor = 2;
   };
 }
