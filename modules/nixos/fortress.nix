@@ -1,3 +1,0 @@
-{
-  imports = [./fortress-configuration.nix];
-}

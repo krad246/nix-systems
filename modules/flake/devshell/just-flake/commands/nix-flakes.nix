@@ -101,7 +101,7 @@ in {
             comment = "Wraps `nix flake lock`.";
             justfile = ''
               lock *ARGS: (add "-A") (nix "flake" "lock" ARGS)
-                exec {{ direnv_dir }}/bin/nix-direnv-reload
+                -nix-direnv-reload
             '';
           };
 

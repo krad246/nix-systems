@@ -14,7 +14,7 @@ in {
             justfile = ''
               [no-exit-message]
               git *ARGS:
-                  ${lib.meta.getExe pkgs.git} {{ ARGS }}
+                  -${lib.meta.getExe pkgs.git} {{ ARGS }}
             '';
           };
 
