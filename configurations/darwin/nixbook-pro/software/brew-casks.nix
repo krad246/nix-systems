@@ -16,10 +16,6 @@
       ++ [
         "crystalfetch"
         "utm"
-        "vagrant"
-        "vagrant-vmware-utility"
-        "virtualbox"
-        "vmware-fusion"
       ]
       ++ ["zoom"];
   };
