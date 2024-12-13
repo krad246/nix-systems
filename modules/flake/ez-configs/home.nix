@@ -1,7 +1,6 @@
 {
+  withSystem,
   config,
-  lib,
-  pkgs,
   ...
 }: {
   ezConfigs = {
@@ -11,15 +10,20 @@
 
       users = {
         keerad = {
-          # Generate only one WSL config; requires a matching Windows user
           nameFunction = _name: "keerad@windex";
+        };
 
-          # Standalone configuration independent of the host
+        ubuntu = {
+          nameFunction = _name: "ubuntu";
+
           standalone = let
-            impure = !lib.trivial.inPureEvalMode;
+            system = builtins.currentSystem;
           in {
-            enable = impure;
-            inherit pkgs;
+            enable = true;
+            pkgs = withSystem system ({pkgs, ...}:
+              if pkgs.stdenv.isLinux
+              then pkgs
+              else throw "Only available for Linux");
           };
         };
       };
