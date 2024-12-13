@@ -9,6 +9,7 @@
 in {
   imports =
     (with self.modules.generic; [
+      etc-registry
       flake-registry
       nix-core
       unfree

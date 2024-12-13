@@ -1,5 +1,10 @@
-{lib, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   nix = {
+    package = lib.modules.mkDefault pkgs.nixVersions.stable;
     checkConfig = true;
     gc.automatic = true;
     settings = {

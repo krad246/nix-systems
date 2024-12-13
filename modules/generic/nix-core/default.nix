@@ -1,0 +1,3 @@
+{
+  imports = [./nix-core.nix];
+}

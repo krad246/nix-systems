@@ -11,6 +11,8 @@ in {
     ([agenix] ++ [colima] ++ [discord kitty vscode])
     ++ [mac-app-util.homeManagerModules.default];
 
+  nix.settings.sandbox = false;
+
   home = {
     packages = with pkgs; [mas m-cli];
   };

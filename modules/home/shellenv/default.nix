@@ -3,11 +3,8 @@
   config,
   lib,
   pkgs,
-  specialArgs,
   ...
-}: let
-  inherit (specialArgs) krad246;
-in {
+}: {
   imports =
     [
       ./bash.nix
@@ -18,13 +15,14 @@ in {
       ./fd.nix
       ./fzf.nix
       ./git.nix
-      ./nix-core.nix
       ./ripgrep.nix
       ./starship
       ./zoxide.nix
     ]
     ++ [
+      self.modules.generic.nix-core
       self.homeModules.nixvim
+      self.modules.generic.unfree
     ];
 
   home = {
@@ -32,14 +30,7 @@ in {
     preferXdgDirectories = true;
 
     shellAliases = rec {
-      l = ''
-        ${krad246.cli.toGNUCommandLineShell (lib.meta.getExe pkgs.lsd) {
-          hyperlink = "auto";
-          group-dirs = "first";
-          icon-theme = "unicode";
-        }}
-      '';
-
+      l = lib.meta.getExe pkgs.lsd;
       ls = l;
       ll = "${ls} -gl";
       la = "${ll} -A";

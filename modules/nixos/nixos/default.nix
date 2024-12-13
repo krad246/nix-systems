@@ -13,5 +13,5 @@
       ./nix-ld.nix
       ./packages.nix
     ]
-    ++ (with self.modules.generic; [flake-registry nix-core unfree]);
+    ++ (with self.modules.generic; [etc-registry flake-registry nix-core unfree]);
 }
