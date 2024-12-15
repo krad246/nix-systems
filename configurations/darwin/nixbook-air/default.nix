@@ -1,6 +1,9 @@
 {withSystem, ...}: let
   entrypoint = {system, ...}: {
-    imports = [./nixbook-air.nix];
+    imports = [
+      ./brew-casks.nix
+      ./nixbook-air.nix
+    ];
     nixpkgs.system = system;
   };
 in

@@ -3,18 +3,14 @@
   config,
   ...
 }: {
-  imports = with self.darwinModules;
-    [
-      darwin
-      dock
-      finder
-      pointer
-      single-user
-      ui-ux
-    ]
-    ++ [
-      ./brew-casks.nix
-    ];
+  imports = with self.darwinModules; [
+    darwin
+    dock
+    finder
+    pointer
+    single-user
+    ui-ux
+  ];
 
   krad246.darwin.masterUser = {
     enable = true;

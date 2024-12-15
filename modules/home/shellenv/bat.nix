@@ -13,7 +13,7 @@
   home = {
     shellAliases = rec {
       cat = lib.meta.getExe config.programs.bat.package;
-      bag = lib.meta.getExe pkgs.bat-extras.batgrep;
+      brg = lib.meta.getExe pkgs.bat-extras.batgrep;
       man = lib.meta.getExe pkgs.bat-extras.batman;
       watch = lib.meta.getExe (pkgs.bat-extras.batwatch.override {withEntr = true;});
       tail = watch;
