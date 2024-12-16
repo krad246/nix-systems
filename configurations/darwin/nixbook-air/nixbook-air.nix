@@ -1,16 +1,4 @@
-{
-  self,
-  config,
-  ...
-}: {
-  imports = with self.darwinModules; [
-    dock
-    finder
-    pointer
-    single-user
-    ui-ux
-  ];
-
+{config, ...}: {
   krad246.darwin.masterUser = {
     enable = true;
     owner = rec {

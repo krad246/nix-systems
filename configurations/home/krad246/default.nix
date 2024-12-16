@@ -1,17 +1,10 @@
 {
-  self,
   osConfig,
   config,
   lib,
   pkgs,
   ...
-}: let
-  inherit (lib) modules;
-in {
-  imports = [
-    self.homeModules.shellenv
-  ];
-
+}: {
   home = {
     username = osConfig.users.users.krad246.name or "krad246";
     homeDirectory =
@@ -27,30 +20,5 @@ in {
 
   nix.settings = {
     trusted-users = ["${config.home.username}"];
-  };
-
-  specialisation = rec {
-    default = modules.mkForce fortress;
-    fortress = modules.mkIf pkgs.stdenv.isLinux {
-      configuration = _: {
-        imports = with self.homeModules; [
-          discord
-          kdeconnect
-          vscode
-          vscode-server
-        ];
-
-        services = {
-          flatpak = {
-            packages = [
-              "us.zoom.Zoom"
-              "org.signal.Signal"
-              "com.spotify.Client"
-              "com.valvesoftware.Steam"
-            ];
-          };
-        };
-      };
-    };
   };
 }

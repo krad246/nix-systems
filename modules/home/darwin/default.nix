@@ -59,7 +59,7 @@ in {
   specialisation = {
     default = {
       configuration = _: {
-        imports = [self.darwinModules.darwin];
+        imports = [self.darwinModules.default];
       };
     };
   };

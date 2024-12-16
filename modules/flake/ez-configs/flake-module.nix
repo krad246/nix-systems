@@ -1,4 +1,5 @@
 {
+  importApply,
   getSystem,
   moduleWithSystem,
   withSystem,
@@ -18,6 +19,7 @@
   ezConfigs = {
     root = self;
     globalArgs = {
+      inherit importApply;
       inherit getSystem moduleWithSystem withSystem;
       inherit inputs self;
       inherit (specialArgs) krad246;

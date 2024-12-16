@@ -1,16 +1,10 @@
-{
-  inputs,
+args @ {
+  importApply,
   self,
-  config,
-  lib,
-  pkgs,
-  modulesPath,
   ...
 }: rec {
   default = fortress;
-  fortress.configuration = _: let
-    inherit self;
-  in {
+  fortress.configuration = _: {
     imports =
       [self.diskoConfigurations.fortress-desktop]
       ++ (let
@@ -18,8 +12,8 @@
       in [
         (desktop + "/authorized-keys.nix")
         (desktop + "/cachix-agent.nix")
+        (importApply (desktop + "/hardware-configuration.nix") args)
         (desktop + "/hercules-ci-agent.nix")
-        (import (desktop + "/hardware-configuration.nix") {inherit inputs self config lib pkgs modulesPath;}) # pre-apply args
         (desktop + "/secrets.nix")
         (desktop + "/settings.nix")
       ]);

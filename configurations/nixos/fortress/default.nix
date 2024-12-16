@@ -1,19 +1,11 @@
-{
+outer @ {
   withSystem,
   inputs,
-  self,
   lib,
-  modulesPath,
-  specialArgs,
   ...
 }: let
   inherit (inputs) nixos-generators;
-  entrypoint = {
-    config,
-    pkgs,
-    system,
-    ...
-  }: {
+  entrypoint = inner @ {system, ...}: {
     imports =
       [nixos-generators.nixosModules.all-formats]
       ++ [
@@ -21,13 +13,11 @@
         ./stub-disko.nix
       ];
 
-    formatConfigs = import ./specialisations/formats {
-      inherit self config lib pkgs modulesPath specialArgs;
-    };
-
-    specialisation = import ./specialisations {
-      inherit inputs self config lib pkgs modulesPath specialArgs;
-    };
+    formatConfigs = import ./specialisations/formats (outer // inner);
+    specialisation = import ./specialisations (outer
+      // {
+        inherit (inner) pkgs;
+      });
 
     nixpkgs.system = lib.modules.mkDefault system;
   };

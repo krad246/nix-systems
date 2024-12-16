@@ -2,7 +2,7 @@
   imports = with self.homeModules;
     [shellenv]
     ++ (with self.modules.generic; [
-      home-registry
+      home-link-registry
       flake-registry
     ]);
 }

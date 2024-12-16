@@ -17,7 +17,6 @@
       pointer
       single-user
       touch-id
-      ui-ux
       window-manager
     ])
     ++ (with self.darwinModules; [
@@ -31,7 +30,7 @@
       vscode
     ])
     ++ (with self.modules.generic; [
-      etc-registry
+      system-link-registry
       flake-registry
       nix-core
       unfree
