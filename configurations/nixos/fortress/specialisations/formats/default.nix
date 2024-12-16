@@ -20,6 +20,7 @@
       };
   };
 in {
+  disko-vm = mkConfig ./disko-vm.nix;
   hyperv = mkConfig ./hyperv.nix;
   install-iso-hyperv = mkConfig ./install-iso-hyperv.nix;
   install-iso = mkConfig ./install-iso.nix;

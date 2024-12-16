@@ -41,6 +41,18 @@ in {
     ...
   }: {
     apps = lib.modules.mkIf pkgs.stdenv.isLinux {
+      fortress-disko-vm = let
+        wrapper = pkgs.writeShellApplication {
+          name = "fortress-disko-vm";
+          text = ''
+            exec ${self'.packages.fortress-disko-vm}/disko-vm
+          '';
+        };
+      in {
+        type = "app";
+        program = lib.meta.getExe wrapper;
+      };
+
       fortress-vm = let
         wrapper = pkgs.writeShellApplication {
           name = "fortress-vm";
@@ -56,12 +68,14 @@ in {
     };
 
     packages = lib.modules.mkIf pkgs.stdenv.isLinux {
+      fortress-disko-vm = mkFormat pkgs "fortress" "disko-vm";
+
       fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
       fortress-iso = mkFormat pkgs "fortress" "iso";
       fortress-install-iso = mkFormat pkgs "fortress" "install-iso";
       fortress-install-iso-hyperv = mkFormat pkgs "fortress" "install-iso-hyperv";
 
-      # fortress-qcow = mkFormat pkgs "fortress" "qcow";
+      fortress-qcow = mkFormat pkgs "fortress" "qcow";
       fortress-qcow-efi = mkFormat pkgs "fortress" "qcow-efi";
 
       fortress-raw = mkFormat pkgs "fortress" "raw";
