@@ -2,7 +2,7 @@
   home = {
     packages = with pkgs;
       [
-        uutils-coreutils
+        coreutils
         safe-rm
       ]
       ++ [

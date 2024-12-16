@@ -4,7 +4,6 @@
   ...
 }: {
   imports = [
-    self.modules.darwin.agenix
     self.modules.generic.fortress
   ];
 

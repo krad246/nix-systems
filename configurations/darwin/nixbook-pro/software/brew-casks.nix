@@ -3,20 +3,11 @@
     arc
     bluesnooze
     groupme
-    magnet
-    quickemu
+    launchcontrol
     rdp
+    signal
+    spotify
+    utm
+    zoom
   ];
-
-  homebrew = {
-    casks =
-      ["launchcontrol"]
-      ++ ["signal"]
-      ++ ["spotify"]
-      ++ [
-        "crystalfetch"
-        "utm"
-      ]
-      ++ ["zoom"];
-  };
 }

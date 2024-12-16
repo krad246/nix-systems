@@ -2,18 +2,20 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) modules;
+in {
   nix = {
-    package = lib.modules.mkDefault pkgs.nixVersions.stable;
+    package = modules.mkDefault pkgs.nixVersions.stable;
     checkConfig = true;
     gc.automatic = true;
     settings = {
       builders-use-substitutes = true;
       experimental-features = ["nix-command" "flakes"];
-      keep-outputs = lib.modules.mkDefault true;
-      keep-derivations = lib.modules.mkDefault true;
-      auto-optimise-store = lib.modules.mkDefault true;
-      sandbox = lib.modules.mkDefault "relaxed";
+      keep-outputs = modules.mkDefault true;
+      keep-derivations = modules.mkDefault false;
+      auto-optimise-store = modules.mkDefault true;
+      sandbox = modules.mkDefault "relaxed";
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
@@ -29,11 +31,11 @@
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "krad246.cachix.org-1:N57J9SfNFtxMSYnlULH4l7ZkdNjIQb0ByyapaEb/8IM="
       ];
-      connect-timeout = lib.modules.mkDefault 300;
-      timeout = lib.modules.mkDefault 1800;
-      max-silent-time = lib.modules.mkDefault 3600;
+      connect-timeout = modules.mkDefault 300;
+      timeout = modules.mkDefault 1800;
+      max-silent-time = modules.mkDefault 3600;
       keep-going = true;
-      min-free = lib.modules.mkDefault 12884901888;
+      min-free = modules.mkDefault 12884901888;
       preallocate-contents = true;
     };
   };

@@ -2,13 +2,10 @@
   imports = with self.darwinModules; [
     arc
     bluesnooze
+    groupme
+    launchcontrol
     rdp
+    signal
+    spotify
   ];
-
-  homebrew = {
-    casks =
-      ["launchcontrol"]
-      ++ ["signal"]
-      ++ ["spotify"];
-  };
 }

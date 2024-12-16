@@ -4,7 +4,6 @@
   ...
 }: {
   imports = with self.darwinModules; [
-    darwin
     dock
     finder
     pointer
@@ -16,7 +15,7 @@
     enable = true;
     owner = rec {
       name = "krad246";
-      home = "/Users" + "/" + name;
+      home = "/Users/${name}";
 
       uid = 501;
       gid = 20;

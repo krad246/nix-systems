@@ -1,27 +1,13 @@
 {
-  self,
   config,
   specialArgs,
   ...
 }: {
-  imports = with self.darwinModules;
-    [
-      arc
-    ]
-    ++ [
-      darwin
-      dock
-      finder
-      pointer
-      single-user
-      ui-ux
-    ];
-
   krad246.darwin.masterUser = {
     enable = true;
     owner = rec {
       name = "krad246";
-      home = "/Users" + "/" + name;
+      home = "/Users/${name}";
 
       uid = 501;
       gid = 20;

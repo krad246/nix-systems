@@ -1,3 +1,5 @@
 {
-  imports = [./nix-core.nix];
+  imports = [
+    ./nix-core.nix
+  ];
 }

@@ -1,7 +1,4 @@
 {
-  homebrew = {
-    masApps = {
-      "Unite - GroupMe app" = 1152517150;
-    };
-  };
+  imports = [./apps/groupme.nix];
+  krad246.darwin.apps.groupme = true;
 }

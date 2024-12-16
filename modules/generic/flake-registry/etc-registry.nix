@@ -11,7 +11,7 @@
       name = "nix/path/${name}";
       value.source = value.flake;
     };
-    mapRegistryPaths = registry: lib.mapAttrs' mapFlakePath registry;
+    mapRegistryPaths = registry: lib.attrsets.mapAttrs' mapFlakePath registry;
   in
     mapRegistryPaths
     config.nix.registry;
