@@ -7,9 +7,15 @@
 }: let
   inherit (inputs) mac-app-util;
 in {
-  imports = with self.homeModules;
-    ([agenix] ++ [colima] ++ [discord kitty vscode])
-    ++ [mac-app-util.homeManagerModules.default];
+  imports =
+    [mac-app-util.homeManagerModules.default]
+    ++ (with self.homeModules; [
+      agenix
+      colima
+      discord
+      kitty
+      vscode
+    ]);
 
   nix.settings.sandbox = false;
 
@@ -59,7 +65,7 @@ in {
   specialisation = {
     default = {
       configuration = _: {
-        imports = [self.darwinModules.default];
+        imports = [self.homeModules.darwin];
       };
     };
   };

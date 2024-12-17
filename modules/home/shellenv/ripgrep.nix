@@ -1,6 +1,6 @@
 {
-  lib,
   config,
+  lib,
   ...
 }: {
   programs.ripgrep = {

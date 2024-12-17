@@ -3,7 +3,7 @@ args @ {
   self,
   ...
 }: rec {
-  default = fortress;
+  default.configuration = fortress.configuration;
   fortress.configuration = _: {
     imports =
       [self.diskoConfigurations.fortress-desktop]

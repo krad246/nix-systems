@@ -4,7 +4,9 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) meta;
+in {
   imports =
     [
       ./bash.nix
@@ -21,8 +23,10 @@
     ]
     ++ [
       self.modules.generic.nix-core
-      self.homeModules.nixvim
       self.modules.generic.unfree
+    ]
+    ++ [
+      self.homeModules.nixvim
     ];
 
   home = {
@@ -30,19 +34,19 @@
     preferXdgDirectories = true;
 
     shellAliases = rec {
-      l = lib.meta.getExe pkgs.lsd;
+      l = meta.getExe pkgs.lsd;
       ls = l;
       ll = "${ls} -gl";
       la = "${ll} -A";
       lal = la;
 
       reload = ''
-        exec ${lib.meta.getExe pkgs.bashInteractive} \
-          --rcfile <(${lib.meta.getExe' pkgs.coreutils "echo"} \
+        exec ${meta.getExe pkgs.bashInteractive} \
+          --rcfile <(${meta.getExe' pkgs.coreutils "echo"} \
               'source ${config.home.homeDirectory}/.bashrc; \
-              ${lib.meta.getExe pkgs.direnv} reload')
+              ${meta.getExe pkgs.direnv} reload')
       '';
-      tldr = "${lib.meta.getExe pkgs.tldr}";
+      tldr = meta.getExe pkgs.tldr;
     };
   };
 
