@@ -20,62 +20,41 @@
   in
     e.config.formats.${format};
 in {
-  flake.packages.aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
-    fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
-    fortress-sd-aarch64-installer = mkFormat pkgs "fortress" "sd-aarch64-installer";
-  });
+  flake.packages = {
+    aarch64-darwin =
+      withSystem "aarch64-darwin" (_: {
+      });
 
-  flake.packages.x86_64-linux = withSystem "x86_64-linux" ({pkgs, ...}: {
-    fortress-sd-x86_64 = mkFormat pkgs "fortress" "sd-x86_64";
+    aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
+      fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
+      fortress-sd-aarch64-installer = mkFormat pkgs "fortress" "sd-aarch64-installer";
+    });
 
-    fortress-virtualbox = mkFormat pkgs "fortress" "virtualbox";
-    fortress-vagrant-virtualbox = mkFormat pkgs "fortress" "vagrant-virtualbox";
+    x86_64-linux = withSystem "x86_64-linux" ({pkgs, ...}: {
+      fortress-sd-x86_64 = mkFormat pkgs "fortress" "sd-x86_64";
 
-    fortress-vmware = mkFormat pkgs "fortress" "vmware";
-  });
+      fortress-virtualbox = mkFormat pkgs "fortress" "virtualbox";
+      fortress-vagrant-virtualbox = mkFormat pkgs "fortress" "vagrant-virtualbox";
+
+      fortress-vmware = mkFormat pkgs "fortress" "vmware";
+    });
+  };
 
   perSystem = {
     lib,
     pkgs,
-    self',
     ...
   }: {
-    apps = lib.modules.mkIf pkgs.stdenv.isLinux {
-      fortress-disko-vm = let
-        wrapper = pkgs.writeShellApplication {
-          name = "fortress-disko-vm";
-          text = ''
-            exec ${self'.packages.fortress-disko-vm}/disko-vm
-          '';
-        };
-      in {
-        type = "app";
-        program = lib.meta.getExe wrapper;
-      };
-
-      fortress-vm = let
-        wrapper = pkgs.writeShellApplication {
-          name = "fortress-vm";
-
-          text = ''
-            exec ${self'.packages.fortress-vm}/run-fortress-vm
-          '';
-        };
-      in {
-        type = "app";
-        program = lib.meta.getExe wrapper;
-      };
-    };
-
     packages = lib.modules.mkIf pkgs.stdenv.isLinux {
       fortress-disko-vm = mkFormat pkgs "fortress" "disko-vm";
+      fortress-disko-vm-darwin = mkFormat pkgs "fortress" "disko-vm-darwin";
 
       fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
       fortress-iso = mkFormat pkgs "fortress" "iso";
       fortress-install-iso = mkFormat pkgs "fortress" "install-iso";
       fortress-install-iso-hyperv = mkFormat pkgs "fortress" "install-iso-hyperv";
 
-      fortress-qcow = mkFormat pkgs "fortress" "qcow";
+      # fortress-qcow = mkFormat pkgs "fortress" "qcow";
       fortress-qcow-efi = mkFormat pkgs "fortress" "qcow-efi";
 
       fortress-raw = mkFormat pkgs "fortress" "raw";

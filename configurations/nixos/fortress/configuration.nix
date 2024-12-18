@@ -16,7 +16,7 @@
       ./specialisations/efiboot.nix
     ];
 
-  programs.dconf.enable = true;
+  programs.dconf.enable = lib.modules.mkDefault true;
 
   xdg.portal = {
     enable = true;

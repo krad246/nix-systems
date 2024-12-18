@@ -3,9 +3,13 @@
   lib,
   ...
 }: let
-  mkConfig = extraConfig: _: {
+  mkConfig = extraConfig: _: rec {
     imports = [extraConfig];
-    disko.enableConfig = false;
+
+    disko = {
+      enableConfig = false;
+      memSize = 6 * 1024;
+    };
 
     # provide the builder VM that generates these images some beefier specs...
     virtualisation =
@@ -13,14 +17,15 @@
         diskSize = 32 * 1024;
       }
       // lib.attrsets.optionalAttrs (lib.attrsets.hasAttrByPath ["virtualisation" "cores"] config) {
-        cores = 6;
+        cores = 1;
       }
       // lib.attrsets.optionalAttrs (lib.attrsets.hasAttrByPath ["virtualisation" "memorySize"] config) {
-        memorySize = 6 * 1024;
+        memorySize = disko.memSize;
       };
   };
 in {
   disko-vm = mkConfig ./disko-vm.nix;
+  disko-vm-darwin = mkConfig ./disko-vm-darwin.nix;
   hyperv = mkConfig ./hyperv.nix;
   install-iso-hyperv = mkConfig ./install-iso-hyperv.nix;
   install-iso = mkConfig ./install-iso.nix;
