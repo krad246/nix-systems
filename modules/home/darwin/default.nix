@@ -11,7 +11,6 @@ in {
     [mac-app-util.homeManagerModules.default]
     ++ (with self.homeModules; [
       agenix
-      colima
       discord
       kitty
       vscode

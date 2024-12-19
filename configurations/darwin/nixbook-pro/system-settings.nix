@@ -1,8 +1,11 @@
 {
+  self,
   config,
   specialArgs,
   ...
 }: {
+  imports = [self.darwinModules.colima];
+
   # Parse the secrets directory
   age.secrets = let
     inherit (specialArgs) krad246;
@@ -39,6 +42,13 @@
 
       memorySize = 16 * 1024;
       diskSize = 256 * 1024;
+    };
+
+    colima = {
+      enable = true;
+      memorySize = 16 * 1024;
+      diskSize = 64 * 1024;
+      cores = 8;
     };
   };
 

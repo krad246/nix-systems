@@ -1,5 +1,0 @@
-{
-  imports = [
-    ./colima-darwin.nix
-  ];
-}
