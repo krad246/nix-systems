@@ -9,7 +9,7 @@
     extra-trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "krad246.cachix.org-1:naxMicfqW5ZWr7XNZeLfAT3YHWCDLs3noY0aI3eBfvQ="
+      "krad246.cachix.org-1:N57J9SfNFtxMSYnlULH4l7ZkdNjIQb0ByyapaEb/8IM="
     ];
   };
 
@@ -213,15 +213,20 @@
     }
     # Entrypoint
     ({
+      getSystem,
+      moduleWithSystem,
       withSystem,
       flake-parts-lib,
       ...
     }: let
       args = {
-        inherit withSystem flake-parts-lib;
-        inherit self lib inputs;
+        inherit getSystem moduleWithSystem withSystem;
+        inherit (flake-parts-lib) importApply;
+        inherit inputs self;
+        inherit lib;
       };
 
+      # pull the flake module into this context
       entrypoint = import ./modules args;
     in {
       # Source files and other callables pulled in here are combined into this 'layer'.

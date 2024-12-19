@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  modulesPath,
   ...
 }: let
   cfg = config.krad246.darwin.masterUser;
@@ -9,11 +10,9 @@ in {
     krad246.darwin = {
       masterUser = {
         enable = lib.options.mkEnableOption "masterUser";
-        username = lib.mkOption {
-          description = lib.mdDoc ''
-            The name of the master user owning the Homebrew directories.
-          '';
-          type = lib.types.str;
+        owner = lib.options.mkOption {
+          description = "Configuration for master user.";
+          type = lib.types.submodule (import "${modulesPath}/users/user.nix");
         };
       };
     };
@@ -29,16 +28,12 @@ in {
       screensaver.askForPassword = true;
     };
 
-    nix-homebrew.user = cfg.username;
+    nix-homebrew.user = cfg.owner.name;
     users = {
-      knownUsers = [cfg.username];
+      knownUsers = [cfg.owner.name];
 
       users = {
-        ${cfg.username} = {
-          createHome = true;
-          home = "/Users" + "/" + cfg.username;
-          shell = "${config.homebrew.brewPrefix}/bash";
-        };
+        ${cfg.owner.name} = cfg.owner;
       };
     };
   };

@@ -7,12 +7,11 @@
       self.nixosModules.zram
     ]
     ++ [
-      ./aarch64-binfmt.nix
       ./default-users.nix
       ./environment.nix
       ./kernel.nix
       ./nix-ld.nix
       ./packages.nix
     ]
-    ++ (with self.modules.generic; [flake-registry nix-core unfree]);
+    ++ (with self.modules.generic; [system-link-registry flake-registry nix-core unfree]);
 }

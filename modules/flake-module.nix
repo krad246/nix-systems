@@ -1,12 +1,5 @@
-{
-  withSystem,
-  importApply,
-  self,
-  inputs,
-  lib,
-  ...
-}: let
-  entrypoint = import ./flake {inherit withSystem importApply self lib inputs;};
+args @ {inputs, ...}: let
+  entrypoint = import ./flake args;
 in
   {...}: {
     # pull in the default flake module so that we can, y'know, build stuff...

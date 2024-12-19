@@ -1,3 +1,0 @@
-{
-  imports = [./windex-configuration.nix];
-}
