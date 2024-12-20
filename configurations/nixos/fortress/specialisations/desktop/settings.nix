@@ -15,15 +15,9 @@
   };
 
   home-manager.sharedModules = [
-    ({
-      config,
-      lib,
-      ...
-    }: let
-      hasCfg = lib.attrsets.hasAttrByPath ["specialisation" "fortress"] config;
-      cfg = config.specialisation.fortress.configuration;
-    in {
-      specialisation = {
+    ({lib, ...}: {
+      specialisation = rec {
+        default = lib.modules.mkForce fortress;
         fortress = {
           configuration = _: {
             # TODO: must inherit settings from generic-linux
@@ -46,12 +40,6 @@
             };
           };
         };
-      };
-
-      home.activation = {
-        switchToFortress = lib.modules.mkIf hasCfg (lib.hm.dag.entryAfter ["writeBoundary"] ''
-          $DRY_RUN_CMD ${cfg.home.activationPackage}
-        '');
       };
     })
   ];
