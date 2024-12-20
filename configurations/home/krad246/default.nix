@@ -1,19 +1,10 @@
 {
-  self,
   osConfig,
   config,
   lib,
   pkgs,
   ...
 }: {
-  imports =
-    [
-      self.homeModules.shellenv
-    ]
-    ++ [
-      ./specialisations
-    ];
-
   home = {
     username = osConfig.users.users.krad246.name or "krad246";
     homeDirectory =

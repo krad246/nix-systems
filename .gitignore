@@ -20,3 +20,5 @@ Makefile
 .mypy_cache
 __pycache__
 *.just
+*.qcow2
+*.fd

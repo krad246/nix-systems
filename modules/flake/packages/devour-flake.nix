@@ -20,6 +20,9 @@ pkgs.writeShellApplication {
         "builders-use-substitutes true"
         "preallocate-contents true"
       ];
+
+      verbose = true;
+      print-build-logs = true;
     };
   in ''
     set -x

@@ -1,0 +1,3 @@
+_: {
+  disabledModules = [../efiboot.nix];
+}

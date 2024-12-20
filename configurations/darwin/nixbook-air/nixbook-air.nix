@@ -1,29 +1,17 @@
-{
-  self,
-  config,
-  ...
-}: {
-  imports = with self.darwinModules; [
-    darwin
-    dock
-    finder
-    pointer
-    single-user
-    ui-ux
-  ];
+{config, ...}: {
+  krad246.darwin.masterUser = {
+    enable = true;
+    owner = rec {
+      name = "krad246";
+      home = "/Users/${name}";
 
-  users = {
-    users.krad246 = {
-      home = "/Users/krad246";
-      createHome = true;
       uid = 501;
       gid = 20;
-      shell = "${config.homebrew.brewPrefix}/bash";
-    };
 
-    knownUsers = ["krad246"];
+      shell = "${config.homebrew.brewPrefix}/bash";
+      createHome = true;
+    };
   };
 
-  nixpkgs.hostPlatform = "aarch64-darwin";
   nix.settings.keep-outputs = false;
 }
