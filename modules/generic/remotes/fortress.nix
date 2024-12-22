@@ -7,7 +7,7 @@
 in {
   options = {
     krad246.remotes.fortress = {
-      enable = lib.options.mkEnableOption "enable";
+      enable = lib.options.mkEnableOption "fortress";
 
       sshUser = lib.options.mkOption {
         type = lib.types.str;

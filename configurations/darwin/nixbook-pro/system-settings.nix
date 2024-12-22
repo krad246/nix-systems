@@ -41,13 +41,13 @@
       cores = 8;
 
       memorySize = 16 * 1024;
-      diskSize = 256 * 1024;
+      diskSize = 64 * 1024;
     };
 
     colima = {
-      enable = true;
+      enable = false;
       memorySize = 16 * 1024;
-      diskSize = 64 * 1024;
+      diskSize = 192 * 1024;
       cores = 8;
     };
   };

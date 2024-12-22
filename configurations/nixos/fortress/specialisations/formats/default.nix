@@ -10,7 +10,6 @@ _: let
 
       virtualisation = {
         diskSize = 32 * 1024;
-        memorySize = disko.memSize;
       };
     };
   in
@@ -18,7 +17,7 @@ _: let
 
   mkQemuConfig = extraConfig: let
     module = {modulesPath, ...}: {
-      imports = [(modulesPath + "/virtualisation/qemu-vm.nix")] ++ [ (mkConfig extraConfig) ];
+      imports = [(modulesPath + "/virtualisation/qemu-vm.nix")] ++ [(mkConfig extraConfig)];
 
       virtualisation = {
         cores = 6;

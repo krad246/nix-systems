@@ -7,7 +7,7 @@
 in {
   options = {
     krad246.remotes.dullahan = {
-      enable = lib.options.mkEnableOption "enable";
+      enable = lib.options.mkEnableOption "dullahan";
 
       sshUser = lib.options.mkOption {
         type = lib.types.str;
