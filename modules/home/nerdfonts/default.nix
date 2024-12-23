@@ -1,8 +1,10 @@
-{pkgs, ...}: {
-  fonts.fontconfig.enable = true;
+{
+  withSystem,
+  pkgs,
+  ...
+}: {
+  fonts.fontconfig.enable = pkgs.stdenv.isLinux;
   home.packages = with pkgs; [
-    (nerdfonts.override {
-      fonts = ["Meslo" "NerdFontsSymbolsOnly"];
-    })
+    (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))
   ];
 }

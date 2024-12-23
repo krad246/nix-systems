@@ -10,6 +10,7 @@ in {
     checkConfig = true;
     gc.automatic = true;
     settings = {
+      use-xdg-base-directories = true;
       builders-use-substitutes = true;
       experimental-features = ["nix-command" "flakes"];
       keep-outputs = modules.mkDefault true;

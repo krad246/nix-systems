@@ -6,6 +6,7 @@
 }: {
   imports = [
     self.homeModules.shellenv
+    self.homeModules.dconf
   ];
 
   home = {

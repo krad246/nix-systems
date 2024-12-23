@@ -1,4 +1,8 @@
 {
+  config,
+  lib,
+  ...
+}: {
   system.defaults = {
     dock = {
       appswitcher-all-displays = true;
@@ -9,13 +13,16 @@
 
       mouse-over-hilite-stack = true;
 
-      persistent-apps = [
-        /Applications/Arc.app
-        /Applications/kitty.app
-        "/Applications/Visual Studio Code.app"
-        "/System/Applications/iPhone Mirroring.app"
-        /System/Applications/Launchpad.app
-      ];
+      persistent-apps = let
+        inherit (config.krad246.darwin) apps;
+      in
+        (lib.lists.optionals apps.arc [/Applications/Arc.app])
+        ++ (lib.lists.optionals apps.kitty [/Applications/kitty.app])
+        ++ (lib.lists.optionals apps.vscode ["/Applications/Visual Studio Code.app"])
+        ++ [
+          "/System/Applications/iPhone Mirroring.app"
+          /System/Applications/Launchpad.app
+        ];
 
       persistent-others = [];
 

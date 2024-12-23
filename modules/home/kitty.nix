@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  withSystem,
+  pkgs,
+  ...
+}: {
   programs.kitty = {
     enable = true;
     darwinLaunchOptions = ["--single-instance"];
@@ -10,12 +14,8 @@
     font = {
       name = "meslo-lg";
       size = 20.0;
-      package = pkgs.nerdfonts.override {
-        fonts = [
-          "Meslo"
-          "NerdFontsSymbolsOnly"
-        ];
-      };
+      package =
+        withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts);
     };
     keybindings = {};
     environment = {};

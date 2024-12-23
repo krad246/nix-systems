@@ -11,8 +11,9 @@
   containers = import ./containers {inherit importApply self;};
   nixos-generators = import ./nixos-generators {inherit withSystem importApply inputs self specialArgs;};
   disko-config = import ./disko {inherit importApply;};
+  nerdfonts = import ./nerdfonts {inherit importApply;};
 in {
-  imports = [disko-config.flakeModule nixos-generators.flakeModule];
+  imports = [disko-config.flakeModule nixos-generators.flakeModule nerdfonts.flakeModule];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
@@ -20,6 +21,7 @@ in {
       containers = containers.flakeModule;
       nixos-generators = nixos-generators.flakeModule;
       disko-config = disko-config.flakeModule;
+      nerdfonts = nerdfonts.flakeModule;
     };
 
     modules.flake = flakeModules;

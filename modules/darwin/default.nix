@@ -1,4 +1,5 @@
 {
+  withSystem,
   self,
   config,
   lib,
@@ -21,6 +22,7 @@
     ])
     ++ (with self.darwinModules; [
       agenix
+      arc
       hm-compat
       homebrew
       kitty
@@ -35,6 +37,8 @@
       nix-core
       unfree
     ]);
+
+  fonts.packages = [(withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))];
 
   system.defaults = {
     NSGlobalDomain = {

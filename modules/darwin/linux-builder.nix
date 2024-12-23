@@ -9,6 +9,8 @@
 in {
   options = {
     krad246.darwin.linux-builder = {
+      enable = (options.mkEnableOption "linux-builder") // {default = true;};
+
       maxJobs = options.mkOption {
         type = types.ints.positive;
         default = 16;
@@ -92,7 +94,7 @@ in {
       settings.trusted-users = ["@admin" "@wheel"];
 
       linux-builder = {
-        enable = true;
+        inherit (cfg) enable;
         protocol = "ssh-ng";
 
         config = {pkgs, ...}: let

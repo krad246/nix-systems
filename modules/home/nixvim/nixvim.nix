@@ -11,7 +11,7 @@ in {
   imports = [self.homeModules.nerdfonts];
 
   home = {
-    packages = [nixvim] ++ (with pkgs; [nil nixd nixpkgs-fmt]);
+    packages = [nixvim] ++ (with pkgs; [nil nixd]);
 
     shellAliases = {
       vi = meta.getExe nixvim;
