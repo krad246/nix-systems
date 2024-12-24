@@ -80,6 +80,7 @@ in {
     config,
     lib,
     pkgs,
+    inputs',
     self',
     ...
   }: let
@@ -115,6 +116,7 @@ in {
             else
               :
             fi
+            source ${lib.meta.getExe inputs'.agenix-shell.packages.installationScript}
           '';
         };
 
