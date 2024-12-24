@@ -160,6 +160,10 @@
       inputs.pre-commit-hooks.follows = "pre-commit-hooks-nix";
     };
 
+    agenix-shell = {
+      url = "github:aciceri/agenix-shell";
+    };
+
     # Handles the Spotlight and Dock synchronization
     mac-app-util = {
       url = "github:hraban/mac-app-util";

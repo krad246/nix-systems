@@ -12,6 +12,8 @@ in {
       treefmt-nix.flakeModule
       flake-root.flakeModule
       pre-commit-hooks-nix.flakeModule
+      agenix-rekey.flakeModule
+      agenix-shell.flakeModules.default
     ])
     ++ [justfile.flakeModule];
 
