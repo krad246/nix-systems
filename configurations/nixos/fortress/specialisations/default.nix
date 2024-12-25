@@ -2,20 +2,37 @@ args @ {
   importApply,
   self,
   ...
-}: rec {
-  default.configuration = fortress.configuration;
-  fortress.configuration = _: {
+}: let
+  shared = {
+    imports = [
+      (importApply ./hardware-configuration.nix args)
+      self.diskoConfigurations.fortress-desktop
+    ];
+  };
+in rec {
+  default.configuration = desktop.configuration;
+
+  desktop.configuration = _: let
+    desktop = ./desktop;
+  in {
     imports =
-      [self.diskoConfigurations.fortress-desktop]
-      ++ (let
-        desktop = ./desktop;
-      in [
-        (desktop + "/authorized-keys.nix")
-        (desktop + "/cachix-agent.nix")
-        (importApply (desktop + "/hardware-configuration.nix") args)
-        (desktop + "/hercules-ci-agent.nix")
-        (desktop + "/secrets.nix")
-        (desktop + "/settings.nix")
-      ]);
+      [shared]
+      ++ [
+        (desktop + "/system-settings.nix")
+      ];
+  };
+
+  ci-agent.configuration = _: let
+    ci-agent = ./ci-agent;
+  in {
+    imports =
+      [shared]
+      ++ [
+        self.nixosModules.agenix
+        (ci-agent + "/agenix.nix")
+        (ci-agent + "/authorized-keys.nix")
+        (ci-agent + "/cachix-agent.nix")
+        (ci-agent + "/hercules-ci-agent.nix")
+      ];
   };
 }
