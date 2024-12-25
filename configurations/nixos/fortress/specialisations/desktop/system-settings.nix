@@ -23,20 +23,6 @@
     AllowSuspendThenHibernate=no
   '';
 
-  home-manager.sharedModules = [
-    ({lib, ...}: {
-      specialisation = rec {
-        default = lib.modules.mkForce fortress;
-        fortress = {
-          configuration = _: {
-            # TODO: must inherit settings from generic-linux
-            imports = with self.homeModules; [
-              discord
-              kdeconnect
-              vscode
-              vscode-server
-            ];
-
   home-manager.sharedModules = let
     fortress = {
       configuration = {...}: {
