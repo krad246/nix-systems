@@ -116,7 +116,7 @@ in {
             else
               :
             fi
-            source ${lib.meta.getExe inputs'.agenix-shell.packages.installationScript}
+            # source ${lib.meta.getExe inputs'.agenix-shell.packages.installationScript}
           '';
         };
 
