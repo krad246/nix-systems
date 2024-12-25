@@ -58,11 +58,15 @@
 
   nix = {
     useDaemon = lib.modules.mkForce true;
+    configureBuildUsers = true;
+    daemonIOLowPriority = lib.modules.mkDefault true;
+    daemonProcessType = lib.modules.mkDefault "Adaptive";
     settings = {
       auto-optimise-store = false;
-      sandbox = false;
     };
   };
+
+  ids.gids.nixbld = 350;
 
   services.nix-daemon.enable = lib.modules.mkForce true;
   system.stateVersion = 4;

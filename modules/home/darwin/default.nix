@@ -16,8 +16,6 @@ in {
       vscode
     ]);
 
-  nix.settings.sandbox = false;
-
   home = {
     packages = with pkgs; [mas m-cli];
   };

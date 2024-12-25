@@ -14,7 +14,8 @@
       AppWindowGroupingBehavior = true;
       AutoHide = true;
       EnableStandardClickToShowDesktop = false;
-      GloballyEnabled = true;
+      EnableTiledWindowMargins = true;
+      GloballyEnabled = false;
       HideDesktop = true;
       StageManagerHideWidgets = false;
       StandardHideDesktopIcons = false;

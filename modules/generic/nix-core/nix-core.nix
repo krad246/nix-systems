@@ -15,8 +15,9 @@ in {
       experimental-features = ["nix-command" "flakes"];
       keep-outputs = modules.mkDefault true;
       keep-derivations = modules.mkDefault false;
-      auto-optimise-store = modules.mkDefault true;
+      auto-optimise-store = modules.mkDefault false;
       sandbox = modules.mkDefault "relaxed";
+      sandbox-fallback = modules.mkDefault pkgs.stdenv.isDarwin;
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
