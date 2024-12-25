@@ -66,10 +66,8 @@
     };
   };
 
-  ids.gids.nixbld = 350;
-
   services.nix-daemon.enable = lib.modules.mkForce true;
-  system.stateVersion = 4;
+  # system.stateVersion = 4;
 
   homebrew = {
     brews = ["bash" "zsh"];

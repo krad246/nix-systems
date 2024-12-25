@@ -53,6 +53,11 @@
 
   # Enable more deep caching of artifacts since we have space
   nix = {
-    settings.keep-derivations = true;
+    settings = {
+      keep-derivations = true;
+      max-substitution-jobs = 60;
+    };
   };
+
+  ids.gids.nixbld = 350;
 }

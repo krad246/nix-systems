@@ -39,6 +39,8 @@ in {
       keep-going = true;
       min-free = modules.mkDefault 12884901888;
       preallocate-contents = true;
+      max-jobs = modules.mkDefault "auto";
+      max-substitution-jobs = modules.mkDefault 16;
     };
   };
 }
