@@ -23,6 +23,8 @@
     AllowSuspendThenHibernate=no
   '';
 
+  nix.settings.max-substitution-jobs = 144;
+
   home-manager.sharedModules = let
     fortress = {
       configuration = {...}: {
