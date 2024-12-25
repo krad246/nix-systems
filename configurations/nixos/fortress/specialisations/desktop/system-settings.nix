@@ -6,13 +6,14 @@
     kdeconnect
     pipewire
     rdp
-    sshd
     system76-scheduler
   ];
 
   programs.ssh = {
     startAgent = true;
   };
+
+  systemd.services.NetworkManager-wait-online.enable = false;
 
   home-manager.sharedModules = [
     ({lib, ...}: {
