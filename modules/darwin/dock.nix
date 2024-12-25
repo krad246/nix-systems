@@ -5,36 +5,43 @@
 }: {
   system.defaults = {
     dock = {
+      enable-spring-load-actions-on-all-items = null;
       appswitcher-all-displays = true;
-      autohide = false;
-      dashboard-in-overlay = true;
-
+      autohide = true;
+      autohide-delay = 0.15;
+      autohide-time-modifier = 0.25;
+      dashboard-in-overlay = null;
+      expose-animation-duration = null;
+      expose-group-apps = true;
+      largesize = 128;
+      launchanim = true;
+      magnification = true;
+      mineffect = "genie";
       minimize-to-application = true;
-
       mouse-over-hilite-stack = true;
-
+      mru-spaces = true;
+      orientation = "bottom";
       persistent-apps = let
         inherit (config.krad246.darwin) apps;
+        inherit (lib) lists;
       in
-        (lib.lists.optionals apps.arc [/Applications/Arc.app])
-        ++ (lib.lists.optionals apps.kitty [/Applications/kitty.app])
-        ++ (lib.lists.optionals apps.vscode ["/Applications/Visual Studio Code.app"])
+        (lists.optionals apps.arc [/Applications/Arc.app])
+        ++ (lists.optionals apps.kitty [/Applications/kitty.app])
+        ++ (lists.optionals apps.vscode ["/Applications/Visual Studio Code.app"])
         ++ [
           "/System/Applications/iPhone Mirroring.app"
           /System/Applications/Launchpad.app
         ];
-
       persistent-others = [];
-
       scroll-to-open = true;
       show-process-indicators = true;
       show-recents = true;
-      showhidden = false;
+      showhidden = true;
+      slow-motion-allowed = true;
       static-only = false;
       tilesize = 64;
 
-      # Disable all hot corners
-      wvous-bl-corner = 1;
+      wvous-bl-corner = 11;
       wvous-br-corner = 1;
       wvous-tl-corner = 1;
       wvous-tr-corner = 1;

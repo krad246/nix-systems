@@ -102,7 +102,11 @@ in {
           inherit (config.nix) linux-builder;
         in {
           imports =
-            (with self; [modules.generic.nix-core nixosModules.ccache-stdenv nixosModules.zram])
+            (with self; [
+              modules.generic.nix-core
+              nixosModules.ccache-stdenv
+              nixosModules.zram
+            ])
             ++ [cfg.extraConfig];
 
           # Emulate all of the linux-builder systems
