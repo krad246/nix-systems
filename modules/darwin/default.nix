@@ -17,6 +17,7 @@
       menubar
       pointer
       single-user
+      spotlight
       touch-id
       window-manager
     ])
