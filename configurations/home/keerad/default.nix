@@ -2,7 +2,6 @@
   self,
   osConfig,
   config,
-  lib,
   pkgs,
   ...
 }: {
@@ -23,8 +22,6 @@
         then "/Users/keerad"
         else "/home/keerad"
       );
-
-    stateVersion = lib.trivial.release;
   };
 
   nix.settings = {

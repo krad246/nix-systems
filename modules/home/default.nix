@@ -24,4 +24,6 @@ in {
       $DRY_RUN_CMD ${lib.meta.getExe cfg.home.activationPackage}
     '';
   };
+
+  home.stateVersion = lib.trivial.release;
 }
