@@ -1,7 +1,6 @@
 {
   self,
   config,
-  lib,
   ...
 }: {
   imports = [
@@ -12,8 +11,6 @@
   home = {
     username = "ubuntu";
     homeDirectory = "/home/ubuntu";
-
-    stateVersion = lib.trivial.release;
   };
 
   nix.settings = {

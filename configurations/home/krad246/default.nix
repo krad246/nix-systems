@@ -1,7 +1,6 @@
 {
   osConfig,
   config,
-  lib,
   pkgs,
   ...
 }: {
@@ -14,8 +13,6 @@
         then "/Users/krad246"
         else "/home/krad246"
       );
-
-    stateVersion = lib.trivial.release;
   };
 
   nix.settings = {
