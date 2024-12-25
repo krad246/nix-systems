@@ -11,14 +11,17 @@ args @ {
   };
 in rec {
   default.configuration = desktop.configuration;
+  fortress.configuration = desktop.configuration;
 
   desktop.configuration = _: let
     desktop = ./desktop;
+    ci-agent = ./ci-agent;
   in {
     imports =
       [shared]
       ++ [
         (desktop + "/system-settings.nix")
+        (ci-agent + "/authorized-keys.nix")
       ];
   };
 
