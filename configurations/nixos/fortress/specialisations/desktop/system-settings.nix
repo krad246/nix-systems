@@ -6,6 +6,7 @@
     kdeconnect
     pipewire
     rdp
+    sshd
     system76-scheduler
   ];
 
@@ -14,6 +15,13 @@
   };
 
   systemd.services.NetworkManager-wait-online.enable = false;
+
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernate=no
+  '';
 
   home-manager.sharedModules = [
     ({lib, ...}: {
