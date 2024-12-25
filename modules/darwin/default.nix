@@ -67,7 +67,7 @@
   };
 
   services.nix-daemon.enable = lib.modules.mkForce true;
-  # system.stateVersion = 4;
+  system.stateVersion = 5;
 
   homebrew = {
     brews = ["bash" "zsh"];
