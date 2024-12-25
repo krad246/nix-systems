@@ -25,4 +25,6 @@
       krad246.attrsets.stemValuePair path {
         file = path;
       });
+
+  ids.gids.nixbld = 30000;
 }
