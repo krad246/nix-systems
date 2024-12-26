@@ -1,0 +1,56 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "echo",
+            "type": "shell",
+            "command": "echo Hello"
+        },
+        {
+            "label": "bottom",
+            "type": "shell",
+            "command": "btm",
+            "problemMatcher": []
+        },
+        {
+            "label": "check",
+            "type": "shell",
+            "command": "just check --all-systems",
+            "problemMatcher": [],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "devour-flake",
+            "type": "shell",
+            "command": "just devour-flake",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "fmt",
+            "type": "shell",
+            "command": "nix fmt --inputs-from ${workspaceFolder}",
+            "problemMatcher": []
+        },
+        {
+            "label": "apply-system",
+            "type": "shell",
+            "command": "just apply-system",
+            "problemMatcher": []
+        },
+        {
+            "label": "apply-home",
+            "type": "shell",
+            "command": "just apply-home",
+            "problemMatcher": []
+        },
+    ]
+}
