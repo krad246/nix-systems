@@ -35,7 +35,7 @@
       persistent-others = [];
       scroll-to-open = true;
       show-process-indicators = true;
-      show-recents = true;
+      show-recents = false;
       showhidden = true;
       slow-motion-allowed = true;
       static-only = false;

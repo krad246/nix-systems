@@ -15,7 +15,7 @@
       AutoHide = true;
       EnableStandardClickToShowDesktop = false;
       EnableTiledWindowMargins = true;
-      GloballyEnabled = false;
+      GloballyEnabled = null;
       HideDesktop = true;
       StageManagerHideWidgets = false;
       StandardHideDesktopIcons = false;
