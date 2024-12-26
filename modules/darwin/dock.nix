@@ -42,9 +42,9 @@
       tilesize = 64;
 
       wvous-bl-corner = 11;
-      wvous-br-corner = 4;
+      wvous-br-corner = 11;
       wvous-tl-corner = 2;
-      wvous-tr-corner = 12;
+      wvous-tr-corner = 2;
     };
 
     spaces.spans-displays = false;
