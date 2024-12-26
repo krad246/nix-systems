@@ -131,6 +131,7 @@ in {
       directories = [
         "/var/log"
         "/var/lib/bluetooth"
+        "/var/lib/flatpak"
         "/var/lib/nixos"
         "/var/lib/systemd/coredump"
         "/etc/NetworkManager/system-connections"
