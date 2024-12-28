@@ -10,4 +10,7 @@
     utm
     zoom
   ];
+
+  krad246.darwin.apps.vscode = false;
+  krad246.darwin.apps.kitty = false;
 }
