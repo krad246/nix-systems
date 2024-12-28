@@ -4,7 +4,7 @@
       AppleShowScrollBars = "Automatic";
       AppleScrollerPagingBehavior = true;
 
-      AppleSpacesSwitchOnActivate = false;
+      AppleSpacesSwitchOnActivate = true;
       AppleWindowTabbingMode = "manual";
 
       NSWindowShouldDragOnGesture = true;
