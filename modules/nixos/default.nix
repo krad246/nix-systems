@@ -1,3 +1,3 @@
 {self, ...}: {
-  imports = with self.nixosModules; [nixos nerdfonts];
+  imports = with self.nixosModules; [nixos];
 }

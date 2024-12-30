@@ -7,6 +7,7 @@
 in {
   perSystem = {
     self',
+    config,
     pkgs,
     ...
   }: {
@@ -37,7 +38,7 @@ in {
             comment = "Format the repository.";
             justfile = ''
               fmt *ARGS: (lock)
-                treefmt {{ ARGS }}
+                ${lib.meta.getExe config.treefmt.build.wrapper} {{ ARGS }}
             '';
           };
         };
