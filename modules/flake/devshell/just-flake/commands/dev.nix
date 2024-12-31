@@ -18,12 +18,20 @@ in {
         inherit lib;
         group = "dev";
         recipes = {
+          make = {
+            enable = self'.packages ? makefile;
+            comment = "Makefile commands. Syntax: `make ARGS`";
+            justfile = ''
+              make *ARGS:
+                ${lib.meta.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ ARGS }}
+            '';
+          };
+
           container = {
-            enable = true;
+            enable = self'.packages ? makefile;
             comment = "Container commands. Syntax: `just container ARGS`";
             justfile = ''
-              container *ARGS:
-                ${lib.meta.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ prepend("container-", ARGS) }}
+              container *ARGS: (make prepend("container-", ARGS))
             '';
           };
 

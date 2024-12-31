@@ -1,4 +1,5 @@
 {
+  getSystem,
   withSystem,
   importApply,
   inputs,
@@ -8,7 +9,7 @@
 }: let
   # Sets up container image packages, custom devShell derivation within the container
   # VSCode *is* supported!
-  containers = import ./containers {inherit importApply self;};
+  containers = import ./containers {inherit getSystem withSystem importApply self;};
   nixos-generators = import ./nixos-generators {inherit withSystem importApply inputs self specialArgs;};
   disko-config = import ./disko {inherit importApply;};
   nerdfonts = import ./nerdfonts {inherit importApply;};
