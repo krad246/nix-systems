@@ -13,7 +13,7 @@
   disko-config = import ./disko {inherit importApply;};
   nerdfonts = import ./nerdfonts {inherit importApply;};
 in {
-  imports = [disko-config.flakeModule nixos-generators.flakeModule nerdfonts.flakeModule];
+  imports = [containers.flakeModule disko-config.flakeModule nixos-generators.flakeModule nerdfonts.flakeModule];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
