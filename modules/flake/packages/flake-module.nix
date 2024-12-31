@@ -113,7 +113,7 @@ in {
         # with more capabilities on linux environments
         bwrapenv = pkgs.buildFHSEnvBubblewrap {
           name = "bwrapenv";
-          runScript = self'.packages.nix-shell-env;
+          runScript = "bash --rcfile <(echo ${lib.strings.escapeShellArg self'.packages.nix-shell-env.shellHook})";
           nativeBuildInputs = let
             # 1. get all `{build,nativeBuild,...}Inputs` from the elements of `inputs`
             # 2. since that is a list of lists, `flatten` that into a regular list
