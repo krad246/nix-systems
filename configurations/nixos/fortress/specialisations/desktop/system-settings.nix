@@ -18,12 +18,16 @@
 
   systemd.sleep.extraConfig = ''
     AllowSuspend=no
-    AllowHibernation=no
-    AllowHybridSleep=no
-    AllowSuspendThenHibernate=no
+    AllowHibernation=yes
+    AllowHybridSleep=yes
+    AllowSuspendThenHibernate=yes
   '';
 
   nix.settings.max-substitution-jobs = 144;
+
+  virtualisation.docker.enable = true;
+
+  users.users.krad246.extraGroups = ["docker"];
 
   home-manager.sharedModules = let
     fortress = {

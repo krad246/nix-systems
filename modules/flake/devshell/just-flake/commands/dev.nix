@@ -19,7 +19,7 @@ in {
         group = "dev";
         recipes = {
           container = {
-            enable = false;
+            enable = true;
             comment = "Container commands. Syntax: `just container ARGS`";
             justfile = ''
               container *ARGS:
