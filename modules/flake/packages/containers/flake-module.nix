@@ -55,7 +55,6 @@ in {
       vscode-devcontainer-aarch64-linux = mkContainerBuilder hostCtx.system "aarch64-linux";
       vscode-devcontainer-x86_64-linux = mkContainerBuilder hostCtx.system "x86_64-linux";
 
-      makefile = makefile-aarch64-linux;
       makefile-aarch64-linux = mkMakefile hostCtx.system "aarch64-linux";
       makefile-x86_64-linux = mkMakefile hostCtx.system "x86_64-linux";
     });

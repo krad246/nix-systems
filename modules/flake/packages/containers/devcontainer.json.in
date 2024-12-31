@@ -25,7 +25,8 @@
         "--memory-swap=-1",
 
         // max 6 cpus
-        "--cpus=6"
+        "--cpus=6",
+
         // enable KVM for building
         "--device=/dev/kvm",
     ],
