@@ -46,7 +46,7 @@ in
       EOF
     '';
 
-    enableFakechroot = hostCtx.pkgs.stdenv.isx86_64;
+    enableFakechroot = hostCtx.pkgs.stdenv.isLinux;
     fakeRootCommands = ''
     '';
   }
