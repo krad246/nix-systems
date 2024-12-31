@@ -14,6 +14,8 @@
         // dmesg access
         "--cap-add=SYSLOG",
 
+        // reserve about 6 gigs of ram, but deprioritize the container in the case of memory contention
+        // memory-reservation is a soft limit that does NOT invoke the OOM killer.
         // see:
         // - https://docs.docker.com/engine/containers/resource_constraints/
         // - https://stackoverflow.com/questions/68991039/what-is-docker-kernel-memory
@@ -21,6 +23,9 @@
 
         // allow the container unlimited swap addressability
         "--memory-swap=-1",
+
+        // max 6 cpus
+        "--cpus=6"
     ],
 
    "customizations": {
