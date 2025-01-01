@@ -43,6 +43,8 @@ in
       build-users-group =
       experimental-features = nix-command flakes
       extra-platforms = ${hostCtx.pkgs.stdenv.system} ${pkgs.stdenv.system}
+      cores = 0
+      max-jobs = auto
       EOF
     '';
 

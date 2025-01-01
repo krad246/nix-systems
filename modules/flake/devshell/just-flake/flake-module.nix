@@ -50,7 +50,7 @@
     in
       cli.toGNUCommandLine {} {
         option = [
-          "inputs-from ${self}"
+          "inputs-from {{ flake }}"
           "experimental-features 'nix-command flakes'"
           "keep-going true"
           "show-trace true"
