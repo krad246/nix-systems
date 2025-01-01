@@ -84,7 +84,7 @@ in {
     # Core package list for the host
     targetPkgs = tpkgs:
       with tpkgs;
-        [git]
+        [git delta]
         ++ [direnv nix-direnv]
         ++ [just gnumake]
         ++ [shellcheck nil];
@@ -100,6 +100,10 @@ in {
             config.treefmt.build.devShell
             config.pre-commit.devShell
           ];
+
+          shellHook = ''
+
+          '';
         };
 
         devour-flake =
