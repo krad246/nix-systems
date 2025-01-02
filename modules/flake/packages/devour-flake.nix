@@ -1,33 +1,21 @@
-{
+args @ {
   inputs,
   self,
   lib,
   pkgs,
   ...
-}:
-pkgs.writeShellApplication {
-  name = "devour-flake";
+}: let
+  inherit (args) specialArgs;
+in
+  pkgs.writeShellApplication {
+    name = "devour-flake";
 
-  text = let
-    bin = lib.meta.getExe (pkgs.callPackage inputs.devour-flake {});
-    args = lib.cli.toGNUCommandLine {} {
-      option = [
-        "inputs-from ${self}"
-        "experimental-features 'nix-command flakes'"
-        "keep-going true"
-        "show-trace true"
-        "accept-flake-config true"
-        "builders-use-substitutes true"
-        "preallocate-contents true"
-      ];
-
-      verbose = true;
-      print-build-logs = true;
-    };
-  in ''
-    set -x
-    ${bin} "${self}" \
-      ${lib.strings.concatStringsSep " " args} \
-    "$@"
-  '';
-}
+    text = let
+      bin = lib.meta.getExe (pkgs.callPackage inputs.devour-flake {});
+    in ''
+      set -x
+      ${bin} "${self}" \
+        ${lib.strings.concatStringsSep " " (specialArgs.nixArgs lib)} \
+      "$@"
+    '';
+  }

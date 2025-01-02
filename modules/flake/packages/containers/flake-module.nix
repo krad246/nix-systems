@@ -31,14 +31,13 @@
     in
       pkgs.callPackage ./makefile.nix params);
 in {
-  perSystem = {
-    lib,
-    pkgs,
-    ...
-  }: {
-    packages = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-      vscode-devcontainer = mkContainerBuilder pkgs.stdenv.system pkgs.stdenv.system;
-      makefile = mkMakefile pkgs.stdenv.system pkgs.stdenv.system;
+  perSystem = host @ {pkgs, ...}: {
+    packages = {
+      vscode-devcontainer-aarch64-linux = mkContainerBuilder host.system "aarch64-linux";
+      vscode-devcontainer-x86_64-linux = mkContainerBuilder host.system "x86_64-linux";
+
+      makefile-aarch64-linux = mkMakefile pkgs.stdenv.system "aarch64-linux";
+      makefile-x86_64-linux = mkMakefile pkgs.stdenv.system "x86_64-linux";
     };
   };
 
@@ -51,7 +50,6 @@ in {
         });
   in {
     aarch64-darwin = withSystem "aarch64-darwin" (hostCtx: rec {
-      vscode-devcontainer = vscode-devcontainer-aarch64-linux;
       vscode-devcontainer-aarch64-linux = mkContainerBuilder hostCtx.system "aarch64-linux";
       vscode-devcontainer-x86_64-linux = mkContainerBuilder hostCtx.system "x86_64-linux";
 
