@@ -85,27 +85,36 @@ in {
     targetPkgs = tpkgs:
       with tpkgs;
         [git delta]
-        ++ [direnv nix-direnv]
+        ++ [direnv nix-direnv lorri]
         ++ [just gnumake]
         ++ [shellcheck nil];
   in {
+    devShells = {
+      interactive = pkgs.mkShell {
+        inputsFrom = [
+          self'.devShells.nix-shell-env
+          config.just-flake.outputs.devShell
+        ];
+
+        shellHook = ''
+          (${lib.meta.getExe pkgs.lorri} daemon --extra-nix-options ${builtins.toJSON {}} 1>/dev/null 2>/dev/null) &
+          eval "$(${lib.meta.getExe pkgs.lorri} -v direnv --flake $FLAKE_ROOT)"
+        '';
+      };
+
+      nix-shell-env = pkgs.mkShell {
+        packages = targetPkgs pkgs;
+
+        inputsFrom = [
+          config.flake-root.devShell
+          config.treefmt.build.devShell
+          config.pre-commit.devShell
+        ];
+      };
+    };
+
     packages =
       {
-        nix-shell-env = pkgs.mkShell {
-          packages = targetPkgs pkgs;
-
-          inputsFrom = [
-            config.flake-root.devShell
-            config.just-flake.outputs.devShell
-            config.treefmt.build.devShell
-            config.pre-commit.devShell
-          ];
-
-          shellHook = ''
-
-          '';
-        };
-
         devour-flake =
           pkgs.callPackage ./devour-flake.nix forwarded;
       }
@@ -117,7 +126,7 @@ in {
         # with more capabilities on linux environments
         bwrapenv = pkgs.buildFHSEnvBubblewrap {
           name = "bwrapenv";
-          runScript = "bash --rcfile <(echo ${lib.strings.escapeShellArg self'.packages.nix-shell-env.shellHook})";
+          runScript = "bash --rcfile <(echo ${lib.strings.escapeShellArg self'.devShells.nix-shell-env.shellHook})";
           nativeBuildInputs = let
             # 1. get all `{build,nativeBuild,...}Inputs` from the elements of `inputs`
             # 2. since that is a list of lists, `flatten` that into a regular list
@@ -125,7 +134,7 @@ in {
             # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
             mergeInputs = inputs: name: (lib.subtractLists inputs (lib.flatten (lib.catAttrs name inputs)));
           in
-            mergeInputs [self'.packages.nix-shell-env] "nativeBuildInputs";
+            mergeInputs [self'.devShells.nix-shell-env] "nativeBuildInputs";
 
           extraInstallCommands = "";
           meta = {};

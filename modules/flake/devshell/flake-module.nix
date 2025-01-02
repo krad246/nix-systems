@@ -85,7 +85,7 @@ in {
     devShells = {
       # prefer an interpreter-level venv by default
       default = self'.devShells.nix-shell;
-      nix-shell = self'.packages.nix-shell-env;
+      nix-shell = self'.devShells.nix-shell-env;
     };
   };
 }
