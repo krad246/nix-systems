@@ -25,7 +25,10 @@
 
   nix.settings.max-substitution-jobs = 144;
 
-  virtualisation.docker.enable = true;
+  virtualisation = {
+    docker.enable = true;
+    containerd.enable = true;
+  };
 
   users.users.krad246.extraGroups = ["docker"];
 

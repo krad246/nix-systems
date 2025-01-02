@@ -4,7 +4,7 @@
   ...
 }: {
   fonts.fontconfig.enable = pkgs.stdenv.isLinux;
-  home.packages = with pkgs; [
+  home.packages = [
     (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))
   ];
 }
