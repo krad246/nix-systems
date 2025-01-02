@@ -1,43 +1,17 @@
-{withSystem, ...}: let
-  # Form a container mapping a streamLayeredImage script from a given 'hostSystem'
-  # to a target 'system'.
-  mkContainerBuilder = hostSystem: system: let
-    # grab the perSystem context for the host loader script
-    hostCtx = withSystem hostSystem (args: args);
-  in
-    # callPackage used to tack on an extra argument
-    withSystem system (ctx @ {pkgs, ...}: let
-      # system built for changes depending on hostCtx
-      params =
-        {
-          inherit hostCtx;
-        }
-        // ctx;
-    in
-      pkgs.callPackage ./container.nix params);
-
-  mkMakefile = hostSystem: system: let
-    # grab the perSystem context for the host loader script
-    hostCtx = withSystem hostSystem (args: args);
-  in
-    # callPackage used to tack on an extra argument
-    withSystem system (ctx @ {pkgs, ...}: let
-      # system built for changes depending on hostCtx
-      params =
-        {
-          inherit hostCtx;
-        }
-        // ctx;
-    in
-      pkgs.callPackage ./makefile.nix params);
-in {
+{withSystem, ...}: {
   perSystem = host @ {pkgs, ...}: {
     packages = {
-      vscode-devcontainer-aarch64-linux = mkContainerBuilder host.system "aarch64-linux";
-      vscode-devcontainer-x86_64-linux = mkContainerBuilder host.system "x86_64-linux";
+      makefile-aarch64-linux = withSystem "aarch64-linux" (cross:
+        host.pkgs.callPackage ./makefile.nix {
+          inherit host cross;
+          devcontainer-loader = host.pkgs.callPackage ./container.nix {inherit host cross;};
+        });
 
-      makefile-aarch64-linux = mkMakefile pkgs.stdenv.system "aarch64-linux";
-      makefile-x86_64-linux = mkMakefile pkgs.stdenv.system "x86_64-linux";
+      makefile-x86_64-linux = withSystem "x86_64-linux" (cross:
+        host.pkgs.callPackage ./makefile.nix {
+          inherit host cross;
+          devcontainer-loader = host.pkgs.callPackage ./container.nix {inherit host cross;};
+        });
     };
   };
 
@@ -49,14 +23,6 @@ in {
           arch = pkgs.go.GOARCH;
         });
   in {
-    aarch64-darwin = withSystem "aarch64-darwin" (hostCtx: rec {
-      vscode-devcontainer-aarch64-linux = mkContainerBuilder hostCtx.system "aarch64-linux";
-      vscode-devcontainer-x86_64-linux = mkContainerBuilder hostCtx.system "x86_64-linux";
-
-      makefile-aarch64-linux = mkMakefile hostCtx.system "aarch64-linux";
-      makefile-x86_64-linux = mkMakefile hostCtx.system "x86_64-linux";
-    });
-
     aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
       ubuntu = pullImage pkgs {
         imageName = "ubuntu";

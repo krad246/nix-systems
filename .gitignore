@@ -19,6 +19,7 @@ __pycache__
 \#*\#
 just-flake.just
 Makefile
+makefile
 outputs/
 repl-result-*
 result

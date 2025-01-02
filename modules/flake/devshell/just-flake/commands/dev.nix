@@ -6,7 +6,6 @@
   inherit (specialArgs) mkJustRecipeGroup;
 in {
   perSystem = {
-    self',
     config,
     pkgs,
     ...
@@ -18,22 +17,13 @@ in {
         inherit lib;
         group = "dev";
         recipes = {
-          make = {
-            enable = self'.packages ? makefile;
-            comment = "Makefile commands. Syntax: `make ARGS`";
-            justfile = ''
-              make +ARGS:
-                exec {{ just_executable() }} build --print-out-paths ${self}#packages.$system.makefile | \
-                ${lib.meta.getExe' pkgs.findutils "xargs"} -I {drv} \
-                  ${lib.meta.getExe pkgs.gnumake} -f {drv} {{ ARGS }}
-            '';
-          };
-
           container = {
-            enable = self'.packages ? makefile;
             comment = "Container commands. Syntax: `just container ARGS`";
             justfile = ''
-              container *ARGS: (make prepend("container-", ARGS))
+              container *ARGS:
+                ${lib.meta.getExe pkgs.gnumake} -f \
+                  "$({{ just_executable() }} build --print-out-paths ${self}#makefile-$system)" \
+                  {{ prepend("container-", ARGS) }}
             '';
           };
 
