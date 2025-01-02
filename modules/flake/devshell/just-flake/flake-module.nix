@@ -1,5 +1,5 @@
 # outer / 'flake' scope
-{
+outer @ {
   importApply,
   inputs,
   self,
@@ -45,20 +45,7 @@
       attrsets.mapAttrs (_key: recipe: mkJustRecipe (recipe // {inherit (inner) lib group;}))
       recipes;
 
-    nixArgs = {lib, ...}: let
-      inherit (lib) cli;
-    in
-      cli.toGNUCommandLine {} {
-        option = [
-          "inputs-from {{ flake }}"
-          "experimental-features 'nix-command flakes'"
-          "keep-going true"
-          "show-trace true"
-          "accept-flake-config true"
-          "builders-use-substitutes true"
-          "preallocate-contents true"
-        ];
-      };
+    inherit (outer.specialArgs) nixArgs;
   };
 
   justfile-dev = importApply ./commands/dev.nix {

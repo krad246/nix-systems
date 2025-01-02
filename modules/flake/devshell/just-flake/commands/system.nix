@@ -20,7 +20,7 @@ in {
         group = "system";
 
         recipes = let
-          args = nixArgs {inherit lib;};
+          args = nixArgs lib;
         in
           (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
             nixos-rebuild = {

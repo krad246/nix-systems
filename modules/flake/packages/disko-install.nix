@@ -1,4 +1,4 @@
-{
+outer @ {
   self,
   pkgs,
   ...
@@ -8,9 +8,10 @@ in
   pkgs.writeShellApplication {
     name = "disko-install";
     text = let
-      args = lib.cli.toGNUCommandLine {} {
-        option = ["inputs-from ${self}" "experimental-features 'nix-command flakes'"];
-      };
+      args = let
+        inherit (outer) specialArgs;
+      in
+        specialArgs.nixArgs lib;
     in ''
       disko() {
         mode="$1"

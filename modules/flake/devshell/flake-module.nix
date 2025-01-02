@@ -1,11 +1,6 @@
 # outer / 'flake' scope
-{
-  importApply,
-  inputs,
-  self,
-  ...
-}: let
-  justfile = import ./just-flake {inherit importApply inputs self;};
+args @ {inputs, ...}: let
+  justfile = import ./just-flake args;
 in {
   imports =
     (with inputs; [

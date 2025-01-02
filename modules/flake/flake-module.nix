@@ -31,15 +31,36 @@ args @ {
         stem = path: lib.strings.nameFromURL (builtins.baseNameOf path) ".";
       };
     };
+
+    nixArgs = lib: let
+      inherit (lib) cli;
+    in
+      cli.toGNUCommandLine {} {
+        option = [
+          "inputs-from ${self}"
+          "experimental-features 'nix-command flakes'"
+          "keep-going true"
+          "show-trace true"
+          "accept-flake-config true"
+          "builders-use-substitutes true"
+          "preallocate-contents true"
+          "allow-import-from-derivation true"
+        ];
+
+        verbose = true;
+        print-build-logs = true;
+      };
   };
 
+  forwarded = args // {inherit specialArgs;};
+
   # standard outputs
-  apps = import ./apps args;
-  devShells = import ./devshell args;
-  packages = import ./packages (args // {inherit specialArgs;});
+  apps = import ./apps forwarded;
+  devShells = import ./devshell forwarded;
+  packages = import ./packages forwarded;
 
   # Module that streamlines tying together system and home configurations.
-  ez-configs = import ./ez-configs (args // {inherit specialArgs;});
+  ez-configs = import ./ez-configs forwarded;
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
