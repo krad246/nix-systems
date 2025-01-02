@@ -1,5 +1,5 @@
 WORKSPACE ?= $(FLAKE_ROOT)
-CACHEDIR ?= $(FLAKE_ROOT)/.cache
+CACHEDIR ?= $(FLAKE_ROOT)/.cache/$(system)
 
 devshell_state = $(CACHEDIR)
 devshell_cidfile = $(devshell_state)/cidfile
