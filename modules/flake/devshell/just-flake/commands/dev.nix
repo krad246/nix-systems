@@ -22,8 +22,10 @@ in {
             enable = self'.packages ? makefile;
             comment = "Makefile commands. Syntax: `make ARGS`";
             justfile = ''
-              make *ARGS:
-                ${lib.meta.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ ARGS }}
+              make +ARGS:
+                exec {{ just_executable() }} build --print-out-paths ${self}#packages.$system.makefile | \
+                ${lib.meta.getExe' pkgs.findutils "xargs"} -I {drv} \
+                  ${lib.meta.getExe pkgs.gnumake} -f {drv} {{ ARGS }}
             '';
           };
 
