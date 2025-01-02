@@ -6,7 +6,6 @@ __pycache__
 .cache
 .direnv
 .DS_Store
-.envrc
 .local
 .mypy_cache
 .pre-commit-config.yaml

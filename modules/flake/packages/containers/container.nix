@@ -14,7 +14,10 @@ host.pkgs.dockerTools.streamLayeredImage {
   contents = cross.pkgs.buildEnv {
     name = "vscode-devcontainer-env";
     paths = with cross.pkgs;
-      [bashInteractive git]
+      [
+        bashInteractive
+        git
+      ]
       ++ [toybox less lesspipe util-linux]
       ++ [nix just]
       ++ [
@@ -39,7 +42,7 @@ host.pkgs.dockerTools.streamLayeredImage {
     cat <<- EOF >./etc/nix/nix.conf
     build-users-group =
     experimental-features = nix-command flakes
-    platforms = ${cross.pkgs.stdenv.system}
+    # platforms = ${cross.pkgs.stdenv.system}
     cores = 0
     max-jobs = auto
     EOF
