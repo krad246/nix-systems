@@ -45,7 +45,7 @@ host.pkgs.dockerTools.streamLayeredImage {
     EOF
   '';
 
-  enableFakechroot = host.pkgs.stdenv.isLinux;
+  enableFakechroot = !host.pkgs.stdenv.isAarch64;
   fakeRootCommands = ''
   '';
 }
