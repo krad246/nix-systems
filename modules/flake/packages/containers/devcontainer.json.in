@@ -8,6 +8,8 @@
     "containerUser": "root",
 
     "runArgs": [
+        "-i",
+        "-t",
         "--cidfile=${localEnv:CACHEDIR}/cidfile",
         "--platform=@platform@",
 
@@ -28,7 +30,7 @@
         "--cpus=6",
 
         // enable KVM for building
-        "--device=/dev/kvm",
+        // "--device=/dev/kvm",
     ],
 
    "customizations": {
