@@ -110,6 +110,9 @@ in {
           config.treefmt.build.devShell
           config.pre-commit.devShell
         ];
+
+        shellHook = ''
+        '';
       };
     };
 
