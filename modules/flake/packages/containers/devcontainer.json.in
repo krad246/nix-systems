@@ -1,15 +1,8 @@
 {
     "name": "@image@",
     "image": "@image@",
-
-    "workspaceMount": "source=${localWorkspaceFolder},target=${containerWorkspaceFolder},type=bind",
-    "workspaceFolder": "/workdir",
-
     "containerUser": "root",
-
     "runArgs": [
-        "-i",
-        "-t",
         "--cidfile=${localEnv:CACHEDIR}/cidfile",
         "--platform=@platform@",
 
@@ -26,14 +19,16 @@
         // allow the container unlimited swap addressability
         "--memory-swap=-1",
 
-        // max 6 cpus
         "--cpus=6",
-
-        // enable KVM for building
-        // "--device=/dev/kvm",
     ],
 
-   "customizations": {
+    "workspaceFolder": "/workdir",
+    "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=${containerWorkspaceFolder},readonly=true",
+
+    "mounts": [
+    ],
+
+    "customizations": {
         "vscode": {
             "extensions": [
                 "vscodevim.vim",
