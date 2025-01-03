@@ -79,7 +79,7 @@
 
     # Swiss-army-knife formatter.
     treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
+      url = "github:numtide/treefmt-nix/48961f31e992e43203afb2ea9cb1402ad392d94b";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -89,7 +89,6 @@
       inputs = {
         flake-compat.follows = "flake-compat";
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixos-stable";
       };
     };
 
@@ -187,7 +186,6 @@
       url = "github:lilyinstarlight/nixos-cosmic";
       inputs = {
         nixpkgs.follows = "nixpkgs";
-        nixpkgs-stable.follows = "nixos-stable";
         flake-compat.follows = "flake-compat";
       };
     };
