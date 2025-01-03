@@ -4,14 +4,14 @@
   cross,
   ...
 }:
-host.pkgs.dockerTools.buildImage {
+host.pkgs.dockerTools.streamLayeredImage {
   name = "vscode-devcontainer";
 
   # Based on Ubuntu 22.04 of the mapped architecture
   fromImage = cross.self'.packages.ubuntu;
   architecture = cross.pkgs.go.GOARCH;
 
-  copyToRoot = cross.pkgs.buildEnv {
+  contents = cross.pkgs.buildEnv {
     name = "vscode-devcontainer-env";
     paths = with cross.pkgs;
       [
@@ -42,8 +42,13 @@ host.pkgs.dockerTools.buildImage {
     cat <<- EOF >./etc/nix/nix.conf
     build-users-group =
     experimental-features = nix-command flakes
+    # platforms = ${cross.pkgs.stdenv.system}
     cores = 0
     max-jobs = auto
     EOF
+  '';
+
+  enableFakechroot = !host.pkgs.stdenv.isAarch64;
+  fakeRootCommands = ''
   '';
 }
