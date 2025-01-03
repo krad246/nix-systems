@@ -16,7 +16,7 @@
         file = path;
       });
 
-  krad246.darwin = rec {
+  krad246.darwin = {
     # Used in conjunction with single-user settings.
     # Wraps users.users option
     masterUser = {
@@ -33,22 +33,24 @@
       };
     };
 
-    # Configure onboard nix-builder VM specs
-    linux-builder = {
-      enable = true;
-      ephemeral = true;
-      maxJobs = 60;
-      cores = 8;
-      memorySize = 16 * 1024;
-      diskSize = 192 * 1024;
-      swapSize = 32 * 1024;
-    };
+    virtualisation = rec {
+      # Configure onboard nix-builder VM specs
+      linux-builder = {
+        enable = true;
+        ephemeral = true;
+        maxJobs = 60;
+        cores = 8;
+        memorySize = 16 * 1024;
+        diskSize = 192 * 1024;
+        swapSize = 32 * 1024;
+      };
 
-    colima = {
-      enable = true;
-      inherit (linux-builder) memorySize;
-      inherit (linux-builder) diskSize;
-      inherit (linux-builder) cores;
+      colima = {
+        enable = true;
+        inherit (linux-builder) memorySize;
+        inherit (linux-builder) diskSize;
+        inherit (linux-builder) cores;
+      };
     };
   };
 
