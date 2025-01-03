@@ -45,7 +45,7 @@
     };
 
     colima = {
-      enable = false;
+      enable = true;
       inherit (linux-builder) memorySize;
       inherit (linux-builder) diskSize;
       inherit (linux-builder) cores;
