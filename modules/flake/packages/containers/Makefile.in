@@ -14,7 +14,7 @@ devcontainer_up_args := \
 
 .PHONY: container-import
 container-import: $(devshell_json)
-	@docker@ image inspect @image@ >/dev/null || (@loader@ | @docker@ load)
+	@docker@ image inspect @image@ >/dev/null || (@loader@)
 
 .PHONY: help
 
@@ -49,6 +49,6 @@ container-clean: container-stop ## Clean up the container and all associated art
 
 $(devshell_json):
 	mkdir -p $(@D)
-	ln -snvrf @template@ $@
+	ln -snvrf @json@ $@
 
 .PHONY: $(devshell_json)

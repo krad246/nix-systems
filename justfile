@@ -26,5 +26,6 @@ setup:
 clean *ARGS: && reload
     git clean -fdx {{ ARGS }}
 
+[group('dev')]
 reload:
     direnv reload

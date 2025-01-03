@@ -1,23 +1,17 @@
 {
   host,
-  cross,
+  devcontainer-image,
+  devcontainer-json,
   devcontainer-loader,
   ...
-}: let
-  image = "${devcontainer-loader.imageName}:${devcontainer-loader.imageTag}";
-in
-  host.pkgs.substituteAll rec {
-    src = ./Makefile.in;
-    inherit image;
+}:
+host.pkgs.substituteAll rec {
+  src = ./Makefile.in;
 
-    loader = devcontainer-loader;
-    devcontainer = host.pkgs.lib.meta.getExe host.pkgs.devcontainer;
-    docker = host.pkgs.lib.meta.getExe host.pkgs.docker;
+  image = devcontainer-image;
+  loader = devcontainer-loader;
+  json = devcontainer-json;
 
-    # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
-    template = host.pkgs.substituteAll {
-      src = ./devcontainer.json.in;
-      inherit image;
-      platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
-    };
-  }
+  devcontainer = host.pkgs.lib.meta.getExe host.pkgs.devcontainer;
+  docker = host.pkgs.lib.meta.getExe host.pkgs.docker;
+}
