@@ -35,16 +35,16 @@
       persistent-others = [];
       scroll-to-open = true;
       show-process-indicators = true;
-      show-recents = true;
+      show-recents = false;
       showhidden = true;
       slow-motion-allowed = true;
       static-only = false;
       tilesize = 64;
 
       wvous-bl-corner = 11;
-      wvous-br-corner = 1;
-      wvous-tl-corner = 1;
-      wvous-tr-corner = 1;
+      wvous-br-corner = 11;
+      wvous-tl-corner = 2;
+      wvous-tr-corner = 2;
     };
 
     spaces.spans-displays = false;

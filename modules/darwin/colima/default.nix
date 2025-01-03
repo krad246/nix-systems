@@ -4,12 +4,12 @@
   pkgs,
   ...
 }: let
-  cfg = config.krad246.darwin.colima;
+  cfg = config.krad246.darwin.virtualisation.colima;
 
   inherit (lib) modules options types;
 in {
   options = {
-    krad246.darwin.colima = {
+    krad246.darwin.virtualisation.colima = {
       enable = options.mkEnableOption "colima";
 
       cores = options.mkOption {

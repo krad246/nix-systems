@@ -6,7 +6,11 @@
   cfg = config.krad246.darwin.apps.kitty;
 in {
   options = {
-    krad246.darwin.apps.kitty = lib.options.mkEnableOption "kitty";
+    krad246.darwin.apps.kitty =
+      lib.options.mkEnableOption "kitty"
+      // {
+        default = true;
+      };
   };
 
   config = {

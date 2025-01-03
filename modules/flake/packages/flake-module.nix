@@ -1,19 +1,17 @@
-{
-  withSystem,
-  importApply,
-  inputs,
-  self,
-  specialArgs,
-  ...
-}: let
+forwarded @ {self, ...}: let
   # Sets up container image packages, custom devShell derivation within the container
   # VSCode *is* supported!
-  containers = import ./containers {inherit importApply self;};
-  nixos-generators = import ./nixos-generators {inherit withSystem importApply inputs self specialArgs;};
-  disko-config = import ./disko {inherit importApply;};
-  nerdfonts = import ./nerdfonts {inherit importApply;};
+  containers = import ./containers forwarded;
+  nixos-generators = import ./nixos-generators forwarded;
+  disko-config = import ./disko forwarded;
+  nerdfonts = import ./nerdfonts forwarded;
 in {
-  imports = [disko-config.flakeModule nixos-generators.flakeModule nerdfonts.flakeModule];
+  imports = [
+    containers.flakeModule
+    disko-config.flakeModule
+    nixos-generators.flakeModule
+    nerdfonts.flakeModule
+  ];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
@@ -80,63 +78,58 @@ in {
     config,
     lib,
     pkgs,
-    inputs',
     self',
     ...
   }: let
     # Core package list for the host
     targetPkgs = tpkgs:
       with tpkgs;
-        [git]
-        ++ [direnv nix-direnv]
+        [git delta]
+        ++ [direnv nix-direnv lorri]
         ++ [just gnumake]
         ++ [shellcheck nil];
-
-    inputsFrom = [
-      config.flake-root.devShell
-      config.just-flake.outputs.devShell
-      config.treefmt.build.devShell
-      config.pre-commit.devShell
-    ];
-    # equivalent of mkShell inputsFrom
-    # append devShell dependencies to nativeBuildInputs
   in {
+    devShells = {
+      interactive = pkgs.mkShell {
+        inputsFrom = [
+          self'.devShells.nix-shell-env
+          config.just-flake.outputs.devShell
+        ];
+
+        shellHook = ''
+          (${lib.meta.getExe pkgs.lorri} daemon --extra-nix-options ${builtins.toJSON {}} 1>/dev/null 2>/dev/null) &
+          eval "$(${lib.meta.getExe pkgs.lorri} -v direnv --flake $FLAKE_ROOT)"
+        '';
+      };
+
+      nix-shell-env = pkgs.mkShell {
+        packages = targetPkgs pkgs;
+
+        inputsFrom = [
+          config.flake-root.devShell
+          config.treefmt.build.devShell
+          config.pre-commit.devShell
+        ];
+
+        shellHook = ''
+        '';
+      };
+    };
+
     packages =
       {
-        nix-shell-env = import ./nix-shell-env.nix {
-          inherit config pkgs;
-          inherit targetPkgs;
-          inherit inputsFrom;
-          shellHook = ''
-            if [[ -f /.dockerenv ]]; then
-              # nix-build doesn't play very nice with the sticky bit
-              # and /tmp in a docker environment. unsetting it enables
-              # the container to manage its tmpfs as it pleases.
-              unset TEMP TMPDIR NIX_BUILD_TOP
-            else
-              :
-            fi
-            # source ${lib.meta.getExe inputs'.agenix-shell.packages.installationScript}
-          '';
-        };
-
-        devour-flake = import ./devour-flake.nix {
-          inherit inputs self lib pkgs;
-        };
+        devour-flake =
+          pkgs.callPackage ./devour-flake.nix forwarded;
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        disko-install = import ./disko-install.nix {inherit self pkgs;};
+        disko-install = pkgs.callPackage ./disko-install.nix forwarded;
 
         # linux has first class support for namespacing, the backend of docker
         # this means that we have a slightly simpler container interface available
         # with more capabilities on linux environments
-        bwrapenv = let
-          inputsFrom = [
-            self'.devShells.nix-shell
-          ];
-
-          # equivalent of mkShell inputsFrom
-          # append devShell dependencies to nativeBuildInputs
+        bwrapenv = pkgs.buildFHSEnvBubblewrap {
+          name = "bwrapenv";
+          runScript = "bash --rcfile <(echo ${lib.strings.escapeShellArg self'.devShells.nix-shell-env.shellHook})";
           nativeBuildInputs = let
             # 1. get all `{build,nativeBuild,...}Inputs` from the elements of `inputs`
             # 2. since that is a list of lists, `flatten` that into a regular list
@@ -144,14 +137,22 @@ in {
             # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
             mergeInputs = inputs: name: (lib.subtractLists inputs (lib.flatten (lib.catAttrs name inputs)));
           in
-            mergeInputs inputsFrom "nativeBuildInputs";
+            mergeInputs [self'.devShells.nix-shell-env] "nativeBuildInputs";
 
-          bwrap = pkgs.buildFHSEnvBubblewrap {
-            name = "bwrapenv";
-            inherit nativeBuildInputs;
-          };
-        in
-          bwrap;
+          extraInstallCommands = "";
+          meta = {};
+          passhtru = {};
+          extraPreBwrapCmds = "";
+          extraBwrapArgs = [];
+          unshareUser = false;
+          unshareIpc = false;
+          unsharePid = false;
+          unshareNet = false;
+          unshareUts = false;
+          unshareCgroup = false;
+          privateTmp = true;
+          dieWithParent = true;
+        };
       });
   };
 }

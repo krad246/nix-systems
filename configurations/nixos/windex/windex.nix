@@ -1,6 +1,7 @@
 {self, ...}: {
   imports =
     (with self.nixosModules; [
+      aarch64-binfmt
       nixos
       wsl
     ])

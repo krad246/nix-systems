@@ -23,6 +23,9 @@ setup:
     exec {{ flake / "setup.sh" }}
 
 [group('dev')]
-clean *ARGS:
-    -git clean -fdx {{ ARGS }}
-    @touch {{ flake / ".envrc" }}
+clean *ARGS: && reload
+    git clean -fdx {{ ARGS }}
+
+[group('dev')]
+reload:
+    direnv reload

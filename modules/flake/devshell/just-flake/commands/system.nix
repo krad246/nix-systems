@@ -20,7 +20,7 @@ in {
         group = "system";
 
         recipes = let
-          args = nixArgs {inherit lib;};
+          args = nixArgs lib;
         in
           (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
             nixos-rebuild = {
@@ -37,14 +37,14 @@ in {
             _test_system = {
               justfile = ''
                 [private]
-                _test_system *ARGS: (nixos-rebuild "test" replace(ARGS, hostname, "--specialisation" + " " + hostname))
+                _test_system *ARGS: (nixos-rebuild "test" ARGS)
               '';
             };
 
             _boot_system = {
               justfile = ''
                 [private]
-                _boot_system *ARGS: (nixos-rebuild "boot" replace(ARGS, hostname, ""))
+                _boot_system *ARGS: (nixos-rebuild "boot" ARGS)
               '';
             };
           })

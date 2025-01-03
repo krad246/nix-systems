@@ -17,7 +17,7 @@ in {
 
         recipes = {
           nix = let
-            args = nixArgs {inherit lib;};
+            args = nixArgs lib;
           in {
             comment = "Wraps `nix`. Pass arguments as normal.";
             justfile = ''

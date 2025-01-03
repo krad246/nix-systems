@@ -16,7 +16,7 @@ in {
         group = "home";
 
         recipes = let
-          args = nixArgs {inherit lib;};
+          args = nixArgs lib;
         in {
           # Home configs work on all *nix systems
           home-manager = {

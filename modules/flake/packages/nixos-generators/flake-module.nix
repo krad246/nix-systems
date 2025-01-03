@@ -47,7 +47,7 @@ in {
   }: {
     packages = lib.modules.mkIf pkgs.stdenv.isLinux {
       fortress-disko-vm = mkFormat pkgs "fortress" "disko-vm";
-      fortress-disko-vm-darwin = mkFormat pkgs "fortress" "disko-vm-darwin";
+      # disko-vm-darwin = mkFormat pkgs "fortress" "disko-vm-darwin";
 
       fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
       fortress-iso = mkFormat pkgs "fortress" "iso";

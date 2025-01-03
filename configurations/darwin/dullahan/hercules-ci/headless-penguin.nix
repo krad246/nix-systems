@@ -4,7 +4,7 @@ outer @ {
   specialArgs,
   ...
 }: {
-  krad246.darwin.linux-builder = {
+  krad246.darwin.virtualisation.linux-builder = {
     ephemeral = false;
 
     extraConfig = {config, ...}: {

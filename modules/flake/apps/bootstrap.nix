@@ -7,7 +7,7 @@
 
       direnv allow "$PWD"
       exec bash --rcfile \
-        <(echo $'source ~/.bashrc; eval "$(direnv hook bash)"')
+        <(echo $'source ~/.bashrc; eval "$(direnv hook bash)";')
     '';
   };
 in {

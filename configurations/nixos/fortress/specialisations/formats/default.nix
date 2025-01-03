@@ -32,10 +32,10 @@ in {
   install-iso-hyperv = mkConfig ./install-iso-hyperv.nix;
   install-iso = mkConfig ./install-iso.nix;
   iso = mkConfig ./iso.nix;
-  qcow-efi = mkQemuConfig ./qcow-efi.nix;
-  qcow = mkQemuConfig ./qcow.nix;
-  raw-efi = mkQemuConfig ./raw-efi.nix;
-  raw = mkQemuConfig ./raw.nix;
+  qcow-efi = mkConfig ./qcow-efi.nix;
+  qcow = mkConfig ./qcow.nix;
+  raw-efi = mkConfig ./raw-efi.nix;
+  raw = mkConfig ./raw.nix;
   sd-aarch64-installer = mkConfig ./sd-aarch64-installer.nix;
   sd-aarch64 = mkConfig ./sd-aarch64.nix;
   sd-x86_64 = mkConfig ./sd-x86_64.nix;

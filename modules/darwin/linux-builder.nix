@@ -4,11 +4,11 @@
   lib,
   ...
 }: let
-  cfg = config.krad246.darwin.linux-builder;
+  cfg = config.krad246.darwin.virtualisation.linux-builder;
   inherit (lib) options types;
 in {
   options = {
-    krad246.darwin.linux-builder = {
+    krad246.darwin.virtualisation.linux-builder = {
       enable = (options.mkEnableOption "linux-builder") // {default = true;};
 
       maxJobs = options.mkOption {

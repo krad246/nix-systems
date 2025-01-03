@@ -1,11 +1,6 @@
 # outer / 'flake' scope
-{
-  importApply,
-  inputs,
-  self,
-  ...
-}: let
-  justfile = import ./just-flake {inherit importApply inputs self;};
+args @ {inputs, ...}: let
+  justfile = import ./just-flake args;
 in {
   imports =
     (with inputs; [
@@ -90,7 +85,7 @@ in {
     devShells = {
       # prefer an interpreter-level venv by default
       default = self'.devShells.nix-shell;
-      nix-shell = self'.packages.nix-shell-env;
+      nix-shell = self'.devShells.nix-shell-env;
     };
   };
 }

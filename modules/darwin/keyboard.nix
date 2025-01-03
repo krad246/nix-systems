@@ -20,8 +20,8 @@
         InitialKeyRepeat = 12;
         KeyRepeat = 3;
 
-        # f1, f2 etc available
-        "com.apple.keyboard.fnState" = true;
+        # f1, f2 etc available as default key behavior
+        "com.apple.keyboard.fnState" = false;
       };
     };
 

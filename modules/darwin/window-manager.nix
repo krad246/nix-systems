@@ -4,7 +4,7 @@
       AppleShowScrollBars = "Automatic";
       AppleScrollerPagingBehavior = true;
 
-      AppleSpacesSwitchOnActivate = false;
+      AppleSpacesSwitchOnActivate = true;
       AppleWindowTabbingMode = "manual";
 
       NSWindowShouldDragOnGesture = true;
@@ -15,7 +15,7 @@
       AutoHide = true;
       EnableStandardClickToShowDesktop = false;
       EnableTiledWindowMargins = true;
-      GloballyEnabled = false;
+      GloballyEnabled = null;
       HideDesktop = true;
       StageManagerHideWidgets = false;
       StandardHideDesktopIcons = false;

@@ -6,7 +6,7 @@
   inherit (specialArgs) mkJustRecipeGroup;
 in {
   perSystem = {
-    self',
+    config,
     pkgs,
     ...
   }: {
@@ -18,11 +18,12 @@ in {
         group = "dev";
         recipes = {
           container = {
-            enable = false;
             comment = "Container commands. Syntax: `just container ARGS`";
             justfile = ''
               container *ARGS:
-                ${lib.meta.getExe pkgs.gnumake} -f ${self'.packages.makefile} {{ prepend("container-", ARGS) }}
+                ${lib.meta.getExe pkgs.gnumake} -f \
+                  "$({{ just_executable() }} build --print-out-paths ${self}#makefile-$system)" \
+                  {{ prepend("container-", ARGS) }}
             '';
           };
 
@@ -37,7 +38,7 @@ in {
             comment = "Format the repository.";
             justfile = ''
               fmt *ARGS: (lock)
-                treefmt {{ ARGS }}
+                ${lib.meta.getExe config.treefmt.build.wrapper} {{ ARGS }}
             '';
           };
         };
