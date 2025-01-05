@@ -1,3 +1,4 @@
+# importApply context
 {
   importApply,
   getSystem,
@@ -7,10 +8,16 @@
   self,
   specialArgs,
   ...
-}: {config, ...}: {
+}:
+# module context as seen by the flake
+{config, ...}: {
   imports = [inputs.ez-configs.flakeModule];
 
-  ezConfigs = {
+  # set ehllie/ez-configs modules options
+  ezConfigs = let
+    configRoot = config.ezConfigs.root + "/configurations";
+    modulesRoot = config.ezConfigs.root + "/modules";
+  in {
     root = self;
     globalArgs = {
       inherit importApply;
@@ -20,8 +27,8 @@
     };
 
     nixos = {
-      configurationsDirectory = "${config.ezConfigs.root}/configurations/nixos";
-      modulesDirectory = "${config.ezConfigs.root}/modules/nixos";
+      configurationsDirectory = configRoot + "/nixos";
+      modulesDirectory = modulesRoot + "/nixos";
       hosts = {
         windex.userHomeModules = ["keerad" "krad246"];
         fortress.userHomeModules = ["krad246"];
@@ -29,8 +36,8 @@
     };
 
     darwin = {
-      configurationsDirectory = "${config.ezConfigs.root}/configurations/darwin";
-      modulesDirectory = "${config.ezConfigs.root}/modules/darwin";
+      configurationsDirectory = configRoot + "/darwin";
+      modulesDirectory = modulesRoot + "/darwin";
       hosts = {
         nixbook-air.userHomeModules = ["krad246"];
         nixbook-pro.userHomeModules = ["krad246"];
@@ -39,8 +46,8 @@
     };
 
     home = {
-      configurationsDirectory = "${config.ezConfigs.root}/configurations/home";
-      modulesDirectory = "${config.ezConfigs.root}/modules/home";
+      configurationsDirectory = configRoot + "/home";
+      modulesDirectory = modulesRoot + "/home";
 
       users = {
         keerad = {
