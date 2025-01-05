@@ -9,6 +9,8 @@ args @ {
   specialArgs = {
     inherit withSystem;
     inherit inputs self;
+
+    # my own small helper library of sorts
     krad246 = rec {
       attrsets = {
         genAttrs' = keys: f: builtins.listToAttrs (builtins.map f keys);
@@ -32,6 +34,7 @@ args @ {
       };
     };
 
+    # shared arguments for nix binaries called
     nixArgs = lib: let
       inherit (lib) cli;
     in
@@ -54,25 +57,24 @@ args @ {
 
   forwarded = args // {inherit specialArgs;};
 
-  # standard outputs
+  # flake outputs
+
   apps = import ./apps forwarded;
   devShells = import ./devshell forwarded;
+  ez-configs = import ./ez-configs forwarded; # ties system and home configurations together
   packages = import ./packages forwarded;
-
-  # Module that streamlines tying together system and home configurations.
-  ez-configs = import ./ez-configs forwarded;
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
   imports = [
-    apps.flakeModule
-    devShells.flakeModule
-    ez-configs.flakeModule
-    packages.flakeModule
+    apps.flakeModule # adds to flake apps
+    devShells.flakeModule # adds to flake devShells
+    ez-configs.flakeModule # adds to nixosConfigurations, etc.
+    packages.flakeModule # adds to packages
   ];
 
-  # export the flake modules we loaded to this context for user consumption
   flake = rec {
+    # use these in building other flakes
     flakeModules = {
       default = ./.;
 
@@ -82,8 +84,9 @@ in {
       packages = packages.flakeModule;
     };
 
+    # use these for the options namespaces of system / home configurations
     modules = {
-      flake = flakeModules;
+      flake = flakeModules; # alias output name
 
       # ez-configs does the heavy lifting of figuring these out for us
 
@@ -91,6 +94,7 @@ in {
       darwin = self.darwinModules;
       home = self.homeModules;
 
+      # can be used in all of the above contexts
       generic = let
         inherit (specialArgs) krad246;
         paths = krad246.fileset.filterExt "nix" ../generic;
