@@ -5,15 +5,43 @@
 }: {
   perSystem = host @ {pkgs, ...}: {
     packages = let
-      mkMakefile = arch:
+      # Construct a Docker image or a builder script for a Docker image with a known image name and a known image tag.
+      # Parametrize it for a specific architecture.
+      mkImage = arch:
         withSystem arch (cross: let
-          stream-image = pkgs.callPackage ./container-stream.nix {
-            inherit host cross;
-          };
+          devcontainer-image = let
+            drv = let
+              stream-image = pkgs.callPackage ./container-stream.nix {
+                inherit host cross;
+              };
 
-          image = pkgs.callPackage ./container.nix {inherit host cross;};
+              image = pkgs.callPackage ./container.nix {inherit host cross;};
+            in
+              if pkgs.stdenv.isLinux
+              then stream-image
+              else image;
+          in "${drv.imageName}:${drv.passthru.imageTag}";
         in
-          pkgs.callPackage ./makefile.nix rec {
+          devcontainer-image);
+
+      # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer, parametrized to the system.
+      mkJson = arch:
+        withSystem arch (cross: let
+          devcontainer-json = let
+            template = host.pkgs.substituteAll {
+              src = ./devcontainer.json.in;
+              image = mkImage arch;
+              platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
+            };
+          in
+            template;
+        in
+          devcontainer-json);
+
+      # Generate a Makefile to actually launch the container.
+      mkMakefile = arch:
+        withSystem arch (cross:
+          pkgs.callPackage ./makefile.nix {
             inherit host cross;
 
             # Create a loader derivation for the makefile to pull in the container
@@ -25,7 +53,7 @@
                   linux-loader = pkgs.writeShellApplication {
                     name = "linux-loader";
                     text = ''
-                      ${stream-image} | ${lib.meta.getExe pkgs.docker} load
+                      ${mkImage arch} | ${lib.meta.getExe pkgs.docker} load
                     '';
                   };
                 in
@@ -35,7 +63,7 @@
                   darwin-loader = pkgs.writeShellApplication {
                     name = "darwin-loader";
                     text = ''
-                      ${lib.meta.getExe pkgs.docker} image load -i ${image}
+                      ${lib.meta.getExe pkgs.docker} image load -i ${mkImage arch}
                     '';
                   };
                 in
@@ -44,26 +72,17 @@
               lib.meta.getExe loader;
 
             # pass through the docker image name
-            devcontainer-image = let
-              drv =
-                if pkgs.stdenv.isLinux
-                then stream-image
-                else image;
-            in "${drv.imageName}:${drv.passthru.imageTag}";
+            devcontainer-image = mkImage arch;
 
             # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
-            devcontainer-json = let
-              template = host.pkgs.substituteAll {
-                src = ./devcontainer.json.in;
-                image = devcontainer-image;
-                platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
-              };
-            in
-              template;
+            devcontainer-json = mkJson arch;
           });
     in {
       makefile-aarch64-linux = mkMakefile "aarch64-linux";
       makefile-x86_64-linux = mkMakefile "x86_64-linux";
+
+      devcontainer-json-aarch64-linux = mkJson "aarch64-linux";
+      devcontainer-json-x86_64-linux = mkJson "x86_64-linux";
     };
   };
 
