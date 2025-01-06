@@ -4,6 +4,8 @@ __pycache__
 .*.swp
 .\#*
 .cache
+.devcontainer.json
+.devcontainer/
 .direnv
 .DS_Store
 .local
@@ -17,8 +19,8 @@ __pycache__
 *~
 \#*\#
 just-flake.just
-Makefile
 makefile
+Makefile
 outputs/
 repl-result-*
 result

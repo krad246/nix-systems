@@ -100,6 +100,7 @@ in {
           parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
           arch = parse.cpu.name;
           makefile = self'.packages."makefile-${arch}-linux";
+          devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
 
           logger =
             if pkgs.stdenv.isLinux
@@ -111,6 +112,7 @@ in {
 
           # Link the container makefile to this repository
           ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $PWD/Makefile
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $PWD/.devcontainer.json
         '';
       };
 
