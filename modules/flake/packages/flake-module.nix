@@ -96,8 +96,8 @@ in {
           config.just-flake.outputs.devShell
         ];
 
-        shellHook = ''
-          (${lib.meta.getExe pkgs.lorri} daemon --extra-nix-options ${builtins.toJSON {}} 1>/dev/null 2>/dev/null) &
+        shellHook = let logger = if pkgs.stdenv.isLinux then lib.meta.getExe' pkgs.systemd "systemd-cat" else "${pkgs.darwin.remote_cmds}/out/bin/logger"; in ''
+          (${logger} ${lib.meta.getExe pkgs.lorri} daemon --extra-nix-options ${builtins.toJSON {}}) &
           eval "$(${lib.meta.getExe pkgs.lorri} -v direnv --flake $FLAKE_ROOT)"
         '';
       };
