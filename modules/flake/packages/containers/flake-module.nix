@@ -4,118 +4,66 @@
   ...
 }: {
   perSystem = host @ {pkgs, ...}: {
-    packages = {
-      makefile-aarch64-linux = withSystem "aarch64-linux" (cross: let
-        stream-image = pkgs.callPackage ./container-stream.nix {
-          inherit host cross;
-        };
+    packages = let
+      mkMakefile = arch:
+        withSystem arch (cross: let
+          stream-image = pkgs.callPackage ./container-stream.nix {
+            inherit host cross;
+          };
 
-        image = pkgs.callPackage ./container.nix {inherit host cross;};
-      in
-        pkgs.callPackage ./makefile.nix rec {
-          inherit host cross;
+          image = pkgs.callPackage ./container.nix {inherit host cross;};
+        in
+          pkgs.callPackage ./makefile.nix rec {
+            inherit host cross;
 
-          # Create a loader derivation for the makefile to pull in the container
-          devcontainer-loader = let
-            loader =
-              # streamLayeredImage is more efficient
-              if pkgs.stdenv.isLinux
-              then let
-                linux-loader = pkgs.writeShellApplication {
-                  name = "linux-loader";
-                  text = ''
-                    ${stream-image} | ${lib.meta.getExe pkgs.docker} load
-                  '';
-                };
-              in
-                linux-loader
-              # MacOS can't use fakeroot, so have to build in a VM
-              else let
-                darwin-loader = pkgs.writeShellApplication {
-                  name = "darwin-loader";
-                  text = ''
-                    ${lib.meta.getExe pkgs.docker} image load -i ${image}
-                  '';
-                };
-              in
-                darwin-loader;
-          in
-            lib.meta.getExe loader;
+            # Create a loader derivation for the makefile to pull in the container
+            devcontainer-loader = let
+              loader =
+                # streamLayeredImage is more efficient
+                if pkgs.stdenv.isLinux
+                then let
+                  linux-loader = pkgs.writeShellApplication {
+                    name = "linux-loader";
+                    text = ''
+                      ${stream-image} | ${lib.meta.getExe pkgs.docker} load
+                    '';
+                  };
+                in
+                  linux-loader
+                # MacOS can't use fakeroot, so have to build in a VM
+                else let
+                  darwin-loader = pkgs.writeShellApplication {
+                    name = "darwin-loader";
+                    text = ''
+                      ${lib.meta.getExe pkgs.docker} image load -i ${image}
+                    '';
+                  };
+                in
+                  darwin-loader;
+            in
+              lib.meta.getExe loader;
 
-          # pass through the docker image name
-          devcontainer-image = let
-            drv =
-              if pkgs.stdenv.isLinux
-              then stream-image
-              else image;
-          in "${drv.imageName}:${drv.passthru.imageTag}";
+            # pass through the docker image name
+            devcontainer-image = let
+              drv =
+                if pkgs.stdenv.isLinux
+                then stream-image
+                else image;
+            in "${drv.imageName}:${drv.passthru.imageTag}";
 
-          # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
-          devcontainer-json = let
-            template = host.pkgs.substituteAll {
-              src = ./devcontainer.json.in;
-              image = devcontainer-image;
-              platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
-            };
-          in
-            template;
-        });
-
-      makefile-x86_64-linux = withSystem "x86_64-linux" (cross: let
-        stream-image = pkgs.callPackage ./container-stream.nix {
-          inherit host cross;
-        };
-
-        image = pkgs.callPackage ./container.nix {inherit host cross;};
-      in
-        pkgs.callPackage ./makefile.nix rec {
-          inherit host cross;
-
-          # Create a loader derivation for the makefile to pull in the container
-          devcontainer-loader = let
-            loader =
-              # streamLayeredImage is more efficient
-              if pkgs.stdenv.isLinux
-              then let
-                linux-loader = pkgs.writeShellApplication {
-                  name = "linux-loader";
-                  text = ''
-                    ${stream-image} | ${lib.meta.getExe pkgs.docker} load
-                  '';
-                };
-              in
-                linux-loader
-              # MacOS can't use fakeroot, so have to build in a VM
-              else let
-                darwin-loader = pkgs.writeShellApplication {
-                  name = "darwin-loader";
-                  text = ''
-                    ${lib.meta.getExe pkgs.docker} image load -i ${image}
-                  '';
-                };
-              in
-                darwin-loader;
-          in
-            lib.meta.getExe loader;
-
-          # pass through the docker image name
-          devcontainer-image = let
-            drv =
-              if pkgs.stdenv.isLinux
-              then stream-image
-              else image;
-          in "${drv.imageName}:${drv.passthru.imageTag}";
-
-          # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
-          devcontainer-json = let
-            template = host.pkgs.substituteAll {
-              src = ./devcontainer.json.in;
-              image = devcontainer-image;
-              platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
-            };
-          in
-            template;
-        });
+            # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
+            devcontainer-json = let
+              template = host.pkgs.substituteAll {
+                src = ./devcontainer.json.in;
+                image = devcontainer-image;
+                platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
+              };
+            in
+              template;
+          });
+    in {
+      makefile-aarch64-linux = mkMakefile "aarch64-linux";
+      makefile-x86_64-linux = mkMakefile "x86_64-linux";
     };
   };
 

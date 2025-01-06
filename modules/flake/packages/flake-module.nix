@@ -97,13 +97,20 @@ in {
         ];
 
         shellHook = let
+          parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
+          arch = parse.cpu.name;
+          makefile = self'.packages."makefile-${arch}-linux";
+
           logger =
             if pkgs.stdenv.isLinux
             then lib.meta.getExe' pkgs.systemd "systemd-cat"
             else "${pkgs.darwin.remote_cmds}/out/bin/logger";
         in ''
           (${logger} ${lib.meta.getExe pkgs.lorri} -v daemon --extra-nix-options ${builtins.toJSON {}}) &
-          eval "$(${lib.meta.getExe pkgs.lorri} -v direnv --flake $FLAKE_ROOT)"
+          eval "$(${lib.meta.getExe pkgs.lorri} -v direnv --flake $PWD)"
+
+          # Link the container makefile to this repository
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $PWD/Makefile
         '';
       };
 
