@@ -3,14 +3,21 @@
     arc
     bluesnooze
     groupme
+    kitty
     launchcontrol
+    magnet
     rdp
     signal
     spotify
     utm
+    vscode
+    zen-browser
     zoom
   ];
 
-  krad246.darwin.apps.vscode = false;
-  krad246.darwin.apps.kitty = false;
+  krad246.darwin.apps = {
+    launchcontrol = false;
+    kitty = false;
+    vscode = false;
+  };
 }
