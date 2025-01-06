@@ -1,0 +1,15 @@
+{
+    "name": "@image@",
+    "containerUser": "root",
+    "dockerComposeFile": "@docker-compose@",
+    "workspaceFolder": "/workdir",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscodevim.vim",
+                "nefrob.vscode-just-syntax",
+                "jnoortheen.nix-ide",
+            ],
+        }
+    },
+}
