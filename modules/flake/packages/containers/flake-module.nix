@@ -3,7 +3,11 @@
   lib,
   ...
 }: {
-  perSystem = host @ {pkgs, ...}: {
+  perSystem = host @ {
+    pkgs,
+    self',
+    ...
+  }: {
     packages = let
       # Construct a Docker image or a builder script for a Docker image with a known image name and a known image tag.
       # Parametrize it for a specific architecture.
@@ -77,12 +81,17 @@
             # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
             devcontainer-json = mkJson arch;
           });
+
+      parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
+      arch = parse.cpu.name;
     in {
       makefile-aarch64-linux = mkMakefile "aarch64-linux";
       makefile-x86_64-linux = mkMakefile "x86_64-linux";
+      makefile = self'.packages."makefile-${arch}-linux";
 
       devcontainer-json-aarch64-linux = mkJson "aarch64-linux";
       devcontainer-json-x86_64-linux = mkJson "x86_64-linux";
+      devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
     };
   };
 
