@@ -1,4 +1,4 @@
-{
+global @ {
   self,
   config,
   lib,
@@ -12,17 +12,8 @@ in {
       enable = (options.mkEnableOption "linux-builder") // {default = true;};
 
       maxJobs = options.mkOption {
-        type = types.ints.positive;
         default = 16;
-        example = 4;
-        description = ''
-          The number of concurrent jobs the Linux builder machine supports. The
-          build machine will enforce its own limits, but this allows hydra
-          to schedule better since there is no work-stealing between build
-          machines.
-
-          This sets the corresponding `nix.buildMachines.*.maxJobs` option.
-        '';
+        inherit (global.options.nix.linux-builder.maxJobs) type defaultText example description;
       };
 
       cores = options.mkOption {
@@ -59,32 +50,12 @@ in {
       ephemeral = options.mkEnableOption "ephemeral";
 
       extraConfig = options.mkOption {
-        type = types.deferredModule;
-        default = {};
-        example = options.literalExpression ''{}'';
-        description = ''
-          This option specifies extra NixOS configuration for the builder.
-        '';
+        inherit (global.options.nix.linux-builder.config) type default example description;
       };
 
       systems = options.mkOption {
-        type = types.listOf types.str;
         default = ["i386-linux" "i686-linux" "x86_64-linux" "aarch64-linux"];
-
-        defaultText = ''
-          The `nixpkgs.hostPlatform.system` of the build machine's final NixOS configuration.
-        '';
-        example = options.literalExpression ''
-          [
-            "x86_64-linux"
-            "aarch64-linux"
-          ]
-        '';
-        description = ''
-          This option specifies system types the build machine can execute derivations on.
-
-          This sets the corresponding `nix.buildMachines.*.systems` option.
-        '';
+        inherit (global.options.nix.linux-builder.systems) type description defaultText;
       };
     };
   };
