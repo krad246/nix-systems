@@ -44,7 +44,7 @@ in {
             _boot_system = {
               justfile = ''
                 [private]
-                _boot_system *ARGS: (nixos-rebuild "boot" ARGS)
+                _boot_system *ARGS: (nixos-rebuild "boot" replace(replace(ARGS, "--specialisation", ""), hostname, ""))
               '';
             };
           })
