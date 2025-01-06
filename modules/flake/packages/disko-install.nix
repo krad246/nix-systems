@@ -19,7 +19,7 @@ in
 
         ${lib.meta.getExe' pkgs.disko "disko-install"} \
           ${lib.strings.concatStringsSep " " args} \
-          --flake "${self}#$HOSTNAME" \
+          --flake "${self}#{{ hostname }}" \
           --mode "$mode" \
         "$@"
       }
