@@ -1,4 +1,21 @@
 {
-  imports = [./apps/rdp.nix];
-  krad246.darwin.apps.windows-app = true;
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.krad246.darwin.apps.windows-app;
+in {
+  options = {
+    krad246.darwin.apps.windows-app =
+      lib.options.mkEnableOption "windows-app"
+      // {
+        default = true;
+      };
+  };
+
+  config = {
+    homebrew = {
+      casks = lib.modules.mkIf cfg ["windows-app"];
+    };
+  };
 }

@@ -42,7 +42,6 @@ host.pkgs.dockerTools.streamLayeredImage {
     cat <<- EOF >./etc/nix/nix.conf
     build-users-group =
     experimental-features = nix-command flakes
-    # platforms = ${cross.pkgs.stdenv.system}
     cores = 0
     max-jobs = auto
     EOF
