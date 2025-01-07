@@ -1,13 +1,41 @@
-# Generated via dconf2nix: https://github.com/gvolpe/dconf2nix
+# Generated via dconf2nix: https://github.com/nix-commmunity/dconf2nix
 {lib, ...}:
 with lib.hm.gvariant; {
   dconf.settings = {
+    "apps/psensor" = {
+      graph-alpha-channel-enabled = false;
+      graph-background-alpha = mkDouble "1.0";
+      graph-background-color = "#e8f4e8f4a8f5";
+      graph-foreground-color = "#000000000000";
+      graph-monitoring-duration = 20;
+      graph-update-interval = 2;
+      interface-hide-on-startup = false;
+      interface-window-divider-pos = 866;
+      interface-window-h = 850;
+      interface-window-restore-enabled = true;
+      interface-window-w = 1666;
+      interface-window-x = 45;
+      interface-window-y = 29;
+      sensor-update-interval = 2;
+      slog-enabled = false;
+      slog-interval = 300;
+    };
+
     "apps/seahorse/listing" = {
       keyrings-selected = ["gnupg://"];
     };
 
     "org/freedesktop/folks" = {
       primary-store = "eds:a3117721c18ca91f93da7d2bcbd4d4edf633e818";
+    };
+
+    "org/gnome/Connections" = {
+      first-run = false;
+    };
+
+    "org/gnome/Console" = {
+      last-window-maximised = true;
+      last-window-size = mkTuple [1008 595];
     };
 
     "org/gnome/Contacts" = {
@@ -18,11 +46,15 @@ with lib.hm.gvariant; {
       migrated-config = true;
     };
 
-    "org/gnome/Weather" = {
+    "org/gnome/baobab/ui" = {
+      is-maximized = false;
+      window-size = mkTuple [960 600];
     };
 
     "org/gnome/calendar" = {
       active-view = "month";
+      window-maximized = true;
+      window-size = mkTuple [768 600];
     };
 
     "org/gnome/clocks/state/window" = {
@@ -31,7 +63,8 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/control-center" = {
-      last-panel = "keyboard";
+      last-panel = "display";
+      window-state = mkTuple [980 595 true];
     };
 
     "org/gnome/desktop/app-folders" = {
@@ -85,7 +118,21 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/desktop/notifications" = {
-      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon"];
+      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam"];
+      show-banners = true;
+      show-in-lock-screen = false;
+    };
+
+    "org/gnome/desktop/notifications/application/chromium-browser" = {
+      application-id = "chromium-browser.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/com-github-tchx84-flatseal" = {
+      application-id = "com.github.tchx84.Flatseal.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/com-spotify-client" = {
+      application-id = "com.spotify.Client.desktop";
     };
 
     "org/gnome/desktop/notifications/application/com-valvesoftware-steam" = {
@@ -96,8 +143,36 @@ with lib.hm.gvariant; {
       application-id = "gnome-power-panel.desktop";
     };
 
+    "org/gnome/desktop/notifications/application/kitty" = {
+      application-id = "kitty.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-baobab" = {
+      application-id = "org.gnome.baobab.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-console" = {
+      application-id = "org.gnome.Console.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-evolution-alarm-notify" = {
+      application-id = "org.gnome.Evolution-alarm-notify.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-settings" = {
+      application-id = "org.gnome.Settings.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-gnome-software" = {
+      application-id = "org.gnome.Software.desktop";
+    };
+
     "org/gnome/desktop/notifications/application/org-kde-kdeconnect-daemon" = {
       application-id = "org.kde.kdeconnect.daemon.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/org-signal-signal" = {
+      application-id = "org.signal.Signal.desktop";
     };
 
     "org/gnome/desktop/notifications/application/signal-desktop" = {
@@ -108,8 +183,20 @@ with lib.hm.gvariant; {
       application-id = "spotify.desktop";
     };
 
+    "org/gnome/desktop/notifications/application/steam" = {
+      application-id = "steam.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/us-zoom-zoom" = {
+      application-id = "us.zoom.Zoom.desktop";
+    };
+
     "org/gnome/desktop/notifications/application/vesktop" = {
       application-id = "vesktop.desktop";
+    };
+
+    "org/gnome/desktop/peripherals/keyboard" = {
+      numlock-state = true;
     };
 
     "org/gnome/desktop/peripherals/mouse" = {
@@ -125,8 +212,16 @@ with lib.hm.gvariant; {
       recent-files-max-age = -1;
     };
 
+    "org/gnome/desktop/remote-desktop/rdp" = {
+      enable = true;
+      tls-cert = "/home/krad246/.local/share/gnome-remote-desktop/certificates/rdp-tls.crt";
+      tls-key = "/home/krad246/.local/share/gnome-remote-desktop/certificates/rdp-tls.key";
+      view-only = false;
+    };
+
     "org/gnome/desktop/screensaver" = {
       color-shading-type = "solid";
+      lock-delay = mkUint32 300;
       picture-options = "zoom";
       picture-uri = "file:///run/current-system/sw/share/backgrounds/gnome/blobs-l.svg";
       primary-color = "#241f31";
@@ -166,6 +261,10 @@ with lib.hm.gvariant; {
       migrated = true;
     };
 
+    "org/gnome/evolution-data-server/calendar" = {
+      reminders-past = [];
+    };
+
     "org/gnome/mutter" = {
       dynamic-workspaces = true;
       edge-tiling = true;
@@ -182,6 +281,21 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/nautilus/window-state" = {
+      initial-size = mkTuple [890 550];
+    };
+
+    "org/gnome/nm-applet/eap/067a9569-d9b0-3c92-949d-a8d1c4ce3e76" = {
+      ignore-ca-cert = false;
+      ignore-phase2-ca-cert = false;
+    };
+
+    "org/gnome/portal/filechooser/steam" = {
+      last-folder-path = "/home/krad246/.var/app/com.valvesoftware.Steam/.local/share/Steam";
+    };
+
+    "org/gnome/settings-daemon/plugins/color" = {
+      night-light-enabled = true;
+      night-light-schedule-automatic = false;
     };
 
     "org/gnome/settings-daemon/plugins/media-keys" = {
@@ -190,9 +304,93 @@ with lib.hm.gvariant; {
       screenreader = [];
     };
 
+    "org/gnome/settings-daemon/plugins/power" = {
+      sleep-inactive-ac-timeout = 3600;
+      sleep-inactive-ac-type = "suspend";
+    };
+
+    "org/gnome/settings-daemon/plugins/sharing/gnome-user-share-webdav" = {
+      enabled-connections = ["1676a610-974d-4a3e-864e-76de0696d17f"];
+    };
+
+    "org/gnome/settings-daemon/plugins/sharing/rygel" = {
+      enabled-connections = ["1676a610-974d-4a3e-864e-76de0696d17f"];
+    };
+
     "org/gnome/shell" = {
+      app-picker-layout = [
+        [
+          (mkDictionaryEntry [
+            "nixos-manual.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 0)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "3bebe58e-992c-49db-b6ca-29cd02ba98c7"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 1)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "com.github.tchx84.Flatseal.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 2)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "us.zoom.Zoom.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 3)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "org.signal.Signal.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 4)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "com.spotify.Client.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 5)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "com.valvesoftware.Steam.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 6)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "Utilities"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 7)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "org.pulseaudio.pavucontrol.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 8)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "vesktop.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 9)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "org.gnome.Settings.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 10)])
+            ])
+          ])
+        ]
+      ];
       disable-user-extensions = true;
       favorite-apps = ["org.gnome.Nautilus.desktop" "chromium-browser.desktop" "kitty.desktop" "code.desktop"];
+      last-selected-power-profile = "power-saver";
       welcome-dialog-last-shown-version = "46.2";
     };
 
@@ -215,9 +413,9 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/software" = {
-      check-timestamp = mkInt64 1723383144;
+      check-timestamp = mkInt64 1736216164;
       first-run = false;
-      flatpak-purge-timestamp = mkInt64 1723325351;
+      flatpak-purge-timestamp = mkInt64 1736223985;
     };
 
     "org/gnome/tweaks" = {
@@ -234,6 +432,7 @@ with lib.hm.gvariant; {
       sort-order = "ascending";
       type-format = "category";
       view-type = "list";
+      window-size = mkTuple [859 372];
     };
 
     "org/virt-manager/virt-manager/connections" = {

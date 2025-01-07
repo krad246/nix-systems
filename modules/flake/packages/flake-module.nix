@@ -1,4 +1,8 @@
-forwarded @ {self, ...}: let
+forwarded @ {
+  inputs,
+  self,
+  ...
+}: let
   # Sets up container image packages, custom devShell derivation within the container
   # VSCode *is* supported!
   containers = import ./containers forwarded;
@@ -136,6 +140,8 @@ in {
           pkgs.callPackage ./devour-flake.nix forwarded;
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+        dconf2nix = pkgs.callPackage inputs.dconf2nix {};
+
         disko-install = pkgs.callPackage ./disko-install.nix forwarded;
 
         # linux has first class support for namespacing, the backend of docker
