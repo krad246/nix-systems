@@ -1,6 +1,6 @@
 {
-    "name": "@image@",
-    "image": "@image@",
+    "name": "@tag@",
+    "image": "@tag@",
     "containerUser": "root",
     "runArgs": [
         "--cidfile=${localEnv:CACHEDIR}/cidfile",
