@@ -14,7 +14,7 @@ devcontainer_up_args := \
 
 .PHONY: container-import
 container-import: $(devshell_json)
-	@docker@ image inspect @image@ >/dev/null || (@loader@)
+	@docker@ image inspect @tag@ >/dev/null || (@loader@)
 
 .PHONY: help
 

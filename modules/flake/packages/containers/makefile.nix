@@ -1,6 +1,6 @@
 {
   host,
-  devcontainer-image,
+  devcontainer-tag,
   devcontainer-json,
   devcontainer-loader,
   ...
@@ -8,7 +8,7 @@
 host.pkgs.substituteAll rec {
   src = ./Makefile.in;
 
-  image = devcontainer-image;
+  tag = devcontainer-tag;
   loader = devcontainer-loader;
   json = devcontainer-json;
 
