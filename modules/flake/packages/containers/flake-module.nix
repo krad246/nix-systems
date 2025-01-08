@@ -24,7 +24,8 @@
               if pkgs.stdenv.isLinux
               then stream-image
               else image;
-          in "${drv.imageName}:${drv.passthru.imageTag}";
+          in
+            drv;
         in
           devcontainer-image);
 
@@ -34,7 +35,7 @@
           devcontainer-json = let
             template = host.pkgs.substituteAll {
               src = ./devcontainer.json.in;
-              image = mkImage arch;
+              tag = let drv = mkImage arch; in "${drv.imageName}:${drv.passthru.imageTag}";
               platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
             };
           in
