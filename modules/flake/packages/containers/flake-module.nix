@@ -77,7 +77,7 @@
               lib.meta.getExe loader;
 
             # pass through the docker image name
-            devcontainer-image = mkImage arch;
+            devcontainer-tag = let drv = mkImage arch; in "${drv.imageName}:${drv.passthru.imageTag}";
 
             # Generate a devcontainer.json with the 'image' parameter set to this flake's vscode-devcontainer.
             devcontainer-json = mkJson arch;
