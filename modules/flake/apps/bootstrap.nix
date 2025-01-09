@@ -1,13 +1,22 @@
 {pkgs, ...}: let
   runner = pkgs.writeShellApplication {
     name = "bootstrap";
-    runtimeInputs = with pkgs; [bashInteractive coreutils direnv nix-direnv git nixVersions.stable];
+    runtimeInputs = with pkgs;
+      [
+        bashInteractive
+        git
+        coreutils
+        curl
+        xz
+      ]
+      ++ [
+        direnv
+        nix-direnv
+      ]
+      ++ [nixVersions.stable];
     text = ''
-      set -x
-
       direnv allow "$PWD"
-      exec bash --rcfile \
-        <(echo $'source ~/.bashrc; eval "$(direnv hook bash)";')
+      direnv exec "$PWD" true
     '';
   };
 in {
