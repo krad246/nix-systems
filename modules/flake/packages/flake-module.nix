@@ -105,18 +105,10 @@ in {
           arch = parse.cpu.name;
           makefile = self'.packages."makefile-${arch}-linux";
           devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
-
-          logger =
-            if pkgs.stdenv.isLinux
-            then lib.meta.getExe' pkgs.systemd "systemd-cat"
-            else "${pkgs.darwin.remote_cmds}/out/bin/logger";
         in ''
-          (${logger} ${lib.meta.getExe pkgs.lorri} -v daemon --extra-nix-options ${builtins.toJSON {}}) &
-          eval "$(${lib.meta.getExe pkgs.lorri} -v direnv --flake $PWD)"
-
-          # Link the container makefile to this repository
-          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $PWD/Makefile
-          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $PWD/.devcontainer.json
+          eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
         '';
       };
 
