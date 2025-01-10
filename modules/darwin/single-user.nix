@@ -26,6 +26,8 @@ in {
       };
 
       screensaver.askForPassword = true;
+
+      CustomSystemPreferences = config.system.defaults.CustomUserPreferences;
     };
 
     nix-homebrew.user = cfg.owner.name;
