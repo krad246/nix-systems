@@ -1,6 +1,6 @@
 {
   system = {
-    defaults.CustomSystemPreferences = {
+    defaults.CustomUserPreferences = {
       "com.apple.Spotlight" = {
         orderedItems = [
           {
