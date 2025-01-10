@@ -104,7 +104,6 @@
     # Darwin shims for Nix
     darwin = {
       url = "github:lnl7/nix-darwin/master";
-      inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
 
     # Cross-platform (Linux / MacOS) userspace package management

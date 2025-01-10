@@ -26,4 +26,9 @@ in {
   };
 
   home.stateVersion = lib.trivial.release;
+
+  manual = {
+    html.enable = true;
+    json.enable = true;
+  };
 }
