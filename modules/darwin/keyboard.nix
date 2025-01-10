@@ -1,4 +1,4 @@
-{lib, ...}: {
+{
   system = {
     defaults = {
       # disable fn key bc it's annoying
@@ -29,57 +29,4 @@
       enableKeyMapping = true;
     };
   };
-
-  home.activation.disableHotkeys = let
-    hotkeys = [
-      12
-      15
-      16
-      163
-      164
-      17
-      175
-      18
-      184
-      19
-      190
-      20
-      21
-      22
-      222
-      223
-      224
-      23
-      24
-      25
-      26
-      28
-      29
-      30
-      31
-      36
-      52
-      53
-      54
-      60
-      61
-      79
-      80
-      81
-      82
-      98
-    ];
-
-    disables =
-      map (key: "defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add ${
-        toString key
-      } '<dict><key>enabled</key><false/></dict>'")
-      hotkeys;
-  in
-    lib.hm.dag.entryAfter ["writeBoundary"] ''
-      # Disable hotkeys
-      echo >&2 "hotkey suppression..."
-      set -e
-      ${lib.concatStringsSep "\n" disables}
-    '';
 }
