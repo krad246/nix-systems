@@ -5,11 +5,9 @@
 	"telemetry.enableCrashReporter": true,
 
 	// If this setting is false, no telemetry will be sent regardless of the new setting's value. Deprecated in favor of the `telemetry.telemetryLevel` setting.
-	// Enable diagnostic data to be collected. This helps us to better understand how Visual Studio Code is performing and where improvements need to be made. [Read more](https://go.microsoft.com/fwlink/?LinkId=521839) about what we collect and our privacy statement.
 	"telemetry.enableTelemetry": true,
 
 	//
-	// Controls Visual Studio Code telemetry, first-party extension telemetry, and participating third-party extension telemetry. Some third party extensions might not respect this setting. Consult the specific extension's documentation to be sure. Telemetry helps us better understand how Visual Studio Code is performing, where improvements need to be made, and how features are being used. Read more about the [data we collect](https://aka.ms/vscode-telemetry) and our [privacy statement](https://go.microsoft.com/fwlink/?LinkId=521839). A full restart of the application is necessary for crash reporting changes to take effect.
 	//
 	// &nbsp;
 	//
@@ -700,7 +698,6 @@
 	// Merge multiple cursors when they are overlapping.
 	"editor.multiCursorMergeOverlapping": true,
 
-	// The modifier to be used to add multiple cursors with the mouse. The Go to Definition and Open Link mouse gestures will adapt such that they do not conflict with the [multicursor modifier](https://code.visualstudio.com/docs/editor/codebasics#_multicursor-modifier).
 	//  - ctrlCmd: Maps to `Control` on Windows and Linux and to `Command` on macOS.
 	//  - alt: Maps to `Alt` on Windows and Linux and to `Option` on macOS.
 	"editor.multiCursorModifier": "alt",
@@ -1281,7 +1278,6 @@
 	// Controls whether to store editor working sets when switching between source control history item groups.
 	"scm.workingSets.enabled": false,
 
-	// A set of UNC host names (without leading or trailing backslash, for example `192.168.0.1` or `my-server`) to allow without user confirmation. If a UNC host is being accessed that is not allowed via this setting or has not been acknowledged via user confirmation, an error will occur and the operation stopped. A restart is required when changing this setting. Find out more about this setting at https://aka.ms/vscode-windows-unc.
 	"security.allowedUNCHosts": [],
 
 	// If enabled, a dialog will ask for confirmation whenever a local file or workspace is about to open through a protocol handler.
@@ -1290,7 +1286,6 @@
 	// If enabled, a dialog will ask for confirmation whenever a remote file or workspace is about to open through a protocol handler.
 	"security.promptForRemoteFileProtocolHandling": true,
 
-	// If enabled, only allows access to UNC host names that are allowed by the `security.allowedUNCHosts` setting or after user confirmation. Find out more about this setting at https://aka.ms/vscode-windows-unc.
 	"security.restrictUNCAccess": true,
 
 	// Controls when the restricted mode banner is shown.
@@ -1593,7 +1588,6 @@
 	// Controls whether tabs should be wrapped over multiple lines when exceeding available space or whether a scrollbar should appear instead. This value is ignored when `workbench.editor.showTabs` is not set to '`multiple`'.
 	"workbench.editor.wrapTabs": false,
 
-	// Configure [glob patterns](https://aka.ms/vscode-glob-patterns) to editors (for example `"*.hex": "hexEditor.hexedit"`). These have precedence over the default behavior.
 	"workbench.editorAssociations": {},
 
 	// Controls the minimum size of a file in MB before asking for confirmation when opening in the editor. Note that this setting may not apply to all editor types and environments.
@@ -1684,7 +1678,6 @@
 	// Controls whether local file history is enabled. When enabled, the file contents of an editor that is saved will be stored to a backup location to be able to restore or review the contents later. Changing this setting has no effect on existing local file history entries.
 	"workbench.localHistory.enabled": true,
 
-	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) for excluding files from the local file history. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. Changing this setting has no effect on existing local file history entries.
 	"workbench.localHistory.exclude": {},
 
 	// Controls the maximum number of local file history entries per file. When the number of local file history entries exceeds this number for a file, the oldest entries will be discarded.
@@ -2041,13 +2034,11 @@
 	// Controls if the 'Zoom In' and 'Zoom Out' commands apply the zoom level to all windows or only the active window. See `window.zoomLevel` for configuring a default zoom level for all windows.
 	"window.zoomPerWindow": true,
 
-	// Configure [glob patterns](https://aka.ms/vscode-glob-patterns) of file associations to languages (for example `"*.extension": "html"`). Patterns will match on the absolute path of a file if they contain a path separator and will match on the name of the file otherwise. These have precedence over the default associations of the languages installed.
 	"files.associations": {},
 
 	// When enabled, the editor will attempt to guess the character set encoding when opening files. This setting can also be configured per language. Note, this setting is not respected by text search. Only `files.encoding` is respected.
 	"files.autoGuessEncoding": false,
 
-	// Controls [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors that have unsaved changes.
 	//  - off: An editor with changes is never automatically saved.
 	//  - afterDelay: An editor with changes is automatically saved after the configured `files.autoSaveDelay`.
 	//  - onFocusChange: An editor with changes is automatically saved when the editor loses focus.
@@ -2057,10 +2048,8 @@
 	// Controls the delay in milliseconds after which an editor with unsaved changes is saved automatically. Only applies when `files.autoSave` is set to `afterDelay`.
 	"files.autoSaveDelay": 1000,
 
-	// When enabled, will limit [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors to files that have no errors reported in them at the time the auto save is triggered. Only applies when `files.autoSave` is enabled.
 	"files.autoSaveWhenNoErrors": false,
 
-	// When enabled, will limit [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors to files that are inside the opened workspace. Only applies when `files.autoSave` is enabled.
 	"files.autoSaveWorkspaceFilesOnly": false,
 
 	// List of character set encodings that the editor should attempt to guess in the order they are listed. In case it cannot be determined, `files.encoding` is respected
@@ -2150,7 +2139,6 @@
 	//  - auto: Uses operating system specific end of line character.
 	"files.eol": "auto",
 
-	// Configure [glob patterns](https://aka.ms/vscode-glob-patterns) for excluding files and folders. For example, the File Explorer decides which files and folders to show or hide based on this setting. Refer to the `search.exclude#` setting to define search-specific excludes. Refer to the `#explorer.excludeGitIgnore` setting for ignoring files based on your `.gitignore`.
 	"files.exclude": {
 		"**/.git": true,
 		"**/.svn": true,
@@ -2160,7 +2148,6 @@
 		"**/Thumbs.db": true
 	},
 
-	// [Hot Exit](https://aka.ms/vscode-hot-exit) controls whether unsaved files are remembered between sessions, allowing the save prompt when exiting the editor to be skipped.
 	//  - off: Disable hot exit. A prompt will show when attempting to close a window with editors that have unsaved changes.
 	//  - onExit: Hot exit will be triggered when the last window is closed on Windows/Linux or when the `workbench.action.quit` command is triggered (command palette, keybinding, menu). All windows without folders opened will be restored upon next launch. A list of previously opened windows with unsaved files can be accessed via `File > Open Recent > More...`
 	//  - onExitAndWindowClose: Hot exit will be triggered when the last window is closed on Windows/Linux or when the `workbench.action.quit` command is triggered (command palette, keybinding, menu), and also for any window with a folder opened regardless of whether it's the last window. All windows without folders opened will be restored upon next launch. A list of previously opened windows with unsaved files can be accessed via `File > Open Recent > More...`
@@ -2172,13 +2159,11 @@
 	// Timeout in milliseconds after which file participants for create, rename, and delete are cancelled. Use `0` to disable participants.
 	"files.participants.timeout": 60000,
 
-	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) to exclude from being marked as read-only if they match as a result of the `files.readonlyInclude` setting. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. Files from readonly file system providers will always be read-only independent of this setting.
 	"files.readonlyExclude": {},
 
 	// Marks files as read-only when their file permissions indicate as such. This can be overridden via `files.readonlyInclude#` and `#files.readonlyExclude` settings.
 	"files.readonlyFromPermissions": false,
 
-	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) to mark as read-only. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. You can exclude matching paths via the `files.readonlyExclude` setting. Files from readonly file system providers will always be read-only independent of this setting.
 	"files.readonlyInclude": {},
 
 	// Controls if files that were part of a refactoring are saved automatically
@@ -2204,7 +2189,6 @@
 	// When enabled, trailing whitespace will be removed from multiline strings and regexes will be removed on save or when executing 'editor.action.trimTrailingWhitespace'. This can cause whitespace to not be trimmed from lines when there isn't up-to-date token information.
 	"files.trimTrailingWhitespaceInRegexAndStrings": true,
 
-	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) to exclude from file watching. Paths can either be relative to the watched folder or absolute. Glob patterns are matched relative from the watched folder. When you experience the file watcher process consuming a lot of CPU, make sure to exclude large folders that are of less interest (such as build output folders).
 	"files.watcherExclude": {
 		"**/.git/objects/**": true,
 		"**/.git/subtree-cache/**": true,
@@ -2274,7 +2258,6 @@
 	//  - focusNoScroll: Files will not be scrolled into view, but will still be focused.
 	"explorer.autoReveal": true,
 
-	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) for excluding files and folders from being revealed and selected in the Explorer when they are opened. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths.
 	"explorer.autoRevealExclude": {
 		"**/node_modules": true,
 		"**/bower_components": true
@@ -2402,7 +2385,6 @@
 	//  - list: Shows search results as a list.
 	"search.defaultViewMode": "list",
 
-	// Configure [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) for excluding files and folders in fulltext searches and file search in quick open. To exclude files from the recently opened list in quick open, patterns must be absolute (for example `**/node_modules/**`). Inherits all glob patterns from the `files.exclude` setting.
 	"search.exclude": {
 		"**/node_modules": true,
 		"**/bower_components": true,
@@ -2733,7 +2715,6 @@
 	//  - empty: Attribute value is not set.
 	"html.completion.attributeDefaultValue": "doublequotes",
 
-	// A list of relative file paths pointing to JSON files following the [custom data format](https://github.com/microsoft/vscode-html-languageservice/blob/master/docs/customData.md).
 	//
 	// VS Code loads custom data on startup to enhance its HTML support for the custom HTML tags, attributes and attribute values you specify in the JSON files.
 	//
@@ -2764,7 +2745,6 @@
 	// Honor django, erb, handlebars and php templating language tags.
 	"html.format.templating": false,
 
-	// List of tags, comma separated, that shouldn't be reformatted. `null` defaults to all tags listed at https://www.w3.org/TR/html5/dom.html#phrasing-content.
 	"html.format.unformatted": "wbr",
 
 	// Keep text content together between this string.
@@ -3152,7 +3132,6 @@
 	// Suppress type hints on variables whose name is identical to the type name.
 	"javascript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
 
-	// Specify glob patterns of files to exclude from auto imports. Relative paths are resolved relative to the workspace root. Patterns are evaluated using tsconfig.json [`exclude`](https://www.typescriptlang.org/tsconfig#exclude) semantics.
 	"javascript.preferences.autoImportFileExcludePatterns": [],
 
 	// Specify regular expressions to exclude auto imports with matching import specifiers. Examples:
@@ -3264,25 +3243,19 @@
 	// Enable/disable `experimentalDecorators` in JavaScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 	"js/ts.implicitProjectConfig.experimentalDecorators": false,
 
-	// Sets the module system for the program. See more: https://www.typescriptlang.org/tsconfig#module.
 	"js/ts.implicitProjectConfig.module": "ESNext",
 
-	// Enable/disable [strict function types](https://www.typescriptlang.org/tsconfig#strictFunctionTypes) in JavaScript and TypeScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 	"js/ts.implicitProjectConfig.strictFunctionTypes": true,
 
-	// Enable/disable [strict null checks](https://www.typescriptlang.org/tsconfig#strictNullChecks) in JavaScript and TypeScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 	"js/ts.implicitProjectConfig.strictNullChecks": true,
 
-	// Set target JavaScript language version for emitted JavaScript and include library declarations. See more: https://www.typescriptlang.org/tsconfig#target.
 	"js/ts.implicitProjectConfig.target": "ES2022",
 
 	// Enable/disable automatic closing of JSX tags.
 	"typescript.autoClosingTags": true,
 
-	// Check if npm is installed for [Automatic Type Acquisition](https://code.visualstudio.com/docs/nodejs/working-with-javascript#_typings-and-automatic-type-acquisition).
 	"typescript.check.npmIsInstalled": true,
 
-	// Disables [automatic type acquisition](https://code.visualstudio.com/docs/nodejs/working-with-javascript#_typings-and-automatic-type-acquisition). Automatic type acquisition fetches `@types` packages from npm to improve IntelliSense for external libraries.
 	"typescript.disableAutomaticTypeAcquisition": false,
 
 	// Enables prompting of users to use the TypeScript version configured in the workspace for Intellisense.
@@ -3435,10 +3408,8 @@
 	//  - zh-TW: 中文(繁體)
 	"typescript.locale": "auto",
 
-	// Specifies the path to the npm executable used for [Automatic Type Acquisition](https://code.visualstudio.com/docs/nodejs/working-with-javascript#_typings-and-automatic-type-acquisition).
 	"typescript.npm": "",
 
-	// Specify glob patterns of files to exclude from auto imports. Relative paths are resolved relative to the workspace root. Patterns are evaluated using tsconfig.json [`exclude`](https://www.typescriptlang.org/tsconfig#exclude) semantics.
 	"typescript.preferences.autoImportFileExcludePatterns": [],
 
 	// Specify regular expressions to exclude auto imports with matching import specifiers. Examples:
@@ -3557,7 +3528,6 @@
 	// - When specified as a user setting, the TypeScript version from `typescript.tsdk` automatically replaces the built-in TypeScript version.
 	// - When specified as a workspace setting, `typescript.tsdk` allows you to switch to use that workspace version of TypeScript for IntelliSense with the `TypeScript: Select TypeScript version` command.
 	//
-	// See the [TypeScript documentation](https://code.visualstudio.com/docs/typescript/typescript-compiling#_using-newer-typescript-versions) for more detail about managing TypeScript versions.
 	"typescript.tsdk": "",
 
 	// Enables region-based diagnostics in TypeScript. Requires using TypeScript 5.6+ in the workspace.
@@ -3624,7 +3594,6 @@
 	// Exclude symbols that come from library files in `Go to Symbol in Workspace` results. Requires using TypeScript 5.3+ in the workspace.
 	"typescript.workspaceSymbols.excludeLibrarySymbols": true,
 
-	// Controls which files are searched by [Go to Symbol in Workspace](https://code.visualstudio.com/docs/editor/editingevolved#_open-symbol-by-name).
 	//  - allOpenProjects: Search all open JavaScript or TypeScript projects for symbols.
 	//  - currentProject: Only search for symbols in the current JavaScript or TypeScript project.
 	"typescript.workspaceSymbols.scope": "allOpenProjects",
@@ -3699,7 +3668,6 @@
 	// By default, VS Code triggers property value completion after selecting a CSS property. Use this setting to disable this behavior.
 	"css.completion.triggerPropertyValueCompletion": true,
 
-	// A list of relative file paths pointing to JSON files following the [custom data format](https://github.com/microsoft/vscode-css-languageservice/blob/master/docs/customData.md).
 	//
 	// VS Code loads custom data on startup to enhance its CSS support for CSS custom properties (variables), at-rules, pseudo-classes, and pseudo-elements you specify in the JSON files.
 	//
@@ -3991,7 +3959,6 @@
 	// Enables or disables all validations.
 	"scss.validate": true,
 
-	// Specify a list of extensions that are allowed to use. This helps maintain a secure and consistent development environment by restricting the use of unauthorized extensions. For more information on how to configure this setting, please visit the [Configure Allowed Extensions](https://code.visualstudio.com/docs/setup/enterprise#_configure-allowed-extensions) section.
 	"extensions.allowed": "*",
 
 	// When enabled, automatically checks extensions for updates. If an extension has an update, it is marked as outdated in the Extensions view. The updates are fetched from a Microsoft online service.
@@ -4745,8 +4712,6 @@
 	// When set, the foreground color of each cell will change to try meet the contrast ratio specified. Note that this will not apply to `powerline` characters per #146406. Example values:
 	//
 	// - 1: Do nothing and use the standard theme colors.
-	// - 4.5: [WCAG AA compliance (minimum)](https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html) (default).
-	// - 7: [WCAG AAA compliance (enhanced)](https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast7.html).
 	// - 21: White on black or black on white.
 	"terminal.integrated.minimumContrastRatio": 4.5,
 
@@ -4780,7 +4745,6 @@
 	// }
 	// ```
 	//
-	// [Read more about configuring profiles](https://code.visualstudio.com/docs/terminal/profiles).
 	"terminal.integrated.profiles.linux": {
 		"bash": {
 			"path": "bash",
@@ -4795,7 +4759,7 @@
 		"tmux": {
 			"path": "tmux",
 			"icon": "terminal-tmux"
-		},
+		}
 	},
 
 	// A set of terminal profile customizations for Mac which allows adding, removing or changing how terminals are launched. Profiles are made up of a mandatory path, optional arguments and other presentation options.
@@ -4808,7 +4772,6 @@
 	// }
 	// ```
 	//
-	// [Read more about configuring profiles](https://code.visualstudio.com/docs/terminal/profiles).
 	"terminal.integrated.profiles.osx": {
 		"bash": {
 			"path": "bash",
@@ -4849,7 +4812,6 @@
 	// }
 	// ```
 	//
-	// [Read more about configuring profiles](https://code.visualstudio.com/docs/terminal/profiles).
 	"terminal.integrated.profiles.windows": {
 		"PowerShell": {
 			"source": "PowerShell",
@@ -4903,7 +4865,6 @@
 	//
 	// This setting applies only when terminals are created, so you will need to restart your terminals for it to take effect.
 	//
-	//  Note that the script injection may not work if you have custom arguments defined in the terminal profile, have enabled `editor.accessibilitySupport#`, have a [complex bash `PROMPT_COMMAND`](https://code.visualstudio.com/docs/editor/integrated-terminal#_complex-bash-promptcommand), or other unsupported setup. To disable decorations, see `#terminal.integrated.shellIntegration.decorationsEnabled`
 	"terminal.integrated.shellIntegration.enabled": true,
 
 	// Controls the number of recently used commands to keep in the terminal command history. Set to 0 to disable terminal command history.
@@ -6459,7 +6420,6 @@
 
 	// An array of paths, where each path can contain Emmet syntaxProfiles and/or snippet files.
 	// In case of conflicts, the profiles/snippets of later paths will override those of earlier paths.
-	// See https://code.visualstudio.com/docs/editor/emmet for more information and an example snippet file.
 	"emmet.extensionsPath": [],
 
 	// Enable Emmet abbreviations in languages that are not supported by default. Add a mapping here between the language and Emmet supported language.
@@ -6932,7 +6892,6 @@
 	//  - disabled: Auto attach is disabled and not shown in status bar.
 	"debug.javascript.autoAttachFilter": "disabled",
 
-	// Configures glob patterns for determining when to attach in "smart" `debug.javascript.autoAttachFilter` mode. `$KNOWN_TOOLS$` is replaced with a list of names of common test and code runners. [Read more on the VS Code docs](https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_auto-attach-smart-patterns).
 	"debug.javascript.autoAttachSmartPattern": [
 		"${workspaceFolder}/**",
 		"!**/node_modules/**",
@@ -6962,7 +6921,6 @@
 	// Default options used when debugging a process through the `Debug: Attach to Node.js Process` command
 	"debug.javascript.pickAndAttachOptions": {},
 
-	// Request options to use when loading resources, such as source maps, in the debugger. You may need to configure this if your sourcemaps require authentication or use a self-signed certificate, for instance. Options are used to create a request using the [`got`](https://github.com/sindresorhus/got) library.
 	//
 	// A common case to disable certificate verification can be done by passing `{ "https": { "rejectUnauthorized": false } }`.
 	"debug.javascript.resourceRequestOptions": {},
@@ -6986,7 +6944,6 @@
 	// Configure glob patterns for folders that should be excluded from automatic script detection.
 	"npm.exclude": "",
 
-	// Fetch data from https://registry.npmjs.org and https://registry.bower.io to provide auto-completion and information on hover features on npm dependencies.
 	"npm.fetchOnlinePackageInfo": true,
 
 	// The package manager used to run scripts.
@@ -7096,7 +7053,6 @@
 	// Optimistically attempt to start docker if the daemon is not already running.
 	"dev.containers.optimisticallyLaunchDocker": true,
 
-	// List of additional paths to search for [repository configurations](https://code.visualstudio.com/docs/devcontainers/create-dev-container#_alternative-repository-configuration-folders).
 	"dev.containers.repositoryConfigurationPaths": [],
 
 	// The consistency level used for the workspace mount (existing containers must be rebuilt to take effect).
@@ -7108,7 +7064,6 @@
 	// The command to run after cloning the dotfiles repository. Defaults to run the first file of `install.sh`, `install`, `bootstrap.sh`, `bootstrap`, `setup.sh` and `setup` found in the dotfiles repository's root folder.
 	"dotfiles.installCommand": "",
 
-	// URL of a dotfiles Git repository (e.g., https://github.com/owner/repository.git) or owner/repository of a GitHub repository.
 	"dotfiles.repository": "",
 
 	// The path to clone the dotfiles repository to. Defaults to `~/dotfiles`.
@@ -7373,7 +7328,6 @@
 	// The cursor color in the dark variant.
 	"gruvboxMaterial.darkCursor": "white",
 
-	// The color palette used in the dark variant. [Preview](https://github.com/sainnhe/gruvbox-material#introduction)
 	//  - material: Carefully designed to have a soft contrast.
 	//  - mix: Color palette obtained by calculating the mean of the other two.
 	//  - original: The color palette used in the original gruvbox.
@@ -7385,7 +7339,6 @@
 	// Workbench style for the dark variant.
 	"gruvboxMaterial.darkWorkbench": "material",
 
-	// The opacity of the background color of [diagnostic text](https://code.visualstudio.com/updates/v1_52#_error-background-colors).
 	"gruvboxMaterial.diagnosticTextBackgroundOpacity": "0%",
 
 	// Whether to add an additional border around items across the UI to increase the contrast.
@@ -7403,7 +7356,6 @@
 	// The cursor color in the light variant.
 	"gruvboxMaterial.lightCursor": "black",
 
-	// The color palette used in the light variant. [Preview](https://github.com/sainnhe/gruvbox-material#introduction)
 	//  - material: Carefully designed to have a soft contrast.
 	//  - mix: Color palette obtained by calculating the mean of the other two.
 	//  - original: The color palette used in the original gruvbox.
@@ -7415,6 +7367,6 @@
 	// Workbench style for the light variant.
 	"gruvboxMaterial.lightWorkbench": "material",
 	"workbench.activityBar.location": "hidden",
-	"terminal.integrated.defaultLocation": "editor",
+	"terminal.integrated.defaultLocation": "editor"
 
 }
