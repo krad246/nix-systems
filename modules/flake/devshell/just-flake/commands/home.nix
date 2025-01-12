@@ -28,16 +28,6 @@ in {
                 ${lib.meta.getExe pkgs.home-manager} ${lib.strings.concatStringsSep " " args} --flake ${self} -b bak {{ ARGS }}
             '';
           };
-
-          apply-home = {
-            justfile = ''
-              apply-home PROFILE="default" +ARGS="": (lock)
-                exec {{ just_executable() }} build --print-out-paths \
-                  {{ ARGS }} "${self}#homeConfigurations.{{ whoami }}@{{ hostname }}.activationPackage" | \
-                  ${lib.meta.getExe' pkgs.findutils "xargs"} -I {drv} \
-                  ${lib.meta.getExe pkgs.bashInteractive} {drv}/specialisation/{{ PROFILE }}/activate
-            '';
-          };
         };
       };
   };
