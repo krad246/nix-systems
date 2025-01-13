@@ -19,16 +19,27 @@ in {
     };
   };
 
-  home.activation = lib.modules.mkIf (config.specialisation != {}) {
-    switchToSpecialisation = lib.hm.dag.entryAfter ["writeBoundary"] ''
-      $DRY_RUN_CMD ${lib.meta.getExe cfg.home.activationPackage}
-    '';
-  };
+  home = {
+    file.dotfiles.source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/dotfiles";
 
-  home.stateVersion = lib.trivial.release;
+    activation = lib.modules.mkIf (config.specialisation != {}) {
+      switchToSpecialisation = lib.hm.dag.entryAfter ["writeBoundary"] ''
+        $DRY_RUN_CMD ${lib.meta.getExe cfg.home.activationPackage}
+      '';
+    };
+
+    stateVersion = lib.trivial.release;
+  };
 
   manual = {
     html.enable = true;
     json.enable = true;
+  };
+
+  xdg.configFile = {
+    dotfiles = {
+      enable = false;
+      source = self;
+    };
   };
 }

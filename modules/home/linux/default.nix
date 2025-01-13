@@ -31,18 +31,21 @@ args @ {
         };
       };
 
-      xdg.desktopEntries = {
-        "org.kde.kdeconnect.nonplasma" = {
-          name = "org.kde.kdeconnect.nonplasma";
-          noDisplay = true;
-        };
-        "org.gnome.Software" = {
-          name = "org.gnome.Software";
-          noDisplay = true;
-        };
-        "bottom" = {
-          name = "bottom";
-          noDisplay = true;
+      xdg = {
+        enable = true;
+        desktopEntries = {
+          "org.kde.kdeconnect.nonplasma" = {
+            name = "org.kde.kdeconnect.nonplasma";
+            noDisplay = true;
+          };
+          "org.gnome.Software" = {
+            name = "org.gnome.Software";
+            noDisplay = true;
+          };
+          "bottom" = {
+            name = "bottom";
+            noDisplay = true;
+          };
         };
       };
     };
