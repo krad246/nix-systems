@@ -35,7 +35,14 @@ in {
 
     package =
       if pkgs.stdenv.isLinux
-      then pkgs.vscode.fhsWithPackages (_ps: config.home.packages)
+      then
+        pkgs.vscode.fhsWithPackages (ps:
+          withSystem ps.stdenv.system ({
+            self',
+            pkgs,
+            ...
+          }:
+            [self'.packages.term-fonts] ++ [pkgs.nil pkgs.nixd]))
       else pkgs.vscode;
 
     extensions = [
