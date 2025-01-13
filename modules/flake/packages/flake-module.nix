@@ -132,7 +132,15 @@ in {
           pkgs.callPackage ./devour-flake.nix forwarded;
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        dconf2nix = pkgs.callPackage inputs.dconf2nix {};
+        dconf2nix = pkgs.callPackage inputs.dconf2nix rec {
+          compiler = import (inputs.dconf2nix + "/nix/ghc-version.nix");
+          packages = {
+            inherit pkgs;
+            hp = pkgs.haskell.packages.${compiler}.override {
+              overrides = _newPkgs: _oldPkgs: {};
+            };
+          };
+        };
 
         disko-install = pkgs.callPackage ./disko-install.nix forwarded;
 
