@@ -63,4 +63,7 @@
   };
 
   ids.gids.nixbld = 350;
+
+  # enable Lorri daemon for nix-direnv
+  services.lorri.enable = true;
 }

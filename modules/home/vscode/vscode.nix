@@ -1,5 +1,6 @@
 {
   withSystem,
+  self,
   config,
   lib,
   pkgs,
@@ -17,7 +18,7 @@
     pkgs.runCommand "strip-comments" {} ''
       ${lib.meta.getExe pkgs.gnused} \
         -re 's#^(([^"\n]*"[^"\n]*")*[^"\n]*)\/\/.*$#\1#' \
-        ${path} >$out
+        "${path}" >$out
     '';
 in {
   home.packages = with pkgs;
@@ -28,6 +29,7 @@ in {
 
   programs.vscode = {
     enable = true;
+
     enableExtensionUpdateCheck = false;
     enableUpdateCheck = false;
 
@@ -42,14 +44,14 @@ in {
     globalSnippets = {
     };
 
-    keybindings = lib.trivial.importJSON (stripComments ./darwin/keybindings.json);
+    keybindings = lib.trivial.importJSON (stripComments (self + "/assets/${keybindingsFilePath}"));
 
     languageSnippets = {
     };
 
     mutableExtensionsDir = false;
 
-    userSettings = lib.trivial.importJSON (stripComments ./darwin/settings.json);
+    userSettings = lib.trivial.importJSON (stripComments (self + "/assets/${settingsFilePath}"));
 
     userTasks = {
     };
@@ -59,11 +61,13 @@ in {
   # points at a mutable version of the dotfiles
   home.file = {
     ${keybindingsFilePath} = {
-      source = config.lib.file.mkOutOfStoreSymlink "$HOME/dotfiles/modules/home/vscode/darwin/keybindings.json";
+      enable = false;
+      source = config.lib.file.mkOutOfStoreSymlink ("$HOME/dotfiles" + "/assets/${keybindingsFilePath}");
     };
 
     ${settingsFilePath} = {
-      source = config.lib.file.mkOutOfStoreSymlink "$HOME/dotfiles/modules/home/vscode/darwin/settings.json";
+      enable = false;
+      source = config.lib.file.mkOutOfStoreSymlink ("$HOME/dotfiles" + "/assets/${settingsFilePath}");
     };
   };
 }
