@@ -5,6 +5,14 @@
   pkgs,
   ...
 }: let
+  userDir =
+    if pkgs.stdenv.hostPlatform.isDarwin
+    then "Library/Application Support/Code/User"
+    else "${config.xdg.configHome}/Code/User";
+
+  settingsFilePath = "${userDir}/settings.json";
+  keybindingsFilePath = "${userDir}/keybindings.json";
+
   stripComments = path:
     pkgs.runCommand "strip-comments" {} ''
       ${lib.meta.getExe pkgs.gnused} \
@@ -44,6 +52,18 @@ in {
     userSettings = lib.trivial.importJSON (stripComments ./darwin/settings.json);
 
     userTasks = {
+    };
+  };
+
+  # mutable store links for VSCode to actually see.
+  # points at a mutable version of the dotfiles
+  home.file = {
+    ${keybindingsFilePath} = {
+      source = config.lib.file.mkOutOfStoreSymlink "$HOME/dotfiles/modules/home/vscode/darwin/keybindings.json";
+    };
+
+    ${settingsFilePath} = {
+      source = config.lib.file.mkOutOfStoreSymlink "$HOME/dotfiles/modules/home/vscode/darwin/settings.json";
     };
   };
 }
