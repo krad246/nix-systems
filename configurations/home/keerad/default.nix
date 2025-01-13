@@ -8,6 +8,7 @@
   imports =
     [
       self.homeModules.shellenv
+      self.homeModules.vscode
     ]
     ++ [
       ./specialisations
