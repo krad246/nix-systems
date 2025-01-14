@@ -337,7 +337,7 @@
 	// Configures font ligatures or font features. Can be either a boolean to enable/disable ligatures or a string for the value of the CSS 'font-feature-settings' property.
 	"editor.fontLigatures": false,
 	// Controls the font size in pixels.
-	"editor.fontSize": 16,
+	"editor.fontSize": 18,
 	// Configures font variations. Can be either a boolean to enable/disable the translation from font-weight to font-variation-settings or a string for the value of the CSS 'font-variation-settings' property.
 	"editor.fontVariations": false,
 	// Controls the font weight. Accepts "normal" and "bold" keywords or numbers between 1 and 1000.
@@ -3651,8 +3651,6 @@
 	"terminal.integrated.fontFamily": "",
 	// Controls whether font ligatures are enabled in the terminal. Ligatures will only work if the configured `terminal.integrated.fontFamily` supports them.
 	"terminal.integrated.fontLigatures": false,
-	// Controls the font size in pixels of the terminal.
-	"terminal.integrated.fontSize": 18,
 	// The font weight to use within the terminal for non-bold text. Accepts "normal" and "bold" keywords or numbers between 1 and 1000.
 	"terminal.integrated.fontWeight": "normal",
 	// The font weight to use within the terminal for bold text. Accepts "normal" and "bold" keywords or numbers between 1 and 1000.
@@ -5341,7 +5339,7 @@
 	// Whether Git is enabled.
 	"git.enabled": true,
 	// Commit all changes when there are no staged changes.
-	"git.enableSmartCommit": false,
+	"git.enableSmartCommit": true,
 	// Controls whether the Git Sync command appears in the status bar.
 	"git.enableStatusBarSync": true,
 	// When enabled, fetch all branches when pulling. Otherwise, fetch just the current one.
