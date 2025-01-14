@@ -5,9 +5,11 @@
 	"telemetry.enableCrashReporter": true,
 
 	// If this setting is false, no telemetry will be sent regardless of the new setting's value. Deprecated in favor of the `telemetry.telemetryLevel` setting.
+	// Enable diagnostic data to be collected. This helps us to better understand how Visual Studio Code is performing and where improvements need to be made. [Read more](https://go.microsoft.com/fwlink/?LinkId=521839) about what we collect and our privacy statement.
 	"telemetry.enableTelemetry": true,
 
 	//
+	// Controls Visual Studio Code telemetry, first-party extension telemetry, and participating third-party extension telemetry. Some third party extensions might not respect this setting. Consult the specific extension's documentation to be sure. Telemetry helps us better understand how Visual Studio Code is performing, where improvements need to be made, and how features are being used. Read more about the [data we collect](https://aka.ms/vscode-telemetry) and our [privacy statement](https://go.microsoft.com/fwlink/?LinkId=521839). A full restart of the application is necessary for crash reporting changes to take effect.
 	//
 	// &nbsp;
 	//
@@ -109,21 +111,21 @@
 	//  - auto: Use platform APIs to detect when a Screen Reader is attached.
 	//  - on: Optimize for usage with a Screen Reader.
 	//  - off: Assume a screen reader is not attached.
-	"editor.accessibilitySupport": "auto",
+	"editor.accessibilitySupport": "off",
 
 	// Controls whether the editor should automatically close brackets after the user adds an opening bracket.
 	//  - always
 	//  - languageDefined: Use language configurations to determine when to autoclose brackets.
 	//  - beforeWhitespace: Autoclose brackets only when the cursor is to the left of whitespace.
 	//  - never
-	"editor.autoClosingBrackets": "languageDefined",
+	"editor.autoClosingBrackets": "beforeWhitespace",
 
 	// Controls whether the editor should automatically close comments after the user adds an opening comment.
 	//  - always
 	//  - languageDefined: Use language configurations to determine when to autoclose comments.
 	//  - beforeWhitespace: Autoclose comments only when the cursor is to the left of whitespace.
 	//  - never
-	"editor.autoClosingComments": "languageDefined",
+	"editor.autoClosingComments": "beforeWhitespace",
 
 	// Controls whether the editor should remove adjacent closing quotes or brackets when deleting.
 	//  - always
@@ -142,7 +144,7 @@
 	//  - languageDefined: Use language configurations to determine when to autoclose quotes.
 	//  - beforeWhitespace: Autoclose quotes only when the cursor is to the left of whitespace.
 	//  - never
-	"editor.autoClosingQuotes": "languageDefined",
+	"editor.autoClosingQuotes": "beforeWhitespace",
 
 	// Controls whether the editor should automatically adjust the indentation when users type, paste, move or indent lines.
 	//  - none: The editor will not insert indentation automatically.
@@ -152,33 +154,23 @@
 	//  - full: The editor will keep the current line's indentation, honor language defined brackets, invoke special onEnterRules defined by languages, and honor indentationRules defined by languages.
 	"editor.autoIndent": "full",
 
-	// Controls whether the editor should automatically surround selections when typing quotes or brackets.
-	//  - languageDefined: Use language configurations to determine when to automatically surround selections.
-	//  - quotes: Surround with quotes but not brackets.
-	//  - brackets: Surround with brackets but not quotes.
-	//  - never
-	"editor.autoSurround": "languageDefined",
-
-	// Controls whether bracket pair colorization is enabled or not. Use `workbench.colorCustomizations` to override the bracket highlight colors.
-	"editor.bracketPairColorization.enabled": true,
-
 	// Controls whether each bracket type has its own independent color pool.
-	"editor.bracketPairColorization.independentColorPoolPerBracketType": false,
+	"editor.bracketPairColorization.independentColorPoolPerBracketType": true,
 
 	// Enable triggering `editor.codeActionsOnSave#` when `#files.autoSave` is set to `afterDelay`. Code Actions must be set to `always` to be triggered for window and focus changes.
-	"editor.codeActions.triggerOnFocusChange": false,
+	"editor.codeActions.triggerOnFocusChange": true,
 
 	// Run Code Actions for the editor on save. Code Actions must be specified and the editor must not be shutting down. When `files.autoSave` is set to `afterDelay`, Code Actions will only be run when the file is saved explicitly. Example: `"source.organizeImports": "explicit" `
 	"editor.codeActionsOnSave": {},
 
 	// Enable/disable showing nearest Quick Fix within a line when not currently on a diagnostic.
-	"editor.codeActionWidget.includeNearbyQuickFixes": true,
+	"editor.codeActionWidget.includeNearbyQuickFixes": false,
 
 	// Enable/disable showing group headers in the Code Action menu.
-	"editor.codeActionWidget.showHeaders": true,
+	"editor.codeActionWidget.showHeaders": false,
 
 	// Controls whether the editor shows CodeLens.
-	"editor.codeLens": true,
+	"editor.codeLens": false,
 
 	// Controls the font family for CodeLens.
 	"editor.codeLensFontFamily": "",
@@ -337,7 +329,7 @@
 	"editor.dragAndDrop": true,
 
 	// Controls whether you can drag and drop a file into a text editor by holding down the `Shift` key (instead of opening the file in an editor).
-	"editor.dropIntoEditor.enabled": true,
+	"editor.dropIntoEditor.enabled": false,
 
 	// Configures the preferred type of edit to use when dropping content.
 	//
@@ -353,7 +345,7 @@
 	"editor.emptySelectionClipboard": true,
 
 	// Controls whether the tokenization should happen asynchronously on a web worker.
-	"editor.experimental.asyncTokenization": true,
+	"editor.experimental.asyncTokenization": false,
 
 	// Controls whether async tokenization should be logged. For debugging only.
 	"editor.experimental.asyncTokenizationLogging": false,
@@ -406,10 +398,10 @@
 	"editor.find.seedSearchStringFromSelection": "always",
 
 	// Controls whether the editor has code folding enabled.
-	"editor.folding": true,
+	"editor.folding": false,
 
 	// Controls whether the editor should highlight folded ranges.
-	"editor.foldingHighlight": true,
+	"editor.foldingHighlight": false,
 
 	// Controls whether the editor automatically collapses import ranges.
 	"editor.foldingImportsByDefault": false,
@@ -423,13 +415,13 @@
 	"editor.foldingStrategy": "auto",
 
 	// Controls the font family.
-	"editor.fontFamily": "Consolas, 'Courier New', monospace",
+	"editor.fontFamily": "'MesloLGM Nerd Font', Consolas, 'Courier New', monospace",
 
 	// Configures font ligatures or font features. Can be either a boolean to enable/disable ligatures or a string for the value of the CSS 'font-feature-settings' property.
 	"editor.fontLigatures": false,
 
 	// Controls the font size in pixels.
-	"editor.fontSize": 14,
+	"editor.fontSize": 16,
 
 	// Configures font variations. Can be either a boolean to enable/disable the translation from font-weight to font-variation-settings or a string for the value of the CSS 'font-variation-settings' property.
 	"editor.fontVariations": false,
@@ -453,7 +445,7 @@
 	"editor.formatOnType": false,
 
 	// Controls whether the editor should render the vertical glyph margin. Glyph margin is mostly used for debugging.
-	"editor.glyphMargin": true,
+	"editor.glyphMargin": false,
 
 	// Alternative command id that is being executed when the result of 'Go to Declaration' is the current location.
 	"editor.gotoLocation.alternativeDeclarationCommand": "editor.action.goToReferences",
@@ -610,9 +602,6 @@
 	// Defines the bracket pairs that are colorized by their nesting level if bracket pair colorization is enabled.
 	"editor.language.colorizedBracketPairs": null,
 
-	// Special handling for large files to disable certain memory intensive features.
-	"editor.largeFileOptimizations": true,
-
 	// Controls the letter spacing in pixels.
 	"editor.letterSpacing": 0,
 
@@ -698,9 +687,10 @@
 	// Merge multiple cursors when they are overlapping.
 	"editor.multiCursorMergeOverlapping": true,
 
+	// The modifier to be used to add multiple cursors with the mouse. The Go to Definition and Open Link mouse gestures will adapt such that they do not conflict with the [multicursor modifier](https://code.visualstudio.com/docs/editor/codebasics#_multicursor-modifier).
 	//  - ctrlCmd: Maps to `Control` on Windows and Linux and to `Command` on macOS.
 	//  - alt: Maps to `Alt` on Windows and Linux and to `Option` on macOS.
-	"editor.multiCursorModifier": "alt",
+	"editor.multiCursorModifier": "ctrlCmd",
 
 	// Controls pasting when the line count of the pasted text matches the cursor count.
 	//  - spread: Each cursor pastes a single line of the text.
@@ -794,7 +784,7 @@
 	//  - selection: Render whitespace characters only on selected text.
 	//  - trailing: Render only trailing whitespace characters.
 	//  - all
-	"editor.renderWhitespace": "selection",
+	"editor.renderWhitespace": "all",
 
 	// Controls whether selections should have rounded corners.
 	"editor.roundedSelection": true,
@@ -1142,16 +1132,13 @@
 	//  - auto: The accessible diff viewer is based on screen reader mode being enabled.
 	//  - on: The accessible diff viewer is always enabled.
 	//  - off: The accessible diff viewer is never enabled.
-	"inlineChat.accessibleDiffView": "auto",
+	"inlineChat.accessibleDiffView": "off",
 
 	// Whether to finish an inline chat session when typing outside of changed regions.
 	"inlineChat.finishOnType": false,
 
 	// Whether holding the inline chat keybinding will automatically enable speech recognition.
-	"inlineChat.holdToSpeech": true,
-
-	// Whether empty lines show a hint to generate code with inline chat.
-	"inlineChat.lineEmptyHint": false,
+	"inlineChat.holdToSpeech": false,
 
 	// Whether lines that are dominated by natural language or pseudo code show a hint to continue with inline chat. For instance, `class Person with name and hobbies` would show a hint to continue with chat.
 	"inlineChat.lineNaturalLanguageHint": true,
@@ -1165,10 +1152,10 @@
 	"notebook.codeActionsOnSave": {},
 
 	// Controls whether inline actions are always visible in the Source Control view.
-	"scm.alwaysShowActions": false,
+	"scm.alwaysShowActions": true,
 
 	// Controls whether repositories should always be visible in the Source Control view.
-	"scm.alwaysShowRepositories": false,
+	"scm.alwaysShowRepositories": true,
 
 	// Controls whether the Source Control view should automatically reveal and select files when opening them.
 	"scm.autoReveal": true,
@@ -1185,7 +1172,7 @@
 	// Controls the default Source Control repository view mode.
 	//  - tree: Show the repository changes as a tree.
 	//  - list: Show the repository changes as a list.
-	"scm.defaultViewMode": "list",
+	"scm.defaultViewMode": "tree",
 
 	// Controls the default Source Control repository changes sort order when viewed as a list.
 	//  - name: Sort the repository changes by file name.
@@ -1208,7 +1195,7 @@
 
 	// Controls whether a pattern is used for the diff decorations in gutter.
 	"scm.diffDecorationsGutterPattern": {
-		"added": false,
+		"added": true,
 		"modified": true
 	},
 
@@ -1265,10 +1252,10 @@
 	"scm.repositories.visible": 10,
 
 	// Controls whether an action button can be shown in the Source Control view.
-	"scm.showActionButton": true,
+	"scm.showActionButton": false,
 
 	// Controls whether an action button can be shown in the Source Control input.
-	"scm.showInputActionButton": true,
+	"scm.showInputActionButton": false,
 
 	// Controls the default working set to use when switching to a source control history item group that does not have a working set.
 	//  - empty: Use an empty working set when switching to a source control history item group that does not have a working set.
@@ -1278,6 +1265,7 @@
 	// Controls whether to store editor working sets when switching between source control history item groups.
 	"scm.workingSets.enabled": false,
 
+	// A set of UNC host names (without leading or trailing backslash, for example `192.168.0.1` or `my-server`) to allow without user confirmation. If a UNC host is being accessed that is not allowed via this setting or has not been acknowledged via user confirmation, an error will occur and the operation stopped. A restart is required when changing this setting. Find out more about this setting at https://aka.ms/vscode-windows-unc.
 	"security.allowedUNCHosts": [],
 
 	// If enabled, a dialog will ask for confirmation whenever a local file or workspace is about to open through a protocol handler.
@@ -1286,6 +1274,7 @@
 	// If enabled, a dialog will ask for confirmation whenever a remote file or workspace is about to open through a protocol handler.
 	"security.promptForRemoteFileProtocolHandling": true,
 
+	// If enabled, only allows access to UNC host names that are allowed by the `security.allowedUNCHosts` setting or after user confirmation. Find out more about this setting at https://aka.ms/vscode-windows-unc.
 	"security.restrictUNCAccess": true,
 
 	// Controls when the restricted mode banner is shown.
@@ -1319,7 +1308,7 @@
 	"accessibility.dimUnfocused.opacity": 0.75,
 
 	// Controls whether the Accessible View is hidden.
-	"accessibility.hideAccessibleView": false,
+	"accessibility.hideAccessibleView": true,
 
 	// Controls the height of editor tabs. Also applies to the title control bar when `workbench.editor.showTabs` is not set to `multiple`.
 	"window.density.editorTabHeight": "default",
@@ -1440,7 +1429,7 @@
 	"workbench.editor.empty.hint": "text",
 
 	// Controls whether preview mode is used when editors open. There is a maximum of one preview mode editor per editor group. This editor displays its filename in italics on its tab or title label and in the Open Editors view. Its contents will be replaced by the next editor opened in preview mode. Making a change in a preview mode editor will persist it, as will a double-click on its label, or the 'Keep Open' option in its label context menu. Opening a file from Explorer with a double-click persists its editor immediately.
-	"workbench.editor.enablePreview": true,
+	"workbench.editor.enablePreview": false,
 
 	// Controls whether editors remain in preview when a code navigation is started from them. Preview editors do not stay open, and are reused until explicitly set to be kept open (via double-click or editing). This value is ignored when `workbench.editor.showTabs` is not set to `multiple`.
 	"workbench.editor.enablePreviewFromCodeNavigation": false,
@@ -1588,6 +1577,7 @@
 	// Controls whether tabs should be wrapped over multiple lines when exceeding available space or whether a scrollbar should appear instead. This value is ignored when `workbench.editor.showTabs` is not set to '`multiple`'.
 	"workbench.editor.wrapTabs": false,
 
+	// Configure [glob patterns](https://aka.ms/vscode-glob-patterns) to editors (for example `"*.hex": "hexEditor.hexedit"`). These have precedence over the default behavior.
 	"workbench.editorAssociations": {},
 
 	// Controls the minimum size of a file in MB before asking for confirmation when opening in the editor. Note that this setting may not apply to all editor types and environments.
@@ -1678,6 +1668,7 @@
 	// Controls whether local file history is enabled. When enabled, the file contents of an editor that is saved will be stored to a backup location to be able to restore or review the contents later. Changing this setting has no effect on existing local file history entries.
 	"workbench.localHistory.enabled": true,
 
+	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) for excluding files from the local file history. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. Changing this setting has no effect on existing local file history entries.
 	"workbench.localHistory.exclude": {},
 
 	// Controls the maximum number of local file history entries per file. When the number of local file history entries exceeds this number for a file, the oldest entries will be discarded.
@@ -1845,7 +1836,108 @@
 		"terminal.integrated.allowChords",
 		"terminal.integrated.accessibleViewPreserveCursorPosition",
 		"terminal.integrated.accessibleViewFocusOnCommandExecution",
-		"terminal.explorerKind"
+		"terminal.explorerKind",
+		"files.autoSave",
+		"editor.fontSize",
+		"editor.tabSize",
+		"editor.fontFamily",
+		"editor.renderWhitespace",
+		"editor.cursorStyle",
+		"editor.multiCursorModifier",
+		"editor.insertSpaces",
+		"editor.wordWrap",
+		"files.exclude",
+		"files.associations",
+		"workbench.editor.enablePreview",
+		"editor.accessibilityPageSize",
+		"editor.accessibilitySupport",
+		"editor.autoClosingBrackets",
+		"editor.autoClosingComments",
+		"editor.autoClosingQuotes",
+		"editor.autoClosingDelete",
+		"editor.autoClosingOvertype",
+		"editor.autoIndent",
+		"editor.autoSurround",
+		"editor.bracketPairColorization.enabled",
+		"editor.bracketPairColorization.independentColorPoolPerBracketType",
+		"editor.codeActions.triggerOnFocusChange",
+		"editor.codeActionsOnSave",
+		"editor.codeActionWidget.includeNearbyQuickFixes",
+		"editor.codeActionWidget.showHeaders",
+		"editor.codeLens",
+		"editor.codeLensFontFamily",
+		"editor.codeLensFontSize",
+		"editor.colorDecorators",
+		"editor.colorDecoratorsActivatedOn",
+		"editor.colorDecoratorsLimit",
+		"editor.columnSelection",
+		"editor.comments.ignoreEmptyLines",
+		"editor.comments.insertSpace",
+		"editor.copyWithSyntaxHighlighting",
+		"editor.defaultColorDecorators",
+		"editor.defaultFoldingRangeProvider",
+		"editor.defaultFormatter",
+		"editor.definitionLinkOpensInPeek",
+		"editor.detectIndentation",
+		"editor.dragAndDrop",
+		"editor.dropIntoEditor.enabled",
+		"editor.dropIntoEditor.preferences",
+		"editor.dropIntoEditor.showDropSelector",
+		"editor.emptySelectionClipboard",
+		"editor.folding",
+		"editor.foldingImportsByDefault",
+		"editor.foldingStrategy",
+		"editor.glyphMargin",
+		"editor.largeFileOptimizations",
+		"editor.experimental.asyncTokenization",
+		"editor.language.colorizedBracketPairs",
+		"chat.commandCenter.enabled",
+		"chat.detectParticipant.enabled",
+		"chat.editor.fontFamily",
+		"chat.editor.fontSize",
+		"chat.editor.fontWeight",
+		"chat.editor.lineHeight",
+		"chat.editor.wordWrap",
+		"inlineChat.accessibleDiffView",
+		"inlineChat.finishOnType",
+		"inlineChat.holdToSpeech",
+		"inlineChat.mode",
+		"mergeEditor.showDeletionMarkers",
+		"mergeEditor.diffAlgorithm",
+		"interactiveWindow.showExecutionHint",
+		"interactiveWindow.alwaysScrollOnNewCell",
+		"interactiveWindow.collapseCellInputCode",
+		"notebook.variablesView",
+		"notebook.undoRedoPerCell",
+		"notebook.showFoldingControls",
+		"notebook.showCellStatusBar",
+		"notebook.scrolling.revealNextCellOnExecute",
+		"notebook.output.wordWrap",
+		"notebook.output.linkifyFilePaths",
+		"notebook.formatOnSave.enabled",
+		"notebook.formatOnCellExecution",
+		"notebook.experimental.generate",
+		"notebook.defaultFormatter",
+		"notebook.confirmDeleteRunningCell",
+		"problems.autoReveal",
+		"problems.showCurrentInStatus",
+		"problems.visibility",
+		"debug.toolBarLocation",
+		"debug.terminal.clearBeforeReusing",
+		"debug.showVariableTypes",
+		"debug.showSubSessionsInToolBar",
+		"debug.showBreakpointsInOverviewRuler",
+		"debug.showInlineBreakpointCandidates",
+		"debug.console.closeOnEnd",
+		"search.seedWithNearestWord",
+		"search.showLineNumbers",
+		"search.smartCase",
+		"search.searchEditor.focusResultsOnSearch",
+		"search.searchEditor.reusePriorSearchConfiguration",
+		"search.searchOnType",
+		"search.quickAccess.preserveInput",
+		"search.quickOpen.history.filterSortOrder",
+		"explorer.fileNesting.enabled"
 	],
 
 	// Determines which settings editor to use by default.
@@ -2034,22 +2126,26 @@
 	// Controls if the 'Zoom In' and 'Zoom Out' commands apply the zoom level to all windows or only the active window. See `window.zoomLevel` for configuring a default zoom level for all windows.
 	"window.zoomPerWindow": true,
 
+	// Configure [glob patterns](https://aka.ms/vscode-glob-patterns) of file associations to languages (for example `"*.extension": "html"`). Patterns will match on the absolute path of a file if they contain a path separator and will match on the name of the file otherwise. These have precedence over the default associations of the languages installed.
 	"files.associations": {},
 
 	// When enabled, the editor will attempt to guess the character set encoding when opening files. This setting can also be configured per language. Note, this setting is not respected by text search. Only `files.encoding` is respected.
 	"files.autoGuessEncoding": false,
 
+	// Controls [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors that have unsaved changes.
 	//  - off: An editor with changes is never automatically saved.
 	//  - afterDelay: An editor with changes is automatically saved after the configured `files.autoSaveDelay`.
 	//  - onFocusChange: An editor with changes is automatically saved when the editor loses focus.
 	//  - onWindowChange: An editor with changes is automatically saved when the window loses focus.
-	"files.autoSave": "off",
+	"files.autoSave": "afterDelay",
 
 	// Controls the delay in milliseconds after which an editor with unsaved changes is saved automatically. Only applies when `files.autoSave` is set to `afterDelay`.
 	"files.autoSaveDelay": 1000,
 
+	// When enabled, will limit [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors to files that have no errors reported in them at the time the auto save is triggered. Only applies when `files.autoSave` is enabled.
 	"files.autoSaveWhenNoErrors": false,
 
+	// When enabled, will limit [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors to files that are inside the opened workspace. Only applies when `files.autoSave` is enabled.
 	"files.autoSaveWorkspaceFilesOnly": false,
 
 	// List of character set encodings that the editor should attempt to guess in the order they are listed. In case it cannot be determined, `files.encoding` is respected
@@ -2139,6 +2235,7 @@
 	//  - auto: Uses operating system specific end of line character.
 	"files.eol": "auto",
 
+	// Configure [glob patterns](https://aka.ms/vscode-glob-patterns) for excluding files and folders. For example, the File Explorer decides which files and folders to show or hide based on this setting. Refer to the `search.exclude#` setting to define search-specific excludes. Refer to the `#explorer.excludeGitIgnore` setting for ignoring files based on your `.gitignore`.
 	"files.exclude": {
 		"**/.git": true,
 		"**/.svn": true,
@@ -2148,6 +2245,7 @@
 		"**/Thumbs.db": true
 	},
 
+	// [Hot Exit](https://aka.ms/vscode-hot-exit) controls whether unsaved files are remembered between sessions, allowing the save prompt when exiting the editor to be skipped.
 	//  - off: Disable hot exit. A prompt will show when attempting to close a window with editors that have unsaved changes.
 	//  - onExit: Hot exit will be triggered when the last window is closed on Windows/Linux or when the `workbench.action.quit` command is triggered (command palette, keybinding, menu). All windows without folders opened will be restored upon next launch. A list of previously opened windows with unsaved files can be accessed via `File > Open Recent > More...`
 	//  - onExitAndWindowClose: Hot exit will be triggered when the last window is closed on Windows/Linux or when the `workbench.action.quit` command is triggered (command palette, keybinding, menu), and also for any window with a folder opened regardless of whether it's the last window. All windows without folders opened will be restored upon next launch. A list of previously opened windows with unsaved files can be accessed via `File > Open Recent > More...`
@@ -2159,11 +2257,13 @@
 	// Timeout in milliseconds after which file participants for create, rename, and delete are cancelled. Use `0` to disable participants.
 	"files.participants.timeout": 60000,
 
+	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) to exclude from being marked as read-only if they match as a result of the `files.readonlyInclude` setting. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. Files from readonly file system providers will always be read-only independent of this setting.
 	"files.readonlyExclude": {},
 
 	// Marks files as read-only when their file permissions indicate as such. This can be overridden via `files.readonlyInclude#` and `#files.readonlyExclude` settings.
 	"files.readonlyFromPermissions": false,
 
+	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) to mark as read-only. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths. You can exclude matching paths via the `files.readonlyExclude` setting. Files from readonly file system providers will always be read-only independent of this setting.
 	"files.readonlyInclude": {},
 
 	// Controls if files that were part of a refactoring are saved automatically
@@ -2189,6 +2289,7 @@
 	// When enabled, trailing whitespace will be removed from multiline strings and regexes will be removed on save or when executing 'editor.action.trimTrailingWhitespace'. This can cause whitespace to not be trimmed from lines when there isn't up-to-date token information.
 	"files.trimTrailingWhitespaceInRegexAndStrings": true,
 
+	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) to exclude from file watching. Paths can either be relative to the watched folder or absolute. Glob patterns are matched relative from the watched folder. When you experience the file watcher process consuming a lot of CPU, make sure to exclude large folders that are of less interest (such as build output folders).
 	"files.watcherExclude": {
 		"**/.git/objects/**": true,
 		"**/.git/subtree-cache/**": true,
@@ -2258,6 +2359,7 @@
 	//  - focusNoScroll: Files will not be scrolled into view, but will still be focused.
 	"explorer.autoReveal": true,
 
+	// Configure paths or [glob patterns](https://aka.ms/vscode-glob-patterns) for excluding files and folders from being revealed and selected in the Explorer when they are opened. Glob patterns are always evaluated relative to the path of the workspace folder unless they are absolute paths.
 	"explorer.autoRevealExclude": {
 		"**/node_modules": true,
 		"**/bower_components": true
@@ -2306,7 +2408,7 @@
 	"explorer.expandSingleFolderWorkspaces": true,
 
 	// Controls whether file nesting is enabled in the Explorer. File nesting allows for related files in a directory to be visually grouped together under a single parent file.
-	"explorer.fileNesting.enabled": false,
+	"explorer.fileNesting.enabled": true,
 
 	// Controls whether file nests are automatically expanded. `explorer.fileNesting.enabled` must be set for this to take effect.
 	"explorer.fileNesting.expand": true,
@@ -2385,6 +2487,7 @@
 	//  - list: Shows search results as a list.
 	"search.defaultViewMode": "list",
 
+	// Configure [glob patterns](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) for excluding files and folders in fulltext searches and file search in quick open. To exclude files from the recently opened list in quick open, patterns must be absolute (for example `**/node_modules/**`). Inherits all glob patterns from the `files.exclude` setting.
 	"search.exclude": {
 		"**/node_modules": true,
 		"**/bower_components": true,
@@ -2415,12 +2518,12 @@
 	"search.mode": "view",
 
 	// Controls whether the last typed input to Quick Search should be restored when opening it the next time.
-	"search.quickAccess.preserveInput": false,
+	"search.quickAccess.preserveInput": true,
 
 	// Controls sorting order of editor history in quick open when filtering.
 	//  - default: History entries are sorted by relevance based on the filter value used. More relevant entries appear first.
 	//  - recency: History entries are sorted by recency. More recently opened entries appear first.
-	"search.quickOpen.history.filterSortOrder": "default",
+	"search.quickOpen.history.filterSortOrder": "recency",
 
 	// Whether to include results from recently opened files in the file results for Quick Open.
 	"search.quickOpen.includeHistory": true,
@@ -2441,10 +2544,10 @@
 	"search.searchEditor.doubleClickBehaviour": "goToLocation",
 
 	// When a search is triggered, focus the Search Editor results instead of the Search Editor input.
-	"search.searchEditor.focusResultsOnSearch": false,
+	"search.searchEditor.focusResultsOnSearch": true,
 
 	// When enabled, new Search Editors will reuse the includes, excludes, and flags of the previously opened Search Editor.
-	"search.searchEditor.reusePriorSearchConfiguration": false,
+	"search.searchEditor.reusePriorSearchConfiguration": true,
 
 	// Configure effect of single-clicking a result in a search editor.
 	//  - default: Single-clicking does nothing.
@@ -2461,13 +2564,13 @@
 	"search.seedOnFocus": false,
 
 	// Enable seeding search from the word nearest the cursor when the active editor has no selection.
-	"search.seedWithNearestWord": false,
+	"search.seedWithNearestWord": true,
 
 	// Controls whether to show line numbers for search results.
-	"search.showLineNumbers": false,
+	"search.showLineNumbers": true,
 
 	// Search case-insensitively if the pattern is all lowercase, otherwise, search case-sensitively.
-	"search.smartCase": false,
+	"search.smartCase": true,
 
 	// Controls sorting order of search results.
 	//  - default: Results are sorted by folder and file names, in alphabetical order.
@@ -2479,13 +2582,13 @@
 	"search.sortOrder": "default",
 
 	// Controls whether to use your global gitignore file (for example, from `$HOME/.config/git/ignore`) when searching for files. Requires `search.useIgnoreFiles` to be enabled.
-	"search.useGlobalIgnoreFiles": false,
+	"search.useGlobalIgnoreFiles": true,
 
 	// Controls whether to use `.gitignore` and `.ignore` files when searching for files.
 	"search.useIgnoreFiles": true,
 
 	// Controls whether to use `.gitignore` and `.ignore` files in parent directories when searching for files. Requires `search.useIgnoreFiles` to be enabled.
-	"search.useParentIgnoreFiles": false,
+	"search.useParentIgnoreFiles": true,
 
 	// Deprecated. PCRE2 will be used automatically when using regex features that are only supported by PCRE2.
 	// Whether to use the PCRE2 regex engine in text search. This enables using some advanced regex features like lookahead and backreferences. However, not all PCRE2 features are supported - only features that are also supported by JavaScript.
@@ -2547,10 +2650,10 @@
 	//  - manual: Disable automatic background update checks. Updates will be available if you manually check for updates.
 	//  - start: Check for updates only on startup. Disable automatic background update checks.
 	//  - default: Enable automatic update checks. Code will check for updates automatically and periodically.
-	"update.mode": "default",
+	"update.mode": "start",
 
 	// Show Release Notes after an update. The Release Notes are fetched from a Microsoft online service.
-	"update.showReleaseNotes": true,
+	"update.showReleaseNotes": false,
 
 	// Controls whether the comment thread should collapse when the thread is resolved.
 	"comments.collapseOnResolve": true,
@@ -2596,7 +2699,7 @@
 	"debug.console.acceptSuggestionOnEnter": "off",
 
 	// Controls if the Debug Console should be automatically closed when the debug session ends.
-	"debug.console.closeOnEnd": false,
+	"debug.console.closeOnEnd": true,
 
 	// Controls if the Debug Console should collapse identical lines and show a number of occurrences with a badge.
 	"debug.console.collapseIdenticalLines": true,
@@ -2670,7 +2773,7 @@
 	"debug.saveBeforeStart": "allEditorsInActiveGroup",
 
 	// Controls whether breakpoints should be shown in the overview ruler.
-	"debug.showBreakpointsInOverviewRuler": false,
+	"debug.showBreakpointsInOverviewRuler": true,
 
 	// Controls whether inline breakpoints candidate decorations should be shown in the editor while debugging.
 	"debug.showInlineBreakpointCandidates": true,
@@ -2682,13 +2785,13 @@
 	"debug.showInStatusBar": "onFirstSessionStart",
 
 	// Controls whether the debug sub-sessions are shown in the debug tool bar. When this setting is false the stop command on a sub-session will also stop the parent session.
-	"debug.showSubSessionsInToolBar": false,
+	"debug.showSubSessionsInToolBar": true,
 
 	// Show variable type in variable pane during debug session
-	"debug.showVariableTypes": false,
+	"debug.showVariableTypes": true,
 
 	// Before starting a new debug session in an integrated or external terminal, clear the terminal.
-	"debug.terminal.clearBeforeReusing": false,
+	"debug.terminal.clearBeforeReusing": true,
 
 	// Controls the location of the debug toolbar. Either `floating` in all views, `docked` in the debug view, `commandCenter` (requires `window.commandCenter`), or `hidden`.
 	//  - floating: Show debug toolbar in all views.
@@ -2696,12 +2799,6 @@
 	//  - commandCenter: `(Experimental)` Show debug toolbar in the command center.
 	//  - hidden: Do not show debug toolbar.
 	"debug.toolBarLocation": "floating",
-
-	// Global debug launch configuration. Should be used as an alternative to 'launch.json' that is shared across workspaces.
-	"launch": {
-		"configurations": [],
-		"compounds": []
-	},
 
 	// Enable/disable autoclosing of HTML tags.
 	"html.autoClosingTags": true,
@@ -2715,6 +2812,7 @@
 	//  - empty: Attribute value is not set.
 	"html.completion.attributeDefaultValue": "doublequotes",
 
+	// A list of relative file paths pointing to JSON files following the [custom data format](https://github.com/microsoft/vscode-html-languageservice/blob/master/docs/customData.md).
 	//
 	// VS Code loads custom data on startup to enhance its HTML support for the custom HTML tags, attributes and attribute values you specify in the JSON files.
 	//
@@ -2745,6 +2843,7 @@
 	// Honor django, erb, handlebars and php templating language tags.
 	"html.format.templating": false,
 
+	// List of tags, comma separated, that shouldn't be reformatted. `null` defaults to all tags listed at https://www.w3.org/TR/html5/dom.html#phrasing-content.
 	"html.format.unformatted": "wbr",
 
 	// Keep text content together between this string.
@@ -3132,6 +3231,7 @@
 	// Suppress type hints on variables whose name is identical to the type name.
 	"javascript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
 
+	// Specify glob patterns of files to exclude from auto imports. Relative paths are resolved relative to the workspace root. Patterns are evaluated using tsconfig.json [`exclude`](https://www.typescriptlang.org/tsconfig#exclude) semantics.
 	"javascript.preferences.autoImportFileExcludePatterns": [],
 
 	// Specify regular expressions to exclude auto imports with matching import specifiers. Examples:
@@ -3243,19 +3343,25 @@
 	// Enable/disable `experimentalDecorators` in JavaScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 	"js/ts.implicitProjectConfig.experimentalDecorators": false,
 
+	// Sets the module system for the program. See more: https://www.typescriptlang.org/tsconfig#module.
 	"js/ts.implicitProjectConfig.module": "ESNext",
 
+	// Enable/disable [strict function types](https://www.typescriptlang.org/tsconfig#strictFunctionTypes) in JavaScript and TypeScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 	"js/ts.implicitProjectConfig.strictFunctionTypes": true,
 
+	// Enable/disable [strict null checks](https://www.typescriptlang.org/tsconfig#strictNullChecks) in JavaScript and TypeScript files that are not part of a project. Existing `jsconfig.json` or `tsconfig.json` files override this setting.
 	"js/ts.implicitProjectConfig.strictNullChecks": true,
 
+	// Set target JavaScript language version for emitted JavaScript and include library declarations. See more: https://www.typescriptlang.org/tsconfig#target.
 	"js/ts.implicitProjectConfig.target": "ES2022",
 
 	// Enable/disable automatic closing of JSX tags.
 	"typescript.autoClosingTags": true,
 
+	// Check if npm is installed for [Automatic Type Acquisition](https://code.visualstudio.com/docs/nodejs/working-with-javascript#_typings-and-automatic-type-acquisition).
 	"typescript.check.npmIsInstalled": true,
 
+	// Disables [automatic type acquisition](https://code.visualstudio.com/docs/nodejs/working-with-javascript#_typings-and-automatic-type-acquisition). Automatic type acquisition fetches `@types` packages from npm to improve IntelliSense for external libraries.
 	"typescript.disableAutomaticTypeAcquisition": false,
 
 	// Enables prompting of users to use the TypeScript version configured in the workspace for Intellisense.
@@ -3408,8 +3514,10 @@
 	//  - zh-TW: 中文(繁體)
 	"typescript.locale": "auto",
 
+	// Specifies the path to the npm executable used for [Automatic Type Acquisition](https://code.visualstudio.com/docs/nodejs/working-with-javascript#_typings-and-automatic-type-acquisition).
 	"typescript.npm": "",
 
+	// Specify glob patterns of files to exclude from auto imports. Relative paths are resolved relative to the workspace root. Patterns are evaluated using tsconfig.json [`exclude`](https://www.typescriptlang.org/tsconfig#exclude) semantics.
 	"typescript.preferences.autoImportFileExcludePatterns": [],
 
 	// Specify regular expressions to exclude auto imports with matching import specifiers. Examples:
@@ -3528,6 +3636,7 @@
 	// - When specified as a user setting, the TypeScript version from `typescript.tsdk` automatically replaces the built-in TypeScript version.
 	// - When specified as a workspace setting, `typescript.tsdk` allows you to switch to use that workspace version of TypeScript for IntelliSense with the `TypeScript: Select TypeScript version` command.
 	//
+	// See the [TypeScript documentation](https://code.visualstudio.com/docs/typescript/typescript-compiling#_using-newer-typescript-versions) for more detail about managing TypeScript versions.
 	"typescript.tsdk": "",
 
 	// Enables region-based diagnostics in TypeScript. Requires using TypeScript 5.6+ in the workspace.
@@ -3594,6 +3703,7 @@
 	// Exclude symbols that come from library files in `Go to Symbol in Workspace` results. Requires using TypeScript 5.3+ in the workspace.
 	"typescript.workspaceSymbols.excludeLibrarySymbols": true,
 
+	// Controls which files are searched by [Go to Symbol in Workspace](https://code.visualstudio.com/docs/editor/editingevolved#_open-symbol-by-name).
 	//  - allOpenProjects: Search all open JavaScript or TypeScript projects for symbols.
 	//  - currentProject: Only search for symbols in the current JavaScript or TypeScript project.
 	"typescript.workspaceSymbols.scope": "allOpenProjects",
@@ -3650,9 +3760,6 @@
 	// Controls whether the running test should be followed in the Test Explorer view.
 	"testing.followRunningTest": false,
 
-	// Controls whether test decorations are shown in the editor gutter.
-	"testing.gutterEnabled": true,
-
 	// Control whether save all dirty editors before running a test.
 	"testing.saveBeforeTest": true,
 
@@ -3660,7 +3767,7 @@
 	"testing.showAllMessages": false,
 
 	// Whether test coverage should be down in the File Explorer view.
-	"testing.showCoverageInExplorer": true,
+	"testing.showCoverageInExplorer": false,
 
 	// Insert semicolon at end of line when completing CSS properties.
 	"css.completion.completePropertyWithSemicolon": true,
@@ -3668,6 +3775,7 @@
 	// By default, VS Code triggers property value completion after selecting a CSS property. Use this setting to disable this behavior.
 	"css.completion.triggerPropertyValueCompletion": true,
 
+	// A list of relative file paths pointing to JSON files following the [custom data format](https://github.com/microsoft/vscode-css-languageservice/blob/master/docs/customData.md).
 	//
 	// VS Code loads custom data on startup to enhance its CSS support for CSS custom properties (variables), at-rules, pseudo-classes, and pseudo-elements you specify in the JSON files.
 	//
@@ -3959,8 +4067,6 @@
 	// Enables or disables all validations.
 	"scss.validate": true,
 
-	"extensions.allowed": "*",
-
 	// When enabled, automatically checks extensions for updates. If an extension has an update, it is marked as outdated in the Extensions view. The updates are fetched from a Microsoft online service.
 	"extensions.autoCheckUpdates": true,
 
@@ -4023,7 +4129,7 @@
 	"settingsSync.keybindingsPerPlatform": true,
 
 	// Controls whether code cells in the interactive window are collapsed by default.
-	"interactiveWindow.collapseCellInputCode": "fromEditor",
+	"interactiveWindow.collapseCellInputCode": "never",
 
 	// The limit of notebook output size in kilobytes (KB) where notebook files will no longer be backed up for hot reload. Use 0 for unlimited.
 	"notebook.backup.sizeLimit": 10000,
@@ -4053,11 +4159,8 @@
 	// Control whether the notebook editor should be rendered in a compact form. For example, when turned on, it will decrease the left margin width.
 	"notebook.compactView": true,
 
-	// Control whether a confirmation prompt is required to delete a running cell.
-	"notebook.confirmDeleteRunningCell": true,
-
 	// Control whether outputs action should be rendered in the output toolbar.
-	"notebook.consolidatedOutputButton": true,
+	"notebook.consolidatedOutputButton": false,
 
 	// Control whether extra actions are shown in a dropdown next to the run button.
 	"notebook.consolidatedRunButton": false,
@@ -4104,7 +4207,7 @@
 	//  - vscode.terminal-suggest: Extension to add terminal completions for zsh, bash, and fish terminals.
 	//  - vscode.tunnel-forwarding: Allows forwarding local ports to be accessible over the internet.
 	//  - ms-vscode.vscode-js-profile-table: Text visualizer for profiles taken from the JavaScript debugger
-	"notebook.defaultFormatter": null,
+	"notebook.defaultFormatter": "vscode.ipynb",
 
 	// Whether to use the enhanced text diff editor for notebook.
 	"notebook.diff.enablePreview": true,
@@ -4128,7 +4231,7 @@
 	"notebook.editorOptionsCustomizations": {},
 
 	// Enable experimental generate action to create code cell with inline chat enabled.
-	"notebook.experimental.generate": true,
+	"notebook.experimental.generate": false,
 
 	// Enables the incremental saving of notebooks between processes and across Remote connections. When enabled, only the changes to the notebook are sent to the extension host, improving performance for large notebooks and slow network connections.
 	"notebook.experimental.remoteSave": false,
@@ -4142,10 +4245,10 @@
 	},
 
 	// Format a notebook cell upon execution. A formatter must be available.
-	"notebook.formatOnCellExecution": false,
+	"notebook.formatOnCellExecution": true,
 
 	// Format a notebook on save. A formatter must be available and the editor must not be shutting down. When `files.autoSave` is set to `afterDelay`, the file will only be formatted when saved explicitly.
-	"notebook.formatOnSave.enabled": false,
+	"notebook.formatOnSave.enabled": true,
 
 	// Control whether to render a global toolbar inside the notebook editor.
 	"notebook.globalToolbar": true,
@@ -4243,14 +4346,8 @@
 	//  - indented: Nested sticky lines appear indented.
 	"notebook.stickyScroll.mode": "indented",
 
-	// Whether to use separate undo/redo stack for each cell.
-	"notebook.undoRedoPerCell": true,
-
 	// Enable the experimental notebook variables view within the debug panel.
-	"notebook.variablesView": false,
-
-	// Automatically scroll the interactive window to show the output of the last statement executed. If this value is false, the window will only scroll if the last cell was already the one scrolled to.
-	"interactiveWindow.alwaysScrollOnNewCell": true,
+	"notebook.variablesView": true,
 
 	// Execute the Interactive Window (REPL) input box with shift+enter, so that enter can be used to create a newline.
 	"interactiveWindow.executeWithShiftEnter": false,
@@ -4259,7 +4356,7 @@
 	"interactiveWindow.promptToSaveOnClose": false,
 
 	// Display a hint in the Interactive Window (REPL) input box to indicate how to execute code.
-	"interactiveWindow.showExecutionHint": true,
+	"interactiveWindow.showExecutionHint": false,
 
 	// When enabled, slow renderers are automatically profiled.
 	"application.experimental.rendererProfiling": false,
@@ -4712,6 +4809,8 @@
 	// When set, the foreground color of each cell will change to try meet the contrast ratio specified. Note that this will not apply to `powerline` characters per #146406. Example values:
 	//
 	// - 1: Do nothing and use the standard theme colors.
+	// - 4.5: [WCAG AA compliance (minimum)](https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast-contrast.html) (default).
+	// - 7: [WCAG AAA compliance (enhanced)](https://www.w3.org/TR/UNDERSTANDING-WCAG20/visual-audio-contrast7.html).
 	// - 21: White on black or black on white.
 	"terminal.integrated.minimumContrastRatio": 4.5,
 
@@ -4745,6 +4844,7 @@
 	// }
 	// ```
 	//
+	// [Read more about configuring profiles](https://code.visualstudio.com/docs/terminal/profiles).
 	"terminal.integrated.profiles.linux": {
 		"bash": {
 			"path": "bash",
@@ -4759,7 +4859,7 @@
 		"tmux": {
 			"path": "tmux",
 			"icon": "terminal-tmux"
-		}
+		},
 	},
 
 	// A set of terminal profile customizations for Mac which allows adding, removing or changing how terminals are launched. Profiles are made up of a mandatory path, optional arguments and other presentation options.
@@ -4772,6 +4872,7 @@
 	// }
 	// ```
 	//
+	// [Read more about configuring profiles](https://code.visualstudio.com/docs/terminal/profiles).
 	"terminal.integrated.profiles.osx": {
 		"bash": {
 			"path": "bash",
@@ -4812,6 +4913,7 @@
 	// }
 	// ```
 	//
+	// [Read more about configuring profiles](https://code.visualstudio.com/docs/terminal/profiles).
 	"terminal.integrated.profiles.windows": {
 		"PowerShell": {
 			"source": "PowerShell",
@@ -4865,6 +4967,7 @@
 	//
 	// This setting applies only when terminals are created, so you will need to restart your terminals for it to take effect.
 	//
+	//  Note that the script injection may not work if you have custom arguments defined in the terminal profile, have enabled `editor.accessibilitySupport#`, have a [complex bash `PROMPT_COMMAND`](https://code.visualstudio.com/docs/editor/integrated-terminal#_complex-bash-promptcommand), or other unsupported setup. To disable decorations, see `#terminal.integrated.shellIntegration.decorationsEnabled`
 	"terminal.integrated.shellIntegration.enabled": true,
 
 	// Controls the number of recently used commands to keep in the terminal command history. Set to 0 to disable terminal command history.
@@ -5649,10 +5752,10 @@
 	"task.slowProviderWarning": true,
 
 	// Enable verbose logging for tasks.
-	"task.verboseLogging": false,
+	"task.verboseLogging": true,
 
 	// Controls whether Problems view should automatically reveal files when opening them.
-	"problems.autoReveal": true,
+	"problems.autoReveal": false,
 
 	// Show Errors & Warnings on files and folder. Overwritten by `problems.visibility` when it is off.
 	"problems.decorations.enabled": true,
@@ -5660,16 +5763,13 @@
 	// Controls the default view mode of the Problems view.
 	"problems.defaultViewMode": "tree",
 
-	// When enabled shows the current problem in the status bar.
-	"problems.showCurrentInStatus": false,
-
 	// Controls the order in which problems are navigated.
 	//  - severity: Navigate problems ordered by severity
 	//  - position: Navigate problems ordered by position
 	"problems.sortOrder": "severity",
 
 	// Controls whether the problems are visible throughout the editor and workbench.
-	"problems.visibility": true,
+	"problems.visibility": false,
 
 	// Enable/disable navigation breadcrumbs.
 	"breadcrumbs.enabled": true,
@@ -6050,16 +6150,16 @@
 	"chat.commandCenter.enabled": false,
 
 	// Enables chat participant autodetection for panel chat.
-	"chat.detectParticipant.enabled": true,
+	"chat.detectParticipant.enabled": false,
 
 	// Whether files that have changes made by chat can be saved without confirmation.
 	"chat.editing.alwaysSaveWithGeneratedChanges": false,
 
 	// Whether to show a confirmation before removing a request and its associated edits.
-	"chat.editing.confirmEditRequestRemoval": true,
+	"chat.editing.confirmEditRequestRemoval": false,
 
 	// Whether to show a confirmation before retrying a request and its associated edits.
-	"chat.editing.confirmEditRequestRetry": true,
+	"chat.editing.confirmEditRequestRetry": false,
 
 	// Controls the font family in chat codeblocks.
 	"chat.editor.fontFamily": "default",
@@ -6153,16 +6253,16 @@
 	"remote.restoreForwardedPorts": true,
 
 	// On keypress, close the Accessible View and focus the element from which it was invoked.
-	"accessibility.accessibleView.closeOnKeyPress": true,
+	"accessibility.accessibleView.closeOnKeyPress": false,
 
 	// Controls whether variable changes should be announced in the debug watch view.
-	"accessibility.debugWatchVariableAnnouncements": true,
+	"accessibility.debugWatchVariableAnnouncements": false,
 
 	// Control whether focus should automatically be sent to the REPL when code is executed.
 	"accessibility.replEditor.autoFocusReplExecution": "input",
 
 	// Controls whether the output from an execution in the native REPL will be announced.
-	"accessibility.replEditor.readLastExecutionOutput": true,
+	"accessibility.replEditor.readLastExecutionOutput": false,
 
 	// Whether or not position changes should be debounced
 	"accessibility.signalOptions.debouncePositionChanges": false,
@@ -6354,49 +6454,49 @@
 	"accessibility.underlineLinks": false,
 
 	// Provide information about actions that can be taken in the comment widget or in a file which contains comments.
-	"accessibility.verbosity.comments": true,
+	"accessibility.verbosity.comments": false,
 
 	// Provide information about how to access the debug console accessibility help dialog when the debug console or run and debug viewlet is focused. Note that a reload of the window is required for this to take effect.
-	"accessibility.verbosity.debug": true,
+	"accessibility.verbosity.debug": false,
 
 	// Provide information about how to navigate changes in the diff editor when it is focused.
-	"accessibility.verbosity.diffEditor": true,
+	"accessibility.verbosity.diffEditor": false,
 
 	// Indicate when a diff editor becomes the active editor.
-	"accessibility.verbosity.diffEditorActive": true,
+	"accessibility.verbosity.diffEditorActive": false,
 
 	// Provide information about relevant actions in an empty text editor.
-	"accessibility.verbosity.emptyEditorHint": true,
+	"accessibility.verbosity.emptyEditorHint": false,
 
 	// Provide information about how to open the hover in an Accessible View.
-	"accessibility.verbosity.hover": true,
+	"accessibility.verbosity.hover": false,
 
 	// Provide information about how to access the inline editor chat accessibility help menu and alert with hints that describe how to use the feature when the input is focused.
 	"accessibility.verbosity.inlineChat": true,
 
 	// Provide information about how to access the inline completions hover and Accessible View.
-	"accessibility.verbosity.inlineCompletions": true,
+	"accessibility.verbosity.inlineCompletions": false,
 
 	// Provide information about how to change a keybinding in the keybindings editor when a row is focused.
-	"accessibility.verbosity.keybindingsEditor": true,
+	"accessibility.verbosity.keybindingsEditor": false,
 
 	// Provide information about how to focus the cell container or inner editor when a notebook cell is focused.
 	"accessibility.verbosity.notebook": true,
 
 	// Provide information about how to open the notification in an Accessible View.
-	"accessibility.verbosity.notification": true,
+	"accessibility.verbosity.notification": false,
 
 	// Provide information about how to access the chat help menu when the chat input is focused.
-	"accessibility.verbosity.panelChat": true,
+	"accessibility.verbosity.panelChat": false,
 
 	// Provide information about how to access the REPL editor accessibility help menu when the REPL editor is focused.
-	"accessibility.verbosity.replEditor": true,
+	"accessibility.verbosity.replEditor": false,
 
 	// Provide information about how to access the terminal accessibility help menu when the terminal is focused.
-	"accessibility.verbosity.terminal": true,
+	"accessibility.verbosity.terminal": false,
 
 	// Provide information about how to open the walkthrough in an Accessible View.
-	"accessibility.verbosity.walkthrough": true,
+	"accessibility.verbosity.walkthrough": false,
 
 	// Set the color mode for native UI elements such as native dialogs, menus and title bar. Even if your OS is configured in light color mode, you can select a dark system color theme for the window. You can also configure to automatically adjust based on the `workbench.colorTheme` setting.
 	//
@@ -6420,6 +6520,7 @@
 
 	// An array of paths, where each path can contain Emmet syntaxProfiles and/or snippet files.
 	// In case of conflicts, the profiles/snippets of later paths will override those of earlier paths.
+	// See https://code.visualstudio.com/docs/editor/emmet for more information and an example snippet file.
 	"emmet.extensionsPath": [],
 
 	// Enable Emmet abbreviations in languages that are not supported by default. Add a mapping here between the language and Emmet supported language.
@@ -6892,6 +6993,7 @@
 	//  - disabled: Auto attach is disabled and not shown in status bar.
 	"debug.javascript.autoAttachFilter": "disabled",
 
+	// Configures glob patterns for determining when to attach in "smart" `debug.javascript.autoAttachFilter` mode. `$KNOWN_TOOLS$` is replaced with a list of names of common test and code runners. [Read more on the VS Code docs](https://code.visualstudio.com/docs/nodejs/nodejs-debugging#_auto-attach-smart-patterns).
 	"debug.javascript.autoAttachSmartPattern": [
 		"${workspaceFolder}/**",
 		"!**/node_modules/**",
@@ -6921,6 +7023,7 @@
 	// Default options used when debugging a process through the `Debug: Attach to Node.js Process` command
 	"debug.javascript.pickAndAttachOptions": {},
 
+	// Request options to use when loading resources, such as source maps, in the debugger. You may need to configure this if your sourcemaps require authentication or use a self-signed certificate, for instance. Options are used to create a request using the [`got`](https://github.com/sindresorhus/got) library.
 	//
 	// A common case to disable certificate verification can be done by passing `{ "https": { "rejectUnauthorized": false } }`.
 	"debug.javascript.resourceRequestOptions": {},
@@ -6944,6 +7047,7 @@
 	// Configure glob patterns for folders that should be excluded from automatic script detection.
 	"npm.exclude": "",
 
+	// Fetch data from https://registry.npmjs.org and https://registry.bower.io to provide auto-completion and information on hover features on npm dependencies.
 	"npm.fetchOnlinePackageInfo": true,
 
 	// The package manager used to run scripts.
@@ -7053,6 +7157,7 @@
 	// Optimistically attempt to start docker if the daemon is not already running.
 	"dev.containers.optimisticallyLaunchDocker": true,
 
+	// List of additional paths to search for [repository configurations](https://code.visualstudio.com/docs/devcontainers/create-dev-container#_alternative-repository-configuration-folders).
 	"dev.containers.repositoryConfigurationPaths": [],
 
 	// The consistency level used for the workspace mount (existing containers must be rebuilt to take effect).
@@ -7064,6 +7169,7 @@
 	// The command to run after cloning the dotfiles repository. Defaults to run the first file of `install.sh`, `install`, `bootstrap.sh`, `bootstrap`, `setup.sh` and `setup` found in the dotfiles repository's root folder.
 	"dotfiles.installCommand": "",
 
+	// URL of a dotfiles Git repository (e.g., https://github.com/owner/repository.git) or owner/repository of a GitHub repository.
 	"dotfiles.repository": "",
 
 	// The path to clone the dotfiles repository to. Defaults to `~/dotfiles`.
@@ -7328,6 +7434,7 @@
 	// The cursor color in the dark variant.
 	"gruvboxMaterial.darkCursor": "white",
 
+	// The color palette used in the dark variant. [Preview](https://github.com/sainnhe/gruvbox-material#introduction)
 	//  - material: Carefully designed to have a soft contrast.
 	//  - mix: Color palette obtained by calculating the mean of the other two.
 	//  - original: The color palette used in the original gruvbox.
@@ -7339,6 +7446,7 @@
 	// Workbench style for the dark variant.
 	"gruvboxMaterial.darkWorkbench": "material",
 
+	// The opacity of the background color of [diagnostic text](https://code.visualstudio.com/updates/v1_52#_error-background-colors).
 	"gruvboxMaterial.diagnosticTextBackgroundOpacity": "0%",
 
 	// Whether to add an additional border around items across the UI to increase the contrast.
@@ -7356,6 +7464,7 @@
 	// The cursor color in the light variant.
 	"gruvboxMaterial.lightCursor": "black",
 
+	// The color palette used in the light variant. [Preview](https://github.com/sainnhe/gruvbox-material#introduction)
 	//  - material: Carefully designed to have a soft contrast.
 	//  - mix: Color palette obtained by calculating the mean of the other two.
 	//  - original: The color palette used in the original gruvbox.
@@ -7367,6 +7476,9 @@
 	// Workbench style for the light variant.
 	"gruvboxMaterial.lightWorkbench": "material",
 	"workbench.activityBar.location": "hidden",
-	"terminal.integrated.defaultLocation": "editor"
+	"terminal.integrated.defaultLocation": "editor",
+	"editor.autoSurround": "never",
+	"interactiveWindow.alwaysScrollOnNewCell": false,
+	"notebook.confirmDeleteRunningCell": false,
 
 }
