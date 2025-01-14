@@ -363,7 +363,7 @@
         "when": "editorFocus"
     },
     {
-        "key": "shift+alt+a",
+        "key": "ctrl+alt+/",
         "command": "editor.action.blockComment",
         "when": "editorTextFocus && !editorReadonly"
     },
@@ -609,11 +609,6 @@
     {
         "key": "shift+alt+right",
         "command": "editor.action.smartSelect.expand",
-        "when": "editorTextFocus"
-    },
-    {
-        "key": "shift+alt+left",
-        "command": "editor.action.smartSelect.shrink",
         "when": "editorTextFocus"
     },
     {
@@ -1276,10 +1271,6 @@
         "when": "inlineEditIsVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionHasIndentationLessThanTabSize && inlineSuggestionVisible && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible || inlineEditIsVisible && inlineSuggestionVisible && tabShouldAcceptInlineEdit && !editorHoverFocused && !editorTabMovesFocus && !suggestWidgetVisible"
     },
     {
-        "key": "insert",
-        "command": "editor.action.toggleOvertypeInsertMode"
-    },
-    {
         "key": "shift+alt+d",
         "command": "editor.detectLanguage",
         "when": "editorTextFocus && !notebookEditable"
@@ -1710,11 +1701,6 @@
         "when": "notebookEditorFocused && notebookFindWidgetFocused"
     },
     {
-        "key": "ctrl+shift+a",
-        "command": "notification.acceptPrimaryAction",
-        "when": "notificationFocus || notificationToastsVisible"
-    },
-    {
         "key": "delete",
         "command": "notification.clear",
         "when": "notificationFocus"
@@ -2035,10 +2021,6 @@
         "when": "searchViewletFocus"
     },
     {
-        "key": "ctrl+alt+win+n",
-        "command": "welcome.showNewFileEntries"
-    },
-    {
         "key": "ctrl+down",
         "command": "widgetNavigation.focusNext",
         "when": "inputFocus && navigableContainerFocused || navigableContainerFocused && treestickyScrollFocused || navigableContainerFocused && !listFocus || navigableContainerFocused && listScrollAtBoundary == 'both' || navigableContainerFocused && listScrollAtBoundary == 'bottom'"
@@ -2175,11 +2157,6 @@
         "command": "workbench.action.moveEditorToPreviousGroup"
     },
     {
-        "key": "alt+left",
-        "command": "workbench.action.navigateBack",
-        "when": "canNavigateBack"
-    },
-    {
         "key": "alt+right",
         "command": "workbench.action.navigateForward",
         "when": "canNavigateForward"
@@ -2195,11 +2172,6 @@
     {
         "key": "ctrl+r",
         "command": "workbench.action.openRecent"
-    },
-    {
-        "key": "ctrl+shift+u",
-        "command": "workbench.action.output.toggleOutput",
-        "when": "workbench.panel.output.active"
     },
     {
         "key": "ctrl+shift+[",
@@ -2488,11 +2460,6 @@
         "key": "left",
         "command": "workbench.banner.focusPreviousAction",
         "when": "bannerFocused"
-    },
-    {
-        "key": "ctrl+shift+y",
-        "command": "workbench.debug.action.toggleRepl",
-        "when": "workbench.panel.repl.view.active"
     },
     {
         "key": "escape",
@@ -4783,32 +4750,6 @@
         "when": "!terminalFocus"
     },
     {
-        "key": "ctrl+shift+t ctrl+shift+l",
-        "command": "workbench.action.terminal.newLocal",
-        "when": "terminalProcessSupported"
-    },
-    {
-        "key": "ctrl+shift+t e",
-        "command": "workbench.action.createTerminalEditor"
-    },
-    {
-        "key": "ctrl+shift+t ctrl+shift+right",
-        "command": "workbench.action.createTerminalEditorSide"
-    },
-    {
-        "key": "ctrl+shift+t ctrl+shift+p",
-        "command": "workbench.action.terminal.newWithProfile"
-    },
-    {
-        "key": "ctrl+shift+t ctrl+shift+t",
-        "command": "workbench.action.terminal.new"
-    },
-    {
-        "key": "ctrl+shift+t ctrl+shift+e",
-        "command": "workbench.action.createTerminalEditor",
-        "when": "terminalProcessSupported"
-    },
-    {
         "key": "ctrl+`",
         "command": "-workbench.action.terminal.toggleTerminal",
         "when": "terminal.active"
@@ -4887,6 +4828,57 @@
         "key": "escape",
         "command": "-workbench.action.speech.stopReadAloud",
         "when": "scopedChatSynthesisInProgress && textToSpeechInProgress"
+    },
+    {
+        "key": "ctrl+shift+t",
+        "command": "terminal.focus"
+    },
+    {
+        "key": "ctrl+shift+t",
+        "command": "workbench.action.terminal.toggleTerminal",
+        "when": "terminal.active"
+    },
+    {
+        "key": "shift+alt+left",
+        "command": "-editor.action.smartSelect.shrink",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "insert",
+        "command": "-editor.action.toggleOvertypeInsertMode"
+    },
+    {
+        "key": "ctrl+shift+u",
+        "command": "-workbench.action.output.toggleOutput",
+        "when": "workbench.panel.output.active"
+    },
+    {
+        "key": "ctrl+shift+y",
+        "command": "-workbench.debug.action.toggleRepl",
+        "when": "workbench.panel.repl.view.active"
+    },
+    {
+        "key": "ctrl+alt+win+n",
+        "command": "-welcome.showNewFileEntries"
+    },
+    {
+        "key": "ctrl+shift+w",
+        "command": "-workbench.action.closeWindow"
+    },
+    {
+        "key": "alt+left",
+        "command": "-workbench.action.navigateBack",
+        "when": "canNavigateBack"
+    },
+    {
+        "key": "ctrl+shift+a",
+        "command": "-notification.acceptPrimaryAction",
+        "when": "notificationFocus || notificationToastsVisible"
+    },
+    {
+        "key": "shift+alt+a",
+        "command": "-editor.action.blockComment",
+        "when": "editorTextFocus && !editorReadonly"
     }
 ]
 // Here are other available commands:
