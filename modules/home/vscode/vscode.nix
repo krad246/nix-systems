@@ -16,9 +16,7 @@
 
   stripComments = path:
     pkgs.runCommand "strip-comments" {} ''
-      ${lib.meta.getExe pkgs.gnused} \
-        -re 's#^(([^"\n]*"[^"\n]*")*[^"\n]*)\/\/.*$#\1#' \
-        "${path}" >$out
+      ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
     '';
 in {
   home.packages = with pkgs;
@@ -61,20 +59,6 @@ in {
     userSettings = lib.trivial.importJSON (stripComments (self + "/assets/${settingsFilePath}"));
 
     userTasks = {
-    };
-  };
-
-  # mutable store links for VSCode to actually see.
-  # points at a mutable version of the dotfiles
-  home.file = {
-    ${keybindingsFilePath} = {
-      enable = false;
-      source = config.lib.file.mkOutOfStoreSymlink ("$HOME/dotfiles" + "/assets/${keybindingsFilePath}");
-    };
-
-    ${settingsFilePath} = {
-      enable = false;
-      source = config.lib.file.mkOutOfStoreSymlink ("$HOME/dotfiles" + "/assets/${settingsFilePath}");
     };
   };
 }
