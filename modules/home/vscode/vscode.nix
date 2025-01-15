@@ -13,11 +13,6 @@
 
   settingsFilePath = "${userDir}/settings.json";
   keybindingsFilePath = "${userDir}/keybindings.json";
-
-  stripComments = path:
-    pkgs.runCommand "strip-comments" {} ''
-      ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
-    '';
 in {
   home.packages = with pkgs;
     [nil nixd]
@@ -25,7 +20,12 @@ in {
       (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))
     ];
 
-  programs.vscode = {
+  programs.vscode = let
+    stripComments = path:
+      pkgs.runCommand "strip-comments" {} ''
+        ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
+      '';
+  in {
     enable = true;
 
     enableExtensionUpdateCheck = false;
@@ -49,14 +49,14 @@ in {
     globalSnippets = {
     };
 
+    # immutable reference to configuration generated here
     keybindings = lib.trivial.importJSON (stripComments (self + "/assets/${keybindingsFilePath}"));
+    userSettings = lib.trivial.importJSON (stripComments (self + "/assets/${settingsFilePath}"));
 
     languageSnippets = {
     };
 
     mutableExtensionsDir = false;
-
-    userSettings = lib.trivial.importJSON (stripComments (self + "/assets/${settingsFilePath}"));
 
     userTasks = {
     };
