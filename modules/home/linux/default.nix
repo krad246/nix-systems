@@ -25,6 +25,7 @@ args @ {
             onActivation = true;
           };
           packages = [
+            "app.zen_browser.zen"
             "org.pulseaudio.pavucontrol"
             "com.github.tchx84.Flatseal"
           ];
@@ -53,7 +54,6 @@ args @ {
 in {
   imports = [nix-flatpak.homeManagerModules.nix-flatpak] ++ [generic-linux.configuration];
 
-  services.flatpak.uninstallUnmanaged = modules.mkDefault false;
   targets.genericLinux.enable = true;
 
   specialisation = rec {

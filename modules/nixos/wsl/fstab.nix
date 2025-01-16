@@ -33,8 +33,8 @@ in {
   };
 
   systemd.tmpfiles.rules = [
-    "d /home/.rw 			            755 root    root  - -"
-    "d /home/.rw/${user} 		      755 ${user} users - -"
-    "d /home/.rw/workdir-${user} 	755 ${user} users - -"
+    "d /home/.rw                  755 root    root  - -"
+    "d /home/.rw/${user}          755 ${user} users - -"
+    "d /home/.rw/workdir-${user}  755 ${user} users - -"
   ];
 }
