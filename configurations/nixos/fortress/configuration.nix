@@ -20,11 +20,6 @@
 
   nix.settings.timeout = 3600;
 
-  xdg.portal = {
-    enable = true;
-    config.common.default = "*";
-  };
-
   users.users.krad246 = {
     isNormalUser = true;
     description = "Keerthi Radhakrishnan";
