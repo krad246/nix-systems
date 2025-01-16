@@ -6,11 +6,11 @@
   pkgs,
   ...
 }: let
+  # default storage paths on different operating systems
   userDir =
     if pkgs.stdenv.hostPlatform.isDarwin
     then "Library/Application Support/Code/User"
     else "${config.xdg.configHome}/Code/User";
-
   settingsFilePath = "${userDir}/settings.json";
   keybindingsFilePath = "${userDir}/keybindings.json";
 in {
@@ -21,10 +21,20 @@ in {
     ];
 
   programs.vscode = let
-    stripComments = path:
-      pkgs.runCommand "strip-comments" {} ''
-        ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
-      '';
+    importJSON = x: let
+      dirOffs = offs: (lib.path.removePrefix /. (/. + offs));
+      assetPath = offs:
+        builtins.concatStringsSep "/" [
+          self
+          (lib.path.subpath.join ["assets" (dirOffs offs)])
+        ];
+
+      stripComments = path:
+        pkgs.runCommand "strip-comments" {} ''
+          ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
+        '';
+    in
+      lib.trivial.importJSON (stripComments (assetPath x));
   in {
     enable = true;
 
@@ -49,9 +59,8 @@ in {
     globalSnippets = {
     };
 
-    # immutable reference to configuration generated here
-    keybindings = lib.trivial.importJSON (stripComments (self + "/assets/${keybindingsFilePath}"));
-    userSettings = lib.trivial.importJSON (stripComments (self + "/assets/${settingsFilePath}"));
+    keybindings = importJSON keybindingsFilePath;
+    userSettings = importJSON settingsFilePath;
 
     languageSnippets = {
     };

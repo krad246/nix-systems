@@ -1,7 +1,8 @@
 {self, ...}: {
   imports =
     (with self.nixosModules; [
-      # aarch64-binfmt
+      aarch64-binfmt
+      flatpak
       nixos
       wsl
     ])
