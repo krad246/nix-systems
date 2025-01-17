@@ -512,11 +512,6 @@
         "when": "editorTextFocus && !editorReadonly"
     },
     {
-        "key": "ctrl+shift+\\",
-        "command": "editor.action.jumpToBracket",
-        "when": "editorTextFocus"
-    },
-    {
         "key": "alt+down",
         "command": "editor.action.moveLinesDownAction",
         "when": "editorTextFocus && !editorReadonly"
@@ -1236,12 +1231,12 @@
         "when": "commentsFilterFocus"
     },
     {
-        "key": "shift+alt+c",
+        "key": "ctrl+shift+c",
         "command": "copyFilePath",
         "when": "!editorFocus"
     },
     {
-        "key": "shift+alt+c",
+        "key": "ctrl+shift+c",
         "command": "copyFilePath",
         "when": "editorFocus"
     },
@@ -1339,11 +1334,6 @@
         "key": "enter",
         "command": "iconSelectBox.selectFocused",
         "when": "iconSelectBoxFocus"
-    },
-    {
-        "key": "ctrl+r",
-        "command": "inlineChat.regenerate",
-        "when": "inlineChatHasProvider && inlineChatVisible"
     },
     {
         "key": "ctrl+z",
@@ -1936,7 +1926,7 @@
         "when": "fileMatchOrMatchFocus"
     },
     {
-        "key": "shift+alt+c",
+        "key": "ctrl+shift+c",
         "command": "search.action.copyPath",
         "when": "fileMatchOrFolderMatchWithResourceFocus"
     },
@@ -2170,10 +2160,6 @@
         "command": "workbench.action.nextEditor"
     },
     {
-        "key": "ctrl+r",
-        "command": "workbench.action.openRecent"
-    },
-    {
         "key": "ctrl+shift+[",
         "command": "workbench.action.previousEditor"
     },
@@ -2192,10 +2178,6 @@
         "when": "!activeEditorGroupEmpty"
     },
     {
-        "key": "ctrl+q",
-        "command": "workbench.action.quickOpenView"
-    },
-    {
         "key": "ctrl+alt+o",
         "command": "workbench.action.remote.showMenu"
     },
@@ -2204,7 +2186,7 @@
         "command": "workbench.action.showCommands"
     },
     {
-        "key": "ctrl+\\",
+        "key": "ctrl+shift+\\",
         "command": "workbench.action.splitEditor"
     },
     {
@@ -2301,11 +2283,6 @@
         "key": "alt+left",
         "command": "workbench.action.terminal.focusPreviousPane",
         "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
-    },
-    {
-        "key": "ctrl+shift+\\",
-        "command": "workbench.action.terminal.focusTabs",
-        "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported || terminalHasBeenCreated && terminalTabsFocus || terminalProcessSupported && terminalTabsFocus"
     },
     {
         "key": "shift+escape",
@@ -2782,16 +2759,6 @@
         "when": "inFilesPicker && inQuickOpen"
     },
     {
-        "key": "ctrl+r",
-        "command": "workbench.action.quickOpenNavigateNextInRecentFilesPicker",
-        "when": "inQuickOpen && inRecentFilesPicker"
-    },
-    {
-        "key": "ctrl+q",
-        "command": "workbench.action.quickOpenNavigateNextInViewPicker",
-        "when": "inQuickOpen && inViewsPicker"
-    },
-    {
         "key": "ctrl+shift+tab",
         "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
         "when": "inEditorsPicker && inQuickOpen"
@@ -2800,16 +2767,6 @@
         "key": "ctrl+shift+p",
         "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
         "when": "inFilesPicker && inQuickOpen"
-    },
-    {
-        "key": "ctrl+shift+r",
-        "command": "workbench.action.quickOpenNavigatePreviousInRecentFilesPicker",
-        "when": "inQuickOpen && inRecentFilesPicker"
-    },
-    {
-        "key": "ctrl+shift+q",
-        "command": "workbench.action.quickOpenNavigatePreviousInViewPicker",
-        "when": "inQuickOpen && inViewsPicker"
     },
     {
         "key": "ctrl+r",
@@ -4879,6 +4836,125 @@
         "key": "shift+alt+a",
         "command": "-editor.action.blockComment",
         "when": "editorTextFocus && !editorReadonly"
+    },
+    {
+        "key": "alt+o",
+        "command": "-clangd.switchheadersource",
+        "when": "editorTextFocus && resourceLangId == 'c' || editorTextFocus && resourceLangId == 'cpp' || editorTextFocus && resourceLangId == 'cuda-cpp' || editorTextFocus && resourceLangId == 'objective-c' || editorTextFocus && resourceLangId == 'objective-cpp'"
+    },
+    {
+        "key": "shift+alt+c",
+        "command": "-copyFilePath",
+        "when": "!editorFocus"
+    },
+    {
+        "key": "shift+alt+c",
+        "command": "-copyFilePath",
+        "when": "editorFocus"
+    },
+    {
+        "key": "shift+alt+c",
+        "command": "-search.action.copyPath",
+        "when": "fileMatchOrFolderMatchWithResourceFocus"
+    },
+    {
+        "key": "ctrl+shift+c",
+        "command": "workbench.action.terminal.copyLastCommand",
+        "when": "terminalHasBeenCreated || terminalProcessSupported"
+    },
+    {
+        "key": "ctrl+shift+d",
+        "command": "workbench.action.terminal.detachSession",
+        "when": "terminalProcessSupported && terminalFocus"
+    },
+    {
+        "key": "ctrl+shift+d",
+        "command": "workbench.action.terminal.detachSession",
+        "when": "terminalProcessSupported && terminalFocus"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "workbench.action.quickOpen"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "workbench.action.quickOpen"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "workbench.action.quickOpenNavigateNextInFilePicker",
+        "when": "inFilesPicker && inQuickOpen"
+    },
+    {
+        "key": "ctrl+e",
+        "command": "workbench.action.quickOpenNavigateNextInFilePicker",
+        "when": "inFilesPicker && inQuickOpen"
+    },
+    {
+        "key": "ctrl+shift+e",
+        "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
+        "when": "inFilesPicker && inQuickOpen"
+    },
+    {
+        "key": "ctrl+shift+e",
+        "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
+        "when": "inFilesPicker && inQuickOpen"
+    },
+    {
+        "key": "ctrl+shift+\\",
+        "command": "-editor.action.jumpToBracket",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+shift+\\",
+        "command": "-workbench.action.terminal.focusTabs",
+        "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported || terminalHasBeenCreated && terminalTabsFocus || terminalProcessSupported && terminalTabsFocus"
+    },
+    {
+        "key": "ctrl+\\",
+        "command": "-workbench.action.splitEditor"
+    },
+    {
+        "key": "ctrl+r",
+        "command": "-workbench.action.openRecent"
+    },
+    {
+        "key": "ctrl+r",
+        "command": "-inlineChat.regenerate",
+        "when": "inlineChatHasProvider && inlineChatVisible"
+    },
+    {
+        "key": "ctrl+r",
+        "command": "-workbench.action.quickOpenNavigateNextInRecentFilesPicker",
+        "when": "inQuickOpen && inRecentFilesPicker"
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "-workbench.action.quickOpenNavigatePreviousInRecentFilesPicker",
+        "when": "inQuickOpen && inRecentFilesPicker"
+    },
+    {
+        "key": "ctrl+q",
+        "command": "-workbench.action.quickOpenNavigateNextInViewPicker",
+        "when": "inQuickOpen && inViewsPicker"
+    },
+    {
+        "key": "ctrl+shift+q",
+        "command": "-workbench.action.quickOpenNavigatePreviousInViewPicker",
+        "when": "inQuickOpen && inViewsPicker"
+    },
+    {
+        "key": "ctrl+q",
+        "command": "-workbench.action.quickOpenView"
+    },
+    {
+        "key": "ctrl+shift+q",
+        "command": "workbench.action.closeWindow"
+    },
+    {
+        "key": "ctrl+shift+l",
+        "command": "workbench.action.terminal.clear",
+        "when": "terminalFocus && (terminalHasBeenCreated || terminalProcessSupported)"
     }
 ]
 // Here are other available commands:

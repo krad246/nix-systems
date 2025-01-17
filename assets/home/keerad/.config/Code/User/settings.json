@@ -498,7 +498,7 @@
 	// Controls whether the minimap is hidden automatically.
 	"editor.minimap.autohide": false,
 	// Controls whether the minimap is shown.
-	"editor.minimap.enabled": true,
+	"editor.minimap.enabled": false,
 	// Limit the width of the minimap to render at most a certain number of columns.
 	"editor.minimap.maxColumn": 120,
 	// Render the actual characters on a line as opposed to color blocks.
@@ -1657,12 +1657,6 @@
 	"files.associations": {},
 	// When enabled, the editor will attempt to guess the character set encoding when opening files. This setting can also be configured per language. Note, this setting is not respected by text search. Only `files.encoding` is respected.
 	"files.autoGuessEncoding": false,
-	// Controls [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors that have unsaved changes.
-	//  - off: An editor with changes is never automatically saved.
-	//  - afterDelay: An editor with changes is automatically saved after the configured `files.autoSaveDelay`.
-	//  - onFocusChange: An editor with changes is automatically saved when the editor loses focus.
-	//  - onWindowChange: An editor with changes is automatically saved when the window loses focus.
-	"files.autoSave": "afterDelay",
 	// Controls the delay in milliseconds after which an editor with unsaved changes is saved automatically. Only applies when `files.autoSave` is set to `afterDelay`.
 	"files.autoSaveDelay": 1000,
 	// When enabled, will limit [auto save](https://code.visualstudio.com/docs/editor/codebasics#_save-auto-save) of editors to files that have no errors reported in them at the time the auto save is triggered. Only applies when `files.autoSave` is enabled.
@@ -3620,7 +3614,7 @@
 	// - The paste is handled by the shell's readline (in the case of pwsh)
 	//  - always: Always show the warning if the text contains a new line.
 	//  - never: Never show the warning.
-	"terminal.integrated.enableMultiLinePasteWarning": "auto",
+	"terminal.integrated.enableMultiLinePasteWarning": false,
 	// Persist terminal sessions/history for the workspace across window reloads.
 	"terminal.integrated.enablePersistentSessions": true,
 	// Controls whether the visual terminal bell is enabled. This shows up next to the terminal's name.
@@ -3835,8 +3829,6 @@
 	"terminal.integrated.rightClickBehavior": "copyPaste",
 	// Controls the maximum number of lines the terminal keeps in its buffer. We pre-allocate memory based on this value in order to ensure a smooth experience. As such, as the value increases, so will the amount of memory.
 	"terminal.integrated.scrollback": 1000,
-	// Dispatches most keybindings to the terminal instead of the workbench, overriding `terminal.integrated.commandsToSkipShell`, which can be used alternatively for fine tuning.
-	"terminal.integrated.sendKeybindingsToShell": true,
 	// When shell integration is enabled, adds a decoration for each command.
 	//  - both: Show decorations in the gutter (left) and overview ruler (right)
 	//  - gutter: Show gutter decorations to the left of the terminal
@@ -5318,7 +5310,7 @@
 	// Controls whether to ask for confirmation before committing without verification.
 	"git.confirmNoVerifyCommit": true,
 	// Confirm before synchronizing Git repositories.
-	"git.confirmSync": true,
+	"git.confirmSync": false,
 	// Controls the Git count badge.
 	//  - all: Count all changes.
 	//  - tracked: Count only tracked changes.
@@ -5881,7 +5873,6 @@
 	// Workbench style for the light variant.
 	"gruvboxMaterial.lightWorkbench": "material",
 	"workbench.activityBar.location": "hidden",
-	"terminal.integrated.defaultLocation": "editor",
 	"editor.autoSurround": "never",
 	"interactiveWindow.alwaysScrollOnNewCell": false,
 	"notebook.confirmDeleteRunningCell": false
