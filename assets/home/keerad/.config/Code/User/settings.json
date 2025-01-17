@@ -320,8 +320,6 @@
 	//  - always: Always seed search string from the editor selection, including word at cursor position.
 	//  - selection: Only seed search string from the editor selection.
 	"editor.find.seedSearchStringFromSelection": "always",
-	// Controls whether the editor has code folding enabled.
-	"editor.folding": false,
 	// Controls whether the editor should highlight folded ranges.
 	"editor.foldingHighlight": false,
 	// Controls whether the editor automatically collapses import ranges.
@@ -3872,16 +3870,8 @@
 		"pwshCode": true,
 		"pwshGit": true
 	},
-	// Enables experimental terminal Intellisense suggestions for supported shells (PowerShell v7+, zsh, bash, fish) when `terminal.integrated.shellIntegration.enabled` is set to `true`.
-	//
-	// If shell integration is installed manually, `VSCODE_SUGGEST` needs to be set to `1` before calling the shell integration script.
-	//
-	// For extension provided completions, `terminal.integrated.suggest.enableExtensionCompletions` will also need to be set.
-	"terminal.integrated.suggest.enabled": false,
 	// Controls whether extension completions are enabled.
 	"terminal.integrated.suggest.enableExtensionCompletions": false,
-	// Controls whether suggestions should automatically show up while typing. Also be aware of the `terminal.integrated.suggest.suggestOnTriggerCharacters`-setting which controls if suggestions are triggered by special characters.
-	"terminal.integrated.suggest.quickSuggestions": false,
 	// Controls whether suggestions should automatically show up when typing trigger characters.
 	"terminal.integrated.suggest.suggestOnTriggerCharacters": false,
 	// A theme color ID to associate with terminal icons by default.
@@ -5875,5 +5865,7 @@
 	"workbench.activityBar.location": "hidden",
 	"editor.autoSurround": "never",
 	"interactiveWindow.alwaysScrollOnNewCell": false,
-	"notebook.confirmDeleteRunningCell": false
+	"notebook.confirmDeleteRunningCell": false,
+	"files.autoSave": "afterDelay",
+	"terminal.integrated.suggest.quickSuggestions": false
 }
