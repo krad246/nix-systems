@@ -4955,6 +4955,30 @@
         "key": "ctrl+shift+l",
         "command": "workbench.action.terminal.clear",
         "when": "terminalFocus && (terminalHasBeenCreated || terminalProcessSupported)"
+    },
+    {
+        "key": "ctrl+shift+l",
+        "command": "search.action.collapseSearchResults",
+        "when": "viewHasSomeCollapsibleResult && view == 'workbench.view.search' || !hasSearchResult && view == 'workbench.view.search'"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "search.action.expandSearchResults",
+        "when": "hasSearchResult && !viewHasSomeCollapsibleResult && view == 'workbench.view.search'"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "editor.unfoldRecursively",
+        "when": "editorFocus"
+    },
+    {
+        "key": "ctrl+shift+l",
+        "command": "editor.foldAll",
+        "when": "editorFocus"
+    },
+    {
+        "key": "ctrl+alt+r",
+        "command": "workbench.action.openRecent"
     }
 ]
 // Here are other available commands:
