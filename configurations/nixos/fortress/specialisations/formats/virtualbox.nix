@@ -1,5 +1,4 @@
 _: {
-  disabledModules = [../efiboot.nix];
   virtualbox = {
     extraDisk = {
       mountPoint = "/growable";

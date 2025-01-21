@@ -5,14 +5,12 @@ args @ {
 }: let
   shared = {
     imports = [
+      (importApply ./efiboot.nix args)
       (importApply ./hardware-configuration.nix args)
       self.diskoConfigurations.fortress-desktop
     ];
   };
 in rec {
-  default.configuration = desktop.configuration;
-  fortress.configuration = desktop.configuration;
-
   desktop.configuration = _: let
     desktop = ./desktop;
     ci-agent = ./ci-agent;
@@ -20,6 +18,7 @@ in rec {
     imports =
       [shared]
       ++ [
+        (desktop + "/configuration.nix")
         (desktop + "/system-settings.nix")
         (ci-agent + "/authorized-keys.nix")
       ];
