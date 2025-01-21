@@ -3545,7 +3545,7 @@
 	//  - never: Never confirm.
 	//  - always: Always confirm if there are terminals.
 	//  - hasChildProcesses: Confirm if there are any terminals that have child processes.
-	"terminal.integrated.confirmOnExit": "never",
+	"terminal.integrated.confirmOnExit": "hasChildProcesses",
 	// Controls whether to confirm killing terminals when they have child processes. When set to editor, terminals in the editor area will be marked as changed when they have child processes. Note that child process detection may not work well for shells like Git Bash which don't run their processes as child processes of the shell.
 	//  - never: Never confirm.
 	//  - editor: Confirm if the terminal is in the editor.
@@ -3617,12 +3617,6 @@
 	"terminal.integrated.enablePersistentSessions": true,
 	// Controls whether the visual terminal bell is enabled. This shows up next to the terminal's name.
 	"terminal.integrated.enableVisualBell": true,
-	// Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux. Set to `null` to delete the environment variable.
-	"terminal.integrated.env.linux": {},
-	// Object with environment variables that will be added to the VS Code process to be used by the terminal on macOS. Set to `null` to delete the environment variable.
-	"terminal.integrated.env.osx": {},
-	// Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows. Set to `null` to delete the environment variable.
-	"terminal.integrated.env.windows": {},
 	// Whether to display the environment changes indicator on each terminal which explains whether extensions have made, or want to make changes to the terminal's environment.
 	//  - off: Disable the indicator.
 	//  - on: Enable the indicator.
@@ -3631,7 +3625,7 @@
 	// Whether to relaunch terminals automatically if extensions want to contribute to their environment and have not been interacted with yet.
 	"terminal.integrated.environmentChangesRelaunch": true,
 	// Whether to use the experimental conpty.dll shipped with VS Code, instead of the one bundled with Windows.
-	"terminal.integrated.experimental.windowsUseConptyDll": false,
+	"terminal.integrated.experimental.windowsUseConptyDll": true,
 	// Scrolling speed multiplier when pressing `Alt`.
 	"terminal.integrated.fastScrollSensitivity": 5,
 	// Controls whether the terminal, accessible buffer, or neither will be focused after `Terminal: Run Selected Text In Active Terminal` has been run.
@@ -3642,7 +3636,7 @@
 	// Controls the font family of the terminal. Defaults to `editor.fontFamily`'s value.
 	"terminal.integrated.fontFamily": "",
 	// Controls whether font ligatures are enabled in the terminal. Ligatures will only work if the configured `terminal.integrated.fontFamily` supports them.
-	"terminal.integrated.fontLigatures": false,
+	"terminal.integrated.fontLigatures": true,
 	// The font weight to use within the terminal for non-bold text. Accepts "normal" and "bold" keywords or numbers between 1 and 1000.
 	"terminal.integrated.fontWeight": "normal",
 	// The font weight to use within the terminal for bold text. Accepts "normal" and "bold" keywords or numbers between 1 and 1000.
@@ -3846,8 +3840,6 @@
 	//
 	//  Note that the script injection may not work if you have custom arguments defined in the terminal profile, have enabled `editor.accessibilitySupport#`, have a [complex bash `PROMPT_COMMAND`](https://code.visualstudio.com/docs/editor/integrated-terminal#_complex-bash-promptcommand), or other unsupported setup. To disable decorations, see `#terminal.integrated.shellIntegration.decorationsEnabled`
 	"terminal.integrated.shellIntegration.enabled": true,
-	// Controls the number of recently used commands to keep in the terminal command history. Set to 0 to disable terminal command history.
-	"terminal.integrated.shellIntegration.history": 100,
 	// Whether to show the command guide when hovering over a command in the terminal.
 	"terminal.integrated.shellIntegration.showCommandGuide": true,
 	// Controls whether to show the alert "The terminal process terminated with exit code" when exit code is non-zero.
@@ -3862,7 +3854,7 @@
 	//  - inherited: On macOS and Linux, a new split terminal will use the working directory of the parent terminal. On Windows, this behaves the same as initial.
 	"terminal.integrated.splitCwd": "inherited",
 	// Shows the current command at the top of the terminal.
-	"terminal.integrated.stickyScroll.enabled": false,
+	"terminal.integrated.stickyScroll.enabled": true,
 	// Defines the maximum number of sticky lines to show. Sticky scroll lines will never exceed 40% of the viewport regardless of this setting.
 	"terminal.integrated.stickyScroll.maxLineCount": 5,
 	// Controls which built-in completions are activated. This setting can cause conflicts if custom shell completions are configured in the shell profile.
