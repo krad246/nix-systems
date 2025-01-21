@@ -1533,7 +1533,7 @@
 	//  - newUntitledFile: Open a new untitled text file (only applies when opening an empty window).
 	//  - welcomePageInEmptyWorkbench: Open the Welcome page when opening an empty workbench.
 	//  - terminal: Open a new terminal in the editor area.
-	"workbench.startupEditor": "welcomePage",
+	"workbench.startupEditor": "none",
 	// Controls the visibility of the status bar at the bottom of the workbench.
 	"workbench.statusBar.visible": true,
 	// When enabled, will show the watermark tips when no editor is open.
