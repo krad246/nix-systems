@@ -21,9 +21,9 @@
     e.config.formats.${format};
 in {
   flake.packages = {
-    aarch64-darwin =
-      withSystem "aarch64-darwin" (_: {
-      });
+    aarch64-darwin = {
+      fortress-disko-vm = mkFormat (withSystem "aarch64-linux" (ctx: ctx.pkgs)) "fortress" "disko-vm-darwin";
+    };
 
     aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
       fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
@@ -45,16 +45,15 @@ in {
     pkgs,
     ...
   }: {
-    packages = lib.modules.mkIf pkgs.stdenv.isLinux {
+    packages = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
       fortress-disko-vm = mkFormat pkgs "fortress" "disko-vm";
-      # disko-vm-darwin = mkFormat pkgs "fortress" "disko-vm-darwin";
 
       fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
       fortress-iso = mkFormat pkgs "fortress" "iso";
       fortress-install-iso = mkFormat pkgs "fortress" "install-iso";
       fortress-install-iso-hyperv = mkFormat pkgs "fortress" "install-iso-hyperv";
 
-      # fortress-qcow = mkFormat pkgs "fortress" "qcow";
+      fortress-qcow = mkFormat pkgs "fortress" "qcow";
       fortress-qcow-efi = mkFormat pkgs "fortress" "qcow-efi";
 
       fortress-raw = mkFormat pkgs "fortress" "raw";
