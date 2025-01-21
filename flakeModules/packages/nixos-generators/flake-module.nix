@@ -21,9 +21,9 @@
     e.config.formats.${format};
 in {
   flake.packages = {
-    aarch64-darwin =
-      withSystem "aarch64-darwin" (_: {
-      });
+    aarch64-darwin = {
+      fortress-disko-vm = mkFormat (withSystem "aarch64-linux" (ctx: ctx.pkgs)) "fortress" "disko-vm-darwin";
+    };
 
     aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
       fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";

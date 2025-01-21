@@ -20,8 +20,8 @@ let
       imports = [(modulesPath + "/virtualisation/qemu-vm.nix")] ++ [(mkConfig extraConfig)];
 
       virtualisation = {
-        memorySize = 6 * 1024;
-        cores = 8;
+        cores = 6;
+        memorySize = 8 * 1024;
       };
     };
   in
