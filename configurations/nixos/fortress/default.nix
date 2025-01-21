@@ -14,7 +14,7 @@ outer @ {
       ];
 
     formatConfigs = import ./specialisations/formats (outer // inner);
-    specialisation = import ./specialisations (outer
+    specialisation = import ./specialisations/bootable (outer
       // {
         inherit (inner) pkgs;
       });
