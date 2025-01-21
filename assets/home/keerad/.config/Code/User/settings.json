@@ -1575,7 +1575,7 @@
 	// Controls whether a confirmation dialog shows asking to save or discard an opened untitled workspace in the window when switching to another workspace. Disabling the confirmation dialog will always discard the untitled workspace.
 	"window.confirmSaveUntitledWorkspace": true,
 	// Controls whether the menu bar will be focused by pressing the Alt-key. This setting has no effect on toggling the menu bar with the Alt-key.
-	"window.customMenuBarAltFocus": true,
+	"window.customMenuBarAltFocus": false,
 	// Adjust when the custom title bar should be shown. The custom title bar can be hidden when in full screen mode with `windowed`. The custom title bar can only be hidden in non full screen mode with `never` when `window.titleBarStyle` is set to `native`.
 	//  - auto: Automatically changes custom title bar visibility.
 	//  - windowed: Hide custom titlebar in full screen. When not in full screen, automatically change custom title bar visibility.
@@ -1586,7 +1586,7 @@
 	// If enabled, this setting will close the window when the application icon in the title bar is double-clicked. The window will not be able to be dragged by the icon. This setting is effective only if `window.titleBarStyle` is set to `custom`.
 	"window.doubleClickIconToClose": false,
 	// Controls whether the main menus can be opened via Alt-key shortcuts. Disabling mnemonics allows to bind these Alt-key shortcuts to editor commands instead.
-	"window.enableMenuBarMnemonics": true,
+	"window.enableMenuBarMnemonics": false,
 	// Controls the dimensions of opening a new window when at least one window is already opened. Note that this setting does not have an impact on the first window that is opened. The first window will always restore the size and location as you left it before closing.
 	//  - default: Open new windows in the center of the screen.
 	//  - inherit: Open new windows with same dimension as last active one.
