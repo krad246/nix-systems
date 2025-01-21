@@ -1,5 +1,5 @@
 {
-  withSystem,
+  inputs,
   lib,
   pkgs,
   ...
@@ -9,6 +9,6 @@
 in {
   formatAttr = "vmWithDisko";
   virtualisation.vmVariantWithDisko = {
-    virtualisation.host.pkgs = withSystem "${arch}-darwin" ({pkgs, ...}: pkgs);
+    virtualisation.host.pkgs = inputs.nixpkgs.legacyPackages."${arch}-darwin";
   };
 }

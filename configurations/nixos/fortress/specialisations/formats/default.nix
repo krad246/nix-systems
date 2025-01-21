@@ -21,6 +21,7 @@ let
 
       virtualisation = {
         cores = 6;
+        memorySize = 8 * 1024;
       };
     };
   in
