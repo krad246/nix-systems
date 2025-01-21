@@ -9,7 +9,7 @@ _: let
       };
 
       virtualisation = {
-        diskSize = 32 * 1024;
+        diskSize = 12 * 1024;
       };
     };
   in
