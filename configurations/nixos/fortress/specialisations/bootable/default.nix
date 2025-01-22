@@ -19,7 +19,6 @@ in rec {
       [shared]
       ++ [
         (desktop + "/configuration.nix")
-        (desktop + "/system-settings.nix")
         (ci-agent + "/authorized-keys.nix")
       ];
   };
