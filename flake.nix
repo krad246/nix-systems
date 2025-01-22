@@ -103,7 +103,7 @@
 
     # Darwin shims for Nix
     darwin = {
-      url = "github:lnl7/nix-darwin/master";
+      url = "github:lnl7/nix-darwin/nix-darwin-24.11";
     };
 
     # Cross-platform (Linux / MacOS) userspace package management
