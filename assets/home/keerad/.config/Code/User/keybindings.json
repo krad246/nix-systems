@@ -5011,6 +5011,15 @@
     {
         "key": "ctrl+shift+f",
         "command": "-workbench.action.findInFiles"
+    },
+    {
+        "key": "ctrl+shift+r",
+        "command": "workbench.action.terminal.relaunch",
+        "when": "terminalFocus && terminalProcessSupported"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "editor.unfoldAll"
     }
 ]
 // Here are other available commands:
