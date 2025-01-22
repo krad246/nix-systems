@@ -16,8 +16,8 @@ in {
       keep-outputs = modules.mkDefault true;
       keep-derivations = modules.mkDefault false;
       auto-optimise-store = modules.mkDefault false;
-      sandbox = modules.mkDefault "relaxed";
-      sandbox-fallback = modules.mkDefault pkgs.stdenv.isDarwin;
+      sandbox = "relaxed";
+      sandbox-fallback = modules.mkForce pkgs.stdenv.isDarwin;
       substituters = [
         "https://cache.nixos.org"
         "https://nix-community.cachix.org"
