@@ -53,7 +53,17 @@ in {
             [self'.packages.term-fonts] ++ [pkgs.nil pkgs.nixd]))
       else pkgs.vscode;
 
-    extensions = [
+    extensions = with pkgs.vscode-extensions; [
+      ms-vscode-remote.remote-containers
+      sainnhe.gruvbox-material
+      pkief.material-icon-theme
+      ms-vscode-remote.remote-ssh
+      ms-vscode-remote.remote-ssh-edit
+      ms-vscode-remote.remote-wsl
+      # ms-azuretools.vscode-docker
+      # ms-vscode.makefile-tools
+      jnoortheen.nix-ide
+      nefrob.vscode-just-syntax
     ];
 
     globalSnippets = {
@@ -65,7 +75,7 @@ in {
     languageSnippets = {
     };
 
-    mutableExtensionsDir = false;
+    mutableExtensionsDir = true;
 
     userTasks = {
     };
