@@ -77,6 +77,7 @@ in {
       {
         devour-flake =
           pkgs.callPackage ./devour-flake.nix forwarded;
+        zen-snapshot = pkgs.callPackage ./zen-snapshot.nix forwarded;
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         dconf2nix = pkgs.callPackage inputs.dconf2nix rec {
