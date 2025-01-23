@@ -25,3 +25,5 @@ outputs/
 repl-result-*
 result
 result-*
+*.tar
+*.tar.gz
