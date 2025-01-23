@@ -4,36 +4,55 @@ args @ {
   ...
 }: let
   shared = {
-    imports = [
-      (importApply ./efiboot.nix args)
-      (importApply ./hardware-configuration.nix args)
-      self.diskoConfigurations.fortress-desktop
-    ];
+    imports =
+      # device-specific provisioning
+      [
+        (importApply ./efiboot.nix args)
+        (importApply ./hardware-configuration.nix args)
+        (importApply ./authorized-keys.nix args)
+      ]
+      ++ [
+        self.diskoConfigurations.fortress-desktop
+      ]
+      # remote access is shared for these bootable specializations
+      ++ [self.nixosModules.avahi];
+
+    # Holds up boot pointlessly
+    systemd.services.NetworkManager-wait-online.enable = false;
+
+    # Prefer to idle in LPM only when explicitly requested
+    systemd.sleep.extraConfig = ''
+      AllowSuspend=no
+      AllowHibernation=yes
+      AllowHybridSleep=yes
+      AllowSuspendThenHibernate=yes
+    '';
   };
 in rec {
-  desktop.configuration = _: let
-    desktop = ./desktop;
-    ci-agent = ./ci-agent;
-  in {
+  desktop.configuration = _: {
     imports =
       [shared]
       ++ [
-        (desktop + "/configuration.nix")
-        (ci-agent + "/authorized-keys.nix")
+        ./desktop/configuration.nix
       ];
   };
 
-  ci-agent.configuration = _: let
-    ci-agent = ./ci-agent;
-  in {
+  ci-agent.configuration = _: {
     imports =
       [shared]
       ++ [
-        self.nixosModules.agenix
-        (ci-agent + "/agenix.nix")
-        (ci-agent + "/authorized-keys.nix")
-        (ci-agent + "/cachix-agent.nix")
-        (ci-agent + "/hercules-ci-agent.nix")
+        ./ci-agent/agenix.nix
+        ./ci-agent/cachix-agent.nix
+        ./ci-agent/hercules-ci-agent.nix
       ];
+
+    nix.settings.max-substitution-jobs = 144;
+
+    virtualisation = {
+      docker.enable = true;
+      containerd.enable = true;
+    };
+
+    users.users.krad246.extraGroups = ["docker"];
   };
 }

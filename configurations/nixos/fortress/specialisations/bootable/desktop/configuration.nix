@@ -8,36 +8,12 @@
     ])
     ++ (with self.nixosModules; [
       aarch64-binfmt
-      avahi
       bluetooth
       kdeconnect
       pipewire
       rdp
-      sshd
       system76-scheduler
     ]);
-
-  programs.ssh = {
-    startAgent = true;
-  };
-
-  systemd.services.NetworkManager-wait-online.enable = false;
-
-  systemd.sleep.extraConfig = ''
-    AllowSuspend=no
-    AllowHibernation=yes
-    AllowHybridSleep=yes
-    AllowSuspendThenHibernate=yes
-  '';
-
-  nix.settings.max-substitution-jobs = 144;
-
-  virtualisation = {
-    docker.enable = true;
-    containerd.enable = true;
-  };
-
-  users.users.krad246.extraGroups = ["docker"];
 
   home-manager.sharedModules = let
     fortress = {
