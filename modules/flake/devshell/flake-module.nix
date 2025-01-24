@@ -24,6 +24,8 @@ in {
   perSystem = {
     self',
     config,
+    lib,
+    pkgs,
     ...
   }: {
     formatter = config.treefmt.build.wrapper;
@@ -82,7 +84,46 @@ in {
       check.enable = false;
     };
 
-    devShells = {
+    devShells = let
+      # Core package list for the host
+      targetPkgs = tpkgs:
+        with tpkgs;
+          [git delta]
+          ++ [direnv nix-direnv lorri]
+          ++ [just gnumake]
+          ++ [shellcheck nil];
+    in {
+      interactive = pkgs.mkShell {
+        inputsFrom = [
+          self'.devShells.nix-shell-env
+          config.just-flake.outputs.devShell
+        ];
+
+        shellHook = let
+          parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
+          arch = parse.cpu.name;
+          makefile = self'.packages."makefile-${arch}-linux";
+          devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
+        in ''
+          eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
+        '';
+      };
+
+      nix-shell-env = pkgs.mkShell {
+        packages = targetPkgs pkgs;
+
+        inputsFrom = [
+          config.flake-root.devShell
+          config.treefmt.build.devShell
+          config.pre-commit.devShell
+        ];
+
+        shellHook = ''
+        '';
+      };
+
       # prefer an interpreter-level venv by default
       default = self'.devShells.nix-shell;
       nix-shell = self'.devShells.nix-shell-env;
