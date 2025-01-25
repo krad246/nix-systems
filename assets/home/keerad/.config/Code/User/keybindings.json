@@ -7621,13 +7621,29 @@
     "when": "terminalProcessSupported && terminalTabsFocus"
   },
   {
-    "key": "ctrl+t",
     "command": "workbench.action.createTerminalEditor",
+    "key": "ctrl+t",
     "when": "terminalProcessSupported"
   },
   {
-    "key": "ctrl+alt+t",
     "command": "workbench.action.terminal.newWithProfile",
+    "key": "ctrl+alt+t",
     "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
+  },
+  {
+    "key": "ctrl+w",
+    "command": "-workbench.action.switchWindow"
+  },
+  {
+    "key": "ctrl+0",
+    "command": "-workbench.action.lastEditorInGroup"
+  },
+  {
+    "key": "ctrl+shift+m",
+    "command": "-editor.action.toggleTabFocusMode"
+  },
+  {
+    "key": "ctrl+w",
+    "command": "workbench.action.closeActiveEditor"
   }
 ]
