@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "modules/flake"
+		},
+		{
+			"path": "modules/home"
+		},
+		{
+			"path": "modules/nixos"
+		},
+		{
+			"path": "modules/darwin"
+		}
+	],
+	"settings": {}
+}
