@@ -26,8 +26,7 @@
         inherit (lib) lists;
       in
         (lists.optionals apps.arc [/Applications/Arc.app])
-        ++ (lists.optionals apps.kitty [/Applications/kitty.app])
-        ++ (lists.optionals apps.vscode ["/Applications/Visual Studio Code.app"])
+        ++ (lists.optionals apps.zen-browser ["/Applications/Zen Browser.app"])
         ++ [
           "/System/Applications/iPhone Mirroring.app"
           /System/Applications/Launchpad.app
