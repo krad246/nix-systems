@@ -1,13 +1,11 @@
 {self, ...}: {
   imports = with self.darwinModules; [
-    arc
     bluesnooze
     groupme
     launchcontrol
     magnet
     signal
     utm
-    zen-browser
     zoom
   ];
 

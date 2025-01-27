@@ -1,8 +1,11 @@
 {
+  self,
   config,
   lib,
   ...
 }: {
+  imports = with self.darwinModules; [arc zen-browser];
+
   system.defaults = {
     dock = {
       enable-spring-load-actions-on-all-items = null;
