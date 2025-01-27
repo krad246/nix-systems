@@ -26,11 +26,9 @@
       arc
       hm-compat
       homebrew
-      kitty
       linux-builder
       mac-app-util
       magnet
-      vscode
     ])
     ++ (with self.modules.generic; [
       system-link-registry
