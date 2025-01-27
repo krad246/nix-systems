@@ -29,6 +29,8 @@ args @ {
     '';
   };
 in rec {
+  fortress = desktop;
+
   desktop.configuration = _: {
     imports =
       [shared]
