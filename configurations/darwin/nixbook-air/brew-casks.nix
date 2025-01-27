@@ -4,8 +4,6 @@
     bluesnooze
     groupme
     launchcontrol
-    rdp
     signal
-    spotify
   ];
 }

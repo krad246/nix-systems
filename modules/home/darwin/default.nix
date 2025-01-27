@@ -13,6 +13,7 @@ in {
       agenix
       discord
       kitty
+      spotify
       vscode
     ]);
 
