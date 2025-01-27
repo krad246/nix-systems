@@ -1,4 +1,9 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  pkgs,
+  ...
+}: {
   imports =
     [self.modules.generic.unfree]
     ++ (with self.nixosModules; [
@@ -11,7 +16,6 @@
       bluetooth
       kdeconnect
       pipewire
-      rdp
       system76-scheduler
     ]);
 
@@ -30,7 +34,6 @@
             packages = [
               "us.zoom.Zoom"
               "org.signal.Signal"
-              "com.spotify.Client"
               "com.valvesoftware.Steam"
             ];
           };
@@ -48,4 +51,12 @@
       };
     })
   ];
+
+  services = {
+    gnome.gnome-remote-desktop.enable = true;
+  };
+
+  services.xrdp.enable = true;
+  services.xrdp.defaultWindowManager = lib.meta.getExe pkgs.gnome.gnome-session;
+  services.xrdp.openFirewall = true;
 }
