@@ -1,15 +1,10 @@
-args @ {
-  importApply,
-  self,
-  ...
-}: let
-  shared = {
+let
+  shared = {self, ...}: {
     imports =
-      # device-specific provisioning
       [
-        (importApply ./efiboot.nix args)
-        (importApply ./hardware-configuration.nix args)
-        (importApply ./authorized-keys.nix args)
+        ./efiboot.nix
+        ./hardware-configuration.nix
+        ./authorized-keys.nix
       ]
       ++ [
         self.diskoConfigurations.fortress-desktop

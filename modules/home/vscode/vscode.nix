@@ -75,7 +75,7 @@ in {
     languageSnippets = {
     };
 
-    mutableExtensionsDir = true;
+    mutableExtensionsDir = false;
 
     userTasks = {
     };
