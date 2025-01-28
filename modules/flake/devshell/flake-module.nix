@@ -1,5 +1,9 @@
 # outer / 'flake' scope
-args @ {inputs, ...}: let
+args @ {
+  inputs,
+  specialArgs,
+  ...
+}: let
   justfile = import ./just-flake args;
 in {
   imports =
@@ -111,7 +115,16 @@ in {
             ++ [direnv nix-direnv lorri]
             ++ [just gnumake]
             ++ [shellcheck nil])
-          ++ (lib.lists.optionals pkgs.stdenv.isLinux [pkgs.nixos-rebuild])
+          ++ (lib.lists.optionals pkgs.stdenv.isLinux [
+            (pkgs.symlinkJoin {
+              name = "nixos-rebuild";
+              paths = [pkgs.nixos-rebuild];
+              buildInputs = [pkgs.makeWrapper];
+              postBuild = ''
+                wrapProgram $out/bin/nixos-rebuild ${lib.strings.concatMapStringsSep " " (x: lib.debug.traceVal "--add-flags ${lib.strings.escapeShellArg x}") (specialArgs.nixArgs lib)}
+              '';
+            })
+          ])
           ++ (lib.lists.optionals pkgs.stdenv.isDarwin [inputs'.darwin.packages.darwin-rebuild])
           ++ [inputs'.home-manager.packages.home-manager];
 
