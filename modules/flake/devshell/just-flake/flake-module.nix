@@ -72,7 +72,14 @@ outer @ {
     inherit self specialArgs;
   };
 in {
-  imports = [inputs.just-flake.flakeModule] ++ [justfile-dev justfile-git justfile-misc justfile-system justfile-nix justfile-home];
+  imports =
+    [inputs.just-flake.flakeModule]
+    ++ [
+      justfile-dev
+      justfile-git
+      justfile-misc
+      justfile-nix
+    ];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
