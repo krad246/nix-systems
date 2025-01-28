@@ -1,4 +1,4 @@
-_: let
+let
   mkConfig = extraConfig: let
     module = _: rec {
       imports = [extraConfig];

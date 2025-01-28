@@ -4,11 +4,10 @@
 {
   inputs,
   lib,
-  pkgs,
   modulesPath,
   ...
 }: let
-  inherit (lib) lists modules;
+  inherit (lib) modules;
   inherit (inputs) nixos-hardware;
 in {
   imports =
@@ -19,13 +18,13 @@ in {
       common-hidpi
       common-pc
       common-pc-ssd
-    ])
-    ++ lists.optionals pkgs.stdenv.isx86_64 (with nixos-hardware.nixosModules; [
-      # common-cpu-amd
-      # common-cpu-amd-pstate
-      # common-cpu-amd-zenpower
-      # common-gpu-amd
     ]);
+  # ++ lists.optionals pkgs.stdenv.isx86_64 (with nixos-hardware.nixosModules; [
+  #   common-cpu-amd
+  #   common-cpu-amd-pstate
+  #   common-cpu-amd-zenpower
+  #   common-gpu-amd
+  # ]);
 
   boot = {
     initrd = {
@@ -61,5 +60,5 @@ in {
     };
   };
 
-  # hardware.cpu.amd.updateMicrocode = config.hardware.enableRedistributableFirmware;
+  # hardware.cpu.amd.updateMicrocode = lib.modules.mkIf pkgs.stdenv.isx86_64 config.hardware.enableRedistributableFirmware;
 }

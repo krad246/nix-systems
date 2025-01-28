@@ -1,11 +1,11 @@
-outer @ {
+{
   withSystem,
   inputs,
   lib,
   ...
 }: let
   inherit (inputs) nixos-generators;
-  entrypoint = inner @ {system, ...}: {
+  entrypoint = {system, ...}: {
     imports =
       [nixos-generators.nixosModules.all-formats]
       ++ [
@@ -13,11 +13,8 @@ outer @ {
         ./stub-disko.nix
       ];
 
-    formatConfigs = import ./specialisations/formats (outer // inner);
-    specialisation = import ./specialisations/bootable (outer
-      // {
-        inherit (inner) pkgs;
-      });
+    formatConfigs = import ./specialisations/formats;
+    specialisation = import ./specialisations/bootable;
 
     nixpkgs.system = lib.modules.mkDefault system;
   };
