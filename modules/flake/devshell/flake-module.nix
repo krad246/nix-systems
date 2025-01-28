@@ -22,6 +22,7 @@ in {
   };
 
   perSystem = {
+    inputs',
     self',
     config,
     lib,
@@ -84,15 +85,7 @@ in {
       check.enable = false;
     };
 
-    devShells = let
-      # Core package list for the host
-      targetPkgs = tpkgs:
-        with tpkgs;
-          [git delta]
-          ++ [direnv nix-direnv lorri]
-          ++ [just gnumake]
-          ++ [shellcheck nil];
-    in {
+    devShells = {
       interactive = pkgs.mkShell {
         inputsFrom = [
           self'.devShells.nix-shell-env
@@ -112,7 +105,15 @@ in {
       };
 
       nix-shell-env = pkgs.mkShell {
-        packages = targetPkgs pkgs;
+        packages =
+          (with pkgs;
+            [git delta]
+            ++ [direnv nix-direnv lorri]
+            ++ [just gnumake]
+            ++ [shellcheck nil])
+          ++ (lib.lists.optionals pkgs.stdenv.isLinux [pkgs.nixos-rebuild])
+          ++ (lib.lists.optionals pkgs.stdenv.isDarwin [inputs'.darwin.packages.darwin-rebuild])
+          ++ [inputs'.home-manager.packages.home-manager];
 
         inputsFrom = [
           config.flake-root.devShell
