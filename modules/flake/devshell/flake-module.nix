@@ -2,7 +2,6 @@
 args @ {
   inputs,
   self,
-  specialArgs,
   ...
 }: let
   justfile = import ./just-flake args;
@@ -111,7 +110,25 @@ in {
 
       nix-shell-env = pkgs.mkShell {
         packages = let
-          nixArgs = specialArgs.nixArgs lib;
+          nixArgs = let
+            inherit (lib) cli;
+          in
+            cli.toGNUCommandLine {} {
+              option = [
+                "inputs-from ${self}"
+                "experimental-features 'nix-command flakes'"
+                "keep-going true"
+                "show-trace true"
+                "accept-flake-config true"
+                "builders-use-substitutes true"
+                "preallocate-contents true"
+                "allow-import-from-derivation true"
+              ];
+
+              verbose = true;
+              # print-build-logs = true;
+            };
+
           addFlags = x: "--add-flags ${lib.strings.escapeShellArg x}";
           wrapArgs = lib.strings.concatMapStringsSep " " addFlags nixArgs;
         in
