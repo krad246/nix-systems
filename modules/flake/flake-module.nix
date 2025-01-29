@@ -1,68 +1,13 @@
 args @ {
   withSystem,
-  inputs,
   self,
   lib,
   ...
 }: let
-  # hijacking specialArgs convention for both importApply as well as passing directly to ez-configs
-  specialArgs = {
-    inherit withSystem;
-    inherit inputs self;
-
-    # my own small helper library of sorts
-    krad246 = rec {
-      attrsets = {
-        genAttrs' = keys: f: builtins.listToAttrs (builtins.map f keys);
-
-        stemValuePair = key: value: lib.attrsets.nameValuePair (strings.stem key) value;
-      };
-
-      cli = {
-        toGNUCommandLineShell = bin: args: let
-          formatted = [bin] ++ (lib.cli.toGNUCommandLine {} args);
-        in
-          lib.strings.concatStringsSep " " formatted;
-      };
-
-      fileset = {
-        filterExt = ext: dir: lib.fileset.toList (lib.fileset.fileFilter (file: file.hasExt ext) dir);
-      };
-
-      strings = {
-        stem = path: lib.strings.nameFromURL (builtins.baseNameOf path) ".";
-      };
-    };
-
-    # shared arguments for nix binaries called
-    nixArgs = let
-      inherit (lib) cli;
-    in
-      cli.toGNUCommandLine {} {
-        option = [
-          "inputs-from ${self}"
-          "experimental-features 'nix-command flakes'"
-          "keep-going true"
-          "show-trace true"
-          "accept-flake-config true"
-          "builders-use-substitutes true"
-          "preallocate-contents true"
-          "allow-import-from-derivation true"
-        ];
-
-        verbose = true;
-        # print-build-logs = true;
-      };
-  };
-
-  forwarded = args // {inherit specialArgs;};
-
-  # flake outputs
-
-  apps = import ./apps forwarded;
-  devShells = import ./devshell forwarded;
-  ez-configs = import ./ez-configs forwarded; # ties system and home configurations together
-  packages = import ./packages forwarded;
+  apps = import ./apps args;
+  devShells = import ./devshell args;
+  ez-configs = import ./ez-configs args; # ties system and home configurations together
+  packages = import ./packages args;
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
@@ -96,7 +41,7 @@ in {
 
       # can be used in all of the above contexts
       generic = let
-        inherit (specialArgs) krad246;
+        inherit (lib) krad246;
         paths = krad246.fileset.filterExt "nix" ../generic;
       in
         krad246.attrsets.genAttrs' paths (path: krad246.attrsets.stemValuePair path (import path));

@@ -2,7 +2,6 @@
 args @ {
   inputs,
   self,
-  specialArgs,
   ...
 }: let
   justfile = import ./just-flake args;
@@ -111,7 +110,7 @@ in {
 
       nix-shell-env = pkgs.mkShell {
         packages = let
-          inherit (specialArgs) nixArgs;
+          inherit (lib.krad246) nixArgs;
           addFlags = x: "--add-flags ${lib.strings.escapeShellArg x}";
           wrapArgs = lib.strings.concatMapStringsSep " " addFlags nixArgs;
         in

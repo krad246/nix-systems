@@ -203,14 +203,58 @@
     self,
     flake-parts,
     ...
-  }: let
-    inherit (inputs.nixpkgs) lib;
-  in
+  }:
     flake-parts.lib.mkFlake
     # Environment
     {
       inherit inputs;
-      specialArgs = {inherit lib;};
+      specialArgs = {
+        lib = inputs.nixpkgs.lib.extend (_self: _super: let
+          inherit (inputs.nixpkgs) lib;
+        in {
+          krad246 = rec {
+            attrsets = {
+              genAttrs' = keys: f: builtins.listToAttrs (builtins.map f keys);
+
+              stemValuePair = key: value: lib.attrsets.nameValuePair (strings.stem key) value;
+            };
+
+            cli = {
+              toGNUCommandLineShell = bin: args: let
+                formatted = [bin] ++ (lib.cli.toGNUCommandLine {} args);
+              in
+                lib.strings.concatStringsSep " " formatted;
+            };
+
+            fileset = {
+              filterExt = ext: dir: lib.fileset.toList (lib.fileset.fileFilter (file: file.hasExt ext) dir);
+            };
+
+            strings = {
+              stem = path: lib.strings.nameFromURL (builtins.baseNameOf path) ".";
+            };
+
+            # shared arguments for nix binaries called
+            nixArgs = let
+              inherit (lib) cli;
+            in
+              cli.toGNUCommandLine {} {
+                option = [
+                  "inputs-from ${self}"
+                  "experimental-features 'nix-command flakes'"
+                  "keep-going true"
+                  "show-trace true"
+                  "accept-flake-config true"
+                  "builders-use-substitutes true"
+                  "preallocate-contents true"
+                  "allow-import-from-derivation true"
+                ];
+                verbose = true;
+                # print-build-logs = true;
+              };
+          };
+        });
+      };
     }
     # Entrypoint
     ({
@@ -224,7 +268,7 @@
         inherit getSystem moduleWithSystem withSystem;
         inherit (flake-parts-lib) importApply;
         inherit inputs self;
-        inherit lib;
+        inherit (inputs.nixpkgs) lib;
       };
 
       # pull the flake module into this context
