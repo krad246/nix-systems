@@ -1,5 +1,5 @@
 {self, ...}: {
-  perSystem = _: {
+  perSystem = {
     just-flake.features = {
       build = {
         enable = true;

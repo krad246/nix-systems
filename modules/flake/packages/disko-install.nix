@@ -11,7 +11,7 @@ in
       args = let
         inherit (outer) specialArgs;
       in
-        specialArgs.nixArgs lib;
+        specialArgs.nixArgs;
     in ''
       disko() {
         mode="$1"
