@@ -75,10 +75,7 @@ in {
   imports =
     [inputs.just-flake.flakeModule]
     ++ [
-      justfile-dev
       justfile-git
-      justfile-misc
-      justfile-nix
     ];
 
   # export the flake modules we loaded to this context for user consumption

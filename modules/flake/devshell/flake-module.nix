@@ -1,6 +1,7 @@
 # outer / 'flake' scope
 args @ {
   inputs,
+  self,
   specialArgs,
   ...
 }: let
@@ -109,24 +110,54 @@ in {
       };
 
       nix-shell-env = pkgs.mkShell {
-        packages =
+        packages = let
+          nixArgs = specialArgs.nixArgs lib;
+          addFlags = x: "--add-flags ${lib.strings.escapeShellArg x}";
+          wrapArgs = lib.strings.concatMapStringsSep " " addFlags nixArgs;
+        in
           (with pkgs;
             [git delta]
             ++ [direnv nix-direnv lorri]
             ++ [just gnumake]
             ++ [shellcheck nil])
+          ++ [
+            (pkgs.symlinkJoin {
+              name = "nix";
+              paths = [pkgs.nixVersions.stable];
+              buildInputs = [pkgs.makeWrapper];
+              postBuild = ''
+                wrapProgram $out/bin/nix ${wrapArgs}
+              '';
+            })
+            (pkgs.symlinkJoin {
+              name = "home-manager";
+              paths = [inputs'.home-manager.packages.home-manager];
+              buildInputs = [pkgs.makeWrapper];
+              postBuild = ''
+                wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '--flake ${self}' --add-flags '-b bak'
+              '';
+            })
+          ]
           ++ (lib.lists.optionals pkgs.stdenv.isLinux [
             (pkgs.symlinkJoin {
               name = "nixos-rebuild";
               paths = [pkgs.nixos-rebuild];
               buildInputs = [pkgs.makeWrapper];
               postBuild = ''
-                wrapProgram $out/bin/nixos-rebuild ${lib.strings.concatMapStringsSep " " (x: lib.debug.traceVal "--add-flags ${lib.strings.escapeShellArg x}") (specialArgs.nixArgs lib)}
+                wrapProgram $out/bin/nixos-rebuild ${wrapArgs} --add-flags '--use-remote-sudo' --add-flags '--flake ${self}'
               '';
             })
           ])
-          ++ (lib.lists.optionals pkgs.stdenv.isDarwin [inputs'.darwin.packages.darwin-rebuild])
-          ++ [inputs'.home-manager.packages.home-manager];
+          ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
+            (pkgs.symlinkJoin {
+              name = "darwin-rebuild";
+              paths = [inputs'.darwin.packages.darwin-rebuild];
+              buildInputs = [pkgs.makeWrapper];
+              postBuild = ''
+                wrapProgram $out/bin/darwin-rebuild ${wrapArgs} --add-flags '--flake ${self}'
+              '';
+            })
+          ]);
 
         inputsFrom = [
           config.flake-root.devShell
