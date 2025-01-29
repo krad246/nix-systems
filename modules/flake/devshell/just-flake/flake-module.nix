@@ -63,19 +63,12 @@ outer @ {
   justfile-nix = importApply ./commands/nix-flakes.nix {
     inherit self specialArgs;
   };
-
-  justfile-home = importApply ./commands/home.nix {
-    inherit self specialArgs;
-  };
-
-  justfile-system = importApply ./commands/system.nix {
-    inherit self specialArgs;
-  };
 in {
   imports =
     [inputs.just-flake.flakeModule]
     ++ [
       justfile-git
+      justfile-nix
     ];
 
   # export the flake modules we loaded to this context for user consumption
@@ -85,9 +78,7 @@ in {
         justfile-dev
         justfile-git
         justfile-misc
-        justfile-system
         justfile-nix
-        justfile-home
         ;
     };
 

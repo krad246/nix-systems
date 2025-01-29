@@ -51,7 +51,7 @@ args @ {
         ];
 
         verbose = true;
-        print-build-logs = true;
+        # print-build-logs = true;
       };
   };
 

@@ -5,11 +5,7 @@
 }: let
   inherit (specialArgs) mkJustRecipeGroup;
 in {
-  perSystem = {
-    config,
-    pkgs,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     just-flake.features = let
       inherit (pkgs) lib;
     in
@@ -31,14 +27,6 @@ in {
             comment = "Build all outputs in the repository.";
             justfile = ''
               devour-flake *ARGS: (lock) (run "${self}#devour-flake -- " ARGS)
-            '';
-          };
-
-          fmt = {
-            comment = "Format the repository.";
-            justfile = ''
-              fmt *ARGS: (lock)
-                ${lib.meta.getExe config.treefmt.build.wrapper} {{ ARGS }}
             '';
           };
         };
