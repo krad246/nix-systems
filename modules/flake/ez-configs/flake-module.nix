@@ -6,7 +6,7 @@
   withSystem,
   inputs,
   self,
-  specialArgs,
+  lib,
   ...
 }:
 # module context as seen by the flake
@@ -23,7 +23,7 @@
       inherit importApply;
       inherit getSystem moduleWithSystem withSystem;
       inherit inputs self;
-      inherit (specialArgs) krad246;
+      inherit (lib) krad246;
     };
 
     nixos = {
