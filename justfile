@@ -18,14 +18,16 @@ alias default := help
 import? 'just-flake.just'
 
 # Enter a `nix` devShell in this repository.
-[group('dev')]
+[group('direnv')]
 setup:
     exec {{ flake / "setup.sh" }}
 
-[group('dev')]
+# Clear all devShell caches.
+[group('direnv')]
 clean *ARGS: && reload
     git clean -fdx {{ ARGS }}
 
-[group('dev')]
+# Reload the direnv context.
+[group('direnv')]
 reload:
     direnv reload
