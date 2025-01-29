@@ -1,5 +1,5 @@
-_: {
-  perSystem = _: {
+{
+  perSystem = {
     just-flake.features = {
       add = {
         enable = true;

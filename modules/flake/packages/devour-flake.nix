@@ -15,7 +15,7 @@ in
     in ''
       set -x
       ${bin} "${self}" \
-        ${lib.strings.concatStringsSep " " (specialArgs.nixArgs lib)} \
+        ${lib.strings.concatStringsSep " " specialArgs.nixArgs} \
       "$@"
     '';
   }

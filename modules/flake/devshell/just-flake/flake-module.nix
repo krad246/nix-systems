@@ -1,11 +1,7 @@
 # outer / 'flake' scope
-args @ {
-  importApply,
-  inputs,
-  ...
-}: let
-  justfile-git = importApply ./commands/git.nix args;
-  justfile-nix = importApply ./commands/nix-flakes.nix args;
+{inputs, ...}: let
+  justfile-git = ./commands/git.nix;
+  justfile-nix = ./commands/nix-flakes.nix;
 
   justfile = {
     imports =

@@ -35,7 +35,7 @@ args @ {
     };
 
     # shared arguments for nix binaries called
-    nixArgs = lib: let
+    nixArgs = let
       inherit (lib) cli;
     in
       cli.toGNUCommandLine {} {
