@@ -1,98 +1,103 @@
-{
-  self,
-  specialArgs,
-  ...
-}: let
-  inherit (specialArgs) mkJustRecipeGroup;
-in {
-  perSystem = {pkgs, ...}: {
-    # set up devshell commands
-    just-flake.features = let
-      inherit (pkgs) lib;
-    in
-      # Helper command aliases
-      mkJustRecipeGroup {
-        inherit lib;
-        group = "nix";
+{self, ...}: {
+  perSystem = _: {
+    just-flake.features = {
+      build = {
+        enable = true;
 
-        recipes = {
-          build = {
-            comment = "Wraps `nix build`.";
-            justfile = ''
-              build *ARGS: lock
-                nix build {{ ARGS }}
-            '';
-          };
-
-          develop = {
-            comment = "Wraps `nix develop`.";
-            justfile = ''
-              develop *ARGS: lock
-                nix develop {{ ARGS }}
-            '';
-          };
-
-          run = {
-            comment = "Wraps `nix run`.";
-            justfile = ''
-              run *ARGS: lock
-                nix run {{ ARGS }}
-            '';
-          };
-
-          search = {
-            comment = "Wraps `nix search`.";
-            justfile = ''
-              search *ARGS:
-                nix search {{ ARGS }}
-            '';
-          };
-
-          shell = {
-            comment = "Wraps `nix shell`.";
-            justfile = ''
-              shell *ARGS:
-                nix shell {{ ARGS }}
-            '';
-          };
-        };
-      }
-      // mkJustRecipeGroup {
-        inherit lib;
-        group = "flake";
-        recipes = {
-          show = {
-            comment = "Wraps `nix flake show`.";
-            justfile = ''
-              show *ARGS:
-                nix flake show {{ ARGS }}
-            '';
-          };
-
-          check = {
-            comment = "Wraps `nix flake check`.";
-            justfile = ''
-              check *ARGS:
-                nix flake check {{ ARGS }}
-            '';
-          };
-
-          repl = {
-            comment = "Wraps `nix repl .`";
-            justfile = ''
-              repl *ARGS: lock
-                nix repl --file "${self}" {{ ARGS }}
-            '';
-          };
-
-          lock = {
-            comment = "Wraps `git add -A && nix flake lock`.";
-            justfile = ''
-              lock *ARGS: (add "-A")
-                nix flake lock {{ ARGS }}
-            '';
-          };
-        };
+        justfile = ''
+          # Wraps `nix build`.
+          [group('nix')]
+          build *ARGS: lock
+            nix build {{ ARGS }}
+        '';
       };
+
+      develop = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `nix develop`.
+          [group('nix')]
+          develop *ARGS: lock
+            nix develop {{ ARGS }}
+        '';
+      };
+
+      run = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `nix run`.
+          [group('nix')]
+          run *ARGS: lock
+            nix run {{ ARGS }}
+        '';
+      };
+
+      search = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `nix search`.
+          [group('nix')]
+          search *ARGS:
+            nix search {{ ARGS }}
+        '';
+      };
+
+      shell = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `nix shell`.
+          [group('nix')]
+          shell *ARGS:
+            nix shell {{ ARGS }}
+        '';
+      };
+      show = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `nix flake show`.
+          [group('nix')]
+          show *ARGS:
+            nix flake show {{ ARGS }}
+        '';
+      };
+
+      check = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `nix flake check`.
+          [group('nix')]
+          check *ARGS:
+            nix flake check {{ ARGS }}
+        '';
+      };
+
+      repl = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `nix repl .`;
+          [group('nix')]
+          repl *ARGS: lock
+            nix repl --file "${self}" {{ ARGS }}
+        '';
+      };
+
+      lock = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `git add -A && nix flake lock`.
+          [group('nix')]
+          lock *ARGS: (add "-A")
+            nix flake lock {{ ARGS }}
+        '';
+      };
+    };
   };
 }
