@@ -136,6 +136,14 @@ in {
                 wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '--flake ${self}' --add-flags '-b bak'
               '';
             })
+            (pkgs.symlinkJoin {
+              name = "devour-flake";
+              paths = [self'.packages.devour-flake];
+              buildInputs = [pkgs.makeWrapper];
+              postBuild = ''
+                wrapProgram $out/bin/devour-flake ${wrapArgs}
+              '';
+            })
           ]
           ++ (lib.lists.optionals pkgs.stdenv.isLinux [
             (pkgs.symlinkJoin {

@@ -1,31 +1,25 @@
-outer @ {
+{
   self,
+  lib,
   pkgs,
   ...
-}: let
-  inherit (pkgs) lib;
-in
-  pkgs.writeShellApplication {
-    name = "disko-install";
-    text = let
-      args = let
-        inherit (outer) specialArgs;
-      in
-        specialArgs.nixArgs;
-    in ''
-      disko() {
-        mode="$1"
-        shift
+}:
+pkgs.writeShellApplication {
+  name = "disko-install";
+  text = ''
+    disko() {
+      mode="$1"
+      shift
 
-        ${lib.meta.getExe' pkgs.disko "disko-install"} \
-          ${lib.strings.concatStringsSep " " args} \
-          --flake "${self}#{{ hostname }}" \
-          --mode "$mode" \
-        "$@"
-      }
+      ${lib.meta.getExe' pkgs.disko "disko-install"} \
+        ${lib.strings.concatStringsSep " " lib.krad246.nixArgs} \
+        --flake "${self}#{{ hostname }}" \
+        --mode "$mode" \
+      "$@"
+    }
 
-      disko format \
-        --write-efi-boot-entries \
-        "$@"
-    '';
-  }
+    disko format \
+      --write-efi-boot-entries \
+      "$@"
+  '';
+}
