@@ -1,4 +1,9 @@
-forwarded @ {inputs, ...}: let
+forwarded @ {
+  inputs,
+  self,
+  lib,
+  ...
+}: let
   # Sets up container image packages, custom devShell derivation within the container
   # VSCode *is* supported!
   containers = import ./containers forwarded;
@@ -26,15 +31,16 @@ in {
   };
 
   perSystem = {
-    lib,
     pkgs,
     self',
     ...
   }: {
     packages =
       {
-        devour-flake =
-          pkgs.callPackage ./devour-flake.nix forwarded;
+        devour-flake = pkgs.callPackage ./devour-flake.nix {
+          inherit inputs self;
+          inherit lib;
+        };
         zen-snapshot = pkgs.callPackage ./zen-snapshot.nix forwarded;
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
