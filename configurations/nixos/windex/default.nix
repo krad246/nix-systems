@@ -4,7 +4,7 @@
   ...
 }: let
   entrypoint = {system, ...}: {
-    imports = [./windex.nix];
+    imports = [./configuration.nix];
     nixpkgs.system = lib.modules.mkDefault system;
   };
 in
