@@ -1,11 +1,8 @@
 {
-  self,
   config,
   lib,
   ...
 }: {
-  imports = with self.darwinModules; [arc zen-browser];
-
   system.defaults = {
     dock = {
       enable-spring-load-actions-on-all-items = null;
@@ -19,17 +16,18 @@
       largesize = 128;
       launchanim = true;
       magnification = true;
-      mineffect = "genie";
+      mineffect = "scale";
       minimize-to-application = true;
       mouse-over-hilite-stack = true;
       mru-spaces = true;
       orientation = "bottom";
       persistent-apps = let
-        inherit (config.krad246.darwin) apps;
-        inherit (lib) lists;
+        inherit (lib) attrsets lists;
+        arc = attrsets.attrByPath ["apps" "arc"] false config.krad246.darwin;
+        zen-browser = attrsets.attrByPath ["apps" "zen-browser"] false config.krad246.darwin;
       in
-        (lists.optionals apps.arc [/Applications/Arc.app])
-        ++ (lists.optionals apps.zen-browser ["/Applications/Zen Browser.app"])
+        (lists.optionals arc [/Applications/Arc.app])
+        ++ (lists.optionals zen-browser ["/Applications/Zen Browser.app"])
         ++ [
           "/System/Applications/iPhone Mirroring.app"
           /System/Applications/Launchpad.app

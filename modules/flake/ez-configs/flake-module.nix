@@ -30,8 +30,14 @@
       configurationsDirectory = configRoot + "/nixos";
       modulesDirectory = modulesRoot + "/nixos";
       hosts = {
-        windex.userHomeModules = ["keerad" "krad246"];
-        fortress.userHomeModules = ["krad246"];
+        windex = {
+          importDefault = true;
+          userHomeModules = ["keerad" "krad246"];
+        };
+        fortress = {
+          importDefault = true;
+          userHomeModules = ["krad246"];
+        };
       };
     };
 
@@ -39,9 +45,18 @@
       configurationsDirectory = configRoot + "/darwin";
       modulesDirectory = modulesRoot + "/darwin";
       hosts = {
-        nixbook-air.userHomeModules = ["krad246"];
-        nixbook-pro.userHomeModules = ["krad246"];
-        dullahan.userHomeModules = ["krad246"];
+        nixbook-air = {
+          importDefault = true;
+          userHomeModules = ["krad246"];
+        };
+        nixbook-pro = {
+          importDefault = true;
+          userHomeModules = ["krad246"];
+        };
+        dullahan = {
+          importDefault = true;
+          userHomeModules = ["krad246"];
+        };
       };
     };
 
@@ -51,10 +66,12 @@
 
       users = {
         keerad = {
+          importDefault = true;
           nameFunction = _name: "keerad@windex";
         };
 
         ubuntu = {
+          importDefault = true;
           nameFunction = _name: "ubuntu";
 
           standalone = let

@@ -1,7 +1,7 @@
 outer @ {
   self,
-  lib,
   specialArgs,
+  lib,
   ...
 }: {
   krad246.darwin.virtualisation.linux-builder = {

@@ -1,8 +1,12 @@
 {
+  self,
   config,
-  specialArgs,
   ...
 }: {
+  imports = with self.darwinModules; [
+    base-configuration
+  ];
+
   krad246.darwin.masterUser = {
     enable = true;
     owner = rec {
@@ -16,15 +20,6 @@
       createHome = true;
     };
   };
-
-  age.secrets = let
-    inherit (specialArgs) krad246;
-    paths = krad246.fileset.filterExt "age" ./secrets/krad246;
-  in
-    krad246.attrsets.genAttrs' paths (path:
-      krad246.attrsets.stemValuePair path {
-        file = path;
-      });
 
   ids.gids.nixbld = 30000;
 }
