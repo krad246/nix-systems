@@ -1,8 +1,15 @@
 {
-  config,
+  self,
   specialArgs,
+  config,
   ...
 }: {
+  imports = with self.darwinModules; [
+    agenix
+    base-configuration
+    utm
+  ];
+
   krad246.darwin.masterUser = {
     enable = true;
     owner = rec {

@@ -1,20 +1,11 @@
 {
   self,
   config,
-  specialArgs,
   ...
 }: {
-  imports = [self.darwinModules.colima];
-
-  # Parse the secrets directory
-  age.secrets = let
-    inherit (specialArgs) krad246;
-    paths = krad246.fileset.filterExt "age" ./secrets;
-  in
-    krad246.attrsets.genAttrs' paths (path:
-      krad246.attrsets.stemValuePair path {
-        file = path;
-      });
+  imports = with self.darwinModules; [
+    base-configuration
+  ];
 
   krad246.darwin = {
     # Used in conjunction with single-user settings.
@@ -44,13 +35,6 @@
         diskSize = 192 * 1024;
         swapSize = 32 * 1024;
       };
-
-      colima = {
-        enable = true;
-        inherit (linux-builder) memorySize;
-        inherit (linux-builder) diskSize;
-        inherit (linux-builder) cores;
-      };
     };
   };
 
@@ -63,7 +47,4 @@
   };
 
   ids.gids.nixbld = 350;
-
-  # enable Lorri daemon for nix-direnv
-  services.lorri.enable = true;
 }

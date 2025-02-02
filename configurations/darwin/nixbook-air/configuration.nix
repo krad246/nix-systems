@@ -1,4 +1,16 @@
-{config, ...}: {
+{
+  self,
+  config,
+  ...
+}: {
+  imports = with self.darwinModules; [
+    base-configuration
+    bluesnooze
+    groupme
+    launchcontrol
+    signal
+  ];
+
   krad246.darwin.masterUser = {
     enable = true;
     owner = rec {

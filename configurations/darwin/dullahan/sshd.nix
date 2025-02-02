@@ -1,7 +1,7 @@
 {
   self,
-  lib,
   specialArgs,
+  lib,
   ...
 }: {
   imports = with self.darwinModules; [
