@@ -1,5 +1,11 @@
-{config, ...}: {
-  krad246.darwin.masterUser = {
+{
+  self,
+  config,
+  ...
+}: {
+  imports = with self.darwinModules; [apps system-preferences];
+
+  krad246.darwin.system-preferences.masterUser = {
     enable = true;
     owner = rec {
       name = "krad246";
