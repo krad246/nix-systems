@@ -5,9 +5,13 @@
   ...
 }: let
   entrypoint = {system, ...}: {
-    imports = let
-      modules = {
-        secrets = {
+    imports =
+      [
+        ./configuration.nix
+        ./remotes.nix
+      ]
+      ++ [
+        {
           imports = [self.darwinModules.agenix];
 
           # Parse the secrets directory
@@ -19,23 +23,8 @@
               krad246.attrsets.stemValuePair path {
                 file = path;
               });
-        };
-
-        apps = {
-          imports = with self.darwinModules; [
-            bluesnooze
-            groupme
-            launchcontrol
-            signal
-          ];
-        };
-      };
-    in
-      [
-        ./configuration.nix
-        ./remotes.nix
-      ]
-      ++ [modules.apps modules.secrets];
+        }
+      ];
 
     nixpkgs.system = system;
   };

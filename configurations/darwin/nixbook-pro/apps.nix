@@ -4,17 +4,13 @@
   ...
 }: {
   imports = with self.darwinModules; [
-    bluesnooze
+    apps
     colima
-    groupme
-    magnet
-    signal
-    utm
-    zoom
-    zen-browser
   ];
 
   krad246.darwin = {
+    apps.arc = false;
+
     virtualisation = rec {
       colima = {
         enable = true;

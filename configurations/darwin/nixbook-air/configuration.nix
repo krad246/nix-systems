@@ -4,6 +4,7 @@
   ...
 }: {
   imports = with self.darwinModules; [
+    apps
     base-configuration
   ];
 
