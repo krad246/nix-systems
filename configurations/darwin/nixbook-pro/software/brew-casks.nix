@@ -1,12 +1,6 @@
 {self, ...}: {
   imports = with self.darwinModules; [
-    bluesnooze
-    groupme
-    launchcontrol
-    magnet
-    signal
-    utm
-    zoom
+    apps
   ];
 
   krad246.darwin.apps = {
