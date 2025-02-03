@@ -7,24 +7,14 @@
   ...
 }: {
   imports =
-    (with self.darwinModules; [
-      auto-update
-      dark-mode
-      dock
-      finder
-      firewall
-      keyboard
-      menubar
-      pointer
-      single-user
-      spotlight
-      touch-id
-      window-manager
-      hm-compat
-      homebrew
-      linux-builder
-      mac-app-util
-    ])
+    (with self.darwinModules;
+      [
+        machine
+      ]
+      ++ [
+        hm-compat
+        homebrew
+      ])
     ++ (with self.modules.generic; [
       system-link-registry
       flake-registry
