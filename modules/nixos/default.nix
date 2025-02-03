@@ -1,3 +1,3 @@
 {self, ...}: {
-  imports = with self.nixosModules; [nixos];
+  imports = [self.nixosModules.base-configuration];
 }

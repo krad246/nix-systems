@@ -7,14 +7,13 @@
   imports =
     [self.modules.generic.unfree]
     ++ (with self.nixosModules; [
+      base-configuration
       flatpak
-      nixos
       opengl
     ])
     ++ (with self.nixosModules; [
       aarch64-binfmt
       bluetooth
-      kdeconnect
       pipewire
       system76-scheduler
     ]);

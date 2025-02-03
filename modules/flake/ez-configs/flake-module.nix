@@ -31,11 +31,11 @@
       modulesDirectory = modulesRoot + "/nixos";
       hosts = {
         windex = {
-          importDefault = true;
+          importDefault = false;
           userHomeModules = ["keerad" "krad246"];
         };
         fortress = {
-          importDefault = true;
+          importDefault = false;
           userHomeModules = ["krad246"];
         };
       };
@@ -46,15 +46,15 @@
       modulesDirectory = modulesRoot + "/darwin";
       hosts = {
         nixbook-air = {
-          importDefault = true;
+          importDefault = false;
           userHomeModules = ["krad246"];
         };
         nixbook-pro = {
-          importDefault = true;
+          importDefault = false;
           userHomeModules = ["krad246"];
         };
         dullahan = {
-          importDefault = true;
+          importDefault = false;
           userHomeModules = ["krad246"];
         };
       };
