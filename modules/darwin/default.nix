@@ -23,12 +23,10 @@
     ])
     ++ (with self.darwinModules; [
       agenix
-      arc
       hm-compat
       homebrew
       linux-builder
       mac-app-util
-      magnet
     ])
     ++ (with self.modules.generic; [
       system-link-registry

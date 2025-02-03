@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   imports = with self.darwinModules; [
     apps
   ];
@@ -7,4 +11,6 @@
     arc = false;
     launchcontrol = false;
   };
+
+  system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen Browser.app"];
 }
