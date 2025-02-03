@@ -6,6 +6,8 @@
     ./finder.nix
     ./firewall.nix
     ./keyboard.nix
+    ./linux-builder.nix
+    ./mac-app-util.nix
     ./menubar.nix
     ./pointer.nix
     ./single-user.nix
