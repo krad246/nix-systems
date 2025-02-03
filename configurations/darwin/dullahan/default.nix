@@ -2,7 +2,7 @@
   entrypoint = {system, ...}: {
     imports = [
       ./dullahan.nix
-      ./hercules-ci/ci-agent.nix
+      ./hercules-ci/dullahan.nix
       ./hercules-ci/headless-penguin.nix
       ./remotes.nix
       ./sshd.nix
