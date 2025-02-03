@@ -24,6 +24,16 @@
                 file = path;
               });
         }
+      ]
+      ++ [
+        {
+          imports = with self.darwinModules; [
+            bluesnooze
+            groupme
+            launchcontrol
+            signal
+          ];
+        }
       ];
 
     nixpkgs.system = system;

@@ -1,9 +1,9 @@
 {withSystem, ...}: let
   entrypoint = {system, ...}: {
     imports = [
-      ./dullahan.nix
-      ./hercules-ci/dullahan.nix
-      ./hercules-ci/headless-penguin.nix
+      ./configuration.nix
+      ./hercules-ci/hercules-ci.nix
+      ./hercules-ci/linux-builder.nix
       ./remotes.nix
       ./sshd.nix
     ];

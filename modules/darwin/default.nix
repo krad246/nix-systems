@@ -1,3 +1,3 @@
-{
-  imports = [./base-configuration.nix];
+{self, ...}: {
+  imports = [self.darwinModules.base-configuration];
 }
