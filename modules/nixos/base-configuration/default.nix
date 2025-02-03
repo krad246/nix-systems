@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   imports =
     [
       ./default-users.nix
@@ -17,4 +21,6 @@
       nix-core
       unfree
     ]);
+
+  system.stateVersion = lib.trivial.release;
 }

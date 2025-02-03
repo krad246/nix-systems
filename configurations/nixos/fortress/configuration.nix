@@ -4,6 +4,7 @@
   ...
 }: {
   imports = with self.nixosModules; [
+    base-configuration
     gnome-desktop
     whitesur
   ];

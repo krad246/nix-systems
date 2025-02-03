@@ -7,7 +7,6 @@
   imports =
     [self.modules.generic.unfree]
     ++ (with self.nixosModules; [
-      base-configuration
       flatpak
       opengl
     ])

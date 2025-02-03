@@ -1,4 +1,4 @@
-{lib, ...}: {
+_: {
   i18n = {
     defaultLocale = "en_US.UTF-8";
 
@@ -23,8 +23,6 @@
 
   # Set your time zone.
   time.timeZone = "America/New_York";
-
-  system.stateVersion = lib.trivial.release;
 
   environment.variables = {
     TERM = "xterm-256color";
