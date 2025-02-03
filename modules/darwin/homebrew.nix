@@ -12,6 +12,7 @@ in {
     enable = true;
     enableRosetta = true;
     autoMigrate = true;
+    user = config.krad246.darwin.system-preferences.masterUser.owner;
   };
 
   homebrew = {

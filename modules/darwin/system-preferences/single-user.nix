@@ -4,16 +4,14 @@
   modulesPath,
   ...
 }: let
-  cfg = config.krad246.darwin.masterUser;
+  cfg = config.krad246.darwin.system-preferences.masterUser;
 in {
   options = {
-    krad246.darwin = {
-      masterUser = {
-        enable = lib.options.mkEnableOption "masterUser";
-        owner = lib.options.mkOption {
-          description = "Configuration for master user.";
-          type = lib.types.submodule (import "${modulesPath}/users/user.nix");
-        };
+    krad246.darwin.system-preferences.masterUser = {
+      enable = lib.options.mkEnableOption "masterUser";
+      owner = lib.options.mkOption {
+        description = "Configuration for master user.";
+        type = lib.types.submodule (import "${modulesPath}/users/user.nix");
       };
     };
   };
@@ -30,7 +28,6 @@ in {
       CustomSystemPreferences = config.system.defaults.CustomUserPreferences;
     };
 
-    nix-homebrew.user = cfg.owner.name;
     users = {
       knownUsers = [cfg.owner.name];
 

@@ -4,7 +4,7 @@
   specialArgs,
   ...
 }: {
-  imports = [self.darwinModules.colima];
+  imports = with self.darwinModules; [agenix colima system-preferences];
 
   # Parse the secrets directory
   age.secrets = let
@@ -19,7 +19,7 @@
   krad246.darwin = {
     # Used in conjunction with single-user settings.
     # Wraps users.users option
-    masterUser = {
+    machine.masterUser = {
       enable = true;
       owner = rec {
         name = "krad246";
