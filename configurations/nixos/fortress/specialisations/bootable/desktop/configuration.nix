@@ -6,8 +6,6 @@
 }: {
   imports =
     [self.modules.generic.unfree]
-    ++ (with self.nixosModules; [
-      ])
     ++ [
       ./bluetooth.nix
       ./flatpak.nix
@@ -17,37 +15,28 @@
       ./system76-scheduler.nix
     ];
 
-  home-manager.sharedModules = let
-    fortress = {
-      configuration = {...}: {
-        imports = with self.homeModules; [
-          discord
-          kdeconnect
-          vscode
-          vscode-server
-        ];
+  home-manager.sharedModules = [
+    # inject some additional config into the base home namespace
+    # this extends the 'parent' config, and then the generic-linux specialization
+    # is then activated as a layer over top.
+    {
+      imports = with self.homeModules; [
+        discord
+        kdeconnect
+      ];
 
-        services = {
-          flatpak = {
-            packages = [
-              "us.zoom.Zoom"
-              "org.signal.Signal"
-              "com.valvesoftware.Steam"
-            ];
-          };
+      services = {
+        flatpak = {
+          packages = [
+            "us.zoom.Zoom"
+            "org.signal.Signal"
+            "com.valvesoftware.Steam"
+          ];
         };
       };
-    };
-  in [
-    ({lib, ...}: {
-      imports = [
-        fortress.configuration
-      ];
-      specialisation = rec {
-        default = lib.modules.mkForce fortress;
-        inherit fortress;
-      };
-    })
+    }
+
+    # we switch to the generic-linux module after loading this
   ];
 
   services = {

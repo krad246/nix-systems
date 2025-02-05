@@ -55,4 +55,19 @@ in {
     description = "Keerthi Radhakrishnan";
     extraGroups = ["wheel" "NetworkManager" "docker"];
   };
+
+  home-manager.sharedModules = [
+    {
+      systemd.user.mounts = {
+      };
+    }
+
+    ({lib, ...}: {
+      # default specialisation is automatically switched to,
+      # so overriding it from generic-linux disables it.
+      specialisation = rec {
+        default.configuration = lib.modules.mkForce {};
+      };
+    })
+  ];
 }

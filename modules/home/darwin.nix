@@ -58,11 +58,10 @@ in {
     search = "Google";
   };
 
+  # overwrite default specialisation
   specialisation = {
-    default = {
-      configuration = _: {
-        imports = [self.homeModules.darwin];
-      };
+    default.configuration = {
+      imports = [self.homeModules.darwin];
     };
   };
 }
