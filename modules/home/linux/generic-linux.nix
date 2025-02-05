@@ -15,11 +15,12 @@ in {
     default = modules.mkDefault generic-linux;
 
     generic-linux = {
-      configuration = _: {
-        imports = with self.homeModules; [
-          dconf # conditionally enabled if the system dconf is enabled
-          kitty
-        ];
+      configuration = {
+        imports =
+          [./dconf.nix]
+          ++ (with self.homeModules; [
+            kitty
+          ]);
 
         dconf.enable = lib.attrsets.attrByPath ["osConfig" "programs" "dconf" "enable"] false args;
 
