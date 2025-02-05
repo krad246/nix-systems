@@ -2,6 +2,7 @@ args @ {
   inputs,
   self,
   lib,
+  pkgs,
   ...
 }: let
   inherit (inputs) nix-flatpak;
@@ -18,9 +19,12 @@ in {
       configuration = {
         imports =
           [./dconf.nix]
-          ++ (with self.homeModules; [
-            kitty
-          ]);
+          ++ (with self.homeModules;
+            [
+              kitty
+              vscode
+            ]
+            ++ (lib.lists.optionals pkgs.stdenv.isLinux [vscode-server]));
 
         dconf.enable = lib.attrsets.attrByPath ["osConfig" "programs" "dconf" "enable"] false args;
 
