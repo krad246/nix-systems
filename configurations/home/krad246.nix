@@ -1,9 +1,13 @@
 {
+  self,
   osConfig,
-  config,
   pkgs,
   ...
 }: {
+  imports = [
+    self.homeModules.base-home
+  ];
+
   home = {
     username = osConfig.users.users.krad246.name or "krad246";
     homeDirectory =
@@ -13,9 +17,5 @@
         then "/Users/krad246"
         else "/home/krad246"
       );
-  };
-
-  nix.settings = {
-    trusted-users = [config.home.username];
   };
 }

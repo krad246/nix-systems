@@ -83,4 +83,8 @@ in {
       source = self;
     };
   };
+
+  nix.settings = {
+    trusted-users = [config.home.username];
+  };
 }

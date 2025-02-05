@@ -1,21 +1,16 @@
 {
   self,
   osConfig,
-  config,
   pkgs,
   ...
 }: {
-  imports =
-    [
-      self.homeModules.base-home
-      self.homeModules.vscode
-    ]
-    ++ [
-      ./specialisations
-    ];
+  imports = [
+    self.homeModules.base-home
+  ];
 
   home = {
     username = osConfig.users.users.keerad.name or "keerad";
+
     homeDirectory =
       osConfig.users.users.keerad.home
       or (
@@ -23,9 +18,5 @@
         then "/Users/keerad"
         else "/home/keerad"
       );
-  };
-
-  nix.settings = {
-    trusted-users = ["${config.home.username}"];
   };
 }
