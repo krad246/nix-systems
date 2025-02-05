@@ -83,7 +83,7 @@ in {
     "${userDir}/.keybindings-immutable.json" = {
       text = builtins.readFile (stripComments (assetPath keybindingsFilePath));
       onChange = ''
-        run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f ${keybindingsFilePath})" ${keybindingsFilePath}
+        run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f "${keybindingsFilePath}")" "${keybindingsFilePath}"
         verboseEcho "Regenerating VSCode keybindings.json"
       '';
     };
@@ -91,7 +91,7 @@ in {
     "${userDir}/.settings-immutable.json" = {
       text = builtins.readFile (stripComments (assetPath settingsFilePath));
       onChange = ''
-        run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f ${settingsFilePath})" ${settingsFilePath}
+        run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f "${settingsFilePath}")" "${settingsFilePath}"
         verboseEcho "Regenerating VSCode settings.json"
       '';
     };
