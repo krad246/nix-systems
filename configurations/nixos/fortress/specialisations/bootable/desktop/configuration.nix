@@ -7,17 +7,15 @@
   imports =
     [self.modules.generic.unfree]
     ++ (with self.nixosModules; [
-      flatpak
-      nixos
-      opengl
-    ])
-    ++ (with self.nixosModules; [
-      aarch64-binfmt
-      bluetooth
-      kdeconnect
-      pipewire
-      system76-scheduler
-    ]);
+      ])
+    ++ [
+      ./bluetooth.nix
+      ./flatpak.nix
+      ./kdeconnect-ports.nix
+      ./opengl.nix
+      ./pipewire.nix
+      ./system76-scheduler.nix
+    ];
 
   home-manager.sharedModules = let
     fortress = {

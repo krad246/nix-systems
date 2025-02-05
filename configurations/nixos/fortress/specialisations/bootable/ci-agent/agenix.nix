@@ -1,10 +1,4 @@
-{
-  self,
-  specialArgs,
-  ...
-}: {
-  imports = [self.nixosModules.agenix];
-
+{specialArgs, ...}: {
   age = {
     secrets = let
       inherit (specialArgs) krad246;

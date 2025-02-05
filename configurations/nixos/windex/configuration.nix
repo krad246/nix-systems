@@ -10,9 +10,7 @@ in {
   imports =
     [nixos-generators.nixosModules.all-formats]
     ++ (with self.nixosModules; [
-      aarch64-binfmt
-      flatpak
-      nixos
+      base-configuration
       wsl
     ]);
 
