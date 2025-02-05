@@ -1,31 +1,17 @@
 {
   withSystem,
-  self,
   config,
   lib,
   pkgs,
   ...
 }: let
-  # default storage paths on different operating systems
-  userDir =
-    if pkgs.stdenv.hostPlatform.isDarwin
-    then "Library/Application Support/Code/User"
-    else "${config.xdg.configHome}/Code/User";
-  settingsFilePath = "${userDir}/settings.json";
-  keybindingsFilePath = "${userDir}/keybindings.json";
-
-  dirOffs = offs: (lib.path.removePrefix /. (/. + offs));
-  assetPath = offs:
-    builtins.concatStringsSep "/" [
-      self
-      (lib.path.subpath.join ["assets" (dirOffs offs)])
-    ];
-
   stripComments = path:
     pkgs.runCommand "strip-comments" {} ''
       ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
     '';
-  importJSON = x: lib.trivial.importJSON (stripComments (assetPath x));
+
+  keybindings = stripComments ./keybindings.json;
+  settings = stripComments ./settings.json;
 in {
   home.packages = with pkgs;
     [nil nixd]
@@ -67,8 +53,8 @@ in {
     globalSnippets = {
     };
 
-    keybindings = importJSON keybindingsFilePath;
-    userSettings = importJSON settingsFilePath;
+    keybindings = lib.trivial.importJSON keybindings;
+    userSettings = lib.trivial.importJSON settings;
 
     languageSnippets = {
     };
@@ -79,9 +65,17 @@ in {
     };
   };
 
-  home.file = {
+  home.file = let
+    # default storage paths on different operating systems
+    userDir =
+      if pkgs.stdenv.hostPlatform.isDarwin
+      then "Library/Application Support/Code/User"
+      else "${config.xdg.configHome}/Code/User";
+    settingsFilePath = "${userDir}/settings.json";
+    keybindingsFilePath = "${userDir}/keybindings.json";
+  in {
     "${userDir}/.keybindings-immutable.json" = {
-      text = builtins.readFile (stripComments (assetPath keybindingsFilePath));
+      text = builtins.readFile keybindings;
       onChange = ''
         run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f "${keybindingsFilePath}")" "${keybindingsFilePath}"
         verboseEcho "Regenerating VSCode keybindings.json"
@@ -89,7 +83,7 @@ in {
     };
 
     "${userDir}/.settings-immutable.json" = {
-      text = builtins.readFile (stripComments (assetPath settingsFilePath));
+      text = builtins.readFile settings;
       onChange = ''
         run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f "${settingsFilePath}")" "${settingsFilePath}"
         verboseEcho "Regenerating VSCode settings.json"
