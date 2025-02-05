@@ -2,29 +2,28 @@ args @ {
   inputs,
   self,
   lib,
-  pkgs,
   ...
 }: let
   inherit (inputs) nix-flatpak;
-  inherit (lib) modules;
 in {
   imports = [nix-flatpak.homeManagerModules.nix-flatpak];
 
   targets.genericLinux.enable = true;
 
+  # add a default set of linux apps into an activatable specialization
+  # this overwrites the default specialization
   specialisation = rec {
-    default = modules.mkDefault generic-linux;
+    default = generic-linux;
 
     generic-linux = {
       configuration = {
         imports =
           [./dconf.nix]
-          ++ (with self.homeModules;
-            [
-              kitty
-              vscode
-            ]
-            ++ (lib.lists.optionals pkgs.stdenv.isLinux [vscode-server]));
+          ++ (with self.homeModules; [
+            kitty
+            vscode
+            vscode-server
+          ]);
 
         dconf.enable = lib.attrsets.attrByPath ["osConfig" "programs" "dconf" "enable"] false args;
 
