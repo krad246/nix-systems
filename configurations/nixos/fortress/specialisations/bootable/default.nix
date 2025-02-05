@@ -2,15 +2,16 @@ let
   shared = {self, ...}: {
     imports =
       [
+        ./authorized-keys.nix
+        ./avahi.nix
         ./efiboot.nix
         ./hardware-configuration.nix
-        ./authorized-keys.nix
+        ./sshd.nix
       ]
       ++ [
         self.diskoConfigurations.fortress-desktop
-      ]
-      # remote access is shared for these bootable specializations
-      ++ [self.nixosModules.avahi];
+        self.nixosModules.base-configuration
+      ];
 
     # Holds up boot pointlessly
     systemd.services.NetworkManager-wait-online.enable = false;
