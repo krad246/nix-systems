@@ -13,6 +13,19 @@
     else "${config.xdg.configHome}/Code/User";
   settingsFilePath = "${userDir}/settings.json";
   keybindingsFilePath = "${userDir}/keybindings.json";
+
+  dirOffs = offs: (lib.path.removePrefix /. (/. + offs));
+  assetPath = offs:
+    builtins.concatStringsSep "/" [
+      self
+      (lib.path.subpath.join ["assets" (dirOffs offs)])
+    ];
+
+  stripComments = path:
+    pkgs.runCommand "strip-comments" {} ''
+      ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
+    '';
+  importJSON = x: lib.trivial.importJSON (stripComments (assetPath x));
 in {
   home.packages = with pkgs;
     [nil nixd]
@@ -20,22 +33,7 @@ in {
       (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))
     ];
 
-  programs.vscode = let
-    importJSON = x: let
-      dirOffs = offs: (lib.path.removePrefix /. (/. + offs));
-      assetPath = offs:
-        builtins.concatStringsSep "/" [
-          self
-          (lib.path.subpath.join ["assets" (dirOffs offs)])
-        ];
-
-      stripComments = path:
-        pkgs.runCommand "strip-comments" {} ''
-          ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
-        '';
-    in
-      lib.trivial.importJSON (stripComments (assetPath x));
-  in {
+  programs.vscode = {
     enable = true;
 
     enableExtensionUpdateCheck = false;
@@ -78,6 +76,24 @@ in {
     mutableExtensionsDir = false;
 
     userTasks = {
+    };
+  };
+
+  home.file = {
+    "${userDir}/.keybindings-immutable.json" = {
+      text = builtins.readFile (stripComments (assetPath keybindingsFilePath));
+      onChange = ''
+        run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f ${keybindingsFilePath})" ${keybindingsFilePath}
+        verboseEcho "Regenerating VSCode keybindings.json"
+      '';
+    };
+
+    "${userDir}/.settings-immutable.json" = {
+      text = builtins.readFile (stripComments (assetPath settingsFilePath));
+      onChange = ''
+        run cp $VERBOSE_ARG --preserve --remove-destination -f "$(readlink -f ${settingsFilePath})" ${settingsFilePath}
+        verboseEcho "Regenerating VSCode settings.json"
+      '';
     };
   };
 }
