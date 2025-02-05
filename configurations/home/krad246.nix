@@ -16,6 +16,6 @@
   };
 
   nix.settings = {
-    trusted-users = ["${config.home.username}"];
+    trusted-users = [config.home.username];
   };
 }

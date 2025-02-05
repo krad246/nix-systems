@@ -7,7 +7,7 @@
 }: {
   imports =
     [
-      self.homeModules.shellenv
+      self.homeModules.base-home
       self.homeModules.vscode
     ]
     ++ [
