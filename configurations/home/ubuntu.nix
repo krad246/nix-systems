@@ -4,8 +4,7 @@
   ...
 }: {
   imports = [
-    self.homeModules.shellenv
-    self.homeModules.dconf
+    self.homeModules.base-home
   ];
 
   home = {

@@ -10,10 +10,8 @@ in {
   imports =
     [mac-app-util.homeManagerModules.default]
     ++ (with self.homeModules; [
-      agenix
       discord
       kitty
-      spotify
       vscode
     ]);
 
