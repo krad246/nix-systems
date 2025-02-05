@@ -1,7 +1,7 @@
 {
   self,
-  lib,
   specialArgs,
+  lib,
   ...
 }: {
   imports = [self.nixosModules.sshd];

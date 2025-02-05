@@ -1,10 +1,10 @@
 {
   withSystem,
   self,
+  specialArgs,
   config,
   lib,
   pkgs,
-  specialArgs,
   ...
 }: let
   machine = self.nixosConfigurations.fortress;

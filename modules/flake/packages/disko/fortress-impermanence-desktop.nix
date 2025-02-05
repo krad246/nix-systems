@@ -1,7 +1,7 @@
 {
+  specialArgs,
   config,
   lib,
-  specialArgs,
   ...
 }: let
   # prefer flake inputs version of agenix, unless the arg is missing
