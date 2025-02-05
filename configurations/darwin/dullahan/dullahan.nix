@@ -1,6 +1,6 @@
 {
-  config,
   specialArgs,
+  config,
   ...
 }: {
   krad246.darwin.masterUser = {

@@ -1,7 +1,7 @@
 {
+  specialArgs,
   config,
   lib,
-  specialArgs,
   ...
 }: let
   inherit (lib) attrsets modules;

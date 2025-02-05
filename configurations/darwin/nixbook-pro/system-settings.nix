@@ -1,10 +1,13 @@
 {
   self,
-  config,
   specialArgs,
+  config,
   ...
 }: {
-  imports = [self.darwinModules.colima];
+  imports = with self.darwinModules; [
+    base-configuration
+    colima
+  ];
 
   # Parse the secrets directory
   age.secrets = let
