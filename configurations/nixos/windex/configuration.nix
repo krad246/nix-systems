@@ -1,4 +1,4 @@
-{
+outer @ {
   inputs,
   self,
   config,
@@ -57,10 +57,27 @@ in {
   };
 
   home-manager.sharedModules = [
-    {
+    (inner @ {
+      config,
+      lib,
+      pkgs,
+      ...
+    }: {
       systemd.user.mounts = {
+        "home-${inner.config.home.username}-.config-Code-User" = {
+          Unit = {
+            Description = "Mount VSCode config directory from Windows host to WSL.";
+          };
+          Install.WantedBy = ["default.target"];
+          Mount = {
+            ExecSearchPath = lib.strings.makeBinPath [pkgs.bindfs];
+            What = "${outer.config.wsl.wslConf.automount.root}/c/Users/${outer.config.wsl.defaultUser}/AppData/Roaming/Code/User";
+            Where = "${inner.config.xdg.configHome}/Code/User";
+            Type = "fuse.bindfs";
+          };
+        };
       };
-    }
+    })
 
     ({lib, ...}: {
       # default specialisation is automatically switched to,
