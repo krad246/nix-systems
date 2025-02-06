@@ -31,3 +31,8 @@ clean *ARGS: && reload
 [group('direnv')]
 reload:
     direnv reload
+
+# Format this repository.
+[group('dev')]
+fmt:
+    treefmt

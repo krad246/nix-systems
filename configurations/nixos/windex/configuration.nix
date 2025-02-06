@@ -44,7 +44,7 @@ in {
     home = "/home/keerad";
     description = "Keerthi Radhakrishnan";
     initialHashedPassword = "";
-    extraGroups = ["wheel" "NetworkManager" "docker"];
+    extraGroups = ["wheel" "NetworkManager" "docker" "kvm"];
   };
 
   # Linux user
@@ -53,7 +53,7 @@ in {
     isNormalUser = true;
     home = "/home/krad246";
     description = "Keerthi Radhakrishnan";
-    extraGroups = ["wheel" "NetworkManager" "docker"];
+    extraGroups = ["wheel" "NetworkManager" "docker" "kvm"];
   };
 
   home-manager.sharedModules = [
