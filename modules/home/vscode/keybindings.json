@@ -2154,10 +2154,6 @@
     "key": "ctrl+shift+["
   },
   {
-    "command": "workbench.action.quickOpen",
-    "key": "ctrl+p"
-  },
-  {
     "command": "workbench.action.quickOpenLeastRecentlyUsedEditorInGroup",
     "key": "ctrl+shift+tab",
     "when": "!activeEditorGroupEmpty"
@@ -7631,19 +7627,19 @@
     "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
   },
   {
-    "key": "ctrl+w",
-    "command": "-workbench.action.switchWindow"
+    "command": "-workbench.action.switchWindow",
+    "key": "ctrl+w"
   },
   {
-    "key": "ctrl+0",
-    "command": "-workbench.action.lastEditorInGroup"
+    "command": "-workbench.action.lastEditorInGroup",
+    "key": "ctrl+0"
   },
   {
-    "key": "ctrl+shift+m",
-    "command": "-editor.action.toggleTabFocusMode"
+    "command": "-editor.action.toggleTabFocusMode",
+    "key": "ctrl+shift+m"
   },
   {
-    "key": "ctrl+w",
-    "command": "workbench.action.closeActiveEditor"
+    "command": "workbench.action.closeActiveEditor",
+    "key": "ctrl+w"
   }
 ]
