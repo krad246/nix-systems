@@ -7,13 +7,29 @@
   imports =
     [self.modules.generic.unfree]
     ++ [
-      ./bluetooth.nix
-      ./flatpak.nix
       ./kdeconnect-ports.nix
-      ./opengl.nix
       ./pipewire.nix
-      ./system76-scheduler.nix
     ];
+
+  hardware = rec {
+    bluetooth.enable = true;
+    opengl = {
+      enable = true;
+      driSupport32Bit = pkgs.stdenv.isx86_64;
+    };
+
+    graphics.enable32Bit = opengl.driSupport32Bit;
+  };
+
+  services = {
+    gnome.gnome-remote-desktop.enable = true;
+    system76-scheduler.enable = true;
+    xrdp = {
+      enable = true;
+      defaultWindowManager = lib.meta.getExe pkgs.gnome.gnome-session;
+      openFirewall = true;
+    };
+  };
 
   home-manager.sharedModules = [
     # inject some additional config into the base home namespace
@@ -38,12 +54,4 @@
 
     # we switch to the generic-linux module after loading this
   ];
-
-  services = {
-    gnome.gnome-remote-desktop.enable = true;
-  };
-
-  services.xrdp.enable = true;
-  services.xrdp.defaultWindowManager = lib.meta.getExe pkgs.gnome.gnome-session;
-  services.xrdp.openFirewall = true;
 }
