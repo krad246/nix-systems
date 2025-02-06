@@ -133,7 +133,7 @@ in {
               paths = [inputs'.home-manager.packages.home-manager];
               buildInputs = [pkgs.makeWrapper];
               postBuild = ''
-                wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '--flake ${self}' --add-flags '-b ${self.dirtyRev}'
+                wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '--flake ${self}' --add-flags '-b ${self.rev or self.dirtyRev or "bak"}'
               '';
             })
             (pkgs.symlinkJoin {
