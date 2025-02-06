@@ -1,11 +1,15 @@
 {
+  lib,
+  pkgs,
+  ...
+}: {
   programs.bottom = {
     enable = true;
     settings = {
     };
   };
 
-  xdg = {
+  xdg = lib.modules.mkIf pkgs.stdenv.isLinux {
     enable = true;
     desktopEntries = {
       "bottom" = {
