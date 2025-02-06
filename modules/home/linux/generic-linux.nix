@@ -9,6 +9,7 @@ in {
   imports = [nix-flatpak.homeManagerModules.nix-flatpak];
 
   targets.genericLinux.enable = true;
+  systemd.user.startServices = "sd-switch";
 
   # add a default set of linux apps into an activatable specialization
   # this overwrites the default specialization

@@ -1,14 +1,12 @@
 {
   self,
-  lib,
+  pkgs,
   ...
 }: {
   imports = with self.nixosModules; [
     gnome-desktop
     whitesur
   ];
-
-  programs.dconf.enable = lib.modules.mkDefault true;
 
   users.users.krad246 = {
     isNormalUser = true;
@@ -17,7 +15,19 @@
     initialHashedPassword = "$y$j9T$GlfzmGjYcMf96CrZDYSKf.$vYN1YvO28MeOLulPK6wNc.RnnL5dN4c.pcR7ur/8jP9";
   };
 
-  home-manager.sharedModules = [
-    {imports = with self.homeModules; [vscode vscode-server];}
+  programs.dconf.enable = true;
+  services = {
+    dbus.enable = true;
+    flatpak.enable = true;
+  };
+
+  xdg.portal = {
+    enable = true;
+    config.common.default = "*";
+    extraPortals = [pkgs.xdg-desktop-portal-gtk];
+  };
+
+  systemd.tmpfiles.rules = [
+    "d /var/lib/flatpak 755 root    root  - -"
   ];
 }
