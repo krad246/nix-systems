@@ -4,4 +4,14 @@
     settings = {
     };
   };
+
+  xdg = {
+    enable = true;
+    desktopEntries = {
+      "bottom" = {
+        name = "bottom";
+        noDisplay = true;
+      };
+    };
+  };
 }

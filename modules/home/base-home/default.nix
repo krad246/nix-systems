@@ -32,12 +32,6 @@ in {
       unfree
     ]);
 
-  specialisation = {
-    default = lib.modules.mkDefault {
-      configuration = _: {};
-    };
-  };
-
   home = {
     file.dotfiles.source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/dotfiles";
 

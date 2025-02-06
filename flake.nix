@@ -235,7 +235,7 @@
         in
           cli.toGNUCommandLine {} {
             option = [
-              "inputs-from ${self}"
+              "inputs-from \"$FLAKE_ROOT\""
               "experimental-features 'nix-command flakes'"
               "keep-going true"
               "show-trace true"
