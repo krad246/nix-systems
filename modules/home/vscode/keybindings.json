@@ -342,11 +342,6 @@
     "when": "breakpointWidgetVisible && textInputFocus"
   },
   {
-    "command": "cursorUndo",
-    "key": "ctrl+u",
-    "when": "textInputFocus"
-  },
-  {
     "command": "deleteWordLeft",
     "key": "ctrl+backspace",
     "when": "textInputFocus && !editorReadonly"
@@ -393,16 +388,6 @@
   {
     "command": "editor.action.commentLine",
     "key": "ctrl+/",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-  {
-    "command": "editor.action.copyLinesDownAction",
-    "key": "shift+alt+down",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-  {
-    "command": "editor.action.copyLinesUpAction",
-    "key": "shift+alt+up",
     "when": "editorTextFocus && !editorReadonly"
   },
   {
@@ -486,26 +471,6 @@
     "when": "standaloneColorPickerFocused"
   },
   {
-    "command": "editor.action.insertCursorAbove",
-    "key": "ctrl+alt+up",
-    "when": "editorTextFocus"
-  },
-  {
-    "command": "editor.action.insertCursorBelow",
-    "key": "ctrl+alt+down",
-    "when": "editorTextFocus"
-  },
-  {
-    "command": "editor.action.insertLineAfter",
-    "key": "ctrl+enter",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-  {
-    "command": "editor.action.insertLineBefore",
-    "key": "ctrl+shift+enter",
-    "when": "editorTextFocus && !editorReadonly"
-  },
-  {
     "command": "editor.action.moveLinesDownAction",
     "key": "alt+down",
     "when": "editorTextFocus && !editorReadonly"
@@ -556,11 +521,6 @@
     "when": "editorFocus && findInputFocussed"
   },
   {
-    "command": "editor.action.removeBrackets",
-    "key": "ctrl+alt+backspace",
-    "when": "editorTextFocus"
-  },
-  {
     "command": "editor.action.scrollDownHover",
     "key": "down",
     "when": "editorHoverFocused"
@@ -596,18 +556,9 @@
     "when": "stickyScrollFocused"
   },
   {
-    "command": "editor.action.smartSelect.expand",
-    "key": "shift+alt+right",
-    "when": "editorTextFocus"
-  },
-  {
     "command": "editor.action.submitComment",
     "key": "ctrl+enter",
     "when": "commentEditorFocused"
-  },
-  {
-    "command": "editor.action.toggleWordWrap",
-    "key": "alt+z"
   },
   {
     "command": "editor.action.triggerParameterHints",
@@ -643,11 +594,6 @@
     "command": "editor.debug.action.closeExceptionWidget",
     "key": "escape",
     "when": "exceptionWidgetVisible"
-  },
-  {
-    "command": "editor.emmet.action.expandAbbreviation",
-    "key": "tab",
-    "when": "config.emmet.triggerExpansionOnTab && editorTextFocus && !editorReadonly && !editorTabMovesFocus"
   },
   {
     "command": "editor.gotoNextSymbolFromResult.cancel",
@@ -7648,5 +7594,54 @@
     "command": "workbench.action.terminal.openDetectedLink",
     "key": "ctrl+shift+o",
     "when": "terminalFocus && terminalHasBeenCreated && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "-workbench.action.quickOpenSelectPrevious",
+    "when": "inQuickOpen"
+  },
+  {
+    "key": "shift+alt+down",
+    "command": "-editor.action.copyLinesDownAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "shift+alt+up",
+    "command": "-editor.action.copyLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+k",
+    "command": "-deleteAllRight",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "tab",
+    "command": "-editor.emmet.action.expandAbbreviation",
+    "when": "config.emmet.triggerExpansionOnTab && editorTextFocus && !editorReadonly && !editorTabMovesFocus"
+  },
+  {
+    "key": "ctrl+shift+right",
+    "command": "-editor.action.smartSelect.expand",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+j",
+    "command": "-editor.action.joinLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+left",
+    "command": "-editor.action.smartSelect.shrink",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+t",
+    "command": "-editor.action.transposeLetters",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "alt+z",
+    "command": "-editor.action.toggleWordWrap"
   }
 ]
