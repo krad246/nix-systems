@@ -2372,11 +2372,6 @@
     "when": "statusBarFocused"
   },
   {
-    "command": "workbench.view.debug",
-    "key": "ctrl+shift+d",
-    "when": "viewContainer.workbench.view.debug.enabled"
-  },
-  {
     "command": "workbench.view.explorer",
     "key": "ctrl+shift+e",
     "when": "viewContainer.workbench.view.explorer.enabled"
@@ -4676,10 +4671,6 @@
     "when": "scopedChatSynthesisInProgress && textToSpeechInProgress"
   },
   {
-    "command": "terminal.focus",
-    "key": "ctrl+shift+t"
-  },
-  {
     "command": "workbench.action.terminal.toggleTerminal",
     "key": "ctrl+shift+t",
     "when": "terminal.active"
@@ -4760,14 +4751,6 @@
     "command": "workbench.action.terminal.detachSession",
     "key": "ctrl+shift+d",
     "when": "terminalProcessSupported && terminalFocus"
-  },
-  {
-    "command": "workbench.action.quickOpen",
-    "key": "ctrl+e"
-  },
-  {
-    "command": "workbench.action.quickOpen",
-    "key": "ctrl+e"
   },
   {
     "command": "workbench.action.quickOpenNavigateNextInFilePicker",
@@ -7617,16 +7600,6 @@
     "when": "terminalProcessSupported && terminalTabsFocus"
   },
   {
-    "command": "workbench.action.createTerminalEditor",
-    "key": "ctrl+t",
-    "when": "terminalProcessSupported"
-  },
-  {
-    "command": "workbench.action.terminal.newWithProfile",
-    "key": "ctrl+alt+t",
-    "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
-  },
-  {
     "command": "-workbench.action.switchWindow",
     "key": "ctrl+w"
   },
@@ -7641,5 +7614,44 @@
   {
     "command": "workbench.action.closeActiveEditor",
     "key": "ctrl+w"
+  },
+  {
+    "key": "ctrl+alt+i",
+    "command": "-workbench.action.chat.open"
+  },
+  {
+    "key": "ctrl+shift+i",
+    "command": "-workbench.action.chat.openEditSession",
+    "when": "chatEditingParticipantRegistered && view != 'workbench.panel.chat.view.edits'"
+  },
+  {
+    "key": "ctrl+k ctrl+r",
+    "command": "-git.revertSelectedRanges",
+    "when": "editorTextFocus && !operationInProgress && resourceScheme == 'vscode-remote'"
+  },
+  {
+    "key": "ctrl+k ctrl+alt+s",
+    "command": "-git.stageSelectedRanges",
+    "when": "editorTextFocus && !operationInProgress && resourceScheme == 'vscode-remote'"
+  },
+  {
+    "key": "ctrl+k ctrl+n",
+    "command": "-git.unstageSelectedRanges",
+    "when": "editorTextFocus && isInDiffEditor && isInDiffRightEditor && !operationInProgress && resourceScheme == 'git'"
+  },
+  {
+    "key": "ctrl+shift+d",
+    "command": "-workbench.view.debug",
+    "when": "viewContainer.workbench.view.debug.enabled"
+  },
+  {
+    "key": "ctrl+e",
+    "command": "workbench.action.terminal.moveToEditor",
+    "when": "terminalFocus && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+shift+o",
+    "command": "workbench.action.terminal.openDetectedLink",
+    "when": "terminalHasBeenCreated &&  terminalFocus && terminalProcessSupported"
   }
 ]

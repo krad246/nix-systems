@@ -74,6 +74,7 @@ in {
             What = "${outer.config.wsl.wslConf.automount.root}/c/Users/${outer.config.wsl.defaultUser}/AppData/Roaming/Code/User";
             Where = "${inner.config.xdg.configHome}/Code/User";
             Type = "fuse.bindfs";
+            Options = "perms=0700,mirror-only=${inner.config.home.username}";
           };
         };
       };
