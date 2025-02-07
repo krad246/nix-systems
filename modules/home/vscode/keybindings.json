@@ -2372,6 +2372,11 @@
     "when": "statusBarFocused"
   },
   {
+    "command": "workbench.view.debug",
+    "key": "ctrl+shift+d",
+    "when": "viewContainer.workbench.view.debug.enabled"
+  },
+  {
     "command": "workbench.view.explorer",
     "key": "ctrl+shift+e",
     "when": "viewContainer.workbench.view.explorer.enabled"
@@ -2647,19 +2652,9 @@
     "when": "inEditorsPicker && inQuickOpen"
   },
   {
-    "command": "workbench.action.quickOpenNavigateNextInFilePicker",
-    "key": "ctrl+p",
-    "when": "inFilesPicker && inQuickOpen"
-  },
-  {
     "command": "workbench.action.quickOpenNavigatePreviousInEditorPicker",
     "key": "ctrl+shift+tab",
     "when": "inEditorsPicker && inQuickOpen"
-  },
-  {
-    "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
-    "key": "ctrl+shift+p",
-    "when": "inFilesPicker && inQuickOpen"
   },
   {
     "command": "workbench.action.reloadWindow",
@@ -4555,16 +4550,16 @@
     "key": "ctrl+b"
   },
   {
-    "command": "workbench.action.quickOpen",
+    "command": "-workbench.action.quickOpen",
     "key": "ctrl+e"
   },
   {
-    "command": "workbench.action.quickOpenNavigateNextInFilePicker",
+    "command": "-workbench.action.quickOpenNavigateNextInFilePicker",
     "key": "ctrl+e",
     "when": "inFilesPicker && inQuickOpen"
   },
   {
-    "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
+    "command": "-workbench.action.quickOpenNavigatePreviousInFilePicker",
     "key": "ctrl+shift+e",
     "when": "inFilesPicker && inQuickOpen"
   },
@@ -4671,6 +4666,10 @@
     "when": "scopedChatSynthesisInProgress && textToSpeechInProgress"
   },
   {
+    "command": "terminal.focus",
+    "key": "ctrl+shift+t"
+  },
+  {
     "command": "workbench.action.terminal.toggleTerminal",
     "key": "ctrl+shift+t",
     "when": "terminal.active"
@@ -4751,26 +4750,6 @@
     "command": "workbench.action.terminal.detachSession",
     "key": "ctrl+shift+d",
     "when": "terminalProcessSupported && terminalFocus"
-  },
-  {
-    "command": "workbench.action.quickOpenNavigateNextInFilePicker",
-    "key": "ctrl+e",
-    "when": "inFilesPicker && inQuickOpen"
-  },
-  {
-    "command": "workbench.action.quickOpenNavigateNextInFilePicker",
-    "key": "ctrl+e",
-    "when": "inFilesPicker && inQuickOpen"
-  },
-  {
-    "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
-    "key": "ctrl+shift+e",
-    "when": "inFilesPicker && inQuickOpen"
-  },
-  {
-    "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
-    "key": "ctrl+shift+e",
-    "when": "inFilesPicker && inQuickOpen"
   },
   {
     "command": "-editor.action.jumpToBracket",
@@ -5517,7 +5496,7 @@
     "when": "editorFocus && hasUndecidedChatEditingResource && !chatSessionRequestInProgress"
   },
   {
-    "command": "workbench.action.closeWindow",
+    "command": "-workbench.action.closeWindow",
     "key": "shift+cmd+w"
   },
   {
@@ -5952,7 +5931,7 @@
     "when": "chatIsEnabled"
   },
   {
-    "command": "workbench.action.quickOpenNavigatePreviousInFilePicker",
+    "command": "-workbench.action.quickOpenNavigatePreviousInFilePicker",
     "key": "shift+cmd+p",
     "when": "inFilesPicker && inQuickOpen"
   },
@@ -6161,7 +6140,7 @@
     "when": "editorHasDefinitionProvider && editorTextFocus && isWeb"
   },
   {
-    "command": "workbench.action.quickOpen",
+    "command": "-workbench.action.quickOpen",
     "key": "cmd+p"
   },
   {
@@ -6446,7 +6425,7 @@
     "when": "terminalFocus && terminalHasBeenCreated || terminalFocus && terminalProcessSupported"
   },
   {
-    "command": "workbench.action.terminal.killEditor",
+    "command": "-workbench.action.terminal.killEditor",
     "key": "cmd+w",
     "when": "terminalEditorFocus && terminalFocus && terminalHasBeenCreated || terminalEditorFocus && terminalFocus && terminalProcessSupported"
   },
@@ -6641,7 +6620,7 @@
     "when": "editorTextFocus && foldingEnabled"
   },
   {
-    "command": "workbench.action.closeActiveEditor",
+    "command": "-workbench.action.closeActiveEditor",
     "key": "cmd+w"
   },
   {
@@ -7519,7 +7498,7 @@
     "when": "inChat && !inChatInput && chatLocation == 'editing-session'"
   },
   {
-    "command": "workbench.action.closeGroup",
+    "command": "-workbench.action.closeGroup",
     "key": "cmd+w",
     "when": "activeEditorGroupEmpty && multipleEditorGroups"
   },
@@ -7561,7 +7540,7 @@
     "key": "cmd+,"
   },
   {
-    "command": "workbench.action.quickOpenNavigateNextInFilePicker",
+    "command": "-workbench.action.quickOpenNavigateNextInFilePicker",
     "key": "cmd+p",
     "when": "inFilesPicker && inQuickOpen"
   },
@@ -7600,6 +7579,16 @@
     "when": "terminalProcessSupported && terminalTabsFocus"
   },
   {
+    "command": "workbench.action.createTerminalEditor",
+    "key": "ctrl+t",
+    "when": "terminalProcessSupported"
+  },
+  {
+    "command": "workbench.action.terminal.newWithProfile",
+    "key": "ctrl+alt+t",
+    "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
+  },
+  {
     "command": "-workbench.action.switchWindow",
     "key": "ctrl+w"
   },
@@ -7616,37 +7605,37 @@
     "key": "ctrl+w"
   },
   {
-    "command": "-workbench.action.chat.open",
-    "key": "ctrl+alt+i"
+    "key": "ctrl+alt+i",
+    "command": "-workbench.action.chat.open"
   },
   {
-    "command": "-workbench.action.chat.openEditSession",
     "key": "ctrl+shift+i",
+    "command": "-workbench.action.chat.openEditSession",
     "when": "chatEditingParticipantRegistered && view != 'workbench.panel.chat.view.edits'"
   },
   {
-    "command": "-git.revertSelectedRanges",
     "key": "ctrl+k ctrl+r",
+    "command": "-git.revertSelectedRanges",
     "when": "editorTextFocus && !operationInProgress && resourceScheme == 'vscode-remote'"
   },
   {
-    "command": "-git.stageSelectedRanges",
     "key": "ctrl+k ctrl+alt+s",
+    "command": "-git.stageSelectedRanges",
     "when": "editorTextFocus && !operationInProgress && resourceScheme == 'vscode-remote'"
-  },
+  }
   {
-    "command": "-git.unstageSelectedRanges",
     "key": "ctrl+k ctrl+n",
+    "command": "-git.unstageSelectedRanges",
     "when": "editorTextFocus && isInDiffEditor && isInDiffRightEditor && !operationInProgress && resourceScheme == 'git'"
   },
   {
-    "command": "-workbench.view.debug",
     "key": "ctrl+shift+d",
+    "command": "-workbench.view.debug",
     "when": "viewContainer.workbench.view.debug.enabled"
   },
   {
-    "command": "workbench.action.terminal.openDetectedLink",
     "key": "ctrl+shift+o",
+    "command": "workbench.action.terminal.openDetectedLink",
     "when": "terminalFocus && terminalHasBeenCreated && terminalProcessSupported"
   }
 ]
