@@ -27,6 +27,9 @@ in
       {}/prefs.js
       {}/storage
       {}/chrome
+      {}/addons.json
+      {}/zen-keyboard-shortcuts.json
+      {}/zen-themes.json
       EOF'
     '';
   }
