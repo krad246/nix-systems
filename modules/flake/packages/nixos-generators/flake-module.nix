@@ -60,6 +60,7 @@ in {
       fortress-raw-efi = mkFormat pkgs "fortress" "raw-efi";
 
       fortress-vm = mkFormat pkgs "fortress" "vm";
+      fortress-vm-bootloader = mkFormat pkgs "fortress" "vm-bootloader";
 
       windex-tarball = mkFormat pkgs "windex" "tarball";
     };

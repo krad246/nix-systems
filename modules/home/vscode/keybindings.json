@@ -7645,13 +7645,8 @@
     "when": "viewContainer.workbench.view.debug.enabled"
   },
   {
-    "key": "ctrl+e",
-    "command": "workbench.action.terminal.moveToEditor",
-    "when": "terminalFocus && terminalProcessSupported"
-  },
-  {
     "key": "ctrl+shift+o",
     "command": "workbench.action.terminal.openDetectedLink",
-    "when": "terminalHasBeenCreated &&  terminalFocus && terminalProcessSupported"
+    "when": "terminalFocus && terminalHasBeenCreated && terminalProcessSupported"
   }
 ]
