@@ -1,4 +1,8 @@
-{inputs, ...}: let
+{
+  inputs,
+  self,
+  ...
+}: let
   inherit (inputs) home-manager;
 in {
   imports = [home-manager.darwinModules.home-manager];
@@ -6,7 +10,7 @@ in {
   home-manager = {
     useUserPackages = true;
     useGlobalPkgs = true;
-    backupFileExtension = "bak";
+    backupFileExtension = self.dirtyRev or self.rev or "bak";
     verbose = false;
   };
 }
