@@ -25,6 +25,7 @@ in {
       ./zoxide.nix
       ./zsh.nix
     ]
+    ++ [self.homeModules.helix]
     ++ (with self.modules.generic; [
       home-link-registry
       flake-registry
