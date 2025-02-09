@@ -1,6 +1,11 @@
-{pkgs, ...}: {
+{
+  withSystem,
+  pkgs,
+  ...
+}: {
   programs.rbw = {
     enable = true;
+    package = withSystem pkgs.stdenv.system ({inputs', ...}: inputs'.nixos-unstable.legacyPackages.rbw);
     settings = {
       email = "krad246@gmail.com";
       pinentry =
