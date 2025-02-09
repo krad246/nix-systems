@@ -35,4 +35,5 @@ reload:
 # Format this repository.
 [group('dev')]
 fmt:
-    treefmt
+    nix flake lock
+    nix fmt

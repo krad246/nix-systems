@@ -5,7 +5,7 @@ let
 
       disko = {
         enableConfig = false;
-        memSize = 6 * 1024;
+        memSize = 8 * 1024;
       };
 
       virtualisation = {
