@@ -1,5 +1,4 @@
 {
-  withSystem,
   lib,
   pkgs,
   ...
@@ -33,7 +32,7 @@
         {
           name = "nix";
           formatter = {
-            command = withSystem pkgs.stdenv.system ({config, ...}: lib.meta.getExe config.treefmt.build.wrapper);
+            command = lib.meta.getExe pkgs.alejandra;
           };
 
           language-servers = ["nixd"];
