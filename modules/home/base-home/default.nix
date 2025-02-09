@@ -12,6 +12,7 @@ in {
       ./agenix.nix
       ./bash.nix
       ./bat.nix
+      ./bitwarden.nix
       ./bottom.nix
       ./coreutils.nix
       ./direnv.nix
