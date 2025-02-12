@@ -7591,57 +7591,57 @@
     "when": "viewContainer.workbench.view.debug.enabled"
   },
   {
-    "command": "workbench.action.terminal.openDetectedLink",
-    "key": "ctrl+shift+o",
-    "when": "terminalFocus && terminalHasBeenCreated && terminalProcessSupported"
-  },
-  {
-    "key": "ctrl+p",
     "command": "-workbench.action.quickOpenSelectPrevious",
+    "key": "ctrl+p",
     "when": "inQuickOpen"
   },
   {
-    "key": "shift+alt+down",
     "command": "-editor.action.copyLinesDownAction",
+    "key": "shift+alt+down",
     "when": "editorTextFocus && !editorReadonly"
   },
   {
-    "key": "shift+alt+up",
     "command": "-editor.action.copyLinesUpAction",
+    "key": "shift+alt+up",
     "when": "editorTextFocus && !editorReadonly"
   },
   {
-    "key": "ctrl+k",
     "command": "-deleteAllRight",
+    "key": "ctrl+k",
     "when": "textInputFocus && !editorReadonly"
   },
   {
-    "key": "tab",
     "command": "-editor.emmet.action.expandAbbreviation",
+    "key": "tab",
     "when": "config.emmet.triggerExpansionOnTab && editorTextFocus && !editorReadonly && !editorTabMovesFocus"
   },
   {
-    "key": "ctrl+shift+right",
     "command": "-editor.action.smartSelect.expand",
+    "key": "ctrl+shift+right",
     "when": "editorTextFocus"
   },
   {
-    "key": "ctrl+j",
     "command": "-editor.action.joinLines",
+    "key": "ctrl+j",
     "when": "editorTextFocus && !editorReadonly"
   },
   {
-    "key": "ctrl+shift+left",
     "command": "-editor.action.smartSelect.shrink",
+    "key": "ctrl+shift+left",
     "when": "editorTextFocus"
   },
   {
-    "key": "ctrl+t",
     "command": "-editor.action.transposeLetters",
+    "key": "ctrl+t",
     "when": "textInputFocus && !editorReadonly"
   },
   {
-    "key": "alt+z",
-    "command": "-editor.action.toggleWordWrap"
+    "command": "-editor.action.toggleWordWrap",
+    "key": "alt+z"
+  },
+  {
+    "key": "browserback",
+    "command": "-workbench.action.navigateBack",
+    "when": "canNavigateBack"
   }
 ]
