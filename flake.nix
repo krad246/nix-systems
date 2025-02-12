@@ -46,6 +46,12 @@
     nixpkgs = {url = "github:NixOS/nixpkgs/nixos-24.11";};
     nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-24.11";};
 
+    # Nix User Repositories
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Legacy and flake compatibility shims.
     flake-compat = {
       url = "github:edolstra/flake-compat";
@@ -196,6 +202,8 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
     zen-browser.url = "github:MarceColl/zen-browser-flake";
+    nixpkgs-mozilla.url = "github:mozilla/nixpkgs-mozilla";
+    nixpkgs-firefox-darwin.url = "github:bandithedoge/nixpkgs-firefox-darwin";
     nixvim-config.url = "github:mikaelfangel/nixvim-config";
   };
 
