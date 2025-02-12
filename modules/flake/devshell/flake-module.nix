@@ -133,7 +133,7 @@ in {
               paths = [inputs'.home-manager.packages.home-manager];
               buildInputs = [pkgs.makeWrapper];
               postBuild = ''
-                wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '--flake ${self}' --add-flags '-b ${self.rev or self.dirtyRev or "bak"}'
+                wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '-b ${self.rev or self.dirtyRev or "bak"}'
               '';
             })
             (pkgs.symlinkJoin {
@@ -151,7 +151,7 @@ in {
               paths = [pkgs.nixos-rebuild];
               buildInputs = [pkgs.makeWrapper];
               postBuild = ''
-                wrapProgram $out/bin/nixos-rebuild ${wrapArgs} --add-flags '--use-remote-sudo' --add-flags '--flake ${self}'
+                wrapProgram $out/bin/nixos-rebuild ${wrapArgs} --add-flags '--use-remote-sudo'
               '';
             })
           ])
@@ -161,7 +161,7 @@ in {
               paths = [inputs'.darwin.packages.darwin-rebuild];
               buildInputs = [pkgs.makeWrapper];
               postBuild = ''
-                wrapProgram $out/bin/darwin-rebuild ${wrapArgs} --add-flags '--flake ${self}'
+                wrapProgram $out/bin/darwin-rebuild ${wrapArgs}
               '';
             })
           ]);
