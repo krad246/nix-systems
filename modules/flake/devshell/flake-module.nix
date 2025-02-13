@@ -1,5 +1,9 @@
 # outer / 'flake' scope
-args @ {inputs, ...}: let
+args @ {
+  inputs,
+  self,
+  ...
+}: let
   justfile = import ./just-flake args;
 in {
   imports =
@@ -121,7 +125,7 @@ in {
           ++ [direnv nix-direnv lorri]
           ++ [just gnumake]
           ++ [shellcheck nil]
-          ++ [self'.packages.nix];
+          ++ [self.packages.${pkgs.stdenv.system}.nix];
 
         inputsFrom = [
           config.flake-root.devShell
