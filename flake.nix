@@ -194,6 +194,8 @@
       flake = false;
     };
 
+    stylix.url = "github:danth/stylix/release-24.11";
+
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
     zen-browser.url = "github:MarceColl/zen-browser-flake";
     nixvim-config.url = "github:mikaelfangel/nixvim-config";
