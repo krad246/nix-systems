@@ -12,7 +12,6 @@ pkgs.writeShellApplication {
       shift
 
       ${lib.meta.getExe' pkgs.disko "disko-install"} \
-        ${lib.strings.concatStringsSep " " lib.krad246.nixArgs} \
         --flake "${self}#{{ hostname }}" \
         --mode "$mode" \
       "$@"

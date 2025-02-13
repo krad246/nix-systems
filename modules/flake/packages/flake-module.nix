@@ -31,17 +31,61 @@ in {
   };
 
   perSystem = {
-    pkgs,
+    inputs',
     self',
+    pkgs,
     ...
-  }: {
+  }: let
+    nixArgs = let
+      inherit (lib) cli;
+    in
+      cli.toGNUCommandLine {} {
+        option = [
+          "inputs-from \"$FLAKE_ROOT\""
+          "experimental-features 'nix-command flakes'"
+          "keep-going true"
+          "show-trace true"
+          "accept-flake-config true"
+          "builders-use-substitutes true"
+          "preallocate-contents true"
+          "allow-import-from-derivation true"
+        ];
+        verbose = true;
+        # print-build-logs = true;
+      };
+    addFlags = x: "--add-flags ${lib.strings.escapeShellArg x}";
+    wrapArgs = lib.strings.concatMapStringsSep " " addFlags nixArgs;
+  in {
     packages =
       {
-        devour-flake = pkgs.callPackage ./devour-flake.nix {
-          inherit inputs self;
-          inherit lib;
+        devour-flake = pkgs.writeShellApplication {
+          name = "devour-flake";
+
+          text = ''
+            set -x
+            ${lib.meta.getExe (pkgs.callPackage inputs.devour-flake {})} "${self}" "$@"
+          '';
         };
-        zen-snapshot = pkgs.callPackage ./zen-snapshot.nix forwarded;
+
+        home-manager = pkgs.symlinkJoin {
+          name = "home-manager";
+          paths = [inputs'.home-manager.packages.home-manager];
+          buildInputs = [pkgs.makeWrapper];
+          postBuild = ''
+            wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '-b ${self.rev or self.dirtyRev or "bak"}'
+          '';
+        };
+
+        nix = pkgs.symlinkJoin {
+          name = "nix";
+          paths = [pkgs.nixVersions.stable];
+          buildInputs = [pkgs.makeWrapper];
+          postBuild = ''
+            wrapProgram $out/bin/nix ${wrapArgs}
+          '';
+        };
+
+        zen-snapshot = pkgs.callPackage ./zen-snapshot.nix {};
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         dconf2nix = pkgs.callPackage inputs.dconf2nix rec {
@@ -54,7 +98,7 @@ in {
           };
         };
 
-        disko-install = pkgs.callPackage ./disko-install.nix forwarded;
+        disko-install = pkgs.callPackage ./disko-install.nix {inherit self;};
 
         # linux has first class support for namespacing, the backend of docker
         # this means that we have a slightly simpler container interface available
@@ -84,6 +128,25 @@ in {
           unshareCgroup = false;
           privateTmp = true;
           dieWithParent = true;
+        };
+
+        nixos-rebuild = pkgs.symlinkJoin {
+          name = "nixos-rebuild";
+          paths = [pkgs.nixos-rebuild];
+          buildInputs = [pkgs.makeWrapper];
+          postBuild = ''
+            wrapProgram $out/bin/nixos-rebuild ${wrapArgs} --add-flags '--use-remote-sudo'
+          '';
+        };
+      })
+      // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
+        darwin-rebuild = pkgs.symlinkJoin {
+          name = "darwin-rebuild";
+          paths = [inputs'.darwin.packages.darwin-rebuild];
+          buildInputs = [pkgs.makeWrapper];
+          postBuild = ''
+            wrapProgram $out/bin/darwin-rebuild ${wrapArgs}
+          '';
         };
       });
   };
