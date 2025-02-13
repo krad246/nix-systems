@@ -12,6 +12,7 @@ in {
     ++ (with self.homeModules; [
       discord
       kitty
+      stylix
       vscode
     ]);
 
