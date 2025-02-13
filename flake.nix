@@ -228,25 +228,6 @@
         strings = {
           stem = path: lib.strings.nameFromURL (builtins.baseNameOf path) ".";
         };
-
-        # shared arguments for nix binaries called
-        nixArgs = let
-          inherit (lib) cli;
-        in
-          cli.toGNUCommandLine {} {
-            option = [
-              "inputs-from \"$FLAKE_ROOT\""
-              "experimental-features 'nix-command flakes'"
-              "keep-going true"
-              "show-trace true"
-              "accept-flake-config true"
-              "builders-use-substitutes true"
-              "preallocate-contents true"
-              "allow-import-from-derivation true"
-            ];
-            verbose = true;
-            # print-build-logs = true;
-          };
       };
     });
   in

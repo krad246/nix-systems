@@ -91,6 +91,18 @@ in {
           config.just-flake.outputs.devShell
         ];
 
+        packages =
+          [
+            self'.packages.devour-flake
+            self'.packages.home-manager
+          ]
+          ++ (lib.lists.optionals pkgs.stdenv.isLinux [
+            self'.packages.nixos-rebuild
+          ])
+          ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
+            self'.packages.darwin-rebuild
+          ]);
+
         shellHook = let
           parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
           arch = parse.cpu.name;
@@ -104,23 +116,12 @@ in {
       };
 
       nix-shell-env = pkgs.mkShell {
-        packages =
-          (with pkgs;
-            [git delta]
-            ++ [direnv nix-direnv lorri]
-            ++ [just gnumake]
-            ++ [shellcheck nil])
-          ++ [
-            self'.packages.devour-flake
-            self'.packages.home-manager
-            self'.packages.nix
-          ]
-          ++ (lib.lists.optionals pkgs.stdenv.isLinux [
-            self'.packages.nixos-rebuild
-          ])
-          ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
-            self'.packages.darwin-rebuild
-          ]);
+        packages = with pkgs;
+          [git delta]
+          ++ [direnv nix-direnv lorri]
+          ++ [just gnumake]
+          ++ [shellcheck nil]
+          ++ [self'.packages.nix];
 
         inputsFrom = [
           config.flake-root.devShell
