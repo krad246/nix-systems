@@ -1,9 +1,5 @@
 # outer / 'flake' scope
-args @ {
-  inputs,
-  self,
-  ...
-}: let
+args @ {inputs, ...}: let
   justfile = import ./just-flake args;
 in {
   imports =
@@ -26,7 +22,6 @@ in {
   };
 
   perSystem = {
-    inputs',
     self',
     config,
     lib,
@@ -109,77 +104,22 @@ in {
       };
 
       nix-shell-env = pkgs.mkShell {
-        packages = let
-          nixArgs = let
-            inherit (lib) cli;
-          in
-            cli.toGNUCommandLine {} {
-              option = [
-                "inputs-from \"$FLAKE_ROOT\""
-                "experimental-features 'nix-command flakes'"
-                "keep-going true"
-                "show-trace true"
-                "accept-flake-config true"
-                "builders-use-substitutes true"
-                "preallocate-contents true"
-                "allow-import-from-derivation true"
-              ];
-              verbose = true;
-              # print-build-logs = true;
-            };
-          addFlags = x: "--add-flags ${lib.strings.escapeShellArg x}";
-          wrapArgs = lib.strings.concatMapStringsSep " " addFlags nixArgs;
-        in
+        packages =
           (with pkgs;
             [git delta]
             ++ [direnv nix-direnv lorri]
             ++ [just gnumake]
             ++ [shellcheck nil])
           ++ [
-            (pkgs.symlinkJoin {
-              name = "nix";
-              paths = [pkgs.nixVersions.stable];
-              buildInputs = [pkgs.makeWrapper];
-              postBuild = ''
-                wrapProgram $out/bin/nix ${wrapArgs}
-              '';
-            })
-            (pkgs.symlinkJoin {
-              name = "home-manager";
-              paths = [inputs'.home-manager.packages.home-manager];
-              buildInputs = [pkgs.makeWrapper];
-              postBuild = ''
-                wrapProgram $out/bin/home-manager ${wrapArgs} --add-flags '-b ${self.rev or self.dirtyRev or "bak"}'
-              '';
-            })
-            (pkgs.symlinkJoin {
-              name = "devour-flake";
-              paths = [self'.packages.devour-flake];
-              buildInputs = [pkgs.makeWrapper];
-              postBuild = ''
-                wrapProgram $out/bin/devour-flake ${wrapArgs}
-              '';
-            })
+            self'.packages.devour-flake
+            self'.packages.home-manager
+            self'.packages.nix
           ]
           ++ (lib.lists.optionals pkgs.stdenv.isLinux [
-            (pkgs.symlinkJoin {
-              name = "nixos-rebuild";
-              paths = [pkgs.nixos-rebuild];
-              buildInputs = [pkgs.makeWrapper];
-              postBuild = ''
-                wrapProgram $out/bin/nixos-rebuild ${wrapArgs} --add-flags '--use-remote-sudo'
-              '';
-            })
+            self'.packages.nixos-rebuild
           ])
           ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
-            (pkgs.symlinkJoin {
-              name = "darwin-rebuild";
-              paths = [inputs'.darwin.packages.darwin-rebuild];
-              buildInputs = [pkgs.makeWrapper];
-              postBuild = ''
-                wrapProgram $out/bin/darwin-rebuild ${wrapArgs}
-              '';
-            })
+            self'.packages.darwin-rebuild
           ]);
 
         inputsFrom = [
