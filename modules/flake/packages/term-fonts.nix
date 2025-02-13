@@ -1,4 +1,4 @@
 {pkgs, ...}:
 pkgs.nerdfonts.override {
-  fonts = ["Meslo" "NerdFontsSymbolsOnly"];
+  fonts = ["CascadiaCode" "Meslo" "NerdFontsSymbolsOnly"];
 }
