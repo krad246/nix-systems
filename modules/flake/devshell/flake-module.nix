@@ -97,14 +97,14 @@ in {
 
         packages =
           [
-            self'.packages.devour-flake
-            self'.packages.home-manager
+            self.packages.${pkgs.stdenv.system}.devour-flake
+            self.packages.${pkgs.stdenv.system}.home-manager
           ]
           ++ (lib.lists.optionals pkgs.stdenv.isLinux [
-            self'.packages.nixos-rebuild
+            self.packages.${pkgs.stdenv.system}.nixos-rebuild
           ])
           ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
-            self'.packages.darwin-rebuild
+            self.packages.${pkgs.stdenv.system}.darwin-rebuild
           ]);
 
         shellHook = let
