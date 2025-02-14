@@ -38,14 +38,20 @@ in {
     file.dotfiles.source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/dotfiles";
 
     # auto switch to default specialisation
-    activation = lib.modules.mkIf (config.specialisation != {}) {
-      switchToSpecialisation = let
-        cfg = config.specialisation.default.configuration;
-      in
-        lib.hm.dag.entryAfter ["writeBoundary"] ''
-          $DRY_RUN_CMD ${lib.meta.getExe cfg.home.activationPackage}
+    activation =
+      (lib.attrsets.optionalAttrs (config.specialisation != {}) {
+        switchToSpecialisation = let
+          cfg = config.specialisation.default.configuration;
+        in
+          lib.hm.dag.entryAfter ["writeBoundary"] ''
+            $DRY_RUN_CMD ${lib.meta.getExe cfg.home.activationPackage}
+          '';
+      })
+      // {
+        syncDotfiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
+          ${lib.meta.getExe pkgs.rsync} --mkpath -auvh ${self}/* ${config.xdg.configHome}/dotfiles/
         '';
-    };
+      };
 
     packages = with pkgs; [cachix];
     preferXdgDirectories = true;
