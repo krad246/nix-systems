@@ -2,7 +2,6 @@
   imports =
     [
       ./aarch64-binfmt.nix
-      ./agenix.nix
       ./default-users.nix
       ./environment.nix
       ./hm-compat.nix
@@ -12,6 +11,7 @@
       ./packages.nix
     ]
     ++ (with self.nixosModules; [
+      agenix
       ccache-stdenv
       zram
     ])
