@@ -19,6 +19,5 @@
       krad246.attrsets.stemValuePair path {
         file = path;
         mode = "770";
-        group = "hercules-ci-agent";
       });
 }

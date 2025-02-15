@@ -1,8 +1,11 @@
 {
   specialArgs,
+  self,
   config,
   ...
 }: {
+  imports = [self.darwinModules.apps];
+
   krad246.darwin.masterUser = {
     enable = true;
     owner = rec {
