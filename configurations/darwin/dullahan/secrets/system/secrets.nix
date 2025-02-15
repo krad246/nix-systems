@@ -12,11 +12,10 @@ let
   inherit (dullahan) system linux-builder;
 in {
   "./hercules-ci/headless-penguin/headless-penguin-binary-caches.age".publicKeys = [system.ed25519 linux-builder.ed25519];
-  "./hercules-ci/headless-penguin/headless-penguin-cachix-auth-token.age".publicKeys = [system.ed25519 linux-builder.ed25519];
   "./hercules-ci/headless-penguin/headless-penguin-cluster-join-token.age".publicKeys = [system.ed25519 linux-builder.ed25519];
 
-  "./hercules-ci/cachix-auth-token.age".publicKeys = [system.ed25519];
-  "./hercules-ci/cluster-join-token.age".publicKeys = [system.ed25519];
+  "./hercules-ci/dullahan-binary-caches.age".publicKeys = [system.ed25519];
+  "./hercules-ci/dullahan-cluster-join-token.age".publicKeys = [system.ed25519];
 
   "./id_ed25519_priv.age".publicKeys = [system.ed25519 linux-builder.ed25519];
 }
