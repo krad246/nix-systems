@@ -30,6 +30,7 @@ in
       {}/addons.json
       {}/zen-keyboard-shortcuts.json
       {}/zen-themes.json
+      {}/containers.json
       EOF'
     '';
   }
