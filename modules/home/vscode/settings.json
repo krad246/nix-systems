@@ -1837,7 +1837,6 @@
   "workbench.editor.defaultBinaryEditor": "",
   "workbench.editor.doubleClickTabToToggleEditorGroupSizes": "expand",
   "workbench.editor.dragToOpenWindow": true,
-  "workbench.editor.editorActionsLocation": "default",
   "workbench.editor.empty.hint": "text",
   "workbench.editor.enablePreview": false,
   "workbench.editor.enablePreviewFromCodeNavigation": false,
