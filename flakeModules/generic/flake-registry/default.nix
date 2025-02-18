@@ -1,5 +1,0 @@
-{...}: {
-  imports = [
-    ./flake-registry.nix
-  ];
-}
