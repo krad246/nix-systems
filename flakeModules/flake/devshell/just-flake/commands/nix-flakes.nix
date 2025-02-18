@@ -1,4 +1,4 @@
-{self, ...}: {
+_: {
   perSystem = {
     just-flake.features = {
       build = {
@@ -84,7 +84,7 @@
           # Wraps `nix repl .`;
           [group('nix')]
           repl *ARGS: lock
-            nix repl --file "${self}" {{ ARGS }}
+            nix repl --file "$FLAKE_ROOT" {{ ARGS }}
         '';
       };
 
