@@ -258,7 +258,7 @@
       # this encompasses passing through a default.nix, capturing
       # calling context, and then attaching it to a flake-module.nix that
       # provides the actual implementation; it provides a callable through the flakeModule attribute
-      entrypoint = import ./modules args;
+      entrypoint = import ./flakeModules args;
     in {
       # Source files and other callables pulled in here are combined into this 'layer'.
       # flake-parts specifies that flake-level functors and other reusable module logic
