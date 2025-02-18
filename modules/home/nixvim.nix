@@ -1,6 +1,5 @@
 {
   withSystem,
-  self,
   lib,
   pkgs,
   ...
@@ -8,8 +7,6 @@
   nixvim = withSystem pkgs.stdenv.system ({inputs', ...}: inputs'.nixvim-config.packages.default);
   inherit (lib) meta;
 in {
-  imports = [self.homeModules.nerdfonts];
-
   home = {
     packages =
       [nixvim]
