@@ -207,6 +207,7 @@
     nixvim-config.url = "github:mikaelfangel/nixvim-config";
     hercules-ci-agent.url = "github:hercules-ci/hercules-ci-agent/hercules-ci-agent-0.10.5";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
+    mkdocs-flake.url = "github:applicative-systems/mkdocs-flake";
   };
 
   outputs = inputs @ {
