@@ -1647,7 +1647,7 @@
   "terminal.integrated.tabs.enabled": true,
   "terminal.integrated.tabs.focusMode": "doubleClick",
   "terminal.integrated.tabs.hideCondition": "singleTerminal",
-  "terminal.integrated.tabs.location": "right",
+  "terminal.integrated.tabs.location": "left",
   "terminal.integrated.tabs.separator": " - ",
   "terminal.integrated.tabs.showActions": "singleTerminalOrNarrow",
   "terminal.integrated.tabs.showActiveTerminal": "singleTerminalOrNarrow",
@@ -1796,7 +1796,6 @@
   "window.zoomLevel": 0,
   "window.zoomPerWindow": true,
   "workbench.activityBar.iconClickBehavior": "toggle",
-  "workbench.activityBar.location": "hidden",
   "workbench.cloudChanges.autoResume": "onReload",
   "workbench.cloudChanges.continueOn": "prompt",
   "workbench.colorCustomizations": {},
@@ -1913,7 +1912,6 @@
   "workbench.navigationControl.enabled": true,
   "workbench.panel.defaultLocation": "bottom",
   "workbench.panel.opensMaximized": "preserve",
-  "workbench.panel.showLabels": true,
   "workbench.preferredDarkColorTheme": "Default Dark Modern",
   "workbench.preferredHighContrastColorTheme": "Default High Contrast",
   "workbench.preferredHighContrastLightColorTheme": "Default High Contrast Light",
@@ -2139,7 +2137,7 @@
   "workbench.settings.useSplitJSON": false,
   "workbench.sideBar.location": "left",
   "workbench.startupEditor": "none",
-  "workbench.statusBar.visible": true,
+  "workbench.statusBar.visible": false,
   "workbench.tips.enabled": true,
   "workbench.tree.enableStickyScroll": true,
   "workbench.tree.expandMode": "singleClick",
@@ -2158,5 +2156,6 @@
   "zenMode.hideStatusBar": true,
   "zenMode.restore": true,
   "zenMode.showTabs": "multiple",
-  "zenMode.silentNotifications": true
+  "zenMode.silentNotifications": true,
+  "workbench.activityBar.location": "hidden"
 }
