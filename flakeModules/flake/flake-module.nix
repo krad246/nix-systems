@@ -42,7 +42,7 @@ in {
       # can be used in all of the above contexts
       generic = let
         inherit (lib) krad246;
-        paths = krad246.fileset.filterExt "nix" self + "/modules/generic";
+        paths = krad246.fileset.filterExt "nix" ../generic;
       in
         krad246.attrsets.genAttrs' paths (path: krad246.attrsets.stemValuePair path (import path));
     };
