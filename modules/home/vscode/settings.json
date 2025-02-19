@@ -1493,7 +1493,7 @@
     "vscode",
     "vscode-insiders"
   ],
-  "terminal.integrated.altClickMovesCursor": true,
+  "terminal.integrated.altClickMovesCursor": false,
   "terminal.integrated.autoReplies": {},
   "terminal.integrated.automationProfile.linux": null,
   "terminal.integrated.automationProfile.osx": null,
@@ -1510,7 +1510,7 @@
   "terminal.integrated.customGlyphs": true,
   "terminal.integrated.cwd": "",
   "terminal.integrated.defaultProfile.linux": "sh",
-  "terminal.integrated.defaultProfile.osx": null,
+  "terminal.integrated.defaultProfile.osx": "sh",
   "terminal.integrated.defaultProfile.windows": null,
   "terminal.integrated.detectLocale": "auto",
   "terminal.integrated.drawBoldTextInBrightColors": true,
@@ -1624,7 +1624,7 @@
   "terminal.integrated.rightClickBehavior": "copyPaste",
   "terminal.integrated.scrollback": 32768,
   "terminal.integrated.shellIntegration.decorationsEnabled": "both",
-  "terminal.integrated.shellIntegration.enabled": true,
+  "terminal.integrated.shellIntegration.enabled": false,
   "terminal.integrated.shellIntegration.showCommandGuide": true,
   "terminal.integrated.showExitAlert": true,
   "terminal.integrated.showLinkHover": true,
@@ -1637,8 +1637,6 @@
     "pwshGit": true
   },
   "terminal.integrated.suggest.enableExtensionCompletions": false,
-  "terminal.integrated.suggest.quickSuggestions": false,
-  "terminal.integrated.suggest.suggestOnTriggerCharacters": false,
   "terminal.integrated.tabStopWidth": 4,
   "terminal.integrated.tabs.defaultColor": null,
   "terminal.integrated.tabs.defaultIcon": "terminal",
@@ -1647,7 +1645,6 @@
   "terminal.integrated.tabs.enabled": true,
   "terminal.integrated.tabs.focusMode": "doubleClick",
   "terminal.integrated.tabs.hideCondition": "singleTerminal",
-  "terminal.integrated.tabs.location": "left",
   "terminal.integrated.tabs.separator": " - ",
   "terminal.integrated.tabs.showActions": "singleTerminalOrNarrow",
   "terminal.integrated.tabs.showActiveTerminal": "singleTerminalOrNarrow",
@@ -2127,7 +2124,12 @@
     "search.searchOnType",
     "search.quickAccess.preserveInput",
     "search.quickOpen.history.filterSortOrder",
-    "explorer.fileNesting.enabled"
+    "explorer.fileNesting.enabled",
+    "terminal.integrated.fontLigatures.enabled",
+    "terminal.integrated.fontLigatures.fallbackLigatures",
+    "terminal.integrated.fontLigatures.featureSettings",
+    "terminal.integrated.hideOnLastClosed",
+    "terminal.integrated.suggest.showStatusBar"
   ],
   "workbench.settings.editor": "ui",
   "workbench.settings.enableNaturalLanguageSearch": true,
@@ -2137,7 +2139,6 @@
   "workbench.settings.useSplitJSON": false,
   "workbench.sideBar.location": "left",
   "workbench.startupEditor": "none",
-  "workbench.statusBar.visible": false,
   "workbench.tips.enabled": true,
   "workbench.tree.enableStickyScroll": true,
   "workbench.tree.expandMode": "singleClick",
@@ -2156,5 +2157,11 @@
   "zenMode.hideStatusBar": true,
   "zenMode.restore": true,
   "zenMode.showTabs": "multiple",
-  "zenMode.silentNotifications": true
+  "zenMode.silentNotifications": true,
+  "workbench.statusBar.visible": false,
+  "terminal.integrated.tabs.location": "left",
+  "cmake.pinnedCommands": [
+    "workbench.action.tasks.configureTaskRunner",
+    "workbench.action.tasks.runTask"
+  ]
 }
