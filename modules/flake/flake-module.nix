@@ -68,7 +68,7 @@ in {
 
         darwinConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.darwinConfigurations;
         inherit (self) devShells;
-        homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.home.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
+        homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
         nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
         packages = lib.attrsets.removeAttrs self.packages [
           "fortress-hyperv"
