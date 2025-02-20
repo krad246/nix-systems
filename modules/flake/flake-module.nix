@@ -70,18 +70,23 @@ in {
         inherit (self) devShells;
         homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
         nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
-        packages = lib.attrsets.removeAttrs self.packages [
-          "fortress-hyperv"
-          "fortress-install-iso"
-          "fortress-install-iso-hyperv"
-          "fortress-iso"
-          "fortress-qcow"
-          "fortress-qcow-efi"
-          "fortress-raw"
-          "fortress-raw-efi"
-          "fortress-sd-aarch64"
-          "fortress-sd-aarch64-installer"
-        ];
+        packages =
+          lib.attrsets.mapAttrs (
+            _system: packages:
+              lib.attrsets.removeAttrs packages [
+                "fortress-hyperv"
+                "fortress-install-iso"
+                "fortress-install-iso-hyperv"
+                "fortress-iso"
+                "fortress-qcow"
+                "fortress-qcow-efi"
+                "fortress-raw"
+                "fortress-raw-efi"
+                "fortress-sd-aarch64"
+                "fortress-sd-aarch64-installer"
+              ]
+          )
+          self.packages;
       };
     };
   };
