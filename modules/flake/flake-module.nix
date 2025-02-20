@@ -62,6 +62,12 @@ in {
     };
 
     herculesCI.onPush = {
+      default.outputs = {
+        inherit (self) checks;
+        inherit (self) devShell devShells;
+        inherit (self) apps;
+        inherit (self) nixosConfigurations darwinConfigurations;
+      };
     };
   };
 }
