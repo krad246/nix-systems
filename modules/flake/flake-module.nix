@@ -84,6 +84,9 @@ in {
                 "fortress-raw-efi"
                 "fortress-sd-aarch64"
                 "fortress-sd-aarch64-installer"
+                "fortress-sd-x86_64"
+                "fortress-vagrant-virtualbox"
+                "fortress-virtuabox"
               ]
           )
           self.packages;
