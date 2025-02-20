@@ -63,10 +63,24 @@ in {
 
     herculesCI.onPush = {
       default.outputs = {
-        inherit (self) checks;
-        inherit (self) devShell devShells;
         inherit (self) apps;
-        inherit (self) nixosConfigurations darwinConfigurations;
+        inherit (self) checks;
+        darwinConfigurations = lib.attrsets.mapAttrs (machine: machine.config.system.build.toplevel) self.darwinConfigurations;
+        inherit (self) devShells;
+        homeConfigurations = lib.attrsets.mapAttrs (machine: machine.config.system.build.toplevel) self.homeConfigurations;
+        nixosConfigurations = lib.attrsets.mapAttrs (machine: machine.config.system.build.toplevel) self.nixosConfigurations;
+        packages = lib.attrsets.removeAttrs self.packages [
+          "fortress-hyperv"
+          "fortress-install-iso"
+          "fortress-install-iso-hyperv"
+          "fortress-iso"
+          "fortress-qcow"
+          "fortress-qcow-efi"
+          "fortress-raw"
+          "fortress-raw-efi"
+          "fortress-sd-aarch64"
+          "fortress-sd-aarch64-installer"
+        ];
       };
     };
   };
