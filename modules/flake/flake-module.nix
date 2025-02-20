@@ -87,6 +87,7 @@ in {
                 "fortress-sd-x86_64"
                 "fortress-vagrant-virtualbox"
                 "fortress-virtuabox"
+                "fortress-vmware"
               ]
           )
           self.packages;
