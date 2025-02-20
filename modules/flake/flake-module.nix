@@ -86,7 +86,7 @@ in {
                 "fortress-sd-aarch64-installer"
                 "fortress-sd-x86_64"
                 "fortress-vagrant-virtualbox"
-                "fortress-virtuabox"
+                "fortress-virtualbox"
                 "fortress-vmware"
               ]
           )

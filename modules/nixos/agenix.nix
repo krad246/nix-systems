@@ -8,7 +8,7 @@ args @ {
   commit = "main";
   pinned = builtins.fetchTarball {
     url = "https://github.com/ryantm/agenix/archive/${commit}.tar.gz";
-    sha256 = "1x8nd8hvsq6mvzig122vprwigsr3z2skanig65haqswn7z7amsvg";
+    sha256 = "006ngydiykjgqs85cl19h9klq8kaqm5zs0ng51dnwy7nzgqxzsdr";
   };
   repo = lib.attrsets.attrByPath ["inputs" "agenix"] pinned args;
 in {
