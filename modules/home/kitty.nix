@@ -10,7 +10,7 @@
       mode = "enabled";
       enableBashIntegration = true;
     };
-    theme = "Gruvbox Material Dark Soft";
+    themeFile = "Gruvbox Material Dark Soft";
     font = {
       name = "meslo-lg";
       size = 20.0;
