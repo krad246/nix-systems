@@ -1,5 +1,6 @@
 {
   withSystem,
+  inputs,
   self,
   config,
   lib,
@@ -75,4 +76,8 @@
 
     systemPackages = with pkgs; ([m-cli] ++ [coreutils just tldr safe-rm] ++ [duf dust]);
   };
+
+  nixpkgs.overlays = [
+    inputs.nixpkgs-firefox-darwin.overlay
+  ];
 }
