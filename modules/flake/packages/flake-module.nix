@@ -9,13 +9,13 @@ forwarded @ {
   containers = import ./containers forwarded;
   nixos-generators = import ./nixos-generators forwarded;
   disko-config = import ./disko forwarded;
-  nerdfonts = import ./nerdfonts forwarded;
+  documentation = import ./documentation forwarded;
 in {
   imports = [
     containers.flakeModule
     disko-config.flakeModule
     nixos-generators.flakeModule
-    nerdfonts.flakeModule
+    documentation.flakeModule
   ];
 
   # export the flake modules we loaded to this context for user consumption
@@ -24,7 +24,7 @@ in {
       containers = containers.flakeModule;
       nixos-generators = nixos-generators.flakeModule;
       disko-config = disko-config.flakeModule;
-      nerdfonts = nerdfonts.flakeModule;
+      documentation = documentation.flakeModule;
     };
 
     modules.flake = flakeModules;
@@ -84,6 +84,8 @@ in {
             wrapProgram $out/bin/nix ${wrapArgs}
           '';
         };
+
+        term-fonts = pkgs.callPackage ./term-fonts.nix {};
 
         zen-snapshot = pkgs.callPackage ./zen-snapshot.nix {};
       }
