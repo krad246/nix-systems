@@ -8,6 +8,7 @@
     settings = {
       binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
       clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
+      concurrentTasks = 12;
     };
   };
 
