@@ -42,8 +42,8 @@
       };
     };
 
-    maxJobs = 24;
-    cores = 6;
+    maxJobs = 32;
+    cores = 8;
 
     memorySize = 6 * 1024;
     diskSize = 192 * 1024;
