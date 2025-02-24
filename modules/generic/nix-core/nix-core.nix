@@ -10,7 +10,7 @@ in {
     checkConfig = true;
     gc.automatic = true;
     settings = {
-      experimental-features = ["nix-command" "flakes"];
+      experimental-features = ["nix-command" "flakes"] ++ (lib.lists.optionals pkgs.stdenv.isLinux ["cgroups" "local-overlay-store"]);
       preallocate-contents = true;
       use-xdg-base-directories = true;
 
@@ -45,8 +45,8 @@ in {
       timeout = modules.mkDefault 1800;
       max-silent-time = modules.mkDefault 3600;
 
-      sandbox = true;
-      sandbox-fallback = true;
+      sandbox = modules.mkForce true;
+      sandbox-fallback = modules.mkForce true;
     };
   };
 }
