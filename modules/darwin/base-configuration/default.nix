@@ -52,11 +52,14 @@
 
   nix = {
     useDaemon = lib.modules.mkForce true;
-    configureBuildUsers = true;
     daemonIOLowPriority = lib.modules.mkDefault true;
     daemonProcessType = lib.modules.mkDefault "Adaptive";
+
+    configureBuildUsers = true;
+
     settings = {
       auto-optimise-store = false;
+      extra-sandbox-paths = ["/nix/store"];
     };
   };
 
