@@ -49,7 +49,10 @@ in {
       })
       // {
         syncDotfiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
-          ${lib.meta.getExe pkgs.rsync} --mkpath -auvh ${self}/* ${config.xdg.configHome}/dotfiles/
+          ${lib.meta.getExe pkgs.rsync} \
+                  --chmod=0755 \
+                  --chown=${config.home.username}:nogroup \
+                  --mkpath -auvh ${self}/* ${config.xdg.configHome}/dotfiles/
         '';
       };
 
