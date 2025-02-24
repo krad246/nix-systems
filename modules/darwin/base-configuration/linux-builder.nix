@@ -54,7 +54,7 @@ in {
       };
 
       systems = options.mkOption {
-        default = ["i386-linux" "i686-linux" "x86_64-linux" "aarch64-linux"];
+        default = ["i686-linux" "x86_64-linux" "aarch64-linux"];
         inherit (global.options.nix.linux-builder.systems) type description defaultText;
       };
     };
