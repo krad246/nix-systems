@@ -60,5 +60,42 @@ in {
         };
       });
     };
+
+    herculesCI.onPush = {
+      default.outputs = {
+        inherit (self) apps;
+        inherit (self) checks;
+
+        darwinConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.darwinConfigurations;
+        inherit (self) devShells;
+        homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
+        nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
+        packages =
+          lib.attrsets.mapAttrs (
+            _system: packages:
+              lib.attrsets.removeAttrs packages [
+                # "fortress-disko-vm"
+                "fortress-hyperv" # aarch64-linux only
+                "fortress-install-iso"
+                "fortress-install-iso-hyperv"
+                "fortress-iso"
+                "fortress-qcow"
+                "fortress-qcow-efi"
+                "fortress-raw"
+                "fortress-raw-efi"
+                "fortress-sd-aarch64"
+                "fortress-sd-aarch64-installer"
+                "fortress-sd-x86_64"
+                "fortress-vagrant-virtualbox"
+                "fortress-virtualbox"
+                "fortress-vm"
+                "fortress-vmware"
+                "fortress-vm-bootloader"
+                # "windex-tarball"
+              ]
+          )
+          self.packages;
+      };
+    };
   };
 }
