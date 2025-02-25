@@ -5,11 +5,11 @@ let
 
       disko = {
         enableConfig = false;
-        memSize = 8 * 1024;
+        memSize = 6 * 1024;
       };
 
       virtualisation = {
-        diskSize = 12 * 1024;
+        diskSize = 20 * 1024;
       };
     };
   in
@@ -20,7 +20,7 @@ let
       imports = [(modulesPath + "/virtualisation/qemu-vm.nix")] ++ [(mkConfig extraConfig)];
 
       virtualisation = {
-        cores = 6;
+        cores = 8;
       };
     };
   in
