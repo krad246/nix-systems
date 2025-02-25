@@ -24,6 +24,7 @@ in {
       containers = containers.flakeModule;
       nixos-generators = nixos-generators.flakeModule;
       disko-config = disko-config.flakeModule;
+
       documentation = documentation.flakeModule;
     };
 

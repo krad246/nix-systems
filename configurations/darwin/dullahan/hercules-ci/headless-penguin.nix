@@ -1,4 +1,4 @@
-outer @ {
+{
   self,
   specialArgs,
   lib,
@@ -8,16 +8,14 @@ outer @ {
     ephemeral = false;
 
     extraConfig = {config, ...}: {
-      imports = [self.nixosModules.agenix] ++ [self.modules.generic.fortress];
-
-      krad246.remotes.fortress = outer.config.krad246.remotes.fortress;
+      imports = [self.nixosModules.agenix];
 
       services.hercules-ci-agent = {
         enable = true;
         settings = {
           clusterJoinTokenPath = config.age.secrets.headless-penguin-cluster-join-token.path;
           binaryCachesPath = config.age.secrets.headless-penguin-binary-caches.path;
-          concurrentTasks = 6;
+          concurrentTasks = 12;
         };
       };
 
@@ -44,11 +42,10 @@ outer @ {
       };
     };
 
-    maxJobs = 24;
-    cores = 6;
+    maxJobs = 32;
+    cores = 8;
 
     memorySize = 6 * 1024;
-    diskSize = 320 * 1024;
-    swapSize = 192 * 1024;
+    diskSize = 192 * 1024;
   };
 }
