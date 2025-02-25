@@ -100,16 +100,20 @@ in {
           # crashed processes aren't worth debugging in this environment tbh
           systemd.coredump.enable = false;
 
+          services.swapspace = {
+            enable = true;
+          };
+
           # setting priority of swap devices to 1 less than mkVMOverride
           # this makes it take precedence over the default behavior of no swap devices
           # alternatively, you *could* reimplement everything via the defaultFileSystems argument
           # but that stinks.
-          swapDevices = lib.mkOverride 9 [
-            {
-              device = "/swapfile";
-              size = cfg.swapSize;
-            }
-          ];
+          #swapDevices = lib.mkOverride 9 [
+          #  {
+          #    device = "/swapfile";
+          #    size = cfg.swapSize;
+          #  }
+          #];
         };
 
         inherit (cfg) maxJobs;

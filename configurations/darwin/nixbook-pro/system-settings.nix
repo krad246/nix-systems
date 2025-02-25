@@ -45,7 +45,6 @@
         cores = 8;
         memorySize = 16 * 1024;
         diskSize = 192 * 1024;
-        swapSize = 32 * 1024;
       };
 
       colima = {
