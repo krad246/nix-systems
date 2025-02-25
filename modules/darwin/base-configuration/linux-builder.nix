@@ -12,13 +12,13 @@ in {
       enable = (options.mkEnableOption "linux-builder") // {default = true;};
 
       maxJobs = options.mkOption {
-        default = 16;
+        default = 24;
         inherit (global.options.nix.linux-builder.maxJobs) type defaultText example description;
       };
 
       cores = options.mkOption {
         type = types.ints.positive;
-        default = 8;
+        default = 6;
         description = ''
           Specify the number of cores the guest is permitted to use.
           The number can be higher than the available cores on the
@@ -100,14 +100,13 @@ in {
           # crashed processes aren't worth debugging in this environment tbh
           systemd.coredump.enable = false;
 
+          # dynamic swap allocator for the underlying QCOW2, keeps space utilization efficient
           services.swapspace = {
             enable = true;
           };
 
           # setting priority of swap devices to 1 less than mkVMOverride
-          # this makes it take precedence over the default behavior of no swap devices
-          # alternatively, you *could* reimplement everything via the defaultFileSystems argument
-          # but that stinks.
+          # to make it take precedence over the default behavior of no swap devices
           swapDevices = lib.mkOverride 9 [
             {
               device = "/swapfile";

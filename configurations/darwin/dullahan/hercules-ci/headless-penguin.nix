@@ -16,6 +16,7 @@
           clusterJoinTokenPath = config.age.secrets.headless-penguin-cluster-join-token.path;
           binaryCachesPath = config.age.secrets.headless-penguin-binary-caches.path;
           concurrentTasks = 12;
+          nixVerbosity = "Info";
         };
       };
 
@@ -40,12 +41,30 @@
         in
           lib.lists.forEach paths (path: builtins.readFile path);
       };
+
+      nix = {
+        daemonIOSchedClass = lib.mkDefault "idle";
+        daemonCPUSchedPolicy = lib.mkDefault "idle";
+      };
+
+      # put the service in top-level slice
+      # so that it's lower than system and user slice overall
+      # instead of only being lower in system slice
+      systemd.services.nix-daemon.serviceConfig.Slice = "-.slice";
+
+      # always use the daemon, even executed  with root
+      environment.variables.NIX_REMOTE = "daemon";
+
+      systemd.services.nix-daemon.serviceConfig = {
+        memoryHigh = "7G";
+      };
     };
 
-    maxJobs = 24;
-    cores = 8;
-
+    memorySize = 8 * 1024;
     diskSize = 128 * 1024;
+
+    maxJobs = 32;
+    cores = 8;
 
     systems = ["aarch64-linux"];
   };
