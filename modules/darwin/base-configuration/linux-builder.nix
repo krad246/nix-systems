@@ -34,7 +34,7 @@ in {
       };
 
       diskSize = options.mkOption {
-        default = 32 * 1024;
+        default = 64 * 1024;
         type = types.ints.positive;
         example = 30720;
         description = "The maximum disk space allocated to the runner in MB";
@@ -108,12 +108,12 @@ in {
           # this makes it take precedence over the default behavior of no swap devices
           # alternatively, you *could* reimplement everything via the defaultFileSystems argument
           # but that stinks.
-          #swapDevices = lib.mkOverride 9 [
-          #  {
-          #    device = "/swapfile";
-          #    size = cfg.swapSize;
-          #  }
-          #];
+          swapDevices = lib.mkOverride 9 [
+            {
+              device = "/swapfile";
+              size = cfg.swapSize;
+            }
+          ];
         };
 
         inherit (cfg) maxJobs;

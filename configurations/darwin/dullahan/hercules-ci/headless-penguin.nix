@@ -42,10 +42,8 @@
       };
     };
 
-    maxJobs = 32;
+    maxJobs = 24;
     cores = 8;
-
-    memorySize = 6 * 1024;
-    diskSize = 192 * 1024;
+    systems = ["aarch64-linux"];
   };
 }

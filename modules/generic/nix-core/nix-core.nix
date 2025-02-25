@@ -16,7 +16,7 @@ in {
 
       keep-going = true;
       max-jobs = "auto";
-      max-substitution-jobs = modules.mkDefault 16;
+      max-substitution-jobs = modules.mkDefault 32;
 
       auto-optimise-store = modules.mkDefault false;
       min-free = modules.mkDefault (12 * 1024 * 1024 * 1024);
