@@ -74,7 +74,7 @@ in {
           lib.attrsets.mapAttrs (
             _system: packages:
               lib.attrsets.removeAttrs packages [
-                "fortress-disko-vm"
+                # "fortress-disko-vm"
                 "fortress-hyperv"
                 "fortress-install-iso"
                 "fortress-install-iso-hyperv"
@@ -91,7 +91,7 @@ in {
                 "fortress-vm"
                 "fortress-vmware"
                 "fortress-vm-bootloader"
-                "windex-tarball"
+                # "windex-tarball"
               ]
           )
           self.packages;
