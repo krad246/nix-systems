@@ -44,13 +44,11 @@
         maxJobs = 60;
         cores = 8;
         memorySize = 16 * 1024;
-        diskSize = 192 * 1024;
       };
 
       colima = {
         enable = true;
         inherit (linux-builder) memorySize;
-        inherit (linux-builder) diskSize;
         inherit (linux-builder) cores;
       };
     };
