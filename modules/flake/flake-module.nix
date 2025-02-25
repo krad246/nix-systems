@@ -75,9 +75,9 @@ in {
             _system: packages:
               lib.attrsets.removeAttrs packages [
                 # "fortress-disko-vm"
-                "fortress-hyperv"
-                "fortress-install-iso"
-                "fortress-install-iso-hyperv"
+                # "fortress-hyperv"
+                # "fortress-install-iso"
+                # "fortress-install-iso-hyperv"
                 "fortress-iso"
                 "fortress-qcow"
                 "fortress-qcow-efi"
