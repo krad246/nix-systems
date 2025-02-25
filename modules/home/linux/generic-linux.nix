@@ -21,7 +21,6 @@ in {
         imports =
           [./dconf.nix]
           ++ (with self.homeModules; [
-            firefox
             kitty
             vscode
             vscode-server
