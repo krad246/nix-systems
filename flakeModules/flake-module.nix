@@ -82,7 +82,7 @@ in {
               lib.attrsets.removeAttrs packages [
                 # "fortress-disko-vm"
                 "fortress-hyperv" # aarch64-linux only
-                "fortress-install-iso"
+                # "fortress-install-iso"
                 "fortress-install-iso-hyperv"
                 "fortress-iso"
                 "fortress-qcow"
