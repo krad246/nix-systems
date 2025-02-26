@@ -78,10 +78,13 @@ in {
         nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
         packages =
           lib.attrsets.mapAttrs (
-            _system: packages:
-              lib.attrsets.removeAttrs packages [
+            system: packages: let
+              excludesPerSystem = {
+                aarch64-linux = packages': lib.attrsets.removeAttrs packages' ["fortress-hyperv"];
+              };
+
+              commonExcludes = lib.attrsets.removeAttrs packages [
                 # "fortress-disko-vm"
-                "fortress-hyperv" # aarch64-linux only
                 # "fortress-install-iso"
                 "fortress-install-iso-hyperv"
                 "fortress-iso"
@@ -98,7 +101,9 @@ in {
                 "fortress-vmware"
                 # "fortress-vm-bootloader"
                 # "windex-tarball"
-              ]
+              ];
+            in
+              excludesPerSystem.${system} commonExcludes
           )
           self.packages;
       };
