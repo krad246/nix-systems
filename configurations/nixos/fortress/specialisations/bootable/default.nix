@@ -52,5 +52,8 @@ in rec {
     };
 
     users.users.krad246.extraGroups = ["docker"];
+
+    # large tmpfs for CI builds
+    boot.tmpfs.tmpfsSize = "176G";
   };
 }
