@@ -9,22 +9,18 @@ let
       };
 
       virtualisation = {
-        diskSize = "auto";
+        diskSize = 20 * 1024;
       };
     };
   in
     module;
 
   mkQemuConfig = extraConfig: let
-    module = {
-      config,
-      modulesPath,
-      ...
-    }: {
+    module = {modulesPath, ...}: {
       imports = [(modulesPath + "/virtualisation/qemu-vm.nix")] ++ [(mkConfig extraConfig)];
 
       virtualisation = {
-        memorySize = config.disko.memSize;
+        memorySize = 6 * 1024;
         cores = 8;
       };
     };
