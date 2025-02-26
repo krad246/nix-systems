@@ -93,7 +93,7 @@ in {
                 "fortress-sd-aarch64-installer"
                 "fortress-sd-x86_64"
                 "fortress-vagrant-virtualbox"
-                "fortress-virtualbox"
+                # "fortress-virtualbox"
                 # "fortress-vm"
                 "fortress-vmware"
                 # "fortress-vm-bootloader"
