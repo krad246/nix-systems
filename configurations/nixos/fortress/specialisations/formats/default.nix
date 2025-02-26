@@ -1,6 +1,6 @@
 let
   mkConfig = extraConfig: let
-    module = _: rec {
+    module = {...}: rec {
       imports = [extraConfig];
 
       disko = {
@@ -9,17 +9,22 @@ let
       };
 
       virtualisation = {
-        diskSize = 20 * 1024;
+        diskSize = "auto";
       };
     };
   in
     module;
 
   mkQemuConfig = extraConfig: let
-    module = {modulesPath, ...}: {
+    module = {
+      config,
+      modulesPath,
+      ...
+    }: {
       imports = [(modulesPath + "/virtualisation/qemu-vm.nix")] ++ [(mkConfig extraConfig)];
 
       virtualisation = {
+        memorySize = config.disko.memSize;
         cores = 8;
       };
     };
