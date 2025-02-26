@@ -82,6 +82,7 @@ in {
               excludesPerSystem = {
                 aarch64-linux = packages': lib.attrsets.removeAttrs packages' ["fortress-hyperv"];
                 x86_64-linux = packages': lib.attrsets.removeAttrs packages' [];
+                aarch64-darwin = packages': lib.attrsets.removeAttrs packages' [];
               };
 
               commonExcludes = lib.attrsets.removeAttrs packages [
