@@ -94,9 +94,9 @@ in {
                 "fortress-sd-x86_64"
                 "fortress-vagrant-virtualbox"
                 "fortress-virtualbox"
-                "fortress-vm"
+                # "fortress-vm"
                 "fortress-vmware"
-                "fortress-vm-bootloader"
+                # "fortress-vm-bootloader"
                 # "windex-tarball"
               ]
           )
