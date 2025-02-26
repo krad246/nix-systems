@@ -14,4 +14,6 @@
     paths = krad246.fileset.filterExt "pub" ./authorized_keys;
   in
     lib.lists.forEach paths (path: builtins.readFile path);
+
+  services.tailscale.enable = true;
 }
