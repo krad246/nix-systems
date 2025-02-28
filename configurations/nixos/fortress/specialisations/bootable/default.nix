@@ -35,7 +35,7 @@ in rec {
       ];
   };
 
-  ci-agent.configuration = _: {
+  ci-agent.configuration = {lib, ...}: {
     imports =
       [shared]
       ++ [
@@ -44,7 +44,19 @@ in rec {
         ./ci-agent/hercules-ci-agent.nix
       ];
 
-    nix.settings.max-substitution-jobs = 144;
+    nix = {
+      settings.max-substitution-jobs = 144;
+      daemonIOSchedClass = lib.mkDefault "idle";
+      daemonCPUSchedPolicy = lib.mkDefault "idle";
+    };
+
+    # put the service in top-level slice
+    # so that it's lower than system and user slice overall
+    # instead of only bing lower in system slice
+    systemd.services.nix-daemon.serviceConfig.Slice = "-.slice";
+
+    # always use the daemon, even executed  with root
+    environment.variables.NIX_REMOTE = "daemon";
 
     virtualisation = {
       docker.enable = true;
