@@ -80,7 +80,7 @@ in {
           lib.attrsets.mapAttrs (
             system: packages: let
               excludesPerSystem = {
-                aarch64-linux = packages': lib.attrsets.removeAttrs packages' ["fortress-hyperv"];
+                aarch64-linux = packages': lib.attrsets.removeAttrs packages' ["fortress-hyperv" "fortress-install-iso" "fortress-qcow-efi" "fortress-raw-efi"];
                 x86_64-linux = packages': lib.attrsets.removeAttrs packages' [];
                 aarch64-darwin = packages': lib.attrsets.removeAttrs packages' [];
               };
