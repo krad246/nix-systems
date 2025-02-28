@@ -16,7 +16,7 @@
           clusterJoinTokenPath = config.age.secrets.headless-penguin-cluster-join-token.path;
           binaryCachesPath = config.age.secrets.headless-penguin-binary-caches.path;
           concurrentTasks = 12;
-          nixVerbosity = "Info";
+          nixVerbosity = "Warn";
         };
       };
 
