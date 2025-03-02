@@ -87,6 +87,7 @@ in {
                     "fortress-install-iso"
                     "fortress-qcow-efi"
                     "fortress-raw-efi"
+                    "fortress-vm"
                     "fortress-vm-bootloader"
                   ];
                 x86_64-linux = packages': lib.attrsets.removeAttrs packages' [];
