@@ -40,23 +40,31 @@ in {
 
   networking.useDHCP = modules.mkDefault true;
 
-  networking.interfaces.enp10s0 = {
-    useDHCP = false;
+  networking.interfaces = {
+    eno1 = {
+      useDHCP = false;
 
-    ipv4.addresses = [
-      {
-        address = "169.254.199.18";
-        prefixLength = 16;
-      }
-    ];
-
-    macAddress = "c8:7f:54:6a:6e:4b";
-    wakeOnLan = {
-      enable = true;
-      policy = [
-        "broadcast"
-        "magic"
+      ipv4.addresses = [
+        {
+          # link-local static IP
+          address = "169.254.199.18";
+          prefixLength = 16;
+        }
+        {
+          # private static IP
+          address = "192.168.199.18";
+          prefixLength = 16;
+        }
       ];
+
+      macAddress = "c8:7f:54:6a:6e:4b";
+      wakeOnLan = {
+        enable = true;
+        policy = [
+          "broadcast"
+          "magic"
+        ];
+      };
     };
   };
 
