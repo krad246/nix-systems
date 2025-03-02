@@ -83,34 +83,21 @@ in {
                 aarch64-linux = packages':
                   lib.attrsets.removeAttrs packages' [
                     "fortress-disko-vm"
-                    "fortress-hyperv"
-                    "fortress-install-iso"
-                    "fortress-qcow-efi"
-                    "fortress-raw-efi"
                     "fortress-vm"
-                    "fortress-vm-bootloader"
                   ];
-                x86_64-linux = packages': lib.attrsets.removeAttrs packages' [];
+                x86_64-linux = packages':
+                  lib.attrsets.removeAttrs packages' [
+                    "fortress-virtualbox"
+                  ];
                 aarch64-darwin = packages': lib.attrsets.removeAttrs packages' [];
               };
 
               commonExcludes = lib.attrsets.removeAttrs packages [
-                # "fortress-install-iso"
-                "fortress-install-iso-hyperv"
-                "fortress-iso"
-                "fortress-qcow"
-                # "fortress-qcow-efi"
-                "fortress-raw"
-                # "fortress-raw-efi"
-                "fortress-sd-aarch64"
-                "fortress-sd-aarch64-installer"
-                "fortress-sd-x86_64"
-                "fortress-vagrant-virtualbox"
-                # "fortress-virtualbox"
-                # "fortress-vm"
-                "fortress-vmware"
-                # "fortress-vm-bootloader"
-                # "windex-tarball"
+                "fortress-hyperv"
+                "fortress-install-iso"
+                "fortress-qcow-efi"
+                "fortress-raw-efi"
+                "fortress-vm-bootloader"
               ];
             in
               excludesPerSystem.${system} commonExcludes
