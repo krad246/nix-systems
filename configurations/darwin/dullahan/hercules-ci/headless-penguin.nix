@@ -5,7 +5,7 @@
   ...
 }: {
   krad246.darwin.virtualisation.linux-builder = {
-    ephemeral = true;
+    ephemeral = false;
 
     extraConfig = {config, ...}: {
       imports = [self.nixosModules.agenix];
@@ -67,7 +67,5 @@
 
     maxJobs = 32;
     cores = 8;
-
-    systems = ["aarch64-linux" "i686-linux"];
   };
 }
