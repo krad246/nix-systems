@@ -10,7 +10,7 @@
     extraConfig = {config, ...}: {
       imports = [self.nixosModules.agenix];
 
-      # networking.hostName = "headless-penguin";
+      networking.hostName = "headless-penguin";
 
       services.hercules-ci-agent = {
         enable = true;
