@@ -60,6 +60,7 @@ in {
           IdentitiesOnly yes
           ${lib.strings.optionalString (cfg.sshKey != null) ''IdentityFile ${cfg.sshKey}''}
           ConnectTimeout ${builtins.toString cfg.connectTimeout}
+          ProxyCommand sh -c 'wakeonlan -i 192.168.199.255 c8:7f:54:6a:6e:4b; nc %h %p'
       '';
     };
 
