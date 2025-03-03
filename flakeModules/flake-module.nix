@@ -93,6 +93,7 @@ in {
                     "fortress-virtualbox"
                     "fortress-vagrant-virtualbox"
                     "fortress-sd-x86_64"
+                    "fortress-vmware"
                   ];
                 aarch64-darwin = packages': lib.attrsets.removeAttrs packages' [];
               };
