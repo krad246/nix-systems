@@ -22,6 +22,7 @@ in {
           [./dconf.nix]
           ++ (with self.homeModules; [
             kitty
+            stylix
             vscode
             vscode-server
           ]);
