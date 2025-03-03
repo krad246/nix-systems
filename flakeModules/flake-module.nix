@@ -86,7 +86,6 @@ in {
                     "fortress-vm"
                     "fortress-sd-aarch64"
                     "fortress-sd-aarch64-installer"
-                    "fortress-raw"
                   ];
                 x86_64-linux = packages':
                   lib.attrsets.removeAttrs packages' [
@@ -105,6 +104,7 @@ in {
                 "fortress-install-iso-hyperv"
                 "fortress-qcow"
                 "fortress-qcow-efi"
+                "fortress-raw"
                 "fortress-raw-efi"
                 "fortress-vm-bootloader"
               ];
