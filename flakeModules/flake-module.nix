@@ -84,10 +84,12 @@ in {
                   lib.attrsets.removeAttrs packages' [
                     "fortress-disko-vm"
                     "fortress-vm"
+                    "fortress-sd-aarch64-installer"
                   ];
                 x86_64-linux = packages':
                   lib.attrsets.removeAttrs packages' [
                     "fortress-virtualbox"
+                    "fortress-iso"
                   ];
                 aarch64-darwin = packages': lib.attrsets.removeAttrs packages' [];
               };
@@ -95,6 +97,8 @@ in {
               commonExcludes = lib.attrsets.removeAttrs packages [
                 "fortress-hyperv"
                 "fortress-install-iso"
+                "fortress-install-iso-hyperv"
+                "fortress-qcow"
                 "fortress-qcow-efi"
                 "fortress-raw-efi"
                 "fortress-vm-bootloader"
