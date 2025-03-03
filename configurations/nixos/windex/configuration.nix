@@ -87,9 +87,5 @@ in {
         default.configuration = lib.modules.mkForce {};
       };
     })
-
-    {
-      imports = [self.homeModules.firefox];
-    }
   ];
 }
