@@ -36,6 +36,7 @@
   home-manager.sharedModules = [
     {
       imports = with self.homeModules; [
+        firefox
         kitty
         vscode
         vscode-server
