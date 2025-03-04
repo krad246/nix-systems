@@ -30,6 +30,7 @@
     ++ (with self.modules.generic; [
       system-link-registry
       flake-registry
+      lorri
       nix-core
       unfree
     ]);
