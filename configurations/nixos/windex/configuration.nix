@@ -19,9 +19,6 @@ in {
   # Doesn't make sense on WSL's network stack
   systemd.services.NetworkManager-wait-online.enable = false;
 
-  # for direnv watching
-  services.lorri.enable = true;
-
   # disable all formats other than the tarball format
   formats = lib.modules.mkForce {
     tarball = config.system.build.tarballBuilder;

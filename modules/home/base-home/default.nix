@@ -34,6 +34,8 @@ in {
       unfree
     ]);
 
+  services.lorri.enable = pkgs.stdenv.isLinux;
+
   home = {
     file.dotfiles.source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/dotfiles";
 
