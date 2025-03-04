@@ -1,5 +1,4 @@
 args @ {
-  withSystem,
   inputs,
   self,
   lib,
@@ -23,6 +22,18 @@ in {
       flake-parts.flakeModules.modules
       flake-parts.flakeModules.flakeModules
     ]);
+
+  perSystem = {pkgs, ...}: {
+    checks.hello = pkgs.testers.runNixOSTest {
+      name = "hello";
+      nodes.machine = {pkgs, ...}: {
+        environment.systemPackages = [pkgs.hello];
+      };
+      testScript = ''
+        machine.succeed("hello")
+      '';
+    };
+  };
 
   flake = rec {
     # use these in building other flakes
@@ -54,17 +65,17 @@ in {
     };
 
     checks = {
-      aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
-        hello = pkgs.testers.runNixOSTest {
-          name = "hello";
-          nodes.machine = {pkgs, ...}: {
-            environment.systemPackages = [pkgs.hello];
-          };
-          testScript = ''
-            machine.succeed("hello")
-          '';
-        };
-      });
+      # aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
+      #   hello = pkgs.testers.runNixOSTest {
+      #     name = "hello";
+      #     nodes.machine = {pkgs, ...}: {
+      #       environment.systemPackages = [pkgs.hello];
+      #     };
+      #     testScript = ''
+      #       machine.succeed("hello")
+      #     '';
+      #   };
+      # });
     };
 
     herculesCI.onPush = {
