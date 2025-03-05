@@ -32,7 +32,7 @@ in {
     usbip.autoAttach = [];
     useWindowsDriver = true;
     startMenuLaunchers = true;
-    nativeSystemd = true;
+    # nativeSystemd = true;
 
     wslConf = {
       automount.enabled = true;
