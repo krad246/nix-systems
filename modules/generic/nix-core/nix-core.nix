@@ -42,7 +42,7 @@ in {
       ];
 
       connect-timeout = modules.mkDefault 300;
-      timeout = modules.mkDefault 1800;
+      timeout = modules.mkDefault 3600;
       max-silent-time = modules.mkDefault 3600;
 
       sandbox = modules.mkForce true;
