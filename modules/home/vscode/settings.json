@@ -1509,7 +1509,7 @@
   "terminal.integrated.cursorWidth": 1,
   "terminal.integrated.customGlyphs": true,
   "terminal.integrated.cwd": "",
-  "terminal.integrated.defaultProfile.linux": "sh",
+  "terminal.integrated.defaultProfile.linux": "bash",
   "terminal.integrated.defaultProfile.osx": null,
   "terminal.integrated.defaultProfile.windows": null,
   "terminal.integrated.detectLocale": "auto",
@@ -1560,18 +1560,8 @@
   "terminal.integrated.persistentSessionScrollback": 100,
   "terminal.integrated.profiles.linux": {
     "bash": {
-      "icon": "terminal-bash",
-      "path": "bash"
-    },
-    "fish": {
-      "path": "fish"
-    },
-    "tmux": {
-      "icon": "terminal-tmux",
-      "path": "tmux"
-    },
-    "zsh": {
-      "path": "zsh"
+      "path": "/run/current-system/sw/bin/bash",
+      "icon": "terminal-bash"
     }
   },
   "terminal.integrated.profiles.osx": {
@@ -1796,6 +1786,7 @@
   "window.zoomLevel": 0,
   "window.zoomPerWindow": true,
   "workbench.activityBar.iconClickBehavior": "toggle",
+  "workbench.activityBar.location": "hidden",
   "workbench.cloudChanges.autoResume": "onReload",
   "workbench.cloudChanges.continueOn": "prompt",
   "workbench.colorCustomizations": {},
@@ -2157,5 +2148,11 @@
   "zenMode.restore": true,
   "zenMode.showTabs": "multiple",
   "zenMode.silentNotifications": true,
-  "workbench.activityBar.location": "hidden"
+  "cmake.pinnedCommands": [
+    "workbench.action.tasks.configureTaskRunner",
+    "workbench.action.tasks.runTask"
+  ],
+  "[c]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+  }
 }
