@@ -48,7 +48,7 @@
     settings = {
       theme = "gruvbox_dark_soft";
       editor = {
-        evil = true;
+        # evil = true;
       };
     };
   };
