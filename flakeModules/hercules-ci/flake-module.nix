@@ -1,4 +1,5 @@
 {
+  withSystem,
   inputs,
   self,
   lib,
@@ -7,6 +8,7 @@
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
   imports = with inputs; [
+    hercules-ci-effects.flakeModule
   ];
 
   perSystem = {pkgs, ...}: {
@@ -21,7 +23,20 @@
     };
   };
 
+  hercules-ci.flake-update = {
+    enable = true;
+    autoMergeMethod = "rebase";
+    when = {
+      hour = [23];
+      dayOfWeek = ["Sun"];
+    };
+  };
+
   flake = rec {
+    effects = _:
+      withSystem "x86_64-linux" {
+      };
+
     herculesCI.onPush = {
       default.outputs = {
         inherit (self) apps;
@@ -29,7 +44,7 @@
 
         darwinConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.darwinConfigurations;
         inherit (self) devShells;
-        homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
+        # homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
         nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
         packages =
           lib.attrsets.mapAttrs (
