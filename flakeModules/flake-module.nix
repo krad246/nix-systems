@@ -7,33 +7,23 @@ args @ {
   apps = import ./apps args;
   devShells = import ./devshell args;
   ez-configs = import ./ez-configs args; # ties system and home configurations together
+  hercules-ci = import ./hercules-ci args;
   packages = import ./packages args;
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
   imports =
-    [
+    (with inputs; [
+      flake-parts.flakeModules.modules
+      flake-parts.flakeModules.flakeModules
+    ])
+    ++ [
       apps.flakeModule # adds to flake apps
       devShells.flakeModule # adds to flake devShells
       ez-configs.flakeModule # adds to nixosConfigurations, etc.
+      hercules-ci.flakeModule
       packages.flakeModule # adds to packages
-    ]
-    ++ (with inputs; [
-      flake-parts.flakeModules.modules
-      flake-parts.flakeModules.flakeModules
-    ]);
-
-  perSystem = {pkgs, ...}: {
-    checks.hello = pkgs.testers.runNixOSTest {
-      name = "hello";
-      nodes.machine = {pkgs, ...}: {
-        environment.systemPackages = [pkgs.hello];
-      };
-      testScript = ''
-        machine.succeed("hello")
-      '';
-    };
-  };
+    ];
 
   flake = rec {
     # use these in building other flakes
@@ -62,68 +52,6 @@ in {
         paths = krad246.fileset.filterExt "nix" ../modules/generic;
       in
         krad246.attrsets.genAttrs' paths (path: krad246.attrsets.stemValuePair path (import path));
-    };
-
-    checks = {
-      # aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
-      #   hello = pkgs.testers.runNixOSTest {
-      #     name = "hello";
-      #     nodes.machine = {pkgs, ...}: {
-      #       environment.systemPackages = [pkgs.hello];
-      #     };
-      #     testScript = ''
-      #       machine.succeed("hello")
-      #     '';
-      #   };
-      # });
-    };
-
-    herculesCI.onPush = {
-      default.outputs = {
-        inherit (self) apps;
-        inherit (self) checks;
-
-        darwinConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.darwinConfigurations;
-        inherit (self) devShells;
-        homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
-        nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
-        packages =
-          lib.attrsets.mapAttrs (
-            system: packages: let
-              excludesPerSystem = {
-                aarch64-linux = packages':
-                  lib.attrsets.removeAttrs packages' [
-                    "fortress-disko-vm"
-                    "fortress-vm"
-                    "fortress-sd-aarch64"
-                    "fortress-sd-aarch64-installer"
-                  ];
-                x86_64-linux = packages':
-                  lib.attrsets.removeAttrs packages' [
-                    "fortress-virtualbox"
-                    "fortress-vagrant-virtualbox"
-                    "fortress-sd-x86_64"
-                    "fortress-vmware"
-                  ];
-                aarch64-darwin = packages': lib.attrsets.removeAttrs packages' [];
-              };
-
-              commonExcludes = lib.attrsets.removeAttrs packages [
-                "fortress-hyperv"
-                "fortress-iso"
-                "fortress-install-iso"
-                "fortress-install-iso-hyperv"
-                "fortress-qcow"
-                "fortress-qcow-efi"
-                "fortress-raw"
-                "fortress-raw-efi"
-                "fortress-vm-bootloader"
-              ];
-            in
-              excludesPerSystem.${system} commonExcludes
-          )
-          self.packages;
-      };
     };
   };
 }
