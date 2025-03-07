@@ -38,14 +38,17 @@
       };
 
     herculesCI.onPush = {
-      default.outputs = {
-        inherit (self) apps;
+      checks.outputs = {
         inherit (self) checks;
+      };
 
+      systems.outputs = {
         darwinConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.darwinConfigurations;
-        inherit (self) devShells;
-        # homeConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.specialisation.default.configuration.home.activationPackage) self.homeConfigurations;
         nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
+      };
+
+      packages.outputs = {
+        inherit (self) apps devShells;
         packages =
           lib.attrsets.mapAttrs (
             system: packages: let
