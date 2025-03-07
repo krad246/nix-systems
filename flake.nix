@@ -205,6 +205,8 @@
     nixpkgs-mozilla.url = "github:mozilla/nixpkgs-mozilla";
     nixpkgs-firefox-darwin.url = "github:bandithedoge/nixpkgs-firefox-darwin";
     nixvim-config.url = "github:mikaelfangel/nixvim-config";
+
+    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
   };
 
   outputs = inputs @ {
