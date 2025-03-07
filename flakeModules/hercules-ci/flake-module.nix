@@ -39,10 +39,6 @@
     in rec {
       default.outputs = lib.modules.mkForce checks.outputs;
 
-      apps.outputs = {
-        inherit (self) apps;
-      };
-
       checks.outputs = {
         inherit (self) checks;
       };
