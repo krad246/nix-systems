@@ -34,6 +34,7 @@
 
   herculesCI = _herculesCI: {
     onPush = {
+      default = lib.modules.mkForce {};
       checks.outputs = {
         inherit (self) checks;
       };
