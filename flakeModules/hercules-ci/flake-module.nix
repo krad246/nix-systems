@@ -33,22 +33,29 @@
   };
 
   herculesCI = _herculesCI: {
-    onPush = {
-      default.outputs = lib.modules.mkForce {inherit (self) checks;};
+    onPush = let
+      getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
+      getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
+    in rec {
+      default.outputs = lib.modules.mkForce checks.outputs;
+
+      apps.outputs = {
+        inherit (self) apps;
+      };
+
       checks.outputs = {
         inherit (self) checks;
       };
 
-      systems.outputs = let
-        getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
-        getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
-      in {
-        darwinConfigurations = getDrvs self.darwinConfigurations;
-        nixosConfigurations = getDrvs self.nixosConfigurations;
+      darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
+
+      devShells.outputs = {
+        inherit (self) devShells;
       };
 
+      nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
+
       packages.outputs = {
-        inherit (self) apps devShells;
         packages =
           lib.attrsets.mapAttrs (
             system: packages: let
