@@ -1,5 +1,4 @@
 {
-  withSystem,
   inputs,
   self,
   lib,
@@ -38,11 +37,11 @@
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
     in rec {
       default.outputs = lib.modules.mkForce checks.outputs;
-      
+
       checks.outputs = self.checks;
-      darwinConfigurations.outputs = self.darwinConfigurations;
+      darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
       devShells.outputs = self.devShells;
-      nixosConfigurations.outputs = self.nixosConfigurations;
+      nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
       packages.outputs = {
         packages =
           lib.attrsets.mapAttrs (
@@ -82,11 +81,5 @@
           self.packages;
       };
     };
-  };
-
-  flake = rec {
-    effects = _:
-      withSystem "x86_64-linux" {
-      };
   };
 }
