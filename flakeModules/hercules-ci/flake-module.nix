@@ -38,9 +38,12 @@
         inherit (self) checks;
       };
 
-      systems.outputs = {
-        darwinConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.darwinConfigurations;
-        nixosConfigurations = lib.attrsets.mapAttrs (_name: machine: machine.config.system.build.toplevel) self.nixosConfigurations;
+      systems.outputs = let
+        getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
+        getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
+      in {
+        darwinConfigurations = getDrvs self.darwinConfigurations;
+        nixosConfigurations = getDrvs self.nixosConfigurations;
       };
 
       packages.outputs = {
