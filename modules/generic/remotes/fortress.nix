@@ -55,7 +55,7 @@ in {
     environment.etc = {
       "ssh/ssh_config.d/103-fortress.conf".text = ''
         Host fortress
-          HostName fortress.local
+          HostName fortress.tailb53085.ts.net
           User ${cfg.sshUser}
           IdentitiesOnly yes
           ${lib.strings.optionalString (cfg.sshKey != null) ''IdentityFile ${cfg.sshKey}''}

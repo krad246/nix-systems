@@ -55,7 +55,7 @@ in {
     environment.etc = {
       "ssh/ssh_config.d/101-dullahan.conf".text = ''
         Host dullahan
-          HostName dullahan.local
+          HostName dullahan.tailb53085.ts.net
           User ${cfg.sshUser}
           IdentitiesOnly yes
           ${lib.strings.optionalString (cfg.sshKey != null) ''IdentityFile ${cfg.sshKey}''}
