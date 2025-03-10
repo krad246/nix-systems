@@ -13,6 +13,8 @@ let
         self.nixosModules.base-configuration
       ];
 
+    services.tailscale.enable = true;
+
     # Holds up boot pointlessly
     systemd.services.NetworkManager-wait-online.enable = false;
 
