@@ -32,12 +32,13 @@
     };
   };
 
-  flake.effects.aarch64-darwin = withSystem "x86_64-linux" ({hci-effects, ...}: {
-    dullahan-deploy = hci-effects.runNixDarwin {
-      ssh.destination = "dullahan";
-      configuration = self.darwinConfigurations.dullahan;
-    };
-  });
+  flake.effects = _:
+    withSystem "x86_64-linux" ({hci-effects, ...}: {
+      dullahan-deploy = hci-effects.runNixDarwin {
+        ssh.destination = "dullahan";
+        configuration = self.darwinConfigurations.dullahan;
+      };
+    });
 
   herculesCI = _herculesCI: {
     onPush = let
