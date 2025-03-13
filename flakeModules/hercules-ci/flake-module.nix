@@ -1,5 +1,6 @@
 {
   inputs,
+  withSystem,
   self,
   lib,
   ...
@@ -31,7 +32,20 @@
     };
   };
 
+  flake.effects = withSystem "x86_64-linux" ({hci-effects, ...}: {
+    dullahan-deploy = hci-effects.runNixDarwin {
+      ssh.destination = "dullahan.tailb53085.ts.net";
+      configuration = self.darwinConfigurations.dullahan;
+    };
+  });
+
   herculesCI = _herculesCI: {
+    onSchedule.dullahan-deploy = {
+      outputs.effects = {
+        inherit (self.effects) dullahan-deploy;
+      };
+    };
+
     onPush = let
       getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
