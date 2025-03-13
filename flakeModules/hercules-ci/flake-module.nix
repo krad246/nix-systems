@@ -45,12 +45,11 @@
       getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
     in rec {
-      default.outputs = lib.modules.mkForce checks.outputs;
+      default.outputs = lib.modules.mkForce (checks.outputs // {inherit (self) effects;});
 
       checks.outputs = self.checks;
       darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
       devShells.outputs = self.devShells;
-      effects.outputs = self.effects;
       nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
       packages.outputs = {
         packages =
