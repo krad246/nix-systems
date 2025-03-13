@@ -48,7 +48,6 @@
       checks.outputs = self.checks;
       darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
       devShells.outputs = self.devShells;
-      effects.outputs = self.effects;
       nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
       default.outputs = lib.modules.mkForce {
         checks = checks.outputs;
