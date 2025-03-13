@@ -41,6 +41,12 @@
     });
 
   herculesCI = _herculesCI: {
+    onSchedule.dullahan-deploy = {
+      outputs.effects = {
+        inherit (self) dullahan-deploy;
+      };
+    };
+
     onPush = let
       getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
