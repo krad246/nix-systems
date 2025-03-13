@@ -43,7 +43,7 @@
   herculesCI = _herculesCI: {
     onSchedule.dullahan-deploy = {
       outputs.effects = {
-        inherit (self) dullahan-deploy;
+        inherit (self.effects) dullahan-deploy;
       };
     };
 
