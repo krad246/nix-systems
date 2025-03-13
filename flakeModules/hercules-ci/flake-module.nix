@@ -1,5 +1,6 @@
 {
   inputs,
+  withSystem,
   self,
   lib,
   ...
@@ -30,6 +31,13 @@
       dayOfWeek = ["Sun"];
     };
   };
+
+  flake.effects.aarch64-darwin = withSystem "aarch64-darwin" ({hci-effects, ...}: {
+    dullahan-deploy = hci-effects.runNixDarwin {
+      ssh.destination = "dullahan";
+      configuration = self.darwinConfigurations.dullahan;
+    };
+  });
 
   herculesCI = _herculesCI: {
     onPush = let
