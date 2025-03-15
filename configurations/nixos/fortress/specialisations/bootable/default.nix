@@ -39,7 +39,7 @@ in rec {
       ];
   };
 
-  ci-agent.configuration = {lib, ...}: {
+  ci-agent.configuration = {...}: {
     imports =
       [shared]
       ++ [
@@ -50,16 +50,17 @@ in rec {
 
     nix = {
       settings.max-substitution-jobs = 144;
-      daemonIOSchedClass = lib.mkDefault "idle";
-      daemonCPUSchedPolicy = lib.mkDefault "idle";
+      # daemonIOSchedClass = lib.mkDefault "idle";
+      # daemonCPUSchedPolicy = lib.mkDefault "idle";
     };
 
     # put the service in top-level slice
     # so that it's lower than system and user slice overall
     # instead of only bing lower in system slice
-    systemd.services.nix-daemon.serviceConfig.Slice = "-.slice";
+    # systemd.services.nix-daemon.serviceConfig.Slice = "-.slice";
 
-    # always use the daemon, even executed  with root
+    # build and evaluation jobs are ALWAYS pushed to the daemon, so that no locking is required.
+    # improves 'streaming job' performance (?)
     environment.variables.NIX_REMOTE = "daemon";
 
     virtualisation = {
