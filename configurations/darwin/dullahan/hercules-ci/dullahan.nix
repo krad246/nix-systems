@@ -22,4 +22,6 @@
         mode = "770";
         group = "_hercules-ci-agent";
       });
+
+  environment.variables.NIX_REMOTE = "daemon";
 }
