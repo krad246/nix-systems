@@ -269,12 +269,10 @@ with lib.hm.gvariant; {
       move-to-workspace-last = [];
       move-to-workspace-left = [];
       move-to-workspace-right = [];
-      panel-run-dialog = [];
+      panel-run-dialog = ["<Super>r"];
       show-desktop = ["<Shift><Super>h"];
       switch-input-source = [];
       switch-input-source-backward = [];
-      switch-panels = [];
-      switch-panels-backward = [];
       switch-to-workspace-1 = ["<Control>1"];
       switch-to-workspace-2 = ["<Control>2"];
       switch-to-workspace-3 = ["<Control>3"];
@@ -330,13 +328,15 @@ with lib.hm.gvariant; {
 
     "org/gnome/settings-daemon/plugins/media-keys" = {
       help = [];
-      logout = [];
+      logout = ["<Shift><Super>q"];
       magnifier = [];
+      magnifier-zoom-in = [];
+      magnifier-zoom-out = [];
       next = ["F9"];
       play = ["F8"];
       previous = ["F7"];
       screenreader = [];
-      screensaver = [];
+      screensaver = ["<Control><Super>q"];
       volume-down = ["F11"];
       volume-mute = ["F10"];
       volume-up = ["F12"];
@@ -459,8 +459,8 @@ with lib.hm.gvariant; {
       screenshot-window = [];
       show-screen-recording-ui = [];
       show-screenshot-ui = ["<Shift><Super>4"];
-      toggle-application-view = ["<Control><Alt>Down"];
       toggle-message-tray = ["<Control><Alt>Right"];
+      toggle-overview = ["<Super>space"];
     };
 
     "org/gnome/shell/weather" = {
