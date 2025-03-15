@@ -25,6 +25,12 @@ with lib.hm.gvariant; {
       keyrings-selected = ["gnupg://"];
     };
 
+    "io/missioncenter/MissionCenter" = {
+      performance-selected-page = "gpu-0000:03:00.0";
+      window-height = 400;
+      window-width = 600;
+    };
+
     "org/freedesktop/folks" = {
       primary-store = "eds:a3117721c18ca91f93da7d2bcbd4d4edf633e818";
     };
@@ -118,9 +124,13 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/desktop/notifications" = {
-      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam"];
+      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam" "org-signal-signal"];
       show-banners = true;
       show-in-lock-screen = false;
+    };
+
+    "org/gnome/desktop/notifications/application/app-zen-browser-zen" = {
+      application-id = "app.zen_browser.zen.desktop";
     };
 
     "org/gnome/desktop/notifications/application/chromium-browser" = {
@@ -137,6 +147,10 @@ with lib.hm.gvariant; {
 
     "org/gnome/desktop/notifications/application/com-valvesoftware-steam" = {
       application-id = "com.valvesoftware.Steam.desktop";
+    };
+
+    "org/gnome/desktop/notifications/application/firefox" = {
+      application-id = "firefox.desktop";
     };
 
     "org/gnome/desktop/notifications/application/gnome-power-panel" = {
@@ -282,6 +296,7 @@ with lib.hm.gvariant; {
 
     "org/gnome/nautilus/window-state" = {
       initial-size = mkTuple [890 550];
+      initial-size-file-chooser = mkTuple [890 550];
     };
 
     "org/gnome/nm-applet/eap/067a9569-d9b0-3c92-949d-a8d1c4ce3e76" = {
@@ -386,10 +401,28 @@ with lib.hm.gvariant; {
               (mkDictionaryEntry ["position" (mkVariant 10)])
             ])
           ])
+          (mkDictionaryEntry [
+            "Helix.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 11)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "home-manager-manual.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 12)])
+            ])
+          ])
+          (mkDictionaryEntry [
+            "org.gnome.Software.desktop"
+            (mkVariant [
+              (mkDictionaryEntry ["position" (mkVariant 13)])
+            ])
+          ])
         ]
       ];
       disable-user-extensions = true;
-      favorite-apps = ["org.gnome.Nautilus.desktop" "chromium-browser.desktop" "kitty.desktop" "code.desktop"];
+      favorite-apps = ["org.gnome.Nautilus.desktop" "app.zen_browser.zen.desktop" "kitty.desktop" "code.desktop"];
       last-selected-power-profile = "power-saver";
       welcome-dialog-last-shown-version = "46.2";
     };
@@ -413,7 +446,7 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/software" = {
-      check-timestamp = mkInt64 1736216164;
+      check-timestamp = mkInt64 1742062939;
       first-run = false;
       flatpak-purge-timestamp = mkInt64 1736223985;
     };
@@ -433,6 +466,21 @@ with lib.hm.gvariant; {
       type-format = "category";
       view-type = "list";
       window-size = mkTuple [859 372];
+    };
+
+    "org/gtk/settings/file-chooser" = {
+      date-format = "regular";
+      location-mode = "path-bar";
+      show-hidden = false;
+      show-size-column = true;
+      show-type-column = true;
+      sidebar-width = 183;
+      sort-column = "name";
+      sort-directories-first = false;
+      sort-order = "ascending";
+      type-format = "category";
+      window-position = mkTuple [665 66];
+      window-size = mkTuple [1231 902];
     };
 
     "org/virt-manager/virt-manager/connections" = {
