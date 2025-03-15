@@ -13,7 +13,10 @@ let
         self.nixosModules.base-configuration
       ];
 
-    services.tailscale.enable = true;
+    services.tailscale = {
+      enable = true;
+      extraUpFlags = ["--ssh"];
+    };
 
     # Holds up boot pointlessly
     systemd.services.NetworkManager-wait-online.enable = false;

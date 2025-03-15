@@ -15,5 +15,7 @@
   in
     lib.lists.forEach paths (path: builtins.readFile path);
 
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+  };
 }
