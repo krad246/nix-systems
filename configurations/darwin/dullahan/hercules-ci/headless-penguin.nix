@@ -45,20 +45,20 @@
       };
 
       nix = {
-        daemonIOSchedClass = lib.mkDefault "idle";
-        daemonCPUSchedPolicy = lib.mkDefault "idle";
+        #daemonIOSchedClass = lib.mkDefault "idle";
+        #daemonCPUSchedPolicy = lib.mkDefault "idle";
       };
 
       # put the service in top-level slice
       # so that it's lower than system and user slice overall
       # instead of only being lower in system slice
-      systemd.services.nix-daemon.serviceConfig.Slice = "-.slice";
+      # systemd.services.nix-daemon.serviceConfig.Slice = "-.slice";
 
       # always use the daemon, even executed  with root
       environment.variables.NIX_REMOTE = "daemon";
 
       systemd.services.nix-daemon.serviceConfig = {
-        memoryHigh = "7G";
+        # memoryHigh = "80%";
       };
     };
 
