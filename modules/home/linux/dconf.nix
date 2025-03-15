@@ -69,7 +69,7 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/control-center" = {
-      last-panel = "display";
+      last-panel = "keyboard";
       window-state = mkTuple [980 595 true];
     };
 
@@ -124,7 +124,7 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/desktop/notifications" = {
-      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam" "org-signal-signal"];
+      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam" "org-signal-signal" "app-zen-browser-zen"];
       show-banners = true;
       show-in-lock-screen = false;
     };
@@ -251,23 +251,38 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/desktop/wm/keybindings" = {
-      activate-window-menu = [];
+      activate-window-menu = ["<Control>Return"];
       begin-move = [];
       begin-resize = [];
-      close = [];
+      close = ["<Super>w"];
+      cycle-group = [];
+      cycle-group-backward = [];
       cycle-panels = [];
       cycle-panels-backward = [];
+      cycle-windows = [];
+      cycle-windows-backward = [];
+      move-to-monitor-down = [];
+      move-to-monitor-left = ["<Shift><Super>Left"];
+      move-to-monitor-right = ["<Shift><Super>Right"];
+      move-to-monitor-up = [];
       move-to-workspace-1 = [];
       move-to-workspace-last = [];
       move-to-workspace-left = [];
       move-to-workspace-right = [];
       panel-run-dialog = [];
+      show-desktop = ["<Shift><Super>h"];
       switch-input-source = [];
       switch-input-source-backward = [];
       switch-panels = [];
       switch-panels-backward = [];
-      switch-to-workspace-1 = [];
+      switch-to-workspace-1 = ["<Control>1"];
+      switch-to-workspace-2 = ["<Control>2"];
+      switch-to-workspace-3 = ["<Control>3"];
+      switch-to-workspace-4 = ["<Control>4"];
+      switch-to-workspace-down = [];
       switch-to-workspace-last = [];
+      switch-to-workspace-left = ["<Control>Left"];
+      switch-to-workspace-right = ["<Control>Right"];
       toggle-maximized = [];
     };
 
@@ -315,8 +330,16 @@ with lib.hm.gvariant; {
 
     "org/gnome/settings-daemon/plugins/media-keys" = {
       help = [];
+      logout = [];
       magnifier = [];
+      next = ["F9"];
+      play = ["F8"];
+      previous = ["F7"];
       screenreader = [];
+      screensaver = [];
+      volume-down = ["F11"];
+      volume-mute = ["F10"];
+      volume-up = ["F12"];
     };
 
     "org/gnome/settings-daemon/plugins/power" = {
@@ -432,8 +455,12 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/shell/keybindings" = {
+      screenshot = [];
       screenshot-window = [];
       show-screen-recording-ui = [];
+      show-screenshot-ui = ["<Shift><Super>4"];
+      toggle-application-view = ["<Control><Alt>Down"];
+      toggle-message-tray = ["<Control><Alt>Right"];
     };
 
     "org/gnome/shell/weather" = {
@@ -448,7 +475,7 @@ with lib.hm.gvariant; {
     "org/gnome/software" = {
       check-timestamp = mkInt64 1742062939;
       first-run = false;
-      flatpak-purge-timestamp = mkInt64 1736223985;
+      flatpak-purge-timestamp = mkInt64 1742066497;
     };
 
     "org/gnome/tweaks" = {
