@@ -68,6 +68,6 @@
     maxJobs = 32;
     cores = 8;
 
-    systems = ["aarch64-linux"];
+    systems = ["aarch64-linux" "x86_64-linux"];
   };
 }
