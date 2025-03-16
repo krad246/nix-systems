@@ -5,6 +5,7 @@
       ./hercules-ci/dullahan.nix
       ./hercules-ci/headless-penguin.nix
       ./remotes.nix
+      ./secrets.nix
       ./sshd.nix
     ];
 
