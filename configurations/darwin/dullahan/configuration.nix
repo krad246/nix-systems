@@ -51,7 +51,7 @@
       };
     };
 
-    linux-builder = {
+    virtualisation.linux-builder = {
       ephemeral = false;
 
       memorySize = 8 * 1024;
