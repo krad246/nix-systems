@@ -34,7 +34,10 @@
 
   flake.effects = withSystem "x86_64-linux" ({hci-effects, ...}: {
     dullahan-deploy = hci-effects.runNixDarwin {
-      ssh.destination = "dullahan.tailb53085.ts.net";
+      ssh = {
+        destination = "dullahan.tailb53085.ts.net";
+        sshOptions = "-v";
+      };
       configuration = self.darwinConfigurations.dullahan;
     };
   });
