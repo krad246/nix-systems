@@ -32,7 +32,7 @@
     };
   };
 
-  flake.effects = withSystem "x86_64-linux" ({hci-effects, ...}: {
+  flake.effects = withSystem "aarch64-darwin" ({hci-effects, ...}: {
     dullahan-deploy = hci-effects.runNixDarwin {
       ssh = {
         destination = "dullahan.tailb53085.ts.net";
