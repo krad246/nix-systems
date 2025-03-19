@@ -1,8 +1,7 @@
 {
-  self,
-  specialArgs,
   config,
   lib,
+  pkgs,
   ...
 }: {
   services.hercules-ci-agent = {
@@ -10,40 +9,25 @@
     settings = {
       binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
       clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
-      concurrentTasks = 12;
+      concurrentTasks = "auto";
     };
   };
 
   environment.variables.NIX_REMOTE = "daemon";
 
-  krad246.darwin.virtualisation.linux-builder.extraConfig = {config, ...}: {
-    imports = [self.nixosModules.agenix];
-
+  krad246.darwin.virtualisation.linux-builder.extraConfig = _: {
     networking.hostName = "headless-penguin";
 
     services.hercules-ci-agent = {
       enable = true;
       settings = {
-        clusterJoinTokenPath = config.age.secrets.headless-penguin-cluster-join-token.path;
-        binaryCachesPath = config.age.secrets.headless-penguin-binary-caches.path;
+        # clusterJoinTokenPath = config.age.secrets.headless-penguin-cluster-join-token.path;
+        # binaryCachesPath = config.age.secrets.headless-penguin-binary-caches.path;
         concurrentTasks = 12;
         nixVerbosity = "Warn";
       };
     };
 
-    # pull all .age files and give them to the CI agent
-    age.secrets = let
-      inherit (specialArgs) krad246;
-      paths = krad246.fileset.filterExt "age" ../secrets/system;
-    in
-      krad246.attrsets.genAttrs' paths (path:
-        krad246.attrsets.stemValuePair path {
-          file = path;
-          mode = "770";
-          group = "hercules-ci-agent";
-        });
-
-    # enable remote SSH connections into the builder for other machines
     users.users.builder = {
       extraGroups = ["systemd-journal"];
     };
@@ -63,6 +47,17 @@
 
     systemd.services.nix-daemon.serviceConfig = {
       memoryHigh = "7G";
+    };
+  };
+
+  system.activationScripts = {
+    postActivation = {
+      enable = true;
+      text = ''
+        set -x
+        ${lib.meta.getExe pkgs.rsync} ${config.age.secrets.headless-penguin-binary-caches.path} builder@linux-builder:~/binary-caches.json
+        ${lib.meta.getExe pkgs.rsync} ${config.age.secrets.headless-penguin-cluster-join-token.path} builder@linux-builder:~/cluster-join-token.key
+      '';
     };
   };
 }
