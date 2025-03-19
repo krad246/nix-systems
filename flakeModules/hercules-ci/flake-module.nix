@@ -37,7 +37,7 @@
       ssh = {
         destination = "dullahan.tailb53085.ts.net";
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-        sshOptions = "-vv";
+        sshOptions = "-vvv";
       };
       configuration = self.darwinConfigurations.dullahan;
     };
