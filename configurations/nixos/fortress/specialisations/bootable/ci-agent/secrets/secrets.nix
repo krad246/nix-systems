@@ -14,5 +14,4 @@ in {
   "./binary-caches.age".publicKeys = [krad246.rsa root.rsa root.ed25519];
   "./cachix.age".publicKeys = [krad246.rsa root.rsa root.ed25519];
   "./cluster-join-token.age".publicKeys = [krad246.rsa root.rsa root.ed25519];
-  "./id_ed25519_priv.age".publicKeys = [krad246.rsa root.rsa root.ed25519];
 }
