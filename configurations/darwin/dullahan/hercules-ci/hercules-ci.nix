@@ -1,8 +1,6 @@
 {
   self,
   config,
-  lib,
-  pkgs,
   ...
 }: {
   imports = [self.modules.generic.hercules-ci-agent];
@@ -22,12 +20,8 @@
 
   system.activationScripts = {
     postActivation = {
-      text = let
-        inherit (config.age.secrets) headless-penguin-binary-caches headless-penguin-cluster-join-token;
-        inherit (config.services) hercules-ci-agent;
-      in ''
-        ${lib.meta.getExe pkgs.rsync} ${headless-penguin-binary-caches.path}      builder@linux-builder:${hercules-ci-agent.settings.binaryCachesPath}
-        ${lib.meta.getExe pkgs.rsync} ${headless-penguin-cluster-join-token.path} builder@linux-builder:${hercules-ci-agent.settings.clusterJoinTokenPath}
+      # TODO: share decrypted agenix files with hercules-ci-agent
+      text = ''
       '';
     };
   };

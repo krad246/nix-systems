@@ -6,4 +6,6 @@
       nixVerbosity = "Warn";
     };
   };
+
+  environment.variables.NIX_REMOTE = "daemon";
 }
