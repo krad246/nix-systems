@@ -46,7 +46,7 @@
       };
 
       virtualisation.linux-builder = {
-        ephemeral = false;
+        ephemeral = true;
 
         memorySize = 8 * 1024;
         diskSize = 128 * 1024;
