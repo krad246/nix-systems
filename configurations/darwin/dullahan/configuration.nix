@@ -5,13 +5,15 @@
   lib,
   ...
 }: {
-  imports = with self.darwinModules; [
-    apps
-    base-configuration
-    sshd
-    tailscale
-    wake-on-lan
-  ];
+  imports =
+    (with self.darwinModules; [
+      apps
+      base-configuration
+      sshd
+      tailscale
+      wake-on-lan
+    ])
+    ++ (with self.modules.generic; [fortress]);
 
   # restrict SSH access to known host keys
   users.users.krad246.openssh.authorizedKeys.keys = let
@@ -61,6 +63,14 @@
       cores = 8;
 
       systems = ["aarch64-linux" "x86_64-linux"];
+    };
+
+    remotes.fortress = {
+      enable = true;
+      sshUser = "krad246";
+      sshKey = config.age.secrets.id_ed25519_priv.path;
+      maxJobs = 72;
+      speedFactor = 3;
     };
   };
 }
