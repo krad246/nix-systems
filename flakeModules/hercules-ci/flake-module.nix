@@ -51,45 +51,6 @@
       darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
       devShells.outputs = self.devShells;
       nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
-
-      packages.outputs = {
-        packages =
-          lib.attrsets.mapAttrs (
-            system: packages: let
-              excludesPerSystem = {
-                aarch64-linux = packages':
-                  lib.attrsets.removeAttrs packages' [
-                    "fortress-disko-vm"
-                    "fortress-vm"
-                    "fortress-sd-aarch64"
-                    "fortress-sd-aarch64-installer"
-                  ];
-                x86_64-linux = packages':
-                  lib.attrsets.removeAttrs packages' [
-                    "fortress-virtualbox"
-                    "fortress-vagrant-virtualbox"
-                    "fortress-sd-x86_64"
-                    "fortress-vmware"
-                  ];
-                aarch64-darwin = packages': lib.attrsets.removeAttrs packages' [];
-              };
-
-              commonExcludes = lib.attrsets.removeAttrs packages [
-                "fortress-hyperv"
-                "fortress-iso"
-                "fortress-install-iso"
-                "fortress-install-iso-hyperv"
-                "fortress-qcow"
-                "fortress-qcow-efi"
-                "fortress-raw"
-                "fortress-raw-efi"
-                "fortress-vm-bootloader"
-              ];
-            in
-              excludesPerSystem.${system} commonExcludes
-          )
-          self.packages;
-      };
     };
   };
 }
