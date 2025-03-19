@@ -1,3 +1,0 @@
-{...}: {
-  imports = [./hercules-ci.nix];
-}

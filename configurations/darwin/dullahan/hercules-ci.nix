@@ -40,10 +40,8 @@
       text = ''
         #!${pkgs.stdenv.shell}
 
-        set -x
-
         # wait for the VM to come up, then use our host key to log in, so that we can rsync our secrets to the hercules-ci-agent.
-        until ${lib.meta.getExe pkgs.rsync} -e "${lib.meta.getExe pkgs.openssh} -i /etc/ssh/ssh_host_ed25519_key" \
+        until ${lib.meta.getExe pkgs.rsync} -q -e "${lib.meta.getExe pkgs.openssh} -q -i /etc/ssh/ssh_host_ed25519_key" \
           --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent --mkpath \
           ${config.age.secrets.headless-penguin-binary-caches.path} \
           ${config.age.secrets.headless-penguin-cluster-join-token.path} \
