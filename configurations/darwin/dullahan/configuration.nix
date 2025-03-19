@@ -1,8 +1,6 @@
 {
-  specialArgs,
   self,
   config,
-  lib,
   ...
 }: {
   imports =
@@ -14,13 +12,6 @@
       wake-on-lan
     ])
     ++ (with self.modules.generic; [fortress]);
-
-  # restrict SSH access to known host keys
-  users.users.krad246.openssh.authorizedKeys.keys = let
-    inherit (specialArgs) krad246;
-    paths = krad246.fileset.filterExt "pub" ./authorized_keys;
-  in
-    lib.lists.forEach paths (path: builtins.readFile path);
 
   # corrects a MacOS Sequoia change to the UID space
   ids.gids.nixbld = 30000;

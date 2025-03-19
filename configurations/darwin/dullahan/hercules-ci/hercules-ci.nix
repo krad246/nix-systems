@@ -46,11 +46,6 @@
     # enable remote SSH connections into the builder for other machines
     users.users.builder = {
       extraGroups = ["systemd-journal"];
-      openssh.authorizedKeys.keys = let
-        inherit (specialArgs) krad246;
-        paths = krad246.fileset.filterExt "pub" ../authorized_keys;
-      in
-        lib.lists.forEach paths (path: builtins.readFile path);
     };
 
     nix = {
