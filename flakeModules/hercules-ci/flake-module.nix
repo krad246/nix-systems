@@ -44,6 +44,7 @@
         packages = lib.attrsets.mapAttrs (_system: packages:
           lib.attrsets.intersectAttrs packages {
             fortress-disko-vm = 1;
+            windex-tarball = 1;
           });
       });
 
