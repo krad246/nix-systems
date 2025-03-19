@@ -50,6 +50,14 @@
           aarch64-darwin = withSystem "aarch64-darwin" ({self', ...}: {
             inherit (self'.packages) fortress-disko-vm;
           });
+
+          aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
+            inherit (self'.packages) fortress-disko-vm windex-tarball;
+          });
+
+          x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
+            inherit (self'.packages) fortress-disko-vm windex-tarball;
+          });
         };
       };
     };
