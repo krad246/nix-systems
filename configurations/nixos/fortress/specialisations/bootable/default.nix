@@ -2,7 +2,6 @@ let
   shared = {self, ...}: {
     imports =
       [
-        ./authorized-keys.nix
         ./avahi.nix
         ./efiboot.nix
         ./hardware-configuration.nix
