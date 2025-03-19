@@ -39,13 +39,19 @@
       default.outputs = lib.modules.mkForce (lib.attrsets.mapAttrs (_name: value: value.outputs) {
         inherit checks;
         inherit darwinConfigurations;
+        inherit devShells;
         inherit nixosConfigurations;
+        packages = lib.attrsets.mapAttrs (_system: packages:
+          lib.attrsets.intersectAttrs packages {
+            fortress-disko-vm = 1;
+          });
       });
 
       checks.outputs = self.checks;
       darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
       devShells.outputs = self.devShells;
       nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
+
       packages.outputs = {
         packages =
           lib.attrsets.mapAttrs (
