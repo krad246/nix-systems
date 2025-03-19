@@ -36,18 +36,18 @@
       getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
     in rec {
-      default.outputs = lib.modules.mkForce (lib.attrsets.mapAttrs (_name: group: group) {
-        inherit checks;
-        inherit darwinConfigurations;
-        inherit devShells;
-        inherit nixosConfigurations;
+      default.outputs = lib.modules.mkForce {
+        checks = checks.outputs;
+        darwinConfigurations = darwinConfigurations.outputs;
+        devShells = devShells.outputs;
+        nixosConfigurations = nixosConfigurations.outputs;
         packages = lib.attrsets.mapAttrs (_system: packages:
           lib.attrsets.intersectAttrs packages {
             fortress-disko-vm = 1;
             windex-tarball = 1;
           })
         self.packages;
-      });
+      };
 
       checks.outputs = self.checks;
       darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
