@@ -14,8 +14,7 @@
     ++ (with self.modules.generic; [fortress]);
 
   users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIAd1bAptObTbXa6odRCSjh3w1l4afdaSafixbH71BZT default-ssh@hercules-ci"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIg7n9nltOGayih/KtPv18mSk/MVoIOGpOa3I+Y3BJcl default-ssh@hercules-ci"
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXafRdLT+qPTMUzzMc35PxOP4zun6zIPTf98jQ6Bv5P"
   ];
 
   # corrects a MacOS Sequoia change to the UID space
