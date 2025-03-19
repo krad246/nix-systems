@@ -4,7 +4,6 @@
       ./configuration.nix
       ./hercules-ci/dullahan.nix
       ./hercules-ci/headless-penguin.nix
-      ./remotes.nix
       ./secrets.nix
     ];
 
