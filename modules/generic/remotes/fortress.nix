@@ -15,7 +15,7 @@ in {
       };
 
       sshKey = lib.options.mkOption {
-        type = lib.types.str;
+        type = lib.types.nullOr lib.types.str;
         default = null;
         example = "/home/alice/.ssh/id_ed25519";
       };
