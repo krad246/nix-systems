@@ -5,6 +5,7 @@
   lib,
   ...
 }: {
+  imports = [./hercules-ci.nix];
   services.hercules-ci-agent = {
     enable = true;
     settings = {

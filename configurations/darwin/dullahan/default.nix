@@ -3,8 +3,6 @@
     imports = [
       ./configuration.nix
       ./hercules-ci
-      ./hercules-ci/dullahan.nix
-      ./hercules-ci/headless-penguin.nix
       ./secrets.nix
     ];
 
