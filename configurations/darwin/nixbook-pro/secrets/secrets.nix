@@ -11,5 +11,4 @@ let
 
   inherit (nixbook-pro) krad246 system;
 in {
-  "id_ed25519_priv.age".publicKeys = [krad246.ed25519 system.ed25519];
 }
