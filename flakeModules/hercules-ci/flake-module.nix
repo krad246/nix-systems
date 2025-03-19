@@ -36,7 +36,7 @@
       getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
     in rec {
-      default.outputs = lib.modules.mkForce (lib.attrsets.mapAttrs (_name: value: value.outputs) {
+      default.outputs = lib.modules.mkForce (lib.attrsets.mapAttrs (_name: group: group.outputs) {
         inherit checks;
         inherit darwinConfigurations;
         inherit devShells;
@@ -45,7 +45,8 @@
           lib.attrsets.intersectAttrs packages {
             fortress-disko-vm = 1;
             windex-tarball = 1;
-          });
+          })
+        self.packages;
       });
 
       checks.outputs = self.checks;
