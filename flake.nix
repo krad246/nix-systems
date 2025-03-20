@@ -205,7 +205,7 @@
     nixpkgs-mozilla.url = "github:mozilla/nixpkgs-mozilla";
     nixpkgs-firefox-darwin.url = "github:bandithedoge/nixpkgs-firefox-darwin";
     nixvim-config.url = "github:mikaelfangel/nixvim-config";
-
+    hercules-ci-agent.url = "github:hercules-ci/hercules-ci-agent/stable";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
   };
 
