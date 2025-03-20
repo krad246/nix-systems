@@ -13,10 +13,6 @@
     ])
     ++ (with self.modules.generic; [fortress]);
 
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXafRdLT+qPTMUzzMc35PxOP4zun6zIPTf98jQ6Bv5P"
-  ];
-
   # corrects a MacOS Sequoia change to the UID space
   ids.gids.nixbld = 30000;
 
