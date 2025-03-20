@@ -37,7 +37,7 @@
       ssh = {
         destination = "dullahan.tailb53085.ts.net";
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-        sshOptions = "-vvv -o StrictHostKeyChecking=no";
+        sshOptions = "-vvv -o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
       configuration = self.darwinConfigurations.dullahan;
     };
