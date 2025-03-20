@@ -24,5 +24,6 @@ in {
           file = path;
           mode = "0600";
           owner = config.users.users._hercules-ci-agent.name;
+          group = config.users.groups._hercules-ci-agent.name;
         }));
 }
