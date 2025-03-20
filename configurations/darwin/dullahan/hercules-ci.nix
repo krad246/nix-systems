@@ -8,7 +8,7 @@
 }: {
   imports =
     (with inputs.hercules-ci-agent.darwinModules; [
-      agent-service
+      # agent-service
       agent-profile
     ])
     ++ [self.modules.generic.hercules-ci-agent];
@@ -26,6 +26,7 @@
 
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
+    package = lib.modules.mkForce inputs.hercules-ci-agent.packages.aarch64-darwin.hercules-ci-agent;
     settings = {
       binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
       clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
@@ -35,7 +36,7 @@
   krad246.darwin.virtualisation.linux-builder.extraConfig = {
     imports =
       (with inputs.hercules-ci-agent.nixosModules; [
-        agent-service
+        # agent-service
         agent-profile
       ])
       ++ [self.modules.generic.hercules-ci-agent];
