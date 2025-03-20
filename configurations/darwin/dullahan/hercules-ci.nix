@@ -6,7 +6,7 @@
   pkgs,
   ...
 }: {
-  imports = [self.modules.generic.hercules-ci-agent] ++ [inputs.hercules-ci-agent.darwinModules.agent-profile];
+  imports = [self.modules.generic.hercules-ci-agent];
 
   # stop on the first failure
   nix.settings.keep-going = false;
