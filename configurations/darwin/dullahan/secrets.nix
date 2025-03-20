@@ -23,6 +23,6 @@ in {
         krad246.attrsets.stemValuePair path {
           file = path;
           mode = "0600";
-          owner = config.users.users.hercules-ci-agent.name;
+          owner = config.users.users._hercules-ci-agent.name;
         }));
 }
