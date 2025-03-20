@@ -6,7 +6,7 @@
   pkgs,
   ...
 }: {
-  imports = [inputs.hercules-ci-agent.darwinModules.agent-service inputs.hercules-ci-agent.darwinModules.agenix-profile] ++ [self.modules.generic.hercules-ci-agent];
+  imports = [inputs.hercules-ci-agent.darwinModules.agent-service inputs.hercules-ci-agent.darwinModules.agent-profile] ++ [self.modules.generic.hercules-ci-agent];
 
   age.secrets = {
     dullahan-binary-caches.name = "dullahan/binary-caches.json";
