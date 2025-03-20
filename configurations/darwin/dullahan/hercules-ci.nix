@@ -13,6 +13,9 @@
     ])
     ++ [self.modules.generic.hercules-ci-agent];
 
+  # stop on the first failure
+  nix.settings.keep-going = false;
+
   # secrets aliases, really
   age.secrets = {
     dullahan-binary-caches.name = "dullahan/binary-caches.json";
@@ -36,6 +39,8 @@
         agent-profile
       ])
       ++ [self.modules.generic.hercules-ci-agent];
+
+    nix.settings.keep-going = false;
 
     networking.hostName = "headless-penguin";
 
