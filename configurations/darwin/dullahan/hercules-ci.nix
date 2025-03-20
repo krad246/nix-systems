@@ -6,14 +6,21 @@
   pkgs,
   ...
 }: {
-  imports = [inputs.hercules-ci-agent.darwinModules.agent-service inputs.hercules-ci-agent.darwinModules.agent-profile] ++ [self.modules.generic.hercules-ci-agent];
+  imports =
+    (with inputs.hercules-ci-agent.darwinModules; [
+      agent-service
+      agent-profile
+    ])
+    ++ [self.modules.generic.hercules-ci-agent];
 
+  # secrets aliases, really
   age.secrets = {
     dullahan-binary-caches.name = "dullahan/binary-caches.json";
     dullahan-cluster-join-token.name = "dullahan/cluster-join-token.key";
     headless-penguin-binary-caches.name = "headless-penguin/binary-caches.json";
     headless-penguin-cluster-join-token.name = "headless-penguin/cluster-join-token.key";
   };
+
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
     settings = {
@@ -23,7 +30,12 @@
   };
 
   krad246.darwin.virtualisation.linux-builder.extraConfig = {
-    imports = [self.modules.generic.hercules-ci-agent];
+    imports =
+      (with inputs.hercules-ci-agent.nixosModules; [
+        agent-service
+        agent-profile
+      ])
+      ++ [self.modules.generic.hercules-ci-agent];
 
     networking.hostName = "headless-penguin";
 

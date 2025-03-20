@@ -14,7 +14,7 @@ in {
       preallocate-contents = true;
       use-xdg-base-directories = true;
 
-      keep-going = true;
+      keep-going = modules.mkDefault true;
       max-jobs = "auto";
       max-substitution-jobs = modules.mkDefault 32;
 
