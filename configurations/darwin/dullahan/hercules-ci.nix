@@ -24,13 +24,6 @@
     settings = {
       binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
       clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
-      labels.darwin = {
-        inherit (config.system) configurationRevision;
-        release = config.system.darwinRelease;
-        label = config.system.darwinLabel;
-        revision = config.system.darwinRevision;
-        version = config.system.darwinVersion;
-      };
     };
   };
 
