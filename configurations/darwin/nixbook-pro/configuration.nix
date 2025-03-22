@@ -2,9 +2,11 @@
   self,
   specialArgs,
   config,
+  lib,
   ...
 }: {
   imports = with self.darwinModules; [
+    apps
     base-configuration
     colima
   ];
@@ -19,7 +21,14 @@
         file = path;
       });
 
+  system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen Browser.app"];
+
   krad246.darwin = {
+    apps = {
+      arc = false;
+      launchcontrol = false;
+    };
+
     # Used in conjunction with single-user settings.
     # Wraps users.users option
     masterUser = {
@@ -63,4 +72,6 @@
   };
 
   ids.gids.nixbld = 350;
+
+  services.tailscale.enable = true;
 }
