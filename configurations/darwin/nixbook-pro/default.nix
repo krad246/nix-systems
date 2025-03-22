@@ -1,9 +1,8 @@
 {withSystem, ...}: let
   entrypoint = {system, ...}: {
     imports = [
+      ./configuration.nix
       ./remotes.nix
-      ./software.nix
-      ./system-settings.nix
     ];
 
     nixpkgs.system = system;
