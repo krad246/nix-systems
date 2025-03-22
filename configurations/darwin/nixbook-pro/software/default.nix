@@ -1,5 +1,0 @@
-{
-  imports = [
-    ./brew-casks.nix
-  ];
-}

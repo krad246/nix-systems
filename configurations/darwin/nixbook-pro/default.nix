@@ -2,7 +2,7 @@
   entrypoint = {system, ...}: {
     imports = [
       ./remotes.nix
-      ./software
+      ./software.nix
       ./system-settings.nix
     ];
 
