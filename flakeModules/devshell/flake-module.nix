@@ -92,9 +92,27 @@ in {
     };
 
     devShells = {
+      devcontainer = pkgs.mkShell {
+        inputsFrom = [
+          self'.devShells.interactive
+        ];
+
+        packages = [];
+
+        shellHook = let
+          parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
+          arch = parse.cpu.name;
+          makefile = self'.packages."makefile-${arch}-linux";
+          devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
+        in ''
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
+          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
+        '';
+      };
+
       interactive = pkgs.mkShell {
         inputsFrom = [
-          self'.devShells.nix-shell-env
+          self'.devShells.nix-shell
           config.just-flake.outputs.devShell
         ];
 
@@ -110,19 +128,12 @@ in {
             self.packages.${pkgs.stdenv.system}.darwin-rebuild
           ]);
 
-        shellHook = let
-          parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
-          arch = parse.cpu.name;
-          makefile = self'.packages."makefile-${arch}-linux";
-          devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
-        in ''
+        shellHook = ''
           eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
-          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
-          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
         '';
       };
 
-      nix-shell-env = pkgs.mkShell {
+      nix-shell = pkgs.mkShell {
         packages = with pkgs;
           [git delta]
           ++ [direnv nix-direnv lorri]
@@ -142,7 +153,6 @@ in {
 
       # prefer an interpreter-level venv by default
       default = self'.devShells.nix-shell;
-      nix-shell = self'.devShells.nix-shell-env;
     };
   };
 }
