@@ -55,27 +55,29 @@
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
     in rec {
       checks.outputs = self.checks;
-      darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
       devShells.outputs = self.devShells;
+
+      darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
       nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
+
+      packages.outputs = {
+        aarch64-darwin = withSystem "aarch64-darwin" ({self', ...}: {
+          inherit (self'.packages) fortress-disko-vm;
+        });
+
+        aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
+          inherit (self'.packages) fortress-disko-vm windex-tarball;
+        });
+
+        x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
+          inherit (self'.packages) fortress-disko-vm windex-tarball;
+        });
+      };
+
       default.outputs = lib.modules.mkForce {
         checks = checks.outputs;
         darwinConfigurations = darwinConfigurations.outputs;
-        devShells = devShells.outputs;
         nixosConfigurations = nixosConfigurations.outputs;
-        packages = {
-          aarch64-darwin = withSystem "aarch64-darwin" ({self', ...}: {
-            inherit (self'.packages) fortress-disko-vm;
-          });
-
-          aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
-            inherit (self'.packages) fortress-disko-vm windex-tarball;
-          });
-
-          x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
-            inherit (self'.packages) fortress-disko-vm windex-tarball;
-          });
-        };
       };
     };
   };
