@@ -49,6 +49,8 @@
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
     settings = {
+      binaryCachesPath = config.age.secrets."gremlin/binary-caches.json".path;
+      clusterJoinTokenPath = config.age.secrets."gremlin/cluster-join-token.key".path;
     };
   };
 
