@@ -42,6 +42,7 @@
         nixbook-air.userHomeModules = ["krad246"];
         nixbook-pro.userHomeModules = ["krad246"];
         dullahan.userHomeModules = ["krad246"];
+        gremlin.userHomeModules = ["krad246"];
       };
     };
 
