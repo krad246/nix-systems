@@ -13,17 +13,11 @@
 
   # secrets aliases, really
   age.secrets = {
-    dullahan-binary-caches.name = "dullahan/binary-caches.json";
-    dullahan-cluster-join-token.name = "dullahan/cluster-join-token.key";
-    headless-penguin-binary-caches.name = "headless-penguin/binary-caches.json";
-    headless-penguin-cluster-join-token.name = "headless-penguin/cluster-join-token.key";
   };
 
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
     settings = {
-      binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
-      clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
     };
   };
 
@@ -36,11 +30,11 @@
 
     nix.settings.keep-going = false;
 
-    networking.hostName = "headless-penguin";
+    networking.hostName = "smeagol";
 
     # same identity that decrypts the host side secrets will be used to access root on the linux-builder
     users.users.root.openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXafRdLT+qPTMUzzMc35PxOP4zun6zIPTf98jQ6Bv5P"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0IJSgLQ/JomKuYZVV5/ZuboysqBJQCgBcHTvKklQDb root@gremlin"
     ];
 
     # give the only interactive user the ability to see the logs
