@@ -8,6 +8,8 @@
     apps
     base-configuration
     colima
+    sshd
+    tailscale
   ];
 
   system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen Browser.app"];
@@ -61,6 +63,4 @@
   };
 
   ids.gids.nixbld = 350;
-
-  services.tailscale.enable = true;
 }

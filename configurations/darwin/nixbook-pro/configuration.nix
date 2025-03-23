@@ -9,6 +9,7 @@
     apps
     base-configuration
     colima
+    tailscale
   ];
 
   # Parse the secrets directory
@@ -72,6 +73,4 @@
   };
 
   ids.gids.nixbld = 350;
-
-  services.tailscale.enable = true;
 }
