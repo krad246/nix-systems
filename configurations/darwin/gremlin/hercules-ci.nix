@@ -13,6 +13,37 @@
 
   # secrets aliases, really
   age.secrets = {
+    "gremlin/binary-caches.json" = {
+      file = ./secrets/hercules-ci/gremlin/binary-caches.age;
+      mode = "0600";
+      owner = config.users.users._hercules-ci-agent.name;
+      group = config.users.groups._hercules-ci-agent.name;
+      name = "gremlin/binary-caches.json";
+    };
+
+    "gremlin/cluster-join-token.key" = {
+      file = ./secrets/hercules-ci/gremlin/cluster-join-token.age;
+      mode = "0600";
+      owner = config.users.users._hercules-ci-agent.name;
+      group = config.users.groups._hercules-ci-agent.name;
+      name = "gremlin/cluster-join-token.key";
+    };
+
+    "smeagol/binary-caches.json" = {
+      file = ./secrets/hercules-ci/gremlin/binary-caches.age;
+      mode = "0600";
+      owner = config.users.users._hercules-ci-agent.name;
+      group = config.users.groups._hercules-ci-agent.name;
+      name = "smeagol/binary-caches.json";
+    };
+
+    "smeagol/cluster-join-token.key" = {
+      file = ./secrets/hercules-ci/gremlin/cluster-join-token.age;
+      mode = "0600";
+      owner = config.users.users._hercules-ci-agent.name;
+      group = config.users.groups._hercules-ci-agent.name;
+      name = "smeagol/cluster-join-token.key";
+    };
   };
 
   # point the darwin CI agent to our secrets' runtime decryption paths.
@@ -49,8 +80,8 @@
         # wait for the VM to come up, then use our host key to log in, so that we can rsync our secrets to the hercules-ci-agent.
         until ${lib.meta.getExe pkgs.rsync} -q -e "${lib.meta.getExe pkgs.openssh} -q -i /etc/ssh/ssh_host_ed25519_key" \
           --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent --mkpath \
-          ${config.age.secrets.headless-penguin-binary-caches.path} \
-          ${config.age.secrets.headless-penguin-cluster-join-token.path} \
+          ${config.age.secrets."smeagol/binary-caches.json".path} \
+          ${config.age.secrets."smeagol/cluster-join-token.key".path} \
             root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/; do
             :
         done
