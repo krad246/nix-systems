@@ -2,6 +2,7 @@
   entrypoint = {system, ...}: {
     imports = [
       ./configuration.nix
+      ./hercules-ci.nix
       ./remotes.nix
     ];
 
