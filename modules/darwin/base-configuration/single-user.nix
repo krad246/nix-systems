@@ -38,5 +38,7 @@ in {
         ${cfg.owner.name} = cfg.owner;
       };
     };
+
+    nix.settings.trusted-users = [cfg.owner.name];
   };
 }
