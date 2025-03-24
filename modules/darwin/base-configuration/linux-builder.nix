@@ -63,8 +63,6 @@ in {
 
   config = {
     nix = {
-      settings.trusted-users = ["@admin" "@wheel"];
-
       linux-builder = {
         inherit (cfg) enable;
         protocol = "ssh-ng";
