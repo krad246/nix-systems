@@ -87,4 +87,19 @@ in {
   ];
 
   services.tailscale.enable = true;
+
+  # required to deal with a DNS fight issue with tailscale.
+  wsl.wslConf.network.generateResolvConf = false;
+
+  # services.resolved.enable = true;
+
+  networking.nameservers = [
+    "100.100.100.100" # tailscale base
+    "10.255.255.254" # host nameserver from WSL bridge
+  ];
+
+  networking.search = [
+    "tailb53085.ts.net" # tailnet
+    "ad.global"
+  ];
 }

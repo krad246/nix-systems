@@ -22,7 +22,7 @@ in {
       # These users shall run builds in a chroot, where the filesystem is virtualized.
       # Enable mapping of daemon processes to CGroups, so that builds can be tuned.
       auto-allocate-uids = modules.mkDefault true;
-      build-users-group = ["nixbld"];
+      build-users-group = "nixbld";
       sandbox = modules.mkForce true;
       sandbox-fallback = modules.mkForce true;
       use-cgroups = true;
