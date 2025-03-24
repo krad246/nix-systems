@@ -41,12 +41,29 @@
       };
       configuration = self.darwinConfigurations.dullahan;
     };
+
+    gremlin-deploy = hci-effects.runNixDarwin {
+      ssh = {
+        destination = "krad246@gremlin.tailb53085.ts.net";
+        destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
+        sshOptions = "-vvv -o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+      };
+      configuration = self.darwinConfigurations.gremlin;
+    };
   });
 
   herculesCI = _herculesCI: {
-    onSchedule.dullahan-deploy = {
-      outputs.effects = {
-        inherit (self.effects) dullahan-deploy;
+    onSchedule = {
+      dullahan-deploy = {
+        outputs.effects = {
+          inherit (self.effects) dullahan-deploy;
+        };
+      };
+
+      gremlin-deploy = {
+        outputs.effects = {
+          inherit (self.effects) gremlin-deploy;
+        };
       };
     };
 
