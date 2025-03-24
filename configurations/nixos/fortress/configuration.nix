@@ -42,6 +42,4 @@
       ];
     }
   ];
-
-  nix.settings.trusted-users = ["krad246"];
 }
