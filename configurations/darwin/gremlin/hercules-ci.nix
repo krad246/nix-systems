@@ -84,8 +84,8 @@
           --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent --mkpath \
           ${config.age.secrets."smeagol/binary-caches.json".path} \
           ${config.age.secrets."smeagol/cluster-join-token.key".path} \
-            root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/; do
-            :
+            root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/ >/dev/null; do
+            ${lib.meta.getExe' pkgs.coreutils "sleep"} 1
         done
 
         ssh root@linux-builder -i /etc/ssh/ssh_host_ed25519_key systemctl restart hercules-ci-agent
