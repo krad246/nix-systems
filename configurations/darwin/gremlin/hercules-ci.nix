@@ -54,24 +54,27 @@
     };
   };
 
-  krad246.darwin.virtualisation.linux-builder.extraConfig = {
-    imports =
-      (with inputs.hercules-ci-agent.nixosModules; [
-        agent-profile
-      ])
-      ++ [self.modules.generic.hercules-ci-agent];
+  krad246.darwin.virtualisation.linux-builder = {
+    systems = ["aarch64-linux"];
+    extraConfig = {
+      imports =
+        (with inputs.hercules-ci-agent.nixosModules; [
+          agent-profile
+        ])
+        ++ [self.modules.generic.hercules-ci-agent];
 
-    nix.settings.keep-going = false;
+      nix.settings.keep-going = false;
 
-    networking.hostName = "smeagol";
+      networking.hostName = "smeagol";
 
-    # same identity that decrypts the host side secrets will be used to access root on the linux-builder
-    users.users.root.openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0IJSgLQ/JomKuYZVV5/ZuboysqBJQCgBcHTvKklQDb root@gremlin"
-    ];
+      # same identity that decrypts the host side secrets will be used to access root on the linux-builder
+      users.users.root.openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0IJSgLQ/JomKuYZVV5/ZuboysqBJQCgBcHTvKklQDb root@gremlin"
+      ];
 
-    # give the only interactive user the ability to see the logs
-    users.users.builder.extraGroups = ["systemd-journal"];
+      # give the only interactive user the ability to see the logs
+      users.users.builder.extraGroups = ["systemd-journal"];
+    };
   };
 
   system.activationScripts = {
