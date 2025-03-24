@@ -30,7 +30,7 @@
     };
 
     "smeagol/binary-caches.json" = {
-      file = ./secrets/hercules-ci/gremlin/binary-caches.age;
+      file = ./secrets/hercules-ci/smeagol/binary-caches.age;
       mode = "0600";
       owner = config.users.users._hercules-ci-agent.name;
       group = config.users.groups._hercules-ci-agent.name;
@@ -38,7 +38,7 @@
     };
 
     "smeagol/cluster-join-token.key" = {
-      file = ./secrets/hercules-ci/gremlin/cluster-join-token.age;
+      file = ./secrets/hercules-ci/smeagol/cluster-join-token.age;
       mode = "0600";
       owner = config.users.users._hercules-ci-agent.name;
       group = config.users.groups._hercules-ci-agent.name;
