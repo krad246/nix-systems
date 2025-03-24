@@ -84,7 +84,9 @@
           --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent --mkpath \
           ${config.age.secrets."smeagol/binary-caches.json".path} \
           ${config.age.secrets."smeagol/cluster-join-token.key".path} \
-            root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/ >/dev/null; do
+            root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/ 2>/dev/null; do
+
+            ${lib.meta.getExe' pkgs.coreutils "printf"} >&2 'copying keys to linux-builder...\n'
             ${lib.meta.getExe' pkgs.coreutils "sleep"} 1
         done
 
