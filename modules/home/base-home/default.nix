@@ -95,6 +95,6 @@ in {
   };
 
   nix.settings = {
-    trusted-users = [config.home.username];
+    allowed-users = [config.home.username];
   };
 }
