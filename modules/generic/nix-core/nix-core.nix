@@ -12,8 +12,10 @@ in {
     settings = {
       experimental-features =
         ["nix-command" "flakes"]
-        ++ (lib.lists.optionals pkgs.stdenv.isLinux [
+        ++ [
           "auto-allocate-uids"
+        ]
+        ++ (lib.lists.optionals pkgs.stdenv.isLinux [
           "cgroups"
         ]);
 
