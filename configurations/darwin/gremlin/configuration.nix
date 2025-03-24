@@ -12,7 +12,7 @@
     tailscale
   ];
 
-  system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen Browser.app"];
+  system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen.app"];
 
   krad246.darwin = {
     apps = {

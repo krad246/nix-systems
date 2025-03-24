@@ -89,15 +89,15 @@ in {
           inherit (cfg) sshUser;
           inherit (cfg) sshKey;
         }
-        {
-          hostName = "headless-penguin";
-          systems = ["aarch64-linux" "x86_64-linux"];
-          protocol = "ssh-ng";
-          inherit (cfg) maxJobs;
-          inherit (cfg) speedFactor;
-          sshUser = "builder";
-          sshKey = "/etc/nix/builder_ed25519";
-        }
+        # {
+        #   hostName = "headless-penguin";
+        #   systems = ["aarch64-linux" "x86_64-linux"];
+        #   protocol = "ssh-ng";
+        #   inherit (cfg) maxJobs;
+        #   inherit (cfg) speedFactor;
+        #   sshUser = "builder";
+        #   sshKey = "/etc/nix/builder_ed25519";
+        # }
       ];
     };
   };
