@@ -93,8 +93,4 @@ in {
       source = self;
     };
   };
-
-  nix.settings = {
-    allowed-users = [config.home.username];
-  };
 }
