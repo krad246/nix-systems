@@ -57,7 +57,8 @@
         destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
         sshOptions = "-vvv -o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
-      inherit (self.nixosConfigurations.fortress.config.specialisation.ci-agent) configuration;
+      config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
+      system = "x86_64-linux";
     };
   });
 
