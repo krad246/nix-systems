@@ -87,6 +87,8 @@
             root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/; do
             :
         done
+
+        ssh root@linux-builder -i /etc/ssh/ssh_host_ed25519_key systemctl restart hercules-ci-agent
       '';
     };
   };
