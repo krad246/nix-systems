@@ -27,7 +27,7 @@ in {
       build-users-group = "nixbld";
       sandbox = modules.mkForce true;
       sandbox-fallback = modules.mkForce true;
-      use-cgroups = true;
+      use-cgroups = modules.mkIf pkgs.stdenv.isLinux;
 
       # Performance tuning, scale automatically to the number of processors.
       # Considering that most computers don't have 16 CPUs, this means that we'd have typically at least 2 substitution jobs running on each core.
