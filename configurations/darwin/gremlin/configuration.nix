@@ -44,6 +44,7 @@
         maxJobs = 60;
         cores = 8;
         memorySize = 16 * 1024;
+        diskSize = 96 * 1024;
       };
 
       colima = {
