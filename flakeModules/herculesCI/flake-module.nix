@@ -37,7 +37,7 @@
       ssh = {
         destination = "krad246@dullahan.tailb53085.ts.net";
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-        sshOptions = "-vvv -o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin";
+        sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin";
       };
       configuration = self.darwinConfigurations.dullahan;
     };
@@ -46,7 +46,7 @@
       ssh = {
         destination = "krad246@gremlin.tailb53085.ts.net";
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-        sshOptions = "-vvv -o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin";
+        sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin";
       };
       configuration = self.darwinConfigurations.gremlin;
     };
@@ -55,7 +55,7 @@
       ssh = {
         destination = "krad246@fortress.tailb53085.ts.net";
         destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
-        sshOptions = "-vvv -o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin";
+        sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin";
       };
       config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
       system = "x86_64-linux";
