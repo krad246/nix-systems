@@ -102,8 +102,8 @@ in {
         # linux has first class support for namespacing, the backend of docker
         # this means that we have a slightly simpler container interface available
         # with more capabilities on linux environments
-        bwrapenv = pkgs.buildFHSEnvBubblewrap {
-          name = "bwrapenv";
+        bubblewrap = pkgs.buildFHSEnvBubblewrap {
+          name = "bubblewrap";
           runScript = "bash --rcfile <(echo ${lib.strings.escapeShellArg self'.devShells.default.shellHook})";
           nativeBuildInputs = let
             # 1. get all `{build,nativeBuild,...}Inputs` from the elements of `inputs`
@@ -112,19 +112,19 @@ in {
             # this leaves actual dependencies of the derivations in `inputsFrom`, but never the derivations themselves
             mergeInputs = inputs: name: (lib.subtractLists inputs (lib.flatten (lib.catAttrs name inputs)));
           in
-            mergeInputs [self'.devShells.nix-shell-env] "nativeBuildInputs";
+            mergeInputs [self'.devShells.default] "nativeBuildInputs";
 
           extraInstallCommands = "";
           meta = {};
           passhtru = {};
           extraPreBwrapCmds = "";
           extraBwrapArgs = [];
-          unshareUser = false;
-          unshareIpc = false;
-          unsharePid = false;
+          unshareUser = true; # all users are remapped into a new UID space
+          unshareIpc = true; # no need for message queues, etc.
+          unsharePid = true; # enter a new PID namespace
           unshareNet = false;
-          unshareUts = false;
-          unshareCgroup = false;
+          unshareUts = true;
+          unshareCgroup = true;
           privateTmp = true;
           dieWithParent = true;
         };
