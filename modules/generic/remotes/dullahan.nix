@@ -60,7 +60,7 @@ in {
           IdentitiesOnly yes
           ${lib.strings.optionalString (cfg.sshKey != null) ''IdentityFile ${cfg.sshKey}''}
           ConnectTimeout ${builtins.toString cfg.connectTimeout}
-          SetEnv PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+          SetEnv PATH=/nix/var/nix/profiles/default/bin
       '';
 
       "ssh/ssh_config.d/102-headless-penguin.conf".text = ''
