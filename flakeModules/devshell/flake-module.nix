@@ -92,6 +92,17 @@ in {
     };
 
     devShells = {
+      bubblewrap = pkgs.mkShell {
+        inputsFrom = [
+          self'.devShells.interactive
+        ];
+
+        packages = [];
+        shellHook = ''
+          ${lib.meta.getExe self'.packages.bubblewrap}
+        '';
+      };
+
       devcontainer = pkgs.mkShell {
         inputsFrom = [
           self'.devShells.interactive
