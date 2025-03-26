@@ -64,7 +64,7 @@
     };
   };
 
-  users.users.root.openssh.authorizedKeys.keys = [
+  users.users.krad246.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIj/uRwLu2OnR99uZSIZYOVeLJGh1DLBrHRabYF2ofho _hercules-ci-agent@dullahan"
   ];
 }
