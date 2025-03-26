@@ -1,5 +1,9 @@
-_: {
+{
   perSystem = {
+    config,
+    lib,
+    ...
+  }: {
     just-flake.features = {
       build = {
         enable = true;
@@ -84,7 +88,7 @@ _: {
           # Wraps `nix repl .`;
           [group('nix')]
           repl *ARGS: lock
-            nix repl --file "$FLAKE_ROOT" {{ ARGS }}
+            nix repl --file "$(${lib.meta.getExe config.flake-root.package})" {{ ARGS }}
         '';
       };
 
