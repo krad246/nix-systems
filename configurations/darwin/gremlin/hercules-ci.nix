@@ -98,7 +98,9 @@
     };
   };
 
-  users.users.krad246.openssh.authorizedKeys.keys = [
+  users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGD6hLeL5EzA8msaTLS964+fPIwtHPWSRZU3nVEGaNi5 _hercules-ci-agent@gremlin"
   ];
+
+  nix.gc.user = "root";
 }
