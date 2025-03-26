@@ -39,6 +39,7 @@
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
         sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
+      secretsMap.ssh = "default-ssh";
       configuration = self.darwinConfigurations.dullahan;
     };
 
@@ -48,6 +49,7 @@
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
         sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
+      secretsMap.ssh = "default-ssh";
       configuration = self.darwinConfigurations.gremlin;
     };
 
@@ -57,6 +59,8 @@
         destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
         sshOptions = "-v -o StrictHostKeyChecking=accept-new";
       };
+
+      secretsMap.ssh = "default-ssh";
       config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
       system = "x86_64-linux";
     };
