@@ -53,7 +53,7 @@
 
     fortress-deploy = hci-effects.runNixOS {
       ssh = {
-        destination = "krad246@fortress.local";
+        destination = "krad246@fortress.tailb53085.ts.net";
         destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
         sshOptions = "-v";
       };
