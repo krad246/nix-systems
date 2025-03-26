@@ -55,7 +55,7 @@
       ssh = {
         destination = "krad246@fortress.tailb53085.ts.net";
         destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
-        sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+        sshOptions = "-vvv -o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
       config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
       system = "x86_64-linux";
