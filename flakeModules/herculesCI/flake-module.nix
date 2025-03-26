@@ -39,7 +39,7 @@
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
         sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
-      secretsMap.ssh = "default-ssh";
+      # secretsMap.ssh = "default-ssh";
       configuration = self.darwinConfigurations.dullahan;
     };
 
@@ -49,7 +49,7 @@
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
         sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
-      secretsMap.ssh = "default-ssh";
+      # secretsMap.ssh = "default-ssh";
       configuration = self.darwinConfigurations.gremlin;
     };
 

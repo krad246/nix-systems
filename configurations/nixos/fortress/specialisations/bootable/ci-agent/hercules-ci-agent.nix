@@ -12,8 +12,4 @@
       binaryCachesPath = config.age.secrets.binary-caches.path;
     };
   };
-
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDg9s+XAwWrvRf0k16ua9/3tpxbohrTGJEp4rOPnqgOh root@fortress"
-  ];
 }
