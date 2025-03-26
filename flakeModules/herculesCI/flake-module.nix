@@ -55,6 +55,7 @@
       ssh = {
         destination = "krad246@fortress.local";
         destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
+        sshOptions = "-v";
       };
       config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
       system = "x86_64-linux";
