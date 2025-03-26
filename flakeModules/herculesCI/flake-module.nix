@@ -35,21 +35,30 @@
   flake.effects = withSystem "x86_64-linux" ({hci-effects, ...}: {
     dullahan-deploy = hci-effects.runNixDarwin {
       ssh = {
-        destination = "krad246@dullahan.tailb53085.ts.net";
+        destination = "root@dullahan.tailb53085.ts.net";
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
         sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
-      # secretsMap.ssh = "default-ssh";
+      secretsMap.ssh = "default-ssh";
+      userSetupScript = ''
+        writeSSHKey
+      '';
+
       configuration = self.darwinConfigurations.dullahan;
     };
 
     gremlin-deploy = hci-effects.runNixDarwin {
       ssh = {
-        destination = "krad246@gremlin.tailb53085.ts.net";
+        destination = "root@gremlin.tailb53085.ts.net";
         destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
         sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
       };
-      # secretsMap.ssh = "default-ssh";
+
+      secretsMap.ssh = "default-ssh";
+      userSetupScript = ''
+        writeSSHKey
+      '';
+
       configuration = self.darwinConfigurations.gremlin;
     };
 
