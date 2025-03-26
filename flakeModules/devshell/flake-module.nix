@@ -91,79 +91,81 @@ in {
       };
     };
 
-    devShells = {
-      bubblewrap = pkgs.mkShell {
-        inputsFrom = [
-          self'.devShells.interactive
-        ];
+    devShells =
+      (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
+        bubblewrap = pkgs.mkShell {
+          inputsFrom = [
+            self'.devShells.interactive
+          ];
 
-        packages = [];
-        shellHook = ''
-          ${lib.meta.getExe self'.packages.bubblewrap}
-        '';
+          packages = [];
+          shellHook = ''
+            ${lib.meta.getExe self'.packages.bubblewrap}
+          '';
+        };
+      })
+      // {
+        devcontainer = pkgs.mkShell {
+          inputsFrom = [
+            self'.devShells.interactive
+          ];
+
+          packages = [];
+
+          shellHook = let
+            parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
+            arch = parse.cpu.name;
+            makefile = self'.packages."makefile-${arch}-linux";
+            devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
+          in ''
+            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
+            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
+          '';
+        };
+
+        interactive = pkgs.mkShell {
+          inputsFrom = [
+            self'.devShells.nix-shell
+            config.just-flake.outputs.devShell
+          ];
+
+          packages =
+            [
+              self.packages.${pkgs.stdenv.system}.devour-flake
+              self.packages.${pkgs.stdenv.system}.home-manager
+            ]
+            ++ (lib.lists.optionals pkgs.stdenv.isLinux [
+              self.packages.${pkgs.stdenv.system}.nixos-rebuild
+            ])
+            ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
+              self.packages.${pkgs.stdenv.system}.darwin-rebuild
+            ]);
+
+          shellHook = ''
+            eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
+          '';
+        };
+
+        nix-shell = pkgs.mkShell {
+          packages = with pkgs;
+            [git delta]
+            ++ [direnv nix-direnv lorri]
+            ++ [just gnumake]
+            ++ [shellcheck nil]
+            ++ [self.packages.${pkgs.stdenv.system}.nix];
+
+          inputsFrom = [
+            config.flake-root.devShell
+            config.treefmt.build.devShell
+            config.pre-commit.devShell
+          ];
+
+          shellHook = ''
+          '';
+        };
+
+        # prefer an interpreter-level venv by default
+        default = self'.devShells.nix-shell;
       };
-
-      devcontainer = pkgs.mkShell {
-        inputsFrom = [
-          self'.devShells.interactive
-        ];
-
-        packages = [];
-
-        shellHook = let
-          parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
-          arch = parse.cpu.name;
-          makefile = self'.packages."makefile-${arch}-linux";
-          devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
-        in ''
-          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
-          ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
-        '';
-      };
-
-      interactive = pkgs.mkShell {
-        inputsFrom = [
-          self'.devShells.nix-shell
-          config.just-flake.outputs.devShell
-        ];
-
-        packages =
-          [
-            self.packages.${pkgs.stdenv.system}.devour-flake
-            self.packages.${pkgs.stdenv.system}.home-manager
-          ]
-          ++ (lib.lists.optionals pkgs.stdenv.isLinux [
-            self.packages.${pkgs.stdenv.system}.nixos-rebuild
-          ])
-          ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
-            self.packages.${pkgs.stdenv.system}.darwin-rebuild
-          ]);
-
-        shellHook = ''
-          eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
-        '';
-      };
-
-      nix-shell = pkgs.mkShell {
-        packages = with pkgs;
-          [git delta]
-          ++ [direnv nix-direnv lorri]
-          ++ [just gnumake]
-          ++ [shellcheck nil]
-          ++ [self.packages.${pkgs.stdenv.system}.nix];
-
-        inputsFrom = [
-          config.flake-root.devShell
-          config.treefmt.build.devShell
-          config.pre-commit.devShell
-        ];
-
-        shellHook = ''
-        '';
-      };
-
-      # prefer an interpreter-level venv by default
-      default = self'.devShells.nix-shell;
-    };
   };
 }
