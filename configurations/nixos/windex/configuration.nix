@@ -102,4 +102,6 @@ in {
     "tailb53085.ts.net" # tailnet
     "ad.global"
   ];
+
+  nix.settings.max-substitution-jobs = 128;
 }
