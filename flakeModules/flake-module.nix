@@ -6,7 +6,7 @@ args @ {
 }: let
   apps = import ./apps args;
   devShell = import ./devShell args;
-  ez-configs = import ./ez-configs args; # ties system and home configurations together
+  ezConfigs = import ./ezConfigs args; # ties system and home configurations together
   hercules-ci = import ./hercules-ci args;
   packages = import ./packages args;
 in {
@@ -20,7 +20,7 @@ in {
     ++ [
       apps.flakeModule # adds to flake apps
       devShell.flakeModule # adds to flake devShellsA
-      ez-configs.flakeModule # adds to nixosConfigurations, etc.
+      ezConfigs.flakeModule # adds to nixosConfigurations, etc.
       hercules-ci.flakeModule
       packages.flakeModule # adds to packages
     ];
@@ -32,7 +32,7 @@ in {
 
       apps = apps.flakeModule;
       devShells = devShell.flakeModule;
-      ez-configs = ez-configs.flakeModule;
+      ezConfigs = ezConfigs.flakeModule;
       packages = packages.flakeModule;
     };
 
@@ -40,7 +40,7 @@ in {
     modules = {
       flake = flakeModules; # alias output name
 
-      # ez-configs does the heavy lifting of figuring these out for us
+      # ezConfigs does the heavy lifting of figuring these out for us
 
       nixos = self.nixosModules;
       darwin = self.darwinModules;
