@@ -81,6 +81,38 @@
           inherit (self.effects) fortress-deploy;
         };
       };
+
+      fortress-disko-vm = {
+        outputs = {
+          packages = {
+            aarch64-darwin = withSystem "aarch64-darwin" ({self', ...}: {
+              inherit (self'.packages) fortress-disko-vm;
+            });
+
+            aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
+              inherit (self'.packages) fortress-disko-vm;
+            });
+
+            x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
+              inherit (self'.packages) fortress-disko-vm;
+            });
+          };
+        };
+      };
+
+      windex-tarball = {
+        outputs = {
+          packages = {
+            aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
+              inherit (self'.packages) windex-tarball;
+            });
+
+            x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
+              inherit (self'.packages) windex-tarball;
+            });
+          };
+        };
+      };
     };
 
     onPush = let
@@ -96,19 +128,6 @@
         darwinConfigurations = darwinConfigurations.outputs;
         devShells = devShells.outputs;
         nixosConfigurations = nixosConfigurations.outputs;
-        packages = {
-          aarch64-darwin = withSystem "aarch64-darwin" ({self', ...}: {
-            inherit (self'.packages) fortress-disko-vm;
-          });
-
-          aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
-            inherit (self'.packages) fortress-disko-vm windex-tarball;
-          });
-
-          x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
-            inherit (self'.packages) fortress-disko-vm windex-tarball;
-          });
-        };
       };
     };
   };
