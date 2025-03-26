@@ -7,7 +7,7 @@ args @ {
   apps = import ./apps args;
   devShell = import ./devShell args;
   ezConfigs = import ./ezConfigs args; # ties system and home configurations together
-  hercules-ci = import ./hercules-ci args;
+  herculesCI = import ./herculesCI args;
   packages = import ./packages args;
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
@@ -21,7 +21,7 @@ in {
       apps.flakeModule # adds to flake apps
       devShell.flakeModule # adds to flake devShellsA
       ezConfigs.flakeModule # adds to nixosConfigurations, etc.
-      hercules-ci.flakeModule
+      herculesCI.flakeModule
       packages.flakeModule # adds to packages
     ];
 
@@ -33,6 +33,7 @@ in {
       apps = apps.flakeModule;
       devShells = devShell.flakeModule;
       ezConfigs = ezConfigs.flakeModule;
+      herculesCI = herculesCI.flakeModule;
       packages = packages.flakeModule;
     };
 
