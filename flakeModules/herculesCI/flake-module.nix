@@ -61,6 +61,9 @@
       };
 
       secretsMap.ssh = "default-ssh";
+      userSetupScript = ''
+        writeSSHKey
+      '';
       config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
       system = "x86_64-linux";
     };
