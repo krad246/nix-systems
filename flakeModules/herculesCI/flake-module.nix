@@ -55,15 +55,16 @@
 
     fortress-deploy = hci-effects.runNixOS {
       ssh = {
-        destination = "krad246@fortress.tailb53085.ts.net";
+        destination = "root@fortress.tailb53085.ts.net";
         destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
-        sshOptions = "-v -o StrictHostKeyChecking=accept-new";
+        sshOptions = "-o StrictHostKeyChecking=accept-new"; # TODO: convert this to a userSetupScript line for strict host verification
       };
 
       secretsMap.ssh = "default-ssh";
       userSetupScript = ''
         writeSSHKey
       '';
+
       config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
       system = "x86_64-linux";
     };
