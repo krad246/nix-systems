@@ -5,7 +5,7 @@ args @ {
   ...
 }: let
   apps = import ./apps args;
-  devShells = import ./devshell args;
+  devShell = import ./devShell args;
   ez-configs = import ./ez-configs args; # ties system and home configurations together
   hercules-ci = import ./hercules-ci args;
   packages = import ./packages args;
@@ -19,7 +19,7 @@ in {
     ])
     ++ [
       apps.flakeModule # adds to flake apps
-      devShells.flakeModule # adds to flake devShells
+      devShell.flakeModule # adds to flake devShellsA
       ez-configs.flakeModule # adds to nixosConfigurations, etc.
       hercules-ci.flakeModule
       packages.flakeModule # adds to packages
@@ -31,7 +31,7 @@ in {
       default = ./.;
 
       apps = apps.flakeModule;
-      devShells = devShells.flakeModule;
+      devShells = devShell.flakeModule;
       ez-configs = ez-configs.flakeModule;
       packages = packages.flakeModule;
     };
