@@ -13,17 +13,19 @@
     };
   };
 
-  systemd.services.hercules-ci-agent.reloadIfChanged = false;
-  systemd.services.hercules-ci-agent-restarter.reloadIfChanged = false;
+  systemd.services.hercules-ci-agent = {
+    reloadIfChanged = false;
+    restartIfChanged = false;
+    stopIfChanged = false;
+    serviceConfig.RemainAfterExit = true;
+  };
 
-  systemd.services.hercules-ci-agent.restartIfChanged = false;
-  systemd.services.hercules-ci-agent-restarter.restartIfChanged = false;
-
-  systemd.services.hercules-ci-agent.stopIfChanged = false;
-  systemd.services.hercules-ci-agent-restarter.stopIfChanged = false;
-
-  systemd.services.hercules-ci-agent.serviceConfig.RemainAfterExit = true;
-  systemd.services.hercules-ci-agent-restarter.serviceConfig.RemainAfterExit = true;
+  systemd.services.hercules-ci-agent-restarter = {
+    reloadIfChanged = false;
+    restartIfChanged = false;
+    stopIfChanged = false;
+    serviceConfig.RemainAfterExit = true;
+  };
 
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/5yaElFDoFQtyZAg2yJaqr+7JjJx0LiWlRUoTRYkPL hercules-ci-agent@fortress"
