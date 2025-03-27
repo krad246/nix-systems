@@ -13,6 +13,9 @@
     };
   };
 
+  systemd.services.hercules-ci-agent.restartIfChanged = false;
+  systemd.services.hercules-ci-agent-restarter.restartIfChanged = false;
+
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/5yaElFDoFQtyZAg2yJaqr+7JjJx0LiWlRUoTRYkPL hercules-ci-agent@fortress"
   ];
