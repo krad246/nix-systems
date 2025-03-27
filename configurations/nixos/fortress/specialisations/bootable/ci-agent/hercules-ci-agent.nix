@@ -13,8 +13,14 @@
     };
   };
 
+  systemd.services.hercules-ci-agent.reloadIfChanged = false;
+  systemd.services.hercules-ci-agent-restarter.reloadIfChanged = false;
+
   systemd.services.hercules-ci-agent.restartIfChanged = false;
   systemd.services.hercules-ci-agent-restarter.restartIfChanged = false;
+
+  systemd.services.hercules-ci-agent.stopIfChanged = false;
+  systemd.services.hercules-ci-agent-restarter.stopIfChanged = false;
 
   systemd.services.hercules-ci-agent.serviceConfig.RemainAfterExit = true;
   systemd.services.hercules-ci-agent-restarter.serviceConfig.RemainAfterExit = true;
