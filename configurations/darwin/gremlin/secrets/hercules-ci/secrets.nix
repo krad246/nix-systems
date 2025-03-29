@@ -9,9 +9,11 @@ let
 in {
   "gremlin/binary-caches.age".publicKeys = [root.ed25519];
   "gremlin/cluster-join-token.age".publicKeys = [root.ed25519];
+  "gremlin/secrets.age".publicKeys = [root.ed25519];
 
   "./gremlin/binary-caches.age".publicKeys = [root.ed25519];
   "./gremlin/cluster-join-token.age".publicKeys = [root.ed25519];
+  "./gremlin/secrets.age".publicKeys = [root.ed25519];
 
   "smeagol/binary-caches.age".publicKeys = [root.ed25519];
   "smeagol/cluster-join-token.age".publicKeys = [root.ed25519];
