@@ -9,6 +9,7 @@
       enable = true;
       sshUser = "krad246";
       maxJobs = 24;
+      connectTimeout = 30;
     };
 
     fortress = {
@@ -16,6 +17,7 @@
       sshUser = "krad246";
       maxJobs = 144;
       speedFactor = 2;
+      connectTimeout = 30;
     };
   };
 }

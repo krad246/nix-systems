@@ -1,4 +1,9 @@
-{pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   runner = pkgs.writeShellApplication {
     name = "bootstrap";
     runtimeInputs = with pkgs;
@@ -15,7 +20,7 @@
       ]
       ++ [nixVersions.stable];
     text = ''
-      direnv allow "$PWD"
+      direnv allow "$(${lib.meta.getExe config.flake-root.package})"
       direnv exec "$PWD" true
     '';
   };

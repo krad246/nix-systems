@@ -1,6 +1,7 @@
 {
   inputs,
   config,
+  lib,
   pkgs,
   ...
 }: let
@@ -15,7 +16,7 @@ in {
   };
 
   homebrew = {
-    enable = false;
+    enable = lib.modules.mkDefault false;
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
@@ -23,7 +24,6 @@ in {
     };
 
     taps = [
-      "homebrew/services"
     ];
 
     global.brewfile = true;

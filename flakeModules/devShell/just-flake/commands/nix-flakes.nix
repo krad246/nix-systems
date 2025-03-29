@@ -102,6 +102,8 @@
             nix flake lock {{ ARGS }}
         '';
       };
+
+      treefmt.enable = true;
     };
   };
 }

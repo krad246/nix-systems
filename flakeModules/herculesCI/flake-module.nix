@@ -33,10 +33,10 @@
   };
 
   flake.effects = {
-    dullahan-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
+    dullahan-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
       hci-effects.runNixDarwin {
         ssh = {
-          destination = "root@dullahan.tailb53085.ts.net";
+          destination = "krad246@dullahan.tailb53085.ts.net";
           destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
           sshOptions = "-oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
         };
@@ -53,10 +53,10 @@
         buildOnDestination = true;
       });
 
-    gremlin-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
+    gremlin-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
       hci-effects.runNixDarwin {
         ssh = {
-          destination = "root@gremlin.tailb53085.ts.net";
+          destination = "krad246@gremlin.tailb53085.ts.net";
           destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
           sshOptions = "-oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
         };

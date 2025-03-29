@@ -83,6 +83,9 @@
 
       # give the only interactive user the ability to see the logs
       users.users.builder.extraGroups = ["systemd-journal"];
+
+      # Allow this VM to join my tailnet
+      services.tailscale.enable = true;
     };
   };
 
@@ -122,5 +125,5 @@
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/5yaElFDoFQtyZAg2yJaqr+7JjJx0LiWlRUoTRYkPL hercules-ci-agent@fortress"
   ];
 
-  nix.gc.user = "root";
+  # nix.gc.user = "root";
 }

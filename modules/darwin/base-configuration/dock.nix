@@ -19,7 +19,7 @@
       orientation = "bottom";
       persistent-apps = [
         "/System/Applications/iPhone Mirroring.app"
-        /System/Applications/Launchpad.app
+        "/System/Applications/Launchpad.app"
       ];
       persistent-others = [];
       scroll-to-open = true;
