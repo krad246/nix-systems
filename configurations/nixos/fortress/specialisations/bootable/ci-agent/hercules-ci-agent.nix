@@ -13,18 +13,14 @@
     };
   };
 
-  systemd.services.hercules-ci-agent = {
-    reloadIfChanged = false;
-    restartIfChanged = false;
-    stopIfChanged = false;
-    serviceConfig.RemainAfterExit = true;
-  };
+  systemd.services = {
+    hercules-ci-agent = {
+      stopIfChanged = false;
+    };
 
-  systemd.services.hercules-ci-agent-restarter = {
-    reloadIfChanged = false;
-    restartIfChanged = false;
-    stopIfChanged = false;
-    serviceConfig.RemainAfterExit = true;
+    hercules-ci-agent-restarter = {
+      stopIfChanged = false;
+    };
   };
 
   users.users.root.openssh.authorizedKeys.keys = [
