@@ -15,10 +15,12 @@
 
   systemd.services = {
     hercules-ci-agent = {
+      restartIfChanged = false;
       stopIfChanged = false;
     };
 
     hercules-ci-agent-restarter = {
+      restartIfChanged = false;
       stopIfChanged = false;
     };
   };
