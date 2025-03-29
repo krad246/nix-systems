@@ -109,7 +109,7 @@
 
     # Darwin shims for Nix
     darwin = {
-      url = "github:lnl7/nix-darwin/nix-darwin-24.11";
+      url = "github:lnl7/nix-darwin/master";
     };
 
     # Cross-platform (Linux / MacOS) userspace package management
@@ -280,6 +280,6 @@
       # export lib from above
       flake = {inherit lib;};
 
-      systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
+      systems = ["x86_64-linux" "aarch64-darwin" "x86_64-darwin" "aarch64-linux"];
     });
 }

@@ -73,4 +73,6 @@
   };
 
   ids.gids.nixbld = 350;
+
+  homebrew.enable = true;
 }

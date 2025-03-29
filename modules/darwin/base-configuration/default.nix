@@ -53,11 +53,12 @@
   };
 
   nix = {
-    useDaemon = lib.modules.mkForce true;
+    enable = true;
+    # useDaemon = lib.modules.mkForce true;
     daemonIOLowPriority = lib.modules.mkDefault true;
     daemonProcessType = lib.modules.mkDefault "Adaptive";
 
-    configureBuildUsers = true;
+    # configureBuildUsers = true;
 
     settings = {
       auto-optimise-store = false;
@@ -65,7 +66,7 @@
     };
   };
 
-  services.nix-daemon.enable = lib.modules.mkForce true;
+  # services.nix-daemon.enable = lib.modules.mkForce true;
   system.stateVersion = 5;
 
   homebrew = {
@@ -84,4 +85,6 @@
   nixpkgs.overlays = [
     inputs.nixpkgs-firefox-darwin.overlay
   ];
+
+  nix.settings.auto-allocate-uids = false;
 }
