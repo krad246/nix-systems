@@ -32,52 +32,55 @@
     };
   };
 
-  flake.effects = withSystem "x86_64-linux" ({hci-effects, ...}: {
-    dullahan-deploy = hci-effects.runNixDarwin {
-      ssh = {
-        destination = "root@dullahan.tailb53085.ts.net";
-        destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-        sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
-      };
-      secretsMap.ssh = "default-ssh";
-      userSetupScript = ''
-        writeSSHKey
-      '';
+  flake.effects = {
+    dullahan-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
+      hci-effects.runNixDarwin {
+        ssh = {
+          destination = "root@dullahan.tailb53085.ts.net";
+          destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
+          sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+        };
+        secretsMap.ssh = "default-ssh";
+        userSetupScript = ''
+          writeSSHKey
+        '';
 
-      configuration = self.darwinConfigurations.dullahan;
-    };
+        configuration = self.darwinConfigurations.dullahan;
+      });
 
-    gremlin-deploy = hci-effects.runNixDarwin {
-      ssh = {
-        destination = "root@gremlin.tailb53085.ts.net";
-        destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-        sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
-      };
+    gremlin-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
+      hci-effects.runNixDarwin {
+        ssh = {
+          destination = "root@gremlin.tailb53085.ts.net";
+          destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
+          sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+        };
 
-      secretsMap.ssh = "default-ssh";
-      userSetupScript = ''
-        writeSSHKey
-      '';
+        secretsMap.ssh = "default-ssh";
+        userSetupScript = ''
+          writeSSHKey
+        '';
 
-      configuration = self.darwinConfigurations.gremlin;
-    };
+        configuration = self.darwinConfigurations.gremlin;
+      });
 
-    fortress-deploy = hci-effects.runNixOS {
-      ssh = {
-        destination = "root@fortress.tailb53085.ts.net";
-        destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
-        sshOptions = "-o StrictHostKeyChecking=accept-new"; # TODO: convert this to a userSetupScript line for strict host verification
-      };
+    fortress-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
+      hci-effects.runNixOS {
+        ssh = {
+          destination = "root@fortress.tailb53085.ts.net";
+          destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
+          sshOptions = "-o StrictHostKeyChecking=accept-new"; # TODO: convert this to a userSetupScript line for strict host verification
+        };
 
-      secretsMap.ssh = "default-ssh";
-      userSetupScript = ''
-        writeSSHKey
-      '';
+        secretsMap.ssh = "default-ssh";
+        userSetupScript = ''
+          writeSSHKey
+        '';
 
-      config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
-      system = "x86_64-linux";
-    };
-  });
+        config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
+        system = "x86_64-linux";
+      });
+  };
 
   herculesCI = _herculesCI: {
     onSchedule = {
