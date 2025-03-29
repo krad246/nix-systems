@@ -64,11 +64,15 @@
         configuration = self.darwinConfigurations.gremlin;
       });
 
-    fortress-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
+    fortress-deploy = withSystem "x86_64-linux" ({
+      hci-effects,
+      pkgs,
+      ...
+    }:
       hci-effects.runNixOS {
         ssh = {
           destination = "root@fortress.tailb53085.ts.net";
-          destinationPkgs = withSystem "x86_64-linux" (ctx: ctx.pkgs);
+          destinationPkgs = pkgs;
           sshOptions = "-o StrictHostKeyChecking=accept-new"; # TODO: convert this to a userSetupScript line for strict host verification
         };
 
