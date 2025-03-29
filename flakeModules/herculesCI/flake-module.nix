@@ -33,7 +33,7 @@
   };
 
   flake.effects = {
-    dullahan-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
+    dullahan-deploy = withSystem "aarch64-darwin" ({hci-effects, ...}:
       hci-effects.runNixDarwin {
         ssh = {
           destination = "root@dullahan.tailb53085.ts.net";
@@ -48,7 +48,7 @@
         configuration = self.darwinConfigurations.dullahan;
       });
 
-    gremlin-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
+    gremlin-deploy = withSystem "aarch64-darwin" ({hci-effects, ...}:
       hci-effects.runNixDarwin {
         ssh = {
           destination = "root@gremlin.tailb53085.ts.net";
