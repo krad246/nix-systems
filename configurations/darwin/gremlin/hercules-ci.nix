@@ -44,6 +44,14 @@
       group = config.users.groups._hercules-ci-agent.name;
       name = "smeagol/cluster-join-token.key";
     };
+
+    "smeagol/secrets.json" = {
+      file = ./secrets/hercules-ci/smeagol/secrets.age;
+      mode = "0600";
+      owner = config.users.users._hercules-ci-agent.name;
+      group = config.users.groups._hercules-ci-agent.name;
+      name = "smeagol/secrets.json";
+    };
   };
 
   # point the darwin CI agent to our secrets' runtime decryption paths.
@@ -87,13 +95,14 @@
           --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent --mkpath \
           ${config.age.secrets."smeagol/binary-caches.json".path} \
           ${config.age.secrets."smeagol/cluster-join-token.key".path} \
+          ${config.age.secrets."smeagol/secrets.json".path} \
             root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/ 2>/dev/null; do
 
             ${lib.meta.getExe' pkgs.coreutils "printf"} >&2 'copying keys to linux-builder...\n'
             ${lib.meta.getExe' pkgs.coreutils "sleep"} 1
         done
 
-        ssh root@linux-builder -i /etc/ssh/ssh_host_ed25519_key systemctl restart hercules-ci-agent
+        ${lib.meta.getExe pkgs.openssh} root@linux-builder -i /etc/ssh/ssh_host_ed25519_key systemctl restart hercules-ci-agent
       '';
     };
   };
