@@ -25,6 +25,11 @@ with lib.hm.gvariant; {
       keyrings-selected = ["gnupg://"];
     };
 
+    "apps/seahorse/windows/key-manager" = {
+      height = 476;
+      width = 600;
+    };
+
     "io/missioncenter/MissionCenter" = {
       performance-selected-page = "gpu-0000:03:00.0";
       window-height = 400;
@@ -273,10 +278,7 @@ with lib.hm.gvariant; {
       show-desktop = ["<Shift><Super>h"];
       switch-input-source = [];
       switch-input-source-backward = [];
-      switch-to-workspace-1 = ["<Control>1"];
-      switch-to-workspace-2 = ["<Control>2"];
-      switch-to-workspace-3 = ["<Control>3"];
-      switch-to-workspace-4 = ["<Control>4"];
+      switch-to-workspace-1 = [];
       switch-to-workspace-down = [];
       switch-to-workspace-last = [];
       switch-to-workspace-left = ["<Control>Left"];
@@ -444,6 +446,7 @@ with lib.hm.gvariant; {
           ])
         ]
       ];
+      command-history = ["sudo journalctl --vacuum-time=1d" "sudo shutdown now" "sudo systemctl hybrid-sleep"];
       disable-user-extensions = true;
       favorite-apps = ["org.gnome.Nautilus.desktop" "app.zen_browser.zen.desktop" "kitty.desktop" "code.desktop"];
       last-selected-power-profile = "power-saver";
@@ -459,6 +462,10 @@ with lib.hm.gvariant; {
       screenshot-window = [];
       show-screen-recording-ui = [];
       show-screenshot-ui = ["<Shift><Super>4"];
+      switch-to-application-1 = [];
+      switch-to-application-2 = [];
+      switch-to-application-3 = [];
+      switch-to-application-4 = [];
       toggle-message-tray = ["<Control><Alt>Right"];
       toggle-overview = ["<Super>space"];
     };
@@ -473,9 +480,9 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/software" = {
-      check-timestamp = mkInt64 1742062939;
+      check-timestamp = mkInt64 1743453362;
       first-run = false;
-      flatpak-purge-timestamp = mkInt64 1742066497;
+      flatpak-purge-timestamp = mkInt64 1743467701;
     };
 
     "org/gnome/tweaks" = {
