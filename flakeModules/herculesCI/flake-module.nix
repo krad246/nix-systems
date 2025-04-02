@@ -38,7 +38,7 @@
         ssh = {
           destination = "root@dullahan.tailb53085.ts.net";
           destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-          sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+          sshOptions = "-oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
         };
         secretsMap.ssh = "default-ssh";
         userSetupScript = ''
@@ -46,6 +46,7 @@
         '';
 
         configuration = self.darwinConfigurations.dullahan;
+        buildOnDestination = true;
       });
 
     gremlin-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
@@ -53,7 +54,7 @@
         ssh = {
           destination = "root@gremlin.tailb53085.ts.net";
           destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-          sshOptions = "-o StrictHostKeyChecking=accept-new -oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
+          sshOptions = "-oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
         };
 
         secretsMap.ssh = "default-ssh";
@@ -62,6 +63,7 @@
         '';
 
         configuration = self.darwinConfigurations.gremlin;
+        buildOnDestination = true;
       });
 
     fortress-deploy = withSystem "x86_64-linux" ({
@@ -74,6 +76,7 @@
           destination = "root@fortress.tailb53085.ts.net";
           destinationPkgs = pkgs;
           sshOptions = "-o StrictHostKeyChecking=accept-new"; # TODO: convert this to a userSetupScript line for strict host verification
+          # buildOnDestination = true;
         };
 
         secretsMap.ssh = "default-ssh";

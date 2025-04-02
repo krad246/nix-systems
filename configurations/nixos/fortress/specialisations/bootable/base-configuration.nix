@@ -10,5 +10,20 @@
     ]
     ++ [
       self.diskoConfigurations.fortress-desktop
+    ]
+    ++ [
+      self.modules.generic.dullahan
+      self.modules.generic.gremlin
     ];
+
+  krad246.remotes = {
+    dullahan = {
+      enable = true;
+      sshUser = "krad246";
+    };
+    gremlin = {
+      enable = true;
+      sshUser = "krad246";
+    };
+  };
 }

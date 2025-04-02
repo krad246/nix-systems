@@ -129,7 +129,7 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/desktop/notifications" = {
-      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam" "org-signal-signal" "app-zen-browser-zen"];
+      application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam" "org-signal-signal" "app-zen-browser-zen" "com-spotify-client"];
       show-banners = true;
       show-in-lock-screen = false;
     };
@@ -480,7 +480,7 @@ with lib.hm.gvariant; {
     };
 
     "org/gnome/software" = {
-      check-timestamp = mkInt64 1743453362;
+      check-timestamp = mkInt64 1743632902;
       first-run = false;
       flatpak-purge-timestamp = mkInt64 1743467701;
     };
