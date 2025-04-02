@@ -61,6 +61,13 @@
       };
     };
 
+    remotes.gremlin = {
+      enable = true;
+      sshUser = "krad246";
+      maxJobs = 48;
+      speedFactor = 2;
+    };
+
     remotes.fortress = {
       enable = true;
       sshUser = "krad246";
