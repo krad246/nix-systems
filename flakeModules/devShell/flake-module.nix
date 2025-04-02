@@ -35,7 +35,7 @@ in {
     formatter = config.treefmt.build.wrapper;
     treefmt = {
       inherit (config.flake-root) projectRootFile;
-      flakeCheck = false;
+      flakeCheck = true;
       programs = {
         alejandra.enable = true;
         deadnix = {
@@ -43,7 +43,7 @@ in {
           no-underscore = true;
         };
         dos2unix.enable = false;
-        just.enable = false;
+        just.enable = true;
         keep-sorted.enable = true;
         shellcheck.enable = true;
         shfmt.enable = true;
@@ -59,7 +59,7 @@ in {
           alejandra.enable = true;
           check-added-large-files.enable = true;
           check-case-conflicts.enable = true;
-          check-executables-have-shebangs.enable = false;
+          check-executables-have-shebangs.enable = true;
           check-merge-conflicts.enable = true;
           check-shebang-scripts-are-executable.enable = true;
           check-symlinks.enable = true;
@@ -70,13 +70,13 @@ in {
           deadnix.enable = true;
           detect-private-keys.enable = true;
           end-of-file-fixer.enable = false;
-          flake-checker.enable = false;
+          flake-checker.enable = true;
           markdownlint.enable = false;
           mdl.enable = false;
           mixed-line-endings.enable = true;
           mkdocs-linkcheck.enable = false;
           nil.enable = true;
-          ripsecrets.enable = false;
+          ripsecrets.enable = true;
           shellcheck.enable = true;
           shfmt.enable = true;
           statix.enable = true;
@@ -84,11 +84,14 @@ in {
             enable = true;
             settings = {fail-on-change = true;};
           };
-          trim-trailing-whitespace.enable = false;
+          trim-trailing-whitespace.enable = true;
           trufflehog.enable = false;
-          check.enable = false;
         };
       };
+
+      # it is redundant to run pre-commit hooks multiple times on the same code
+      # it's not like anything changes between the behaviors cross system
+      check.enable = true;
     };
 
     devShells =

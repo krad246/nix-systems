@@ -1,12 +1,15 @@
 # outer / 'flake' scope
 _: {
-  perSystem = {
+  perSystem = ctx @ {
+    config,
+    lib,
     pkgs,
-    inputs',
     ...
   }: {
     apps = {
-      bootstrap = import ./bootstrap.nix {inherit pkgs inputs';};
+      bootstrap = import ./bootstrap.nix {
+        inherit (ctx) config lib pkgs;
+      };
     };
   };
 }
