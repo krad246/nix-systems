@@ -11,7 +11,10 @@
       tailscale
       wake-on-lan
     ])
-    ++ (with self.modules.generic; [fortress]);
+    ++ (with self.modules.generic; [
+      fortress
+      gremlin
+    ]);
 
   # corrects a MacOS Sequoia change to the UID space
   ids.gids.nixbld = 30000;
