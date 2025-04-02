@@ -15,4 +15,5 @@ in {
 
   "./hercules-ci/dullahan-binary-caches.age".publicKeys = [system.ed25519];
   "./hercules-ci/dullahan-cluster-join-token.age".publicKeys = [system.ed25519];
+  "./hercules-ci/dullahan-secrets.age".publicKeys = [system.ed25519];
 }

@@ -15,6 +15,7 @@
   age.secrets = {
     dullahan-binary-caches.name = "dullahan/binary-caches.json";
     dullahan-cluster-join-token.name = "dullahan/cluster-join-token.key";
+    dullahan-secrets.name = "dullahan/secrets.json";
     headless-penguin-binary-caches.name = "headless-penguin/binary-caches.json";
     headless-penguin-cluster-join-token.name = "headless-penguin/cluster-join-token.key";
   };
@@ -45,21 +46,34 @@
 
     # give the only interactive user the ability to see the logs
     users.users.builder.extraGroups = ["systemd-journal"];
+
+    # Allow the CI VM to join my tailnet
+    services.tailscale.enable = true;
   };
 
   system.activationScripts = {
-    postActivation = {
+    postActivation = let
+      # Convert the list of identity files to a command line that passes each one.
+      identityFiles = lib.strings.concatMapStringsSep " " (x: "-i ${x}") config.age.identityPaths;
+      printf = lib.meta.getExe' pkgs.coreutils "printf";
+      rsync = lib.meta.getExe pkgs.rsync;
+      ssh = lib.meta.getExe pkgs.openssh;
+      sleep = lib.meta.getExe' pkgs.coreutils "sleep";
+    in {
       text = ''
         #!${pkgs.stdenv.shell}
 
         # wait for the VM to come up, then use our host key to log in, so that we can rsync our secrets to the hercules-ci-agent.
-        until ${lib.meta.getExe pkgs.rsync} -q -e "${lib.meta.getExe pkgs.openssh} -q -i /etc/ssh/ssh_host_ed25519_key" \
-          --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent --mkpath \
-          ${config.age.secrets.headless-penguin-binary-caches.path} \
-          ${config.age.secrets.headless-penguin-cluster-join-token.path} \
-            root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/; do
-            :
+        until ${printf} >&2 'copying keys to linux-builder...\n' &&
+                ${rsync} -q -e "${ssh} -q ${identityFiles}" --mkpath --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent -o hercules-ci-agent -g hercules-ci-agent \
+                  ${config.age.secrets.headless-penguin-binary-caches.path} \
+                  ${config.age.secrets.headless-penguin-cluster-join-token.path} \
+                  ${config.age.secrets.dullahan-secrets.path} \
+                    root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/ 2>/dev/null; do
+            ${sleep} 1
         done
+
+        ${ssh} root@linux-builder ${identityFiles} systemctl restart hercules-ci-agent
       '';
     };
   };
@@ -72,5 +86,3 @@
 
   nix.gc.user = "root";
 }
-#
-
