@@ -83,13 +83,18 @@
         ssh = {
           destination = "root@fortress.tailb53085.ts.net";
           destinationPkgs = pkgs;
-          sshOptions = "-o StrictHostKeyChecking=accept-new"; # TODO: convert this to a userSetupScript line for strict host verification
+          sshOptions = ""; # TODO: convert this to a userSetupScript line for strict host verification
           # buildOnDestination = true;
         };
 
         secretsMap.ssh = "default-ssh";
         userSetupScript = ''
           writeSSHKey
+
+
+          cat >>~/.ssh/known_hosts <<EOF
+          fortress.tailb53085.ts.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDg9s+XAwWrvRf0k16ua9/3tpxbohrTGJEp4rOPnqgOh root@fortress
+          EOF
         '';
 
         config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
