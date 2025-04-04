@@ -55,7 +55,7 @@ in {
         keep-failed = false;
         keep-going = modules.mkDefault true;
         keep-outputs = modules.mkDefault true;
-        min-free = modules.mkDefault "8G";
+        min-free = modules.mkDefault "16G";
 
         # Prefer to pull as many outputs from binary caches as possible.
         builders-use-substitutes = true;
