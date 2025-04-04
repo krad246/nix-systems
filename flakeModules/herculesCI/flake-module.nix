@@ -43,6 +43,10 @@
         secretsMap.ssh = "default-ssh";
         userSetupScript = ''
           writeSSHKey
+
+          cat >>~/.ssh/known_hosts <<EOF
+          dullahan.tailb53085.ts.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJXafRdLT+qPTMUzzMc35PxOP4zun6zIPTf98jQ6Bv5P
+          EOF
         '';
 
         configuration = self.darwinConfigurations.dullahan;
@@ -60,6 +64,10 @@
         secretsMap.ssh = "default-ssh";
         userSetupScript = ''
           writeSSHKey
+
+          cat >>~/.ssh/known_hosts <<EOF
+          gremlin.tailb53085.ts.net ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0IJSgLQ/JomKuYZVV5/ZuboysqBJQCgBcHTvKklQDb
+          EOF
         '';
 
         configuration = self.darwinConfigurations.gremlin;
