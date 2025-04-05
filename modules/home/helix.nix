@@ -16,6 +16,8 @@
       editor = {
         evil = true;
 
+        default-yank-register = "+";
+
         cursorline = true;
         cursorcolumn = true;
 
@@ -84,10 +86,19 @@
             # "select_mode"
             "extend_to_line_bounds"
           ];
+
           "C-a" = [
             # "select_mode"
             "select_all"
           ];
+
+          # TODO:
+          # add_newline_below (<Space>j)
+          # add_newline_above (<Space>k)
+          # file_picker (<Ctrl><Shift>e)
+          # goto_next_buffer
+          # goto_previous_buffer
+          # replace_with_yanked
         };
       };
     };
