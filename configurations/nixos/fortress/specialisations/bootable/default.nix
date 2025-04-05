@@ -15,6 +15,7 @@
       ++ [
         ./ci-agent/agenix.nix
         ./ci-agent/cachix-agent.nix
+        ./ci-agent/container.nix
         ./ci-agent/hercules-ci-agent.nix
       ];
 
