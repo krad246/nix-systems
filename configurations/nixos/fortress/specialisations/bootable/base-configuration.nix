@@ -26,4 +26,6 @@
       sshUser = "krad246";
     };
   };
+
+  systemd.services.NetworkManager-wait-online.enable = false;
 }
