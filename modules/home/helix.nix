@@ -55,6 +55,15 @@
           insert = "bar";
         };
       };
+
+      keys = {
+        normal = {
+          V = [
+            "select_mode"
+            "extend_to_line_bounds"
+          ];
+        };
+      };
     };
   };
 }
