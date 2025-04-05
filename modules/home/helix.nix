@@ -16,16 +16,58 @@
       editor = {
         evil = true;
 
+        cursorline = true;
+        cursorcolumn = true;
+
+        bufferline = "multiple";
+        color-modes = true;
+
+        clipboard-provider = {
+        };
+
+        statusline = {
+        };
+
+        lsp = {
+        };
+
         cursor-shape = {
           normal = "block";
           insert = "bar";
+        };
+
+        file-picker = {
+        };
+
+        auto-pairs = {
+        };
+
+        auto-save = {
+        };
+
+        search = {
+        };
+
+        whitespace = {
+        };
+
+        indent-guides = {
+        };
+
+        gutters = {
+        };
+
+        soft-wrap = {
+        };
+
+        inline-diagnostics = {
         };
       };
 
       keys = {
         normal = {
           s = "no_op"; # disable select_regex
-          "C-s" = "no_op"; # disable save_selection
+          "C-s" = ":w"; # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
 
           # swap paste operations
           # default behavior is to now paste at the cursor position
