@@ -16,53 +16,15 @@
       editor = {
         evil = true;
 
-        default-yank-register = "+";
-
         cursorline = true;
         cursorcolumn = true;
 
         bufferline = "multiple";
         color-modes = true;
 
-        clipboard-provider = {
-        };
-
-        statusline = {
-        };
-
-        lsp = {
-        };
-
         cursor-shape = {
           normal = "block";
           insert = "bar";
-        };
-
-        file-picker = {
-        };
-
-        auto-pairs = {
-        };
-
-        auto-save = {
-        };
-
-        search = {
-        };
-
-        whitespace = {
-        };
-
-        indent-guides = {
-        };
-
-        gutters = {
-        };
-
-        soft-wrap = {
-        };
-
-        inline-diagnostics = {
         };
       };
 
