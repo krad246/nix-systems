@@ -49,6 +49,11 @@
       theme = "gruvbox_dark_soft";
       editor = {
         evil = true;
+
+        cursor-shape = {
+          normal = "block";
+          insert = "bar";
+        };
       };
     };
   };
