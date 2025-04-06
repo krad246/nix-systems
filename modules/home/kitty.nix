@@ -18,7 +18,9 @@
         withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts);
     };
     keybindings = {
-      "ctrl+shift+e" = "";
+      "ctrl+shift+e" = ""; # was 'open link'
+      "ctrl+shift+r" = ""; # was 'window resize'
+      "ctrl+shift+g" = ""; # was 'show last command output'
     };
     environment = {};
     extraConfig = ''
