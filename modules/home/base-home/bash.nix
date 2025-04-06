@@ -8,7 +8,11 @@
       set -o vi
     '';
 
-    historyControl = ["erasedups"];
+    historyControl = [
+      "ignoreboth"
+      "erasedups"
+    ];
+
     historyIgnore = ["exit" "reload"];
   };
 }
