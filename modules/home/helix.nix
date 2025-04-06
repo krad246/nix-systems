@@ -66,6 +66,9 @@
           "C-]" = "goto_next_buffer";
           "C-[" = "goto_previous_buffer";
 
+          "C-c" = "no_op";
+          "C-/" = "toggle_comments";
+
           # TODO:
           # add_newline_below (<Space>j)
           # add_newline_above (<Space>k)
