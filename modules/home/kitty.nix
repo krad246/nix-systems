@@ -17,7 +17,9 @@
       package =
         withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts);
     };
-    keybindings = {};
+    keybindings = {
+      "ctrl+shift+e" = "";
+    };
     environment = {};
     extraConfig = ''
       confirm_os_window_close 0
