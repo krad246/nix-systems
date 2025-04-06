@@ -54,15 +54,17 @@
             "select_all"
           ];
 
-          "C-S-e" = "file_picker";
+          "C-p" = "file_picker";
+          "C-E" = "file_picker";
+
+          "C-]" = "goto_next_buffer";
+          "C-[" = "goto_previous_buffer";
 
           # TODO:
           # add_newline_below (<Space>j)
           # add_newline_above (<Space>k)
 
-          # goto_next_buffer
-          # goto_previous_buffer
-          # replace_with_yanked
+          # replace_with_yanked (R)
         };
       };
     };
