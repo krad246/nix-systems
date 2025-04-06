@@ -22,9 +22,15 @@
         bufferline = "multiple";
         color-modes = true;
 
+        popup-border = "all";
+
         cursor-shape = {
           normal = "block";
           insert = "bar";
+        };
+
+        whitespace = {
+          render = "all";
         };
       };
 
