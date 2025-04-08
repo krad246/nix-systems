@@ -104,11 +104,4 @@ in {
   ];
 
   nix.settings.max-substitution-jobs = 128;
-
-  # mount an overlayFS over the /etc dir
-  boot.initrd.systemd.enable = true;
-  system.etc.overlay = {
-    enable = true;
-    mutable = true;
-  };
 }

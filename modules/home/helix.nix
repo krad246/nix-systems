@@ -56,7 +56,7 @@
           ];
 
           "C-a" = [
-            # "select_mode"
+            "select_mode"
             "select_all"
           ];
 
