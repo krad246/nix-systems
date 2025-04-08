@@ -51,12 +51,12 @@
 
           G = "goto_file_end";
           V = [
-            # "select_mode"
+            "select_mode"
             "extend_to_line_bounds"
           ];
 
           "C-a" = [
-            # "select_mode"
+            "select_mode"
             "select_all"
           ];
 
