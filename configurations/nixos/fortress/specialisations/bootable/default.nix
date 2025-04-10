@@ -13,7 +13,6 @@
     imports =
       [./base-configuration.nix]
       ++ [
-        ./ci-agent/agenix.nix
         ./ci-agent/cachix-agent.nix
         ./ci-agent/container.nix
         ./ci-agent/hercules-ci-agent.nix
@@ -36,5 +35,7 @@
 
     # large tmpfs for CI builds
     boot.tmp.tmpfsSize = "176G";
+
+    age.identityPaths = ["/nix/persist/etc/ssh/ssh_host_ed25519_key"];
   };
 }
