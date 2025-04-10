@@ -55,7 +55,7 @@
   # but we could just as easily re-enable the host-side install
   systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
     hercules-ci-agent = {
-      enable = true;
+      enable = false;
 
       # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
@@ -64,14 +64,61 @@
     };
 
     hercules-ci-agent-restarter = {
-      enable = true;
+      enable = false;
 
       # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
       reloadIfChanged = false;
       stopIfChanged = false;
     };
+
+    "container@hercules-ci-agent".environment = {
+      SYSTEMD_LOG_LEVEL = "debug";
+    };
   };
+
+  containers.hercules-ci-agent = {
+    autoStart = true;
+    ephemeral = true;
+
+    # TODO: set up DNS, etc. here
+    # privateNetwork = true;
+
+    bindMounts = let
+      inherit (config.services) hercules-ci-agent;
+      containerSecrets = hercules-ci-agent.settings.staticSecretsDirectory;
+    in {
+      "${containerSecrets}" = {
+        mountPoint = "${containerSecrets}:noidmap,norbind";
+        hostPath = config.age.secretsDir + "/hercules-ci";
+        isReadOnly = true;
+      };
+    };
+
+    # TODO: determine how to map hercules-ci-agent into a private user namespace, different UID.
+    extraFlags = [
+      "-U"
+      "--bind-user=hercules-ci-agent"
+    ];
+
+    config = {
+      imports = [
+        inputs.hercules-ci-agent.nixosModules.agent-profile
+        self.modules.generic.hercules-ci-agent
+      ];
+
+      services.hercules-ci-agent = {
+        enable = true;
+        settings = {
+          concurrentTasks = 48;
+        };
+      };
+
+      boot.binfmt.emulatedSystems = ["aarch64-linux"];
+    };
+  };
+
+  users.users.hercules-ci-agent.autoSubUidGidRange = true;
 
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/5yaElFDoFQtyZAg2yJaqr+7JjJx0LiWlRUoTRYkPL hercules-ci-agent@fortress"
