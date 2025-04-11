@@ -156,7 +156,7 @@
     };
 
     onPush = let
-      getTopLevelDrv = cfg: cfg.config.system.build.toplevel;
+      getTopLevelDrv = cfg: lib.dontRecurseIntoAttrs cfg.config.system.build.toplevel;
       getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
     in rec {
       checks.outputs = self.checks;
