@@ -33,6 +33,9 @@
     # run in multi-user mode always
     environment.variables.NIX_REMOTE = "daemon";
 
+    # use the current system generation for nix binaries
+    environment.variables.NIX_SSHOPTS = "-o SetEnv=PATH=/run/current-system/sw/bin";
+
     # large tmpfs for CI builds
     boot.tmp.tmpfsSize = "176G";
 

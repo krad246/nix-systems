@@ -50,4 +50,6 @@
       "-U"
     ];
   };
+
+  programs.darling.enable = true;
 }
