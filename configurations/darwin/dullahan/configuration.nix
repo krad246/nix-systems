@@ -7,7 +7,6 @@
     (with self.darwinModules; [
       apps
       base-configuration
-      sshd
       tailscale
       wake-on-lan
     ])
