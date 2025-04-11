@@ -8,7 +8,6 @@
     apps
     base-configuration
     colima
-    sshd
     tailscale
   ];
 
