@@ -73,6 +73,11 @@
   };
 
   environment = {
+    variables = {
+      NIX_REMOTE = "daemon";
+      NIX_SSHOPTS = "-o SetEnv=PATH=${lib.strings.makeBinPath ["/run/current-system/sw" "/nix/var/nix/profiles/default"]}";
+    };
+
     shells = [
       "${config.homebrew.brewPrefix}/bash"
       "${config.homebrew.brewPrefix}/zsh"

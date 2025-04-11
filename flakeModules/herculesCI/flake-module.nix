@@ -38,7 +38,6 @@
         ssh = {
           destination = "root@dullahan.tailb53085.ts.net";
           destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-          sshOptions = "-oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
         };
         secretsMap.ssh = "default-ssh";
         userSetupScript = ''
@@ -58,7 +57,6 @@
         ssh = {
           destination = "root@gremlin.tailb53085.ts.net";
           destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
-          sshOptions = "-oSetEnv=PATH=/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin";
         };
 
         secretsMap.ssh = "default-ssh";

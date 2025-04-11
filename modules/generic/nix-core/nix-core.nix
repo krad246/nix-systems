@@ -10,7 +10,8 @@ in {
     checkConfig = true;
     gc.automatic = true;
     settings =
-      {
+      rec {
+        extra-experimental-features = experimental-features;
         experimental-features =
           ["nix-command" "flakes"]
           ++ [
