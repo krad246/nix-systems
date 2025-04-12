@@ -12,9 +12,9 @@
   };
 
   services.hercules-ci-agent = {
-    enable = lib.modules.mkDefault false;
+    enable = lib.modules.mkDefault true;
     settings = {
-      concurrentTasks = "auto";
+      concurrentTasks = lib.modules.mkDefault "auto";
       nixVerbosity = "Warn";
     };
   };

@@ -34,8 +34,15 @@
         self.modules.generic.hercules-ci-agent
       ];
 
-      services.hercules-ci-agent.enable = true;
+      services.hercules-ci-agent = {
+        enable = true;
+        settings = {
+          concurrentTasks = 48;
+        };
+      };
       boot.binfmt.emulatedSystems = ["aarch64-linux"];
+
+      networking.hostName = config.networking.hostName;
     };
 
     # TODO: need to automatically chown the mounted directory at container spawn time
