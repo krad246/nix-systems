@@ -63,7 +63,7 @@
   };
 
   krad246.darwin.virtualisation.linux-builder = {
-    systems = ["aarch64-linux"];
+    # systems = ["aarch64-linux"];
     extraConfig = {
       imports =
         (with inputs.hercules-ci-agent.nixosModules; [
