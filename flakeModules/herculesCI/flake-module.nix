@@ -33,6 +33,20 @@
   };
 
   herculesCI = _herculesCI: {
+    onPush = rec {
+      checks.outputs = self.checks;
+      darwinConfigurations.outputs = lib.attrsets.mapAttrs (_name: value: lib.attrsets.dontRecurseIntoAttrs value.system) self.darwinConfigurations;
+      devShells.outputs = self.devShells;
+      nixosConfigurations.outputs = lib.attrsets.mapAttrs (_name: value: lib.attrsets.dontRecurseIntoAttrs value.config.system.build.toplevel) self.nixosConfigurations;
+
+      default.outputs = lib.modules.mkForce {
+        checks = checks.outputs;
+        darwinConfigurations = darwinConfigurations.outputs;
+        devShells = devShells.outputs;
+        nixosConfigurations = nixosConfigurations.outputs;
+      };
+    };
+
     onSchedule = {
       dullahan-deploy = {
         outputs.effects = {
@@ -112,19 +126,6 @@
               system = "x86_64-linux";
             });
         };
-      };
-    };
-
-    onPush = rec {
-      checks.outputs = self.checks;
-      darwinConfigurations.outputs = lib.attrsets.mapAttrs (_name: value: lib.attrsets.dontRecurseIntoAttrs value.system) self.darwinConfigurations;
-      devShells.outputs = self.devShells;
-      nixosConfigurations.outputs = lib.attrsets.mapAttrs (_name: value: lib.attrsets.dontRecurseIntoAttrs value.config.system.build.toplevel) self.nixosConfigurations;
-      default.outputs = lib.modules.mkForce {
-        checks = checks.outputs;
-        darwinConfigurations = darwinConfigurations.outputs;
-        devShells = devShells.outputs;
-        nixosConfigurations = nixosConfigurations.outputs;
       };
     };
   };
