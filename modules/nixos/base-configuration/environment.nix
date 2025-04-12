@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  lib,
+  pkgs,
+  ...
+}: {
   i18n = {
     defaultLocale = "en_US.UTF-8";
 
@@ -26,7 +30,8 @@
 
   system.stateVersion = lib.trivial.release;
 
-  environment.variables = {
+  environment.sessionVariables = {
     TERM = "xterm-256color";
+    EDITOR = lib.meta.getExe pkgs.vim;
   };
 }

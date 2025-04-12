@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   imports =
     [
       ./aarch64-binfmt.nix
@@ -22,4 +26,9 @@
       nix-core
       unfree
     ]);
+
+  environment.variables = {
+    NIX_REMOTE = "daemon";
+    NIX_SSHOPTS = "-o SetEnv=PATH=${lib.strings.makeBinPath ["/run/current-system/sw" "/nix/var/nix/profiles/default"]}";
+  };
 }

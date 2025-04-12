@@ -105,7 +105,7 @@ in {
 
           environment = {
             systemPackages = with pkgs; [bottom];
-            variables = {
+            sessionVariables = {
               TERM = "xterm-256color";
             };
           };
