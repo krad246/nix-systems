@@ -1,4 +1,5 @@
 {
+  inputs,
   self,
   config,
   lib,
@@ -55,6 +56,43 @@
       restartIfChanged = false;
       reloadIfChanged = false;
       stopIfChanged = false;
+    };
+  };
+
+  containers.hercules-ci-agent = {
+    autoStart = true;
+    ephemeral = true;
+
+    # TODO: set up DNS, etc. here
+    # privateNetwork = true;
+
+    bindMounts = {
+      "${config.services.hercules-ci-agent.settings.staticSecretsDirectory}" = {
+        hostPath = config.age.secretsDir + "/hercules-ci";
+        isReadOnly = true;
+      };
+    };
+
+    extraFlags = [
+      "-U"
+      # "--overlay-ro=${config.age.secretsDir + "/hercules-ci"}:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}"
+    ];
+
+    config = {
+      imports = [
+        inputs.hercules-ci-agent.nixosModules.agent-profile
+        self.modules.generic.hercules-ci-agent
+      ];
+
+      services.hercules-ci-agent = {
+        enable = true;
+        settings = {
+          concurrentTasks = 48;
+        };
+      };
+
+      boot.binfmt.emulatedSystems = ["aarch64-linux"];
+      networking.hostName = config.networking.hostName;
     };
   };
 
