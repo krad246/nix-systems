@@ -32,9 +32,6 @@
     };
   };
 
-  flake.effects = {
-  };
-
   herculesCI = _herculesCI: {
     onSchedule = {
       dullahan-deploy = {
@@ -114,38 +111,6 @@
               config = self.nixosConfigurations.fortress.config.specialisation.ci-agent.configuration;
               system = "x86_64-linux";
             });
-        };
-      };
-
-      fortress-disko-vm = {
-        outputs = {
-          packages = {
-            aarch64-darwin = withSystem "aarch64-darwin" ({self', ...}: {
-              inherit (self'.packages) fortress-disko-vm;
-            });
-
-            aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
-              inherit (self'.packages) fortress-disko-vm;
-            });
-
-            x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
-              inherit (self'.packages) fortress-disko-vm;
-            });
-          };
-        };
-      };
-
-      windex-tarball = {
-        outputs = {
-          packages = {
-            aarch64-linux = withSystem "aarch64-linux" ({self', ...}: {
-              inherit (self'.packages) windex-tarball;
-            });
-
-            x86_64-linux = withSystem "x86_64-linux" ({self', ...}: {
-              inherit (self'.packages) windex-tarball;
-            });
-          };
         };
       };
     };
