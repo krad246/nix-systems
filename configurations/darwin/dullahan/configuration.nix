@@ -50,11 +50,11 @@
       virtualisation.linux-builder = {
         ephemeral = true;
 
-        memorySize = 8 * 1024;
+        memorySize = 6 * 1024;
         diskSize = 128 * 1024;
 
         maxJobs = 32;
-        cores = 8;
+        cores = 6;
 
         # systems = ["aarch64-linux"];
       };
