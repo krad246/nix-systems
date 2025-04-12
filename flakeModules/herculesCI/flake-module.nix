@@ -157,9 +157,9 @@
 
     onPush = rec {
       checks.outputs = self.checks;
-      darwinConfigurations.outputs = lib.dontRecurseIntoAttrs self.darwinConfigurations;
+      darwinConfigurations.outputs = lib.attrsets.mapAttrs (_name: value: lib.attrsets.dontRecurseIntoAttrs value.system) self.darwinConfigurations;
       devShells.outputs = self.devShells;
-      nixosConfigurations.outputs = lib.dontRecurseIntoAttrs self.nixosConfigurations;
+      nixosConfigurations.outputs = lib.attrsets.mapAttrs (_name: value: lib.attrsets.dontRecurseIntoAttrs value.config.system.build.toplevel) self.nixosConfigurations;
       default.outputs = lib.modules.mkForce {
         checks = checks.outputs;
         darwinConfigurations = darwinConfigurations.outputs;
