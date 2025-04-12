@@ -1,11 +1,11 @@
 {
-  inputs,
   self,
   config,
+  lib,
   ...
 }: {
   imports = [
-    inputs.hercules-ci-agent.nixosModules.agent-profile
+    # inputs.hercules-ci-agent.nixosModules.agent-profile
     self.modules.generic.hercules-ci-agent
   ];
 
@@ -13,29 +13,30 @@
     "binary-caches.json" = {
       file = ./secrets/hercules-ci-agent/binary-caches.age;
       mode = "0600";
-      owner = config.users.users.hercules-ci-agent.name;
-      group = config.users.groups.hercules-ci-agent.name;
+      # owner = config.users.users.hercules-ci-agent.name;
+      # group = config.users.groups.hercules-ci-agent.name;
       name = "hercules-ci/binary-caches.json";
     };
 
     "cluster-join-token.key" = {
       file = ./secrets/hercules-ci-agent/cluster-join-token.age;
       mode = "0600";
-      owner = config.users.users.hercules-ci-agent.name;
-      group = config.users.groups.hercules-ci-agent.name;
+      # owner = config.users.users.hercules-ci-agent.name;
+      # group = config.users.groups.hercules-ci-agent.name;
       name = "hercules-ci/cluster-join-token.key";
     };
 
     "secrets.json" = {
       file = ./secrets/hercules-ci-agent/secrets.age;
       mode = "0600";
-      owner = config.users.users.hercules-ci-agent.name;
-      group = config.users.users.hercules-ci-agent.name;
+      # owner = config.users.users.hercules-ci-agent.name;
+      # group = config.users.users.hercules-ci-agent.name;
       name = "hercules-ci/secrets.json";
     };
   };
 
   services.hercules-ci-agent = {
+    enable = false;
     settings = {
       clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
       binaryCachesPath = config.age.secrets."binary-caches.json".path;
@@ -43,7 +44,7 @@
     };
   };
 
-  systemd.services = {
+  systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
     hercules-ci-agent = {
       restartIfChanged = false;
       reloadIfChanged = false;

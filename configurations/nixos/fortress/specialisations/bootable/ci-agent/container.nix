@@ -24,14 +24,9 @@
 
   containers.hercules-ci-agent = {
     autoStart = true;
-    privateNetwork = true;
 
-    bindMounts = {
-      "${config.services.hercules-ci-agent.settings.staticSecretsDirectory}" = {
-        hostPath = config.age.secretsDir + "/hercules-ci";
-        isReadOnly = true;
-      };
-    };
+    # TODO: set up DNS, etc. here
+    # privateNetwork = true;
 
     config = {
       imports = [
@@ -40,16 +35,13 @@
       ];
 
       services.hercules-ci-agent.enable = true;
-
-      networking.useHostResolvConf = false;
-      services.resolved.enable = true;
+      boot.binfmt.emulatedSystems = ["aarch64-linux"];
     };
 
+    # TODO: need to automatically chown the mounted directory at container spawn time
     extraFlags = [
-      # "--bind-user=hercules-ci-agent"
-      "-U"
+      "--overlay=${config.age.secretsDir + "/hercules-ci"}:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}"
+      # "-U" # TODO: can't seem to log into hercules CI in a private user namespace
     ];
   };
-
-  programs.darling.enable = true;
 }
