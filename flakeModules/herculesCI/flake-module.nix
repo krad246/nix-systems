@@ -155,14 +155,11 @@
       };
     };
 
-    onPush = let
-      getTopLevelDrv = cfg: lib.dontRecurseIntoAttrs cfg;
-      getDrvs = cfgs: lib.attrsets.mapAttrs (_name: getTopLevelDrv) cfgs;
-    in rec {
+    onPush = rec {
       checks.outputs = self.checks;
-      darwinConfigurations.outputs = getDrvs self.darwinConfigurations;
+      darwinConfigurations.outputs = lib.dontRecurseIntoAttrs self.darwinConfigurations;
       devShells.outputs = self.devShells;
-      nixosConfigurations.outputs = getDrvs self.nixosConfigurations;
+      nixosConfigurations.outputs = lib.dontRecurseIntoAttrs self.nixosConfigurations;
       default.outputs = lib.modules.mkForce {
         checks = checks.outputs;
         darwinConfigurations = darwinConfigurations.outputs;
