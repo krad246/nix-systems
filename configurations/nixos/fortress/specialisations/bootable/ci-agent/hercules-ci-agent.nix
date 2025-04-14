@@ -86,7 +86,7 @@
       "${containerSecrets}" = {
         mountPoint = "${containerSecrets}:noidmap";
         hostPath = config.age.secretsDir + "/hercules-ci";
-        isReadOnly = true;
+        isReadOnly = false;
       };
     };
 
@@ -109,7 +109,6 @@
       };
 
       boot.binfmt.emulatedSystems = ["aarch64-linux"];
-      networking.hostName = config.networking.hostName;
     };
   };
 
