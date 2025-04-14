@@ -42,7 +42,7 @@
 
   # host-side install of hercules CI agent
   services.hercules-ci-agent = {
-    enable = true;
+    enable = true; # enable all child options for this module (including the user that gets created)
     settings = {
       clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
       binaryCachesPath = config.age.secrets."binary-caches.json".path;
@@ -50,14 +50,22 @@
     };
   };
 
+  # disable the systemd service on the host since we're moving to containerize the agent
+  # but we could just as easily re-enable the host-side install
   systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
     hercules-ci-agent = {
+      enable = false;
+
+      # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
       reloadIfChanged = false;
       stopIfChanged = false;
     };
 
     hercules-ci-agent-restarter = {
+      enable = false;
+
+      # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
       reloadIfChanged = false;
       stopIfChanged = false;
