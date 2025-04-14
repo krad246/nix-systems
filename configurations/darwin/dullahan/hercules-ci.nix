@@ -47,9 +47,6 @@
 
     # give the only interactive user the ability to see the logs
     users.users.builder.extraGroups = ["systemd-journal"];
-
-    # Allow the CI VM to join my tailnet
-    services.tailscale.enable = true;
   };
 
   system.activationScripts = {

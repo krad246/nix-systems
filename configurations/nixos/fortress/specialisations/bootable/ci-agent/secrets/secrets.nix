@@ -10,4 +10,5 @@ in {
   "./hercules-ci-agent/cluster-join-token.age".publicKeys = [root.ed25519];
   "./hercules-ci-agent/secrets.age".publicKeys = [root.ed25519];
   "./cachix.age".publicKeys = [root.ed25519];
+  "./tailscale-auth-key.age".publicKeys = [root.ed25519];
 }

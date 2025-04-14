@@ -54,7 +54,7 @@
   # but we could just as easily re-enable the host-side install
   systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
     hercules-ci-agent = {
-      enable = false;
+      enable = true;
 
       # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
@@ -63,7 +63,7 @@
     };
 
     hercules-ci-agent-restarter = {
-      enable = false;
+      enable = true;
 
       # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
