@@ -23,6 +23,7 @@
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
     settings = {
+      concurrentTasks = 2;
       binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
       clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
     };
@@ -34,6 +35,8 @@
         agent-profile
       ])
       ++ [self.modules.generic.hercules-ci-agent];
+
+    services.hercules-ci-agent.settings.concurrentTasks = 2;
 
     nix.settings.keep-going = false;
 
@@ -47,9 +50,6 @@
 
     # give the only interactive user the ability to see the logs
     users.users.builder.extraGroups = ["systemd-journal"];
-
-    # Allow the CI VM to join my tailnet
-    services.tailscale.enable = true;
   };
 
   system.activationScripts = {
