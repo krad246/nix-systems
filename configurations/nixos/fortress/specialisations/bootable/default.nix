@@ -16,6 +16,7 @@
         ./ci-agent/cachix-agent.nix
         ./ci-agent/container.nix
         ./ci-agent/hercules-ci-agent.nix
+        ./ci-agent/tailscale.nix
       ];
 
     # Prefer to idle in LPM only when explicitly requested
