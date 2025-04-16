@@ -1,4 +1,4 @@
-{
+{lib, ...}: {
   nix.settings = {
     substituters = [
       "https://hercules-ci.cachix.org"
@@ -12,9 +12,9 @@
   };
 
   services.hercules-ci-agent = {
-    enable = true;
+    enable = lib.modules.mkDefault true;
     settings = {
-      concurrentTasks = "auto";
+      concurrentTasks = lib.modules.mkDefault "auto";
       nixVerbosity = "Warn";
     };
   };

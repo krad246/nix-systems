@@ -2,6 +2,7 @@
   inputs,
   self,
   config,
+  lib,
   ...
 }: {
   imports = [
@@ -9,6 +10,10 @@
     self.modules.generic.hercules-ci-agent
   ];
 
+  # CI agent secrets:
+  # - binary-caches.json (optional): push-pull access to a binary cache
+  # - cluster-join-token.key: access to Hercules CI API
+  # - secrets.json: secrets needed for effects
   age.secrets = {
     "binary-caches.json" = {
       file = ./secrets/hercules-ci-agent/binary-caches.age;
@@ -35,22 +40,33 @@
     };
   };
 
+  # host-side install of hercules CI agent
   services.hercules-ci-agent = {
+    enable = true; # enable all child options for this module (including the user that gets created)
     settings = {
+      concurrentTasks = 8;
       clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
       binaryCachesPath = config.age.secrets."binary-caches.json".path;
       secretsJsonPath = config.age.secrets."secrets.json".path;
     };
   };
 
-  systemd.services = {
+  # disable the systemd service on the host since we're moving to containerize the agent
+  # but we could just as easily re-enable the host-side install
+  systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
     hercules-ci-agent = {
+      enable = true;
+
+      # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
       reloadIfChanged = false;
       stopIfChanged = false;
     };
 
     hercules-ci-agent-restarter = {
+      enable = true;
+
+      # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
       reloadIfChanged = false;
       stopIfChanged = false;
