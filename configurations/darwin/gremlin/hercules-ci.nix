@@ -57,6 +57,7 @@
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
     settings = {
+      concurrentTasks = 4;
       binaryCachesPath = config.age.secrets."gremlin/binary-caches.json".path;
       clusterJoinTokenPath = config.age.secrets."gremlin/cluster-join-token.key".path;
     };
@@ -70,6 +71,8 @@
           agent-profile
         ])
         ++ [self.modules.generic.hercules-ci-agent];
+
+      services.hercules-ci-agent.settings.concurrentTasks = 4;
 
       nix.settings.keep-going = false;
 

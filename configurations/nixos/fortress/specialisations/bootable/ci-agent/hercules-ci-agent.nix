@@ -44,6 +44,7 @@
   services.hercules-ci-agent = {
     enable = true; # enable all child options for this module (including the user that gets created)
     settings = {
+      concurrentTasks = 8;
       clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
       binaryCachesPath = config.age.secrets."binary-caches.json".path;
       secretsJsonPath = config.age.secrets."secrets.json".path;
