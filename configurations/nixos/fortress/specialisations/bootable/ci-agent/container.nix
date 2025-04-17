@@ -8,4 +8,12 @@
     externalInterface = "wlp11s0";
     enableIPv6 = true;
   };
+
+  virtualisation.docker = {
+    enable = true;
+    rootless = {
+      enable = true;
+      setSocketVariable = true;
+    };
+  };
 }
