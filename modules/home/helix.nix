@@ -35,9 +35,16 @@
       };
 
       keys = {
+        insert = {
+          "C-s" = ":w";
+        };
+
         normal = {
-          s = "no_op"; # disable select_regex
+          # s = "no_op"; # disable select_regex
           "C-s" = ":w"; # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
+          "C-w" = ":bc";
+          "C-r" = ":rl";
+          "C-q" = ":q";
 
           # swap paste operations
           # default behavior is to now paste at the cursor position
@@ -61,7 +68,6 @@
           ];
 
           "C-p" = "file_picker";
-          "C-E" = "file_picker";
 
           "C-]" = "goto_next_buffer";
           "C-[" = "goto_previous_buffer";
