@@ -11,18 +11,6 @@
     hercules-ci-effects.flakeModule
   ];
 
-  perSystem = {pkgs, ...}: {
-    checks.hello = pkgs.testers.runNixOSTest {
-      name = "hello";
-      nodes.machine = {pkgs, ...}: {
-        environment.systemPackages = [pkgs.hello];
-      };
-      testScript = ''
-        machine.succeed("hello")
-      '';
-    };
-  };
-
   hercules-ci.flake-update = {
     enable = true;
     autoMergeMethod = "rebase";
