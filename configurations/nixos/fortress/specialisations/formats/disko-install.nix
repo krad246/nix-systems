@@ -8,17 +8,18 @@
   ...
 }: let
   machine = self.nixosConfigurations.fortress;
-  inherit (machine.config.system) build;
   inherit (specialArgs) krad246;
 
   dependencies =
     [
-      build.toplevel
-      build.diskoScript
-    ]
-    ++ [
+      machine.config.system.build.toplevel
+      machine.config.system.build.build.diskoScript
+      machine.config.system.build.diskoScript.drvPath
       machine.pkgs.stdenv.drvPath
       (machine.pkgs.closureInfo {rootPaths = [];}).drvPath
+
+      machine.pkgs.perlPackages.ConfigIniFiles
+      machine.pkgs.perlPackages.FileSlurp
     ]
     ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
 

@@ -1,0 +1,90 @@
+{self, ...}: {
+  perSystem = {
+    pkgs,
+    self',
+    ...
+  }: {
+    checks.hello = pkgs.testers.runNixOSTest {
+      name = "hello";
+      nodes.machine = {pkgs, ...}: {
+        environment.systemPackages = [pkgs.hello];
+      };
+      testScript = ''
+        machine.succeed("hello")
+      '';
+    };
+
+    checks.disko-install = pkgs.testers.runNixOSTest {
+      name = "disko-install";
+      nodes.machine = let
+        machine = self.nixosConfigurations.fortress.extendModules {
+          modules = [
+          ];
+        };
+
+        dependencies =
+          [
+            machine.pkgs.stdenv.drvPath
+            (machine.pkgs.closureInfo {rootPaths = [];}).drvPath
+
+            # https://github.com/NixOS/nixpkgs/blob/f2fd33a198a58c4f3d53213f01432e4d88474956/nixos/modules/system/activation/top-level.nix#L342
+            machine.pkgs.perlPackages.ConfigIniFiles
+            machine.pkgs.perlPackages.FileSlurp
+
+            machine.config.system.build.toplevel
+            machine.config.system.build.diskoScript
+          ]
+          ++ builtins.map (i: i.outPath) (builtins.attrValues self.inputs);
+
+        closureInfo = pkgs.closureInfo {rootPaths = dependencies;};
+      in {
+        environment.etc.install-closure.source = "${closureInfo}/store-paths";
+      };
+
+      testScript = let
+        disko = self'.packages.disko-install;
+      in ''
+        def create_test_machine(
+            oldmachine=None, **kwargs
+        ):  # taken from <nixpkgs/nixos/tests/installer.nix>
+            start_command = [
+                "${pkgs.qemu_test}/bin/qemu-kvm",
+                "-cpu",
+                "max",
+                "-m",
+                "1024",
+                "-virtfs",
+                "local,path=/nix/store,security_model=none,mount_tag=nix-store",
+                "-drive",
+                f"file={oldmachine.state_dir}/empty0.qcow2,id=drive1,if=none,index=1,werror=report",
+                "-device",
+                "virtio-blk-pci,drive=drive1",
+            ]
+            machine = create_machine(start_command=" ".join(start_command), **kwargs)
+            driver.machines.append(machine)
+            return machine
+
+        machine.succeed("lsblk >&2")
+        print(machine.succeed("tty"))
+
+        machine.succeed("umask 066; echo > /tmp/age.key")
+        permission = machine.succeed("stat -c %a /tmp/age.key").strip()
+        assert permission == "600", f"expected permission 600 on /tmp/age.key, got {permission}"
+
+        # Some distros like to automount disks with spaces
+        machine.succeed('mkdir -p "/mnt/with spaces" && mkfs.ext4 /dev/vdb && mount /dev/vdb "/mnt/with spaces"')
+        machine.succeed("${disko}/bin/disko-install --disk main /dev/vdb --extra-files /tmp/age.key /var/lib/secrets/age.key --flake ${../..}#testmachine")
+        # test idempotency
+        machine.succeed("${disko}/bin/disko-install --mode mount --disk main /dev/vdb --flake ${../..}#testmachine")
+        machine.shutdown()
+
+        new_machine = create_test_machine(oldmachine=machine, name="after_install")
+        new_machine.start()
+        name = new_machine.succeed("hostname").strip()
+        assert name == "disko-machine", f"expected hostname 'disko-machine', got {name}"
+        permission = new_machine.succeed("stat -c %a /var/lib/secrets/age.key").strip()
+        assert permission == "600", f"expected permission 600 on /var/lib/secrets/age.key, got {permission}"
+      '';
+    };
+  };
+}

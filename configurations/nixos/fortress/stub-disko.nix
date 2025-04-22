@@ -19,7 +19,7 @@ in {
   disko.devices = modules.mkDefault {
     disk = {
       main = {
-        device = "/dev/vda";
+        device = "/dev/vdb";
         type = "disk";
         content = {
           type = "gpt";

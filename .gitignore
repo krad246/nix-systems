@@ -27,3 +27,4 @@ result
 result-*
 *.tar
 *.tar.gz
+.nixos-test-history
