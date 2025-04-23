@@ -17,7 +17,7 @@
   age.secrets = {
     "binary-caches.json" = {
       file = ./secrets/hercules-ci-agent/binary-caches.age;
-      mode = "0600";
+      mode = "0400";
       owner = config.users.users.hercules-ci-agent.name;
       group = config.users.groups.hercules-ci-agent.name;
       name = "hercules-ci/binary-caches.json";
@@ -25,7 +25,7 @@
 
     "cluster-join-token.key" = {
       file = ./secrets/hercules-ci-agent/cluster-join-token.age;
-      mode = "0600";
+      mode = "0400";
       owner = config.users.users.hercules-ci-agent.name;
       group = config.users.groups.hercules-ci-agent.name;
       name = "hercules-ci/cluster-join-token.key";
@@ -33,7 +33,7 @@
 
     "secrets.json" = {
       file = ./secrets/hercules-ci-agent/secrets.age;
-      mode = "0600";
+      mode = "0400";
       owner = config.users.users.hercules-ci-agent.name;
       group = config.users.users.hercules-ci-agent.name;
       name = "hercules-ci/secrets.json";
@@ -91,7 +91,7 @@
       "${containerSecrets}" = {
         mountPoint = "${containerSecrets}:noidmap,norbind";
         hostPath = config.age.secretsDir + "/hercules-ci";
-        isReadOnly = true;
+        isReadOnly = false; # TODO: figure out how to make this writable, because it technically container escapes.
       };
     };
 
@@ -107,14 +107,8 @@
         self.modules.generic.hercules-ci-agent
       ];
 
-      services.hercules-ci-agent = {
-        enable = true;
-        settings = {
-          concurrentTasks = 48;
-        };
-      };
-
       boot.binfmt.emulatedSystems = ["aarch64-linux"];
+      networking.hostName = "fortress";
     };
   };
 
