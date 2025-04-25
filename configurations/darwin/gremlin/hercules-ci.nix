@@ -64,7 +64,6 @@
   };
 
   krad246.darwin.virtualisation.linux-builder = {
-    # systems = ["aarch64-linux"];
     extraConfig = {
       imports =
         (with inputs.hercules-ci-agent.nixosModules; [
@@ -72,7 +71,7 @@
         ])
         ++ [self.modules.generic.hercules-ci-agent];
 
-      services.hercules-ci-agent.settings.concurrentTasks = 4;
+      services.hercules-ci-agent.settings.concurrentTasks = 2;
 
       nix.settings.keep-going = false;
 

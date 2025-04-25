@@ -26,7 +26,11 @@
 
   system.stateVersion = lib.trivial.release;
 
-  environment.variables = {
-    TERM = "xterm-256color";
+  environment = {
+    homeBinInPath = true;
+    localBinInPath = true;
+    sessionVariables = {
+      TERM = "xterm-256color";
+    };
   };
 }
