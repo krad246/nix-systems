@@ -45,6 +45,7 @@
           "C-w" = ":bc";
           "C-r" = ":rl";
           "C-q" = ":q";
+          "A-S-f" = ":fmt";
 
           # swap paste operations
           # default behavior is to now paste at the cursor position
