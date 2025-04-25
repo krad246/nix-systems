@@ -22,7 +22,7 @@
         file = path;
       });
 
-  system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen.app"];
+  system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen Browser.app"];
 
   krad246.darwin = {
     apps = {
