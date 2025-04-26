@@ -61,7 +61,7 @@
 
     settings = {
       auto-optimise-store = false;
-      extra-sandbox-paths = ["/nix/store"];
+      # extra-sandbox-paths = ["/nix/store"];
     };
   };
 
