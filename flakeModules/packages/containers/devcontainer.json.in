@@ -23,7 +23,7 @@
     ],
 
     "workspaceFolder": "/workdir",
-    "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=${containerWorkspaceFolder},readonly=true",
+    "workspaceMount": "type=bind,source=${localWorkspaceFolder},target=${containerWorkspaceFolder}",
 
     "mounts": [
     ],

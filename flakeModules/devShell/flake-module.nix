@@ -122,8 +122,10 @@ in {
             devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
           in ''
             FLAKE_ROOT="$(${lib.meta.getExe config.flake-root.package})"
-            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
-            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
+            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} "$FLAKE_ROOT/Makefile"
+            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} "$FLAKE_ROOT/.devcontainer.json"
+
+            ${lib.meta.getExe pkgs.gnumake} container-attach
           '';
         };
 
