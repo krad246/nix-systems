@@ -7,8 +7,6 @@
     initExtra = ''
       set -o vi
 
-      # bind -r "\C-i"
-
       bind -r "\C-p"
       bind -r "\C-n"
 
