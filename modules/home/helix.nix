@@ -39,6 +39,10 @@
           "C-s" = ":w";
         };
 
+        visual = {
+          "C-/" = "toggle_block_comments";
+        };
+
         normal = {
           # s = "no_op"; # disable select_regex
           "C-s" = ":w"; # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
@@ -75,6 +79,9 @@
 
           "C-c" = "no_op";
           "C-/" = "toggle_comments";
+
+          # "C-f" = "no_op";
+          # "C-b" = "no_op";
 
           # TODO:
           # add_newline_below (<Space>j)

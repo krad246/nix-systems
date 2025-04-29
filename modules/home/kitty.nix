@@ -1,5 +1,6 @@
 {
   withSystem,
+  lib,
   pkgs,
   ...
 }: {
@@ -16,6 +17,17 @@
       size = 20.0;
       package =
         withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts);
+    };
+    settings = {
+      enabled_layouts = lib.strings.concatStringsSep "," [
+        # "fat"
+        "grid"
+        # "horizontal"
+        # "splits"
+        "stack"
+        "tall"
+        # "vertical"
+      ];
     };
     keybindings =
       {
@@ -156,8 +168,8 @@
         "shift+alt+f" = "goto_layout fat";
         "shift+alt+g" = "goto_layout grid";
         "shift+alt+x" = "goto_layout splits";
-        "shift+alt+v" = "goto_layout horizontal";
-        "shift+alt+h" = "goto_layout vertical";
+        "shift+alt+v" = "goto_layout vertical";
+        "shift+alt+h" = "goto_layout horizontal";
       }
       // {
         # font sizes

@@ -55,6 +55,19 @@
           nameFunction = _name: "keerad@windex";
         };
 
+        standalone = {
+          nameFunction = _name: "standalone";
+
+          importDefault = false;
+
+          standalone = let
+            system = builtins.currentSystem;
+          in {
+            enable = true;
+            pkgs = withSystem system ({pkgs, ...}: pkgs);
+          };
+        };
+
         ubuntu = {
           nameFunction = _name: "ubuntu";
 

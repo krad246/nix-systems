@@ -9,11 +9,13 @@ forwarded @ {
   containers = import ./containers forwarded;
   nixos-generators = import ./nixos-generators forwarded;
   disko-config = import ./disko forwarded;
+  helix = import ./helix forwarded;
 in {
   imports = [
     containers.flakeModule
     disko-config.flakeModule
     nixos-generators.flakeModule
+    helix.flakeModule
   ];
 
   # export the flake modules we loaded to this context for user consumption
@@ -22,6 +24,7 @@ in {
       containers = containers.flakeModule;
       nixos-generators = nixos-generators.flakeModule;
       disko-config = disko-config.flakeModule;
+      helix = helix.flakeModule;
     };
 
     modules.flake = flakeModules;
