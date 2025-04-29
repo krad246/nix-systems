@@ -398,10 +398,8 @@
   "dev.containers.defaultFeatures": {},
   "dev.containers.dockerComposePath": "docker-compose",
   "dev.containers.dockerCredentialHelper": true,
-  "dev.containers.dockerPath": "docker",
+  "dev.containers.dockerPath": "podman",
   "dev.containers.dockerSocketPath": "/var/run/docker.sock",
-  "dev.containers.executeInWSL": false,
-  "dev.containers.executeInWSLDistro": "",
   "dev.containers.experimentalLockfile": false,
   "dev.containers.forwardWSLServices": true,
   "dev.containers.gitCredentialHelperConfigLocation": "global",
@@ -1796,6 +1794,7 @@
   "window.zoomLevel": 0,
   "window.zoomPerWindow": true,
   "workbench.activityBar.iconClickBehavior": "toggle",
+  "workbench.activityBar.location": "hidden",
   "workbench.cloudChanges.autoResume": "onReload",
   "workbench.cloudChanges.continueOn": "prompt",
   "workbench.colorCustomizations": {},
@@ -2157,5 +2156,7 @@
   "zenMode.restore": true,
   "zenMode.showTabs": "multiple",
   "zenMode.silentNotifications": true,
-  "workbench.activityBar.location": "hidden"
+  "[c]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+  }
 }
