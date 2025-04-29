@@ -7629,142 +7629,146 @@
     "when": "terminalProcessSupported"
   },
   {
-    "key": "alt+]",
     "command": "workbench.action.terminal.focusNextPane",
+    "key": "alt+]",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "shift+alt+]",
     "command": "workbench.action.terminal.focusNext",
+    "key": "shift+alt+]",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "shift+alt+[",
     "command": "workbench.action.terminal.focusPrevious",
+    "key": "shift+alt+[",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+alt+t ctrl+alt+l",
     "command": "workbench.action.terminal.newLocal",
+    "key": "ctrl+alt+t ctrl+alt+l",
     "when": "terminalProcessSupported"
   },
   {
-    "key": "ctrl+alt+t ctrl+alt+t",
     "command": "workbench.action.terminal.new",
+    "key": "ctrl+alt+t ctrl+alt+t",
     "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
   },
   {
-    "key": "ctrl+alt+t ctrl+alt+e",
     "command": "workbench.action.createTerminalEditor",
+    "key": "ctrl+alt+t ctrl+alt+e",
     "when": "terminalProcessSupported"
   },
   {
-    "key": "ctrl+k",
     "command": "workbench.action.terminal.scrollUp",
+    "key": "ctrl+k",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+j",
     "command": "workbench.action.terminal.scrollDown",
+    "key": "ctrl+j",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+shift+g",
     "command": "workbench.action.terminal.scrollToBottom",
+    "key": "ctrl+shift+g",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+g ctrl+g",
     "command": "workbench.action.terminal.scrollToTop",
+    "key": "ctrl+g ctrl+g",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+pageup",
-    "command": "-workbench.action.previousEditor"
+    "command": "-workbench.action.previousEditor",
+    "key": "ctrl+pageup"
   },
   {
-    "key": "ctrl+pagedown",
-    "command": "-workbench.action.nextEditor"
+    "command": "-workbench.action.nextEditor",
+    "key": "ctrl+pagedown"
   },
   {
-    "key": "ctrl+\\",
     "command": "workbench.action.terminal.split",
+    "key": "ctrl+\\",
     "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
   },
   {
-    "key": "ctrl+shift+f",
     "command": "-workbench.action.terminal.searchWorkspace",
+    "key": "ctrl+shift+f",
     "when": "terminalFocus && terminalProcessSupported && terminalTextSelected"
   },
   {
-    "key": "ctrl+shift+f",
     "command": "workbench.action.terminal.searchWorkspace",
+    "key": "ctrl+shift+f",
     "when": "terminalProcessSupported"
   },
   {
-    "key": "ctrl+l",
     "command": "workbench.action.terminal.clear",
+    "key": "ctrl+l",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+shift+k",
     "command": "workbench.action.terminal.selectToPreviousLine",
+    "key": "ctrl+shift+k",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+shift+j",
     "command": "workbench.action.terminal.selectToNextLine",
+    "key": "ctrl+shift+j",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "ctrl+space",
     "command": "-workbench.action.terminal.requestCompletions",
+    "key": "ctrl+space",
     "when": "config.terminal.integrated.suggest.enabled && terminalFocus && terminalProcessSupported && !terminalSuggestWidgetVisible"
   },
   {
-    "key": "ctrl+r",
     "command": "workbench.action.terminal.runRecentCommand",
+    "key": "ctrl+r",
     "when": "terminalHasBeenCreated || terminalProcessSupported"
   },
   {
-    "key": "alt+\\",
     "command": "workbench.action.terminal.split",
+    "key": "alt+\\",
     "when": "terminalProcessSupported || terminalWebExtensionContributedProfile"
   },
   {
-    "key": "ctrl+shift+w",
-    "command": "workbench.action.closeWindow"
+    "command": "workbench.action.closeWindow",
+    "key": "ctrl+shift+w"
   },
   {
-    "key": "ctrl+shift+x",
     "command": "-workbench.view.extensions",
+    "key": "ctrl+shift+x",
     "when": "viewContainer.workbench.view.extensions.enabled"
   },
   {
-    "key": "ctrl+]",
-    "command": "workbench.action.nextEditorInGroup"
+    "command": "workbench.action.nextEditorInGroup",
+    "key": "ctrl+]"
   },
   {
-    "key": "ctrl+[",
-    "command": "workbench.action.previousEditorInGroup"
+    "command": "workbench.action.previousEditorInGroup",
+    "key": "ctrl+["
   },
   {
-    "key": "ctrl+pagedown",
     "command": "-workbench.action.debug.nextConsole",
+    "key": "ctrl+pagedown",
     "when": "inDebugRepl"
   },
   {
-    "key": "ctrl+pageup",
     "command": "-workbench.action.debug.prevConsole",
+    "key": "ctrl+pageup",
     "when": "inDebugRepl"
   },
   {
-    "key": "ctrl+shift+d",
-    "command": "workbench.action.debug.selectandstart"
+    "command": "workbench.action.debug.selectandstart",
+    "key": "ctrl+shift+d"
   },
   {
-    "key": "ctrl+alt+e",
     "command": "workbench.action.terminal.moveToEditor",
+    "key": "ctrl+alt+e",
     "when": "terminalHasBeenCreated && terminalIsOpen || terminalIsOpen && terminalProcessSupported"
+  },
+  {
+    "key": "ctrl+p",
+    "command": "workbench.action.quickOpen"
   }
 ]
