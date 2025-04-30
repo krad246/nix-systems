@@ -31,6 +31,7 @@
     localBinInPath = true;
     sessionVariables = {
       TERM = "xterm-256color";
+      NIX_REMOTE = "daemon";
     };
   };
 }

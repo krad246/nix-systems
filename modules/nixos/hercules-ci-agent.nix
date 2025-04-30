@@ -1,4 +1,12 @@
-{lib, ...}: {
+{
+  inputs,
+  lib,
+  config,
+  ...
+}: {
+  imports = [
+    inputs.hercules-ci-agent.nixosModules.agent-profile
+  ];
   nix.settings = {
     substituters = [
       "https://hercules-ci.cachix.org"
@@ -19,5 +27,21 @@
     };
   };
 
-  environment.variables.NIX_REMOTE = "daemon";
+  # prevent the associated hercules CI agent systemd service from blowing itself up when
+  # running a deployment on the same machine in the effects sandbox.
+  systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
+    hercules-ci-agent = {
+      enable = true;
+      restartIfChanged = false;
+      reloadIfChanged = false;
+      stopIfChanged = false;
+    };
+
+    hercules-ci-agent-restarter = {
+      enable = true;
+      restartIfChanged = false;
+      reloadIfChanged = false;
+      stopIfChanged = false;
+    };
+  };
 }
