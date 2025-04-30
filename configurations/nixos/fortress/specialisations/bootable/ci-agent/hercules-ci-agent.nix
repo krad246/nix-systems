@@ -17,7 +17,7 @@
   age.secrets = {
     "binary-caches.json" = {
       file = ./secrets/hercules-ci-agent/binary-caches.age;
-      mode = "0600";
+      mode = "0400";
       owner = config.users.users.hercules-ci-agent.name;
       group = config.users.groups.hercules-ci-agent.name;
       name = "hercules-ci/binary-caches.json";
@@ -25,7 +25,7 @@
 
     "cluster-join-token.key" = {
       file = ./secrets/hercules-ci-agent/cluster-join-token.age;
-      mode = "0600";
+      mode = "0400";
       owner = config.users.users.hercules-ci-agent.name;
       group = config.users.groups.hercules-ci-agent.name;
       name = "hercules-ci/cluster-join-token.key";
@@ -33,7 +33,7 @@
 
     "secrets.json" = {
       file = ./secrets/hercules-ci-agent/secrets.age;
-      mode = "0600";
+      mode = "0400";
       owner = config.users.users.hercules-ci-agent.name;
       group = config.users.users.hercules-ci-agent.name;
       name = "hercules-ci/secrets.json";
@@ -55,7 +55,7 @@
   # but we could just as easily re-enable the host-side install
   systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
     hercules-ci-agent = {
-      enable = true;
+      enable = false;
 
       # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
@@ -64,14 +64,55 @@
     };
 
     hercules-ci-agent-restarter = {
-      enable = true;
+      enable = false;
 
       # for working self-deployments, we need the agent to not kill itself mid system reload.
       restartIfChanged = false;
       reloadIfChanged = false;
       stopIfChanged = false;
     };
+
+    "container@hercules-ci-agent".environment = {
+      SYSTEMD_LOG_LEVEL = "debug";
+    };
   };
+
+  containers.hercules-ci-agent = {
+    autoStart = true;
+    ephemeral = true;
+
+    # TODO: set up DNS, etc. here
+    # privateNetwork = true;
+
+    bindMounts = let
+      inherit (config.services) hercules-ci-agent;
+      containerSecrets = hercules-ci-agent.settings.staticSecretsDirectory;
+    in {
+      "${containerSecrets}" = {
+        mountPoint = "${containerSecrets}:noidmap,norbind";
+        hostPath = config.age.secretsDir + "/hercules-ci";
+        isReadOnly = false; # TODO: figure out how to make this writable, because it technically container escapes.
+      };
+    };
+
+    # TODO: determine how to map hercules-ci-agent into a private user namespace, different UID.
+    extraFlags = [
+      "-U"
+      "--bind-user=hercules-ci-agent"
+    ];
+
+    config = {
+      imports = [
+        inputs.hercules-ci-agent.nixosModules.agent-profile
+        self.modules.generic.hercules-ci-agent
+      ];
+
+      boot.binfmt.emulatedSystems = ["aarch64-linux"];
+      networking.hostName = "fortress";
+    };
+  };
+
+  users.users.hercules-ci-agent.autoSubUidGidRange = true;
 
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/5yaElFDoFQtyZAg2yJaqr+7JjJx0LiWlRUoTRYkPL hercules-ci-agent@fortress"
