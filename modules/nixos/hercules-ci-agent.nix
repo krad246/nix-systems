@@ -1,11 +1,12 @@
-{
-  inputs,
+args @ {
   lib,
   config,
   ...
-}: {
+}: let
+  hercules-ci-agent = lib.attrsets.attrByPath ["inputs" "hercules-ci-agent"] (builtins.getFlake "github:hercules-ci/hercules-ci-agent/hercules-ci-agent-0.10.5") args;
+in {
   imports = [
-    inputs.hercules-ci-agent.nixosModules.agent-profile
+    hercules-ci-agent.nixosModules.agent-profile
   ];
 
   nix.settings = {
