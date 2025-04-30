@@ -7,6 +7,7 @@
   imports = [
     inputs.hercules-ci-agent.nixosModules.agent-profile
   ];
+
   nix.settings = {
     substituters = [
       "https://hercules-ci.cachix.org"

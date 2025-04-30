@@ -7,6 +7,15 @@
     self.modules.nixos.hercules-ci-agent
   ];
 
+  services.hercules-ci-agent = {
+    settings = {
+      concurrentTasks = 8;
+      clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
+      binaryCachesPath = config.age.secrets."binary-caches.json".path;
+      secretsJsonPath = config.age.secrets."secrets.json".path;
+    };
+  };
+
   # CI agent secrets:
   # - binary-caches.json (optional): push-pull access to a binary cache
   # - cluster-join-token.key: access to Hercules CI API
@@ -37,16 +46,7 @@
     };
   };
 
-  # host-side install of hercules CI agent
-  services.hercules-ci-agent = {
-    settings = {
-      concurrentTasks = 8;
-      clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
-      binaryCachesPath = config.age.secrets."binary-caches.json".path;
-      secretsJsonPath = config.age.secrets."secrets.json".path;
-    };
-  };
-
+  # allow login with the machine host key for CI deployments
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID/5yaElFDoFQtyZAg2yJaqr+7JjJx0LiWlRUoTRYkPL hercules-ci-agent@fortress"
   ];
