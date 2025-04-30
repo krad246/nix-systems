@@ -39,7 +39,7 @@
           "C-s" = ":w";
         };
 
-        visual = {
+        select = {
           "C-/" = "toggle_block_comments";
         };
 
