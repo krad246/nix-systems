@@ -64,7 +64,7 @@
         until ${printf} >&2 'copying keys to linux-builder...\n' &&
                 ${rsync} -q -e "${ssh} -q ${identityFiles}" \
                   --mkpath --chmod 0600 --chown hercules-ci-agent:hercules-ci-agent \
-                    ${lib.strings.concatStringsSep " " copyFiles} root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/; do
+                    ${lib.strings.concatStringsSep " " copyFiles} root@linux-builder:${config.services.hercules-ci-agent.settings.staticSecretsDirectory}/ 2>/dev/null; do
             ${sleep} 0.5
         done
 
