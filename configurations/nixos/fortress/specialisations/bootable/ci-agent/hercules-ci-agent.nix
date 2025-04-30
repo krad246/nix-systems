@@ -7,7 +7,7 @@
     self.modules.nixos.hercules-ci-agent
   ];
 
-  services.hercules-ci-agent = {
+  services.hercules-ci-agents."" = {
     settings = {
       concurrentTasks = 16;
       clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
