@@ -9,7 +9,7 @@
 
   services.hercules-ci-agent = {
     settings = {
-      concurrentTasks = 8;
+      concurrentTasks = 16;
       clusterJoinTokenPath = config.age.secrets."cluster-join-token.key".path;
       binaryCachesPath = config.age.secrets."binary-caches.json".path;
       secretsJsonPath = config.age.secrets."secrets.json".path;
