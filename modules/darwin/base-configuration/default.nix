@@ -79,6 +79,7 @@
     ];
 
     systemPackages = with pkgs; ([m-cli] ++ [coreutils just tldr safe-rm] ++ [duf dust]);
+    variables.NIX_REMOTE = "daemon";
   };
 
   nixpkgs.overlays = [
