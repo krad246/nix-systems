@@ -1,5 +1,4 @@
 {
-  inputs,
   self,
   config,
   lib,
@@ -30,11 +29,7 @@
   };
 
   krad246.darwin.virtualisation.linux-builder.extraConfig = {
-    imports =
-      (with inputs.hercules-ci-agent.nixosModules; [
-        agent-profile
-      ])
-      ++ [self.modules.nixos.hercules-ci-agent];
+    imports = [self.modules.nixos.hercules-ci-agent];
 
     services.hercules-ci-agent.settings.concurrentTasks = 2;
 
