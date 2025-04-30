@@ -1,8 +1,4 @@
-args @ {
-  lib,
-  config,
-  ...
-}: let
+args @ {lib, ...}: let
   hercules-ci-agent = lib.attrsets.attrByPath ["inputs" "hercules-ci-agent"] (builtins.getFlake "github:hercules-ci/hercules-ci-agent/hercules-ci-agent-0.10.5") args;
 in {
   imports = [
@@ -30,7 +26,7 @@ in {
 
   # prevent the associated hercules CI agent systemd service from blowing itself up when
   # running a deployment on the same machine in the effects sandbox.
-  systemd.services = lib.modules.mkIf config.services.hercules-ci-agent.enable {
+  systemd.services = {
     hercules-ci-agent = {
       enable = true;
       restartIfChanged = false;
