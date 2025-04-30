@@ -7,7 +7,7 @@
 }: {
   imports = [
     inputs.hercules-ci-agent.nixosModules.agent-profile
-    self.modules.generic.hercules-ci-agent
+    self.modules.nixos.hercules-ci-agent
   ];
 
   # CI agent secrets:
