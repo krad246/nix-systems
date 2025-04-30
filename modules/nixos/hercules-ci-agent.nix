@@ -21,8 +21,7 @@ in {
     ];
   };
 
-  services.hercules-ci-agent = {
-    enable = lib.modules.mkDefault true;
+  services.hercules-ci-agents."" = {
     settings = {
       concurrentTasks = lib.modules.mkDefault "auto";
       nixVerbosity = "Warn";
