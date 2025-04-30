@@ -1,4 +1,9 @@
-{lib, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
+  imports = [inputs.hercules-ci-agent.darwinModules.agent-profile];
   nix.settings = {
     substituters = [
       "https://hercules-ci.cachix.org"
