@@ -6,7 +6,7 @@
   pkgs,
   ...
 }: {
-  imports = [self.modules.generic.hercules-ci-agent inputs.hercules-ci-agent.darwinModules.agent-profile];
+  imports = [self.modules.darwin.hercules-ci-agent inputs.hercules-ci-agent.darwinModules.agent-profile];
 
   # stop on the first failure
   nix.settings.keep-going = false;
@@ -69,7 +69,7 @@
         (with inputs.hercules-ci-agent.nixosModules; [
           agent-profile
         ])
-        ++ [self.modules.generic.hercules-ci-agent];
+        ++ [self.modules.nixos.hercules-ci-agent];
 
       services.hercules-ci-agent.settings.concurrentTasks = 2;
 
