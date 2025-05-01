@@ -1,4 +1,7 @@
 {
+  "[c]": {
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+  },
   "[clojure]": {
     "diffEditor.ignoreTrimWhitespace": false
   },
@@ -716,7 +719,7 @@
   },
   "explorer.compactFolders": true,
   "explorer.confirmDelete": true,
-  "explorer.confirmDragAndDrop": true,
+  "explorer.confirmDragAndDrop": false,
   "explorer.confirmPasteNative": true,
   "explorer.confirmUndo": "default",
   "explorer.copyRelativePathSeparator": "auto",
@@ -1143,7 +1146,7 @@
   "microsoft-sovereign-cloud.customEnvironment": {},
   "microsoft-sovereign-cloud.environment": "",
   "multiDiffEditor.experimental.enabled": true,
-  "nix.enableLanguageServer": false,
+  "nix.enableLanguageServer": true,
   "nix.formatterPath": "nixpkgs-fmt",
   "nix.hiddenLanguageServerErrors": [],
   "nix.serverPath": "nil",
@@ -1828,7 +1831,7 @@
   "workbench.editor.centeredLayoutAutoResize": true,
   "workbench.editor.centeredLayoutFixedWidth": false,
   "workbench.editor.closeEmptyGroups": true,
-  "workbench.editor.closeOnFileDelete": false,
+  "workbench.editor.closeOnFileDelete": true,
   "workbench.editor.customLabels.enabled": true,
   "workbench.editor.customLabels.patterns": {},
   "workbench.editor.decorations.badges": true,
@@ -1852,14 +1855,14 @@
   },
   "workbench.editor.limit.enabled": false,
   "workbench.editor.limit.excludeDirty": false,
-  "workbench.editor.limit.perEditorGroup": false,
+  "workbench.editor.limit.perEditorGroup": true,
   "workbench.editor.limit.value": 10,
   "workbench.editor.mouseBackForwardToNavigate": true,
   "workbench.editor.navigationScope": "default",
   "workbench.editor.openPositioning": "right",
   "workbench.editor.openSideBySideDirection": "right",
   "workbench.editor.pinnedTabSizing": "normal",
-  "workbench.editor.pinnedTabsOnSeparateRow": false,
+  "workbench.editor.pinnedTabsOnSeparateRow": true,
   "workbench.editor.preferHistoryBasedLanguageDetection": false,
   "workbench.editor.preventPinnedEditorClose": "keyboardAndMouse",
   "workbench.editor.restoreViewState": true,
@@ -2155,8 +2158,5 @@
   "zenMode.hideStatusBar": true,
   "zenMode.restore": true,
   "zenMode.showTabs": "multiple",
-  "zenMode.silentNotifications": true,
-  "[c]": {
-    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
-  }
+  "zenMode.silentNotifications": true
 }
