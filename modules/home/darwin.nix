@@ -13,6 +13,7 @@ in {
       discord
       firefox
       kitty
+      stylix
       vscode
     ]);
 
