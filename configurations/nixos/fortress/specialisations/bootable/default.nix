@@ -4,7 +4,7 @@
     imports =
       [./base-configuration.nix]
       ++ [
-        ./desktop/configuration.nix
+        ./desktop
       ];
   };
 
