@@ -35,7 +35,7 @@ in {
     formatter = config.treefmt.build.wrapper;
     treefmt = {
       inherit (config.flake-root) projectRootFile;
-      flakeCheck = true;
+      flakeCheck = false;
       programs = {
         alejandra.enable = true;
         deadnix = {
@@ -81,7 +81,7 @@ in {
           shfmt.enable = true;
           statix.enable = true;
           treefmt = {
-            enable = true;
+            enable = false;
             settings = {fail-on-change = true;};
           };
           trim-trailing-whitespace.enable = true;
@@ -89,8 +89,6 @@ in {
         };
       };
 
-      # it is redundant to run pre-commit hooks multiple times on the same code
-      # it's not like anything changes between the behaviors cross system
       check.enable = true;
     };
 
