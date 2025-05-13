@@ -11,7 +11,7 @@
         self.modules.nixos.hercules-ci-agent
       ];
 
-      services.hercules-ci-agents."".settings.concurrentTasks = 3;
+      services.hercules-ci-agents."".settings.concurrentTasks = 4;
 
       # same identity that decrypts the host side secrets will be used to access root on the linux-builder
       users.users.root.openssh.authorizedKeys.keys = [
