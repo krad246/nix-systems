@@ -174,7 +174,7 @@
     };
 
     nix-homebrew = {
-      url = "github:zhaofengli-wip/nix-homebrew/replacevars-24.11";
+      url = "github:zhaofengli-wip/nix-homebrew";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         nix-darwin.follows = "darwin";

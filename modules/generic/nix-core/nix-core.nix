@@ -82,8 +82,8 @@ in {
 
         # How long to wait before declaring a build as failed.
         connect-timeout = modules.mkDefault 300;
-        timeout = modules.mkDefault 3600;
-        max-silent-time = modules.mkDefault 3600;
+        timeout = modules.mkDefault 7200;
+        max-silent-time = modules.mkDefault 7200;
 
         # Store Nix user environment pointers in each user's home directory.
         use-xdg-base-directories = true;

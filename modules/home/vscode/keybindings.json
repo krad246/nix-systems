@@ -962,7 +962,7 @@
   },
   {
     "command": "editor.action.jumpToBracket",
-    "key": "shift+5",
+    "key": "ctrl+shift+5",
     "when": "editorTextFocus"
   },
   {
