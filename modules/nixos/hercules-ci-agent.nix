@@ -1,5 +1,5 @@
 args @ {lib, ...}: let
-  hercules-ci-agent = lib.attrsets.attrByPath ["inputs" "hercules-ci-agent"] (builtins.getFlake "github:hercules-ci/hercules-ci-agent/hercules-ci-agent-0.10.5") args;
+  hercules-ci-agent = lib.attrsets.attrByPath ["inputs" "hercules-ci-agent"] (builtins.getFlake "github:hercules-ci/hercules-ci-agent/6e1d58c59b63574e9f033bb9dace7a3f42a8413a") args;
 in {
   imports = [
     hercules-ci-agent.nixosModules.agent-profile
