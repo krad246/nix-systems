@@ -48,6 +48,7 @@ in {
       # ms-vscode.makefile-tools
       jnoortheen.nix-ide
       nefrob.vscode-just-syntax
+      vscodevim.vim
     ];
 
     globalSnippets = {
