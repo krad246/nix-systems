@@ -84,8 +84,5 @@
 
   nixpkgs.overlays = [
     inputs.nixpkgs-firefox-darwin.overlay
-    (_: super: {
-      nodejs = super.nodejs_22;
-    })
   ];
 }
