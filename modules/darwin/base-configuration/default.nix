@@ -59,6 +59,7 @@
     settings = {
       auto-optimise-store = false;
       extra-sandbox-paths = ["/nix/store"];
+      auto-allocate-uids = false;
     };
   };
 
