@@ -1,4 +1,4 @@
-{lib, ...}: {
+{
   # Keep the stock users laying around.
   users = {
     users.nixos = {
@@ -10,7 +10,7 @@
     };
   };
 
-  security.sudo.wheelNeedsPassword = lib.modules.mkDefault true;
+  security.sudo.wheelNeedsPassword = true;
 
   # members of the wheel / admin group are able to execute privileged operations on the daemon.
   # trusted users are able to specify arbitrary binary substitutes, etc. as well as signing custom outputs.
