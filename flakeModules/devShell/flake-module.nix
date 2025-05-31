@@ -47,7 +47,7 @@ in {
           '';
         };
       })
-      // {
+      // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
         devcontainer = pkgs.mkShell {
           inputsFrom = [
             self'.devShells.interactive
@@ -66,7 +66,8 @@ in {
             ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
           '';
         };
-
+      })
+      // {
         interactive = pkgs.mkShell {
           inputsFrom = [
             self'.devShells.nix-shell
