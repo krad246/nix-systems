@@ -14,42 +14,32 @@
   };
 
   inputs = {
-    # Package branches
-
-    # system specific channels
-    nixos-2405.url = "github:NixOS/nixpkgs/nixos-24.05";
-    nixpkgs-2405-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.05-darwin";
-    nixos-2411.url = "github:NixOS/nixpkgs/nixos-24.11";
-    nixpkgs-2411-darwin.url = "github:NixOS/nixpkgs/nixpkgs-24.11-darwin";
-
     # generic rolling release branches
     # they're always tracking the latest release
     nixos-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    # stable nixos points at 24.05
     # generic stable nixpkgs also points to it but can move ahead if desired
-    nixos-stable = {url = "github:NixOS/nixpkgs/nixos-24.11";};
+    nixos-stable = {url = "github:NixOS/nixpkgs/nixos-25.05";};
 
     # specifically use stable NixOS for WSL, but otherwise flexible
-    nixpkgs-wsl = {url = "github:NixOS/nixpkgs/nixos-24.11";};
+    nixpkgs-wsl = {url = "github:NixOS/nixpkgs/nixos-25.05";};
 
     # nixpkgs for home has to be in the same release 'family'
     # as the system channels
-    nixpkgs-nixos = {url = "github:NixOS/nixpkgs/nixos-24.11";};
-    nixpkgs-darwin = {url = "github:NixOS/nixpkgs/nixpkgs-24.11-darwin";};
-    nixpkgs-home = {url = "github:NixOS/nixpkgs/nixos-24.11";};
+    nixpkgs-nixos = {url = "github:NixOS/nixpkgs/nixos-25.05";};
+    nixpkgs-darwin = {url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";};
+    nixpkgs-home = {url = "github:NixOS/nixpkgs/nixos-25.05";};
 
     # the flake input 'nixpkgs' is the channel we are using in our flake for the evaluation, as
     # we've overridden the nixpkgs inputs to all of our output derivations.
     # thus nixpkgs is approximately the same thing as nixpkgs-lib for our purpose.
-    nixpkgs = {url = "github:NixOS/nixpkgs/nixos-24.11";};
-    nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-24.11";};
+    nixpkgs = {url = "github:NixOS/nixpkgs/nixos-unstable";};
+    nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-unstable-small";};
 
     # Nix User Repositories
     nur = {
       url = "github:nix-community/NUR";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Legacy and flake compatibility shims.
@@ -75,7 +65,6 @@
     # An opinionated Nix flake library (see flake-utils)
     flake-parts = {
       url = "github:hercules-ci/flake-parts";
-      inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
 
     # Glue logic between just and Nix (replacement to mission-control)
@@ -86,45 +75,31 @@
     # Swiss-army-knife formatter.
     treefmt-nix = {
       url = "github:numtide/treefmt-nix/48961f31e992e43203afb2ea9cb1402ad392d94b";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Code cleanliness checking for developers.
     pre-commit-hooks-nix = {
       url = "github:cachix/pre-commit-hooks.nix";
-      inputs = {
-        flake-compat.follows = "flake-compat";
-        nixpkgs.follows = "nixpkgs";
-      };
     };
 
     # WSL distribution on NixOS
     nixos-wsl = {
       url = "github:nix-community/nixos-wsl/main";
-      inputs = {
-        nixpkgs.follows = "nixpkgs-wsl";
-        flake-compat.follows = "flake-compat";
-      };
     };
 
     # Darwin shims for Nix
     darwin = {
-      url = "github:lnl7/nix-darwin/nix-darwin-24.11";
+      url = "github:lnl7/nix-darwin/nix-darwin-25.05";
     };
 
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
-      inputs.nixpkgs.follows = "nixpkgs-home";
+      url = "github:nix-community/home-manager/release-25.05";
     };
 
     # Flake-Parts module gluing it together
     ez-configs = {
       url = "github:ehllie/ez-configs";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-parts.follows = "flake-parts";
-      };
     };
 
     # Hardware platform configurations with options preset
@@ -135,7 +110,6 @@
     # Simple modules for generating a variety of image formats
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # Immutable OS root filesystem (erase your darlings)
@@ -144,24 +118,16 @@
     # Declarative disk partitioning
     disko = {
       url = "github:nix-community/disko";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     # AGE encrypted secrets
     agenix = {
       url = "github:ryantm/agenix";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        darwin.follows = "darwin";
-        home-manager.follows = "home-manager";
-      };
     };
 
     # Handle rekeying via Yubikey, etc.
     agenix-rekey = {
       url = "github:oddlama/agenix-rekey";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.pre-commit-hooks.follows = "pre-commit-hooks-nix";
     };
 
     agenix-shell = {
@@ -179,16 +145,10 @@
 
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
-      inputs.flake-utils.follows = "flake-utils";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     nixos-cosmic = {
       url = "github:lilyinstarlight/nixos-cosmic";
-      inputs = {
-        nixpkgs.follows = "nixpkgs";
-        flake-compat.follows = "flake-compat";
-      };
     };
 
     dconf2nix = {
