@@ -5,9 +5,8 @@
 }: {
   fonts = {
     enableDefaultPackages = true;
-    packages = [
-      (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))
-    ];
+    packages =
+      withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts.paths);
     fontDir = {
       enable = true;
     };

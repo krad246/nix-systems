@@ -15,15 +15,10 @@
 in {
   home.packages = with pkgs;
     [nil nixd]
-    ++ [
-      (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))
-    ];
+    ++ (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts.paths));
 
   programs.vscode = {
     enable = true;
-
-    enableExtensionUpdateCheck = false;
-    enableUpdateCheck = false;
 
     package =
       if pkgs.stdenv.isLinux
@@ -34,35 +29,39 @@ in {
             pkgs,
             ...
           }:
-            [self'.packages.term-fonts] ++ [pkgs.nil pkgs.nixd]))
+            self'.packages.term-fonts.paths ++ [pkgs.nil pkgs.nixd]))
       else pkgs.vscode;
 
-    extensions = with pkgs.vscode-extensions; [
-      ms-vscode-remote.remote-containers
-      sainnhe.gruvbox-material
-      pkief.material-icon-theme
-      ms-vscode-remote.remote-ssh
-      ms-vscode-remote.remote-ssh-edit
-      ms-vscode-remote.remote-wsl
-      # ms-azuretools.vscode-docker
-      # ms-vscode.makefile-tools
-      jnoortheen.nix-ide
-      nefrob.vscode-just-syntax
-    ];
+    profiles.default = {
+      enableExtensionUpdateCheck = false;
+      enableUpdateCheck = false;
 
-    globalSnippets = {
+      extensions = with pkgs.vscode-extensions; [
+        ms-vscode-remote.remote-containers
+        sainnhe.gruvbox-material
+        pkief.material-icon-theme
+        ms-vscode-remote.remote-ssh
+        ms-vscode-remote.remote-ssh-edit
+        ms-vscode-remote.remote-wsl
+        # ms-azuretools.vscode-docker
+        # ms-vscode.makefile-tools
+        jnoortheen.nix-ide
+        nefrob.vscode-just-syntax
+      ];
+
+      globalSnippets = {
+      };
+
+      keybindings = lib.trivial.importJSON keybindings;
+      userSettings = lib.trivial.importJSON settings;
+
+      languageSnippets = {
+      };
+
+      userTasks = {
+      };
     };
-
-    keybindings = lib.trivial.importJSON keybindings;
-    userSettings = lib.trivial.importJSON settings;
-
-    languageSnippets = {
-    };
-
     mutableExtensionsDir = false;
-
-    userTasks = {
-    };
   };
 
   home.file = let

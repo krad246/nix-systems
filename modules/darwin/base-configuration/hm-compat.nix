@@ -9,7 +9,7 @@ in {
 
   home-manager = {
     useUserPackages = true;
-    useGlobalPkgs = true;
+    # useGlobalPkgs = true;
     backupFileExtension = self.dirtyRev or self.rev or "bak";
     verbose = false;
   };

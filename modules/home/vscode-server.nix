@@ -10,6 +10,6 @@ in {
 
   services.vscode-server = {
     enable = true;
-    extraRuntimeDependencies = (with pkgs; [nodejs jq wget coreutils]) ++ [(withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))];
+    extraRuntimeDependencies = (with pkgs; [nodejs jq wget coreutils]) ++ (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts.paths));
   };
 }

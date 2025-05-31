@@ -35,7 +35,7 @@
       unfree
     ]);
 
-  fonts.packages = [(withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts))];
+  fonts.packages = withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts.paths);
 
   system.defaults = {
     NSGlobalDomain = {

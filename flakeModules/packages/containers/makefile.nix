@@ -5,9 +5,7 @@
   devcontainer-loader,
   ...
 }:
-host.pkgs.substituteAll rec {
-  src = ./Makefile.in;
-
+host.pkgs.replaceVars ./Makefile.in {
   tag = devcontainer-tag;
   loader = devcontainer-loader;
   json = devcontainer-json;

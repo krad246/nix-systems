@@ -33,8 +33,7 @@
       mkJson = arch:
         withSystem arch (cross: let
           devcontainer-json = let
-            template = host.pkgs.substituteAll {
-              src = ./devcontainer.json.in;
+            template = host.pkgs.replaceVars ./devcontainer.json.in {
               tag = let drv = mkImage arch; in "${drv.imageName}:${drv.passthru.imageTag}";
               platform = "${cross.pkgs.go.GOOS}/${cross.pkgs.go.GOARCH}";
             };
