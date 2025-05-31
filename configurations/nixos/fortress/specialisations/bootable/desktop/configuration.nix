@@ -13,12 +13,10 @@
 
   hardware = rec {
     bluetooth.enable = true;
-    opengl = {
+    graphics = {
       enable = true;
-      driSupport32Bit = pkgs.stdenv.isx86_64;
+      enable32Bit = pkgs.stdenv.isx86_64;
     };
-
-    graphics.enable32Bit = opengl.driSupport32Bit;
   };
 
   services = {
@@ -26,7 +24,7 @@
     system76-scheduler.enable = true;
     xrdp = {
       enable = true;
-      defaultWindowManager = lib.meta.getExe pkgs.gnome.gnome-session;
+      defaultWindowManager = lib.meta.getExe pkgs.gnome-session;
       openFirewall = true;
     };
   };

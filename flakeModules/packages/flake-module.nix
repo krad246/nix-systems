@@ -48,7 +48,7 @@ in {
           "preallocate-contents true"
           "allow-import-from-derivation true"
         ];
-        verbose = true;
+        # verbose = true;
         # print-build-logs = true;
       };
     addFlags = x: "--add-flags ${lib.strings.escapeShellArg x}";

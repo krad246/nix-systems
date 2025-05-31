@@ -1,5 +1,4 @@
 {
-  withSystem,
   lib,
   pkgs,
   ...
@@ -15,8 +14,7 @@
     font = {
       name = "meslo-lg";
       size = 20.0;
-      package =
-        withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts);
+      package = pkgs.nerd-fonts.meslo-lg;
     };
     settings = {
       enabled_layouts = lib.strings.concatStringsSep "," [

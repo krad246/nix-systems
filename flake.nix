@@ -34,8 +34,8 @@
     # the flake input 'nixpkgs' is the channel we are using in our flake for the evaluation, as
     # we've overridden the nixpkgs inputs to all of our output derivations.
     # thus nixpkgs is approximately the same thing as nixpkgs-lib for our purpose.
-    nixpkgs = {url = "github:NixOS/nixpkgs/nixos-unstable";};
-    nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-unstable-small";};
+    nixpkgs = {url = "github:NixOS/nixpkgs/nixos-25.05";};
+    nixpkgs-lib = {url = "github:NixOS/nixpkgs/nixos-25.05";};
 
     # Nix User Repositories
     nur = {

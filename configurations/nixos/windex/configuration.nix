@@ -12,10 +12,7 @@ in {
     ++ (with self.nixosModules; [
       base-configuration
       wsl
-    ])
-    ++ [
-      self.nixosModules.darling # for MacOS emulation
-    ];
+    ]);
 
   programs.dconf.enable = false;
 
