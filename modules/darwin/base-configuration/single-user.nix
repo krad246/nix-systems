@@ -32,7 +32,7 @@ in {
 
     nix-homebrew.user = cfg.owner.name;
     users = {
-      knownUsers = [cfg.owner.name];
+      # knownUsers = [cfg.owner.name];
 
       users = {
         ${cfg.owner.name} = cfg.owner;
