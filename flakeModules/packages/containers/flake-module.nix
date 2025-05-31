@@ -84,16 +84,15 @@
 
       parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
       arch = parse.cpu.name;
-    in
-      lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
-        makefile-aarch64-linux = mkMakefile "aarch64-linux";
-        makefile-x86_64-linux = mkMakefile "x86_64-linux";
-        makefile = self'.packages."makefile-${arch}-linux";
+    in {
+      makefile-aarch64-linux = mkMakefile "aarch64-linux";
+      makefile-x86_64-linux = mkMakefile "x86_64-linux";
+      makefile = self'.packages."makefile-${arch}-linux";
 
-        devcontainer-json-aarch64-linux = mkJson "aarch64-linux";
-        devcontainer-json-x86_64-linux = mkJson "x86_64-linux";
-        devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
-      };
+      devcontainer-json-aarch64-linux = mkJson "aarch64-linux";
+      devcontainer-json-x86_64-linux = mkJson "x86_64-linux";
+      devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
+    };
   };
 
   flake.packages = let

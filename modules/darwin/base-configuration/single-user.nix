@@ -40,5 +40,7 @@ in {
     };
 
     nix.settings.trusted-users = [cfg.owner.name];
+
+    system.primaryUser = cfg.owner.name;
   };
 }
