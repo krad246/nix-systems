@@ -53,11 +53,8 @@
   };
 
   nix = {
-    useDaemon = lib.modules.mkForce true;
     daemonIOLowPriority = lib.modules.mkDefault true;
     daemonProcessType = lib.modules.mkDefault "Adaptive";
-
-    configureBuildUsers = true;
 
     settings = {
       auto-optimise-store = false;
@@ -65,7 +62,6 @@
     };
   };
 
-  services.nix-daemon.enable = lib.modules.mkForce true;
   system.stateVersion = 5;
 
   homebrew = {
