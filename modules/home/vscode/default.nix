@@ -43,6 +43,7 @@ in {
         ms-vscode-remote.remote-ssh
         ms-vscode-remote.remote-ssh-edit
         ms-vscode-remote.remote-wsl
+        ms-vsliveshare.vsliveshare
         # ms-azuretools.vscode-docker
         # ms-vscode.makefile-tools
         jnoortheen.nix-ide
