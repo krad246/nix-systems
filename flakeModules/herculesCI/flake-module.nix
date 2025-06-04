@@ -38,7 +38,7 @@
     onSchedule = {
       dullahan-deploy = {
         outputs.effects = {
-          dullahan-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
+          dullahan-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
             hci-effects.runNixDarwin {
               ssh = {
                 destination = "root@dullahan.tailb53085.ts.net";
@@ -62,7 +62,7 @@
 
       gremlin-deploy = {
         outputs.effects = {
-          gremlin-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
+          gremlin-deploy = withSystem "x86_64-linux" ({hci-effects, ...}:
             hci-effects.runNixDarwin {
               ssh = {
                 destination = "root@gremlin.tailb53085.ts.net";

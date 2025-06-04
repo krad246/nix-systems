@@ -9,12 +9,9 @@ in {
     package = modules.mkDefault pkgs.nixVersions.stable;
     checkConfig = true;
     gc.automatic = true;
-    extraOptions = ''
-
-    '';
     settings =
       {
-        extra-experimental-features =
+        experimental-features =
           ["nix-command" "flakes"]
           ++ [
             "auto-allocate-uids"
@@ -62,19 +59,18 @@ in {
 
         # Prefer to pull as many outputs from binary caches as possible.
         builders-use-substitutes = true;
-        extra-substituters = [
+        substituters = [
           "https://cache.nixos.org"
           "https://nix-community.cachix.org"
           "https://krad246.cachix.org"
         ];
 
-        extra-trusted-substituters = [
+        trusted-substituters = [
           "https://cache.nixos.org"
           "https://nix-community.cachix.org"
           "https://krad246.cachix.org"
         ];
-
-        extra-trusted-public-keys = [
+        trusted-public-keys = [
           "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
           "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
           "krad246.cachix.org-1:N57J9SfNFtxMSYnlULH4l7ZkdNjIQb0ByyapaEb/8IM="
@@ -82,8 +78,8 @@ in {
 
         # How long to wait before declaring a build as failed.
         connect-timeout = modules.mkDefault 300;
-        timeout = modules.mkDefault 7200;
-        max-silent-time = modules.mkDefault 7200;
+        timeout = modules.mkDefault 3600;
+        max-silent-time = modules.mkDefault 3600;
 
         # Store Nix user environment pointers in each user's home directory.
         use-xdg-base-directories = true;
