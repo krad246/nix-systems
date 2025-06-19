@@ -20,9 +20,12 @@
 
       systemd.services.tailscaled-autoconnect.unitConfig.ConditionPathExists = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
 
-      systemd.paths.tailscaled-autoconnect.pathConfig = {
-        PathChanged = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
-        Unit = "tailscaled-autoconnect.service";
+      systemd.paths.tailscaled-autoconnect = {
+        wantedBy = ["multi-user.target"];
+        pathConfig = {
+          PathChanged = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+          Unit = "tailscaled-autoconnect.service";
+        };
       };
 
       # same identity that decrypts the host side secrets will be used to access root on the linux-builder
