@@ -18,6 +18,7 @@
       hour = [23];
       dayOfWeek = ["Sun"];
     };
+    effect.system = "aarch64-linux";
   };
 
   herculesCI = _herculesCI: {
