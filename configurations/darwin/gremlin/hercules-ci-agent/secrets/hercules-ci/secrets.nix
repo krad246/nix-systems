@@ -17,7 +17,9 @@ in {
 
   "smeagol/binary-caches.age".publicKeys = [root.ed25519];
   "smeagol/cluster-join-token.age".publicKeys = [root.ed25519];
+  "smeagol/tailscale-auth-key.age".publicKeys = [root.ed25519];
 
   "./smeagol/binary-caches.age".publicKeys = [root.ed25519];
   "./smeagol/cluster-join-token.age".publicKeys = [root.ed25519];
+  "./smeagol/tailscale-auth-key.age".publicKeys = [root.ed25519];
 }

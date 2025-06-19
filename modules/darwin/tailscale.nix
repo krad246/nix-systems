@@ -1,6 +1,3 @@
 {
-  # services.tailscale.enable = true;
-  homebrew.brews = [
-    "tailscale"
-  ];
+  homebrew.casks = ["tailscale"];
 }

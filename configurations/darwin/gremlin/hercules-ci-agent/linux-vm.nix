@@ -13,6 +13,15 @@
 
       services.hercules-ci-agents."".settings.concurrentTasks = 4;
 
+      services.tailscale = {
+        enable = true;
+        authKeyFile = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+      };
+
+      systemd.services.tailscaled-autoconnect.unitConfig.ConditionPathExists = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+
+      systemd.paths.tailscaled-autoconnect.pathConfig.PathChanged = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+
       # same identity that decrypts the host side secrets will be used to access root on the linux-builder
       users.users.root.openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL0IJSgLQ/JomKuYZVV5/ZuboysqBJQCgBcHTvKklQDb root@gremlin"
@@ -34,6 +43,7 @@
       copyFiles = [
         config.age.secrets."smeagol/binary-caches.json".path
         config.age.secrets."smeagol/cluster-join-token.key".path
+        config.age.secrets."smeagol/tailscale-auth.key".path
         config.age.secrets."gremlin/secrets.json".path
       ];
     in {
