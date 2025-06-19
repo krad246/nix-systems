@@ -1,11 +1,8 @@
-{
-  withSystem,
-  pkgs,
-  ...
-}: {
-  # homebrew.casks = ["tailscale"];
+{pkgs, ...}: {
   services.tailscale = {
     enable = true;
-    package = withSystem pkgs.stdenv.system ({inputs', ...}: inputs'.nixpkgs-darwin.legacyPackages.tailscale);
+    package = pkgs.tailscale.overrideAttrs {
+      doCheck = false;
+    };
   };
 }
