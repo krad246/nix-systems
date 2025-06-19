@@ -11,7 +11,7 @@ in {
 
   config = {
     homebrew = {
-      casks = lib.modules.mkIf cfg ["zen-browser"];
+      casks = lib.modules.mkIf cfg ["zen"];
     };
   };
 }

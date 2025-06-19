@@ -15,7 +15,7 @@ in {
   };
 
   homebrew = {
-    enable = false;
+    enable = true;
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
@@ -23,7 +23,6 @@ in {
     };
 
     taps = [
-      "homebrew/services"
     ];
 
     global.brewfile = true;
