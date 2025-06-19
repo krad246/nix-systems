@@ -16,6 +16,7 @@
       services.tailscale = {
         enable = true;
         authKeyFile = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+        extraUpFlags = ["--ssh"];
       };
 
       systemd.services.tailscaled-autoconnect.unitConfig.ConditionPathExists = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
