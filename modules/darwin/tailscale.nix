@@ -1,3 +1,6 @@
 {
-  homebrew.casks = ["tailscale"];
+  # homebrew.casks = ["tailscale"];
+  services.tailscale = {
+    enable = true;
+  };
 }
