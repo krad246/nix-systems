@@ -39,5 +39,13 @@
       group = config.users.groups._hercules-ci-agent.name;
       name = "smeagol/cluster-join-token.key";
     };
+
+    "smeagol/tailscale-auth.key" = {
+      file = ./secrets/hercules-ci/smeagol/tailscale-auth-key.age;
+      mode = "0400";
+      owner = config.users.users._hercules-ci-agent.name;
+      group = config.users.groups._hercules-ci-agent.name;
+      name = "smeagol/tailscale-auth.key";
+    };
   };
 }
