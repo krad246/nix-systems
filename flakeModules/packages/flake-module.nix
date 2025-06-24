@@ -30,7 +30,6 @@ in {
   perSystem = {
     inputs',
     self',
-    config,
     pkgs,
     ...
   }: let
@@ -39,7 +38,6 @@ in {
     in
       cli.toGNUCommandLine {} {
         option = [
-          "inputs-from \"$(${lib.meta.getExe config.flake-root.package})\""
           "experimental-features 'nix-command flakes'"
           "keep-going true"
           "show-trace true"
