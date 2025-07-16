@@ -52,4 +52,6 @@
 
     # we switch to the generic-linux module after loading this
   ];
+
+  boot.kernelPackages = pkgs.linuxPackages_6_6;
 }
