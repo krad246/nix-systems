@@ -59,9 +59,18 @@
               buildOnDestination = true;
             };
 
-            nohup =
-              effect.overrideAttrs (_: {
-              });
+            nohup = effect.overrideAttrs (old: {
+              effectScript = let
+                pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
+                commands = pkgs.writeShellApplication {
+                  name = "nohup-dullahan-deploy";
+                  runtimeInputs = [];
+                  text = old.effectScript;
+                };
+              in ''
+                nohup ${lib.meta.getExe commands}
+              '';
+            });
           in
             nohup);
         };
