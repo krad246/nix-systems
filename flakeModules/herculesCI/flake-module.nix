@@ -39,8 +39,8 @@
     onSchedule = {
       dullahan-deploy = {
         outputs.effects = {
-          dullahan-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
-            hci-effects.runNixDarwin {
+          dullahan-deploy = withSystem "aarch64-linux" ({hci-effects, ...}: let
+            effect = hci-effects.runNixDarwin {
               ssh = {
                 destination = "root@dullahan.tailb53085.ts.net";
                 destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
@@ -57,7 +57,13 @@
 
               configuration = self.darwinConfigurations.dullahan;
               buildOnDestination = true;
-            });
+            };
+
+            nohup =
+              effect.overrideAttrs (_: {
+              });
+          in
+            nohup);
         };
       };
 
