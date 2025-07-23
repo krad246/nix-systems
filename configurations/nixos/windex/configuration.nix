@@ -14,7 +14,10 @@ in {
       wsl
     ]);
 
-  programs.dconf.enable = false;
+  programs = {
+    dconf.enable = false;
+    fuse.userAllowOther = true;
+  };
 
   # Doesn't make sense on WSL's network stack
   systemd.services.NetworkManager-wait-online.enable = false;
@@ -108,7 +111,7 @@ in {
   # mount an overlayFS over the /etc dir
   boot.initrd.systemd.enable = true;
   system.etc.overlay = {
-    enable = true;
+    enable = false;
     mutable = true;
   };
 }
