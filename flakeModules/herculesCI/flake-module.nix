@@ -64,7 +64,7 @@
                 pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
                 commands = pkgs.writeShellApplication {
                   name = "nohup-dullahan-deploy";
-                  runtimeInputs = [];
+                  runtimeInputs = [pkgs.coreutils];
                   text = old.effectScript;
                 };
               in ''
