@@ -16,6 +16,7 @@
         ./ci-agent/cachix-agent.nix
         ./ci-agent/container.nix
         ./ci-agent/hercules-ci-agent.nix
+        ./ci-agent/kernel.nix
         ./ci-agent/tailscale.nix
       ];
 
