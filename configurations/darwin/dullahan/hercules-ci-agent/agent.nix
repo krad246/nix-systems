@@ -10,15 +10,6 @@
   # stop on the first failure
   nix.settings.keep-going = false;
 
-  # secrets aliases, really
-  age.secrets = {
-    dullahan-binary-caches.name = "dullahan/binary-caches.json";
-    dullahan-cluster-join-token.name = "dullahan/cluster-join-token.key";
-    dullahan-secrets.name = "dullahan/secrets.json";
-    headless-penguin-binary-caches.name = "headless-penguin/binary-caches.json";
-    headless-penguin-cluster-join-token.name = "headless-penguin/cluster-join-token.key";
-  };
-
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
     settings = {
@@ -55,7 +46,11 @@
       rsync = lib.meta.getExe pkgs.rsync;
       ssh = lib.meta.getExe pkgs.openssh;
       sleep = lib.meta.getExe' pkgs.coreutils "sleep";
-      copyFiles = with config.age.secrets; [headless-penguin-binary-caches.path headless-penguin-cluster-join-token.path dullahan-secrets.path];
+      copyFiles = with config.age.secrets; [
+        "headless-penguin/binary-caches.json".path
+        "headless-penguin/cluster-join-token.key".path
+        "dullahan/secrets.json".path
+      ];
     in {
       text = ''
         #!${pkgs.stdenv.shell}
