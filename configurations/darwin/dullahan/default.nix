@@ -3,7 +3,6 @@
     imports = [
       ./configuration.nix
       ./hercules-ci-agent
-      ./secrets.nix
     ];
 
     nixpkgs.system = system;
