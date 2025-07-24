@@ -14,8 +14,8 @@
   services.hercules-ci-agent = {
     settings = {
       concurrentTasks = 4;
-      binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
-      clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
+      binaryCachesPath = config.age.secrets."dullahan/binary-caches.json".path;
+      clusterJoinTokenPath = config.age.secrets."dullahan/cluster-join-token.key".path;
     };
   };
 
@@ -46,10 +46,10 @@
       rsync = lib.meta.getExe pkgs.rsync;
       ssh = lib.meta.getExe pkgs.openssh;
       sleep = lib.meta.getExe' pkgs.coreutils "sleep";
-      copyFiles = with config.age.secrets; [
-        "headless-penguin/binary-caches.json".path
-        "headless-penguin/cluster-join-token.key".path
-        "dullahan/secrets.json".path
+      copyFiles = [
+        config.age.secrets."headless-penguin/binary-caches.json".path
+        config.age.secrets."headless-penguin/cluster-join-token.key".path
+        config.age.secrets."dullahan/secrets.json".path
       ];
     in {
       text = ''
