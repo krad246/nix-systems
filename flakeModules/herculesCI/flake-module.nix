@@ -66,6 +66,7 @@
                   name = "nohup-dullahan-deploy";
                   runtimeInputs = [pkgs.coreutils];
                   text = old.effectScript;
+                  excludeShellChecks = ["-e SC2086"];
                 };
               in ''
                 nohup ${lib.meta.getExe commands}
@@ -106,6 +107,7 @@
                   name = "nohup-gremlin-deploy";
                   runtimeInputs = [pkgs.coreutils];
                   text = old.effectScript;
+                  excludeShellChecks = ["-e SC2086"];
                 };
               in ''
                 nohup ${lib.meta.getExe commands}
