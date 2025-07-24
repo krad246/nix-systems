@@ -36,6 +36,22 @@
 
     # give the only interactive user the ability to see the logs
     users.users.builder.extraGroups = ["systemd-journal"];
+
+    services.tailscale = {
+      enable = true;
+      authKeyFile = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+      extraUpFlags = ["--ssh"];
+    };
+
+    systemd.services.tailscaled-autoconnect.unitConfig.ConditionPathExists = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+
+    systemd.paths.tailscaled-autoconnect = {
+      wantedBy = ["multi-user.target"];
+      pathConfig = {
+        PathChanged = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+        Unit = "tailscaled-autoconnect.service";
+      };
+    };
   };
 
   system.activationScripts = {
