@@ -71,7 +71,7 @@
                     excludeShellChecks = ["SC2086"];
                   };
                 in ''
-                  nohup bash -c ${lib.escapeShellArg old.effectScript}
+                  bash -c ${lib.escapeShellArg old.effectScript}
                 '';
               });
           in
@@ -114,7 +114,7 @@
                     excludeShellChecks = ["SC2086"];
                   };
                 in ''
-                  nohup bash -c ${lib.escapeShellArg old.effectScript}
+                  bash -c ${lib.escapeShellArg old.effectScript}
                 '';
               });
           in
