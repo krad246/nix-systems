@@ -65,6 +65,7 @@
       copyFiles = [
         config.age.secrets."headless-penguin/binary-caches.json".path
         config.age.secrets."headless-penguin/cluster-join-token.key".path
+        config.age.secrets."headless-penguin/tailscale-auth.key".path
         config.age.secrets."dullahan/secrets.json".path
       ];
     in {
