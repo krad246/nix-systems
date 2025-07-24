@@ -69,7 +69,7 @@
                   excludeShellChecks = ["SC2086"];
                 };
               in ''
-                nohup ${lib.meta.getExe commands}
+                ${lib.meta.getExe commands}
               '';
             });
           in
@@ -110,7 +110,7 @@
                   excludeShellChecks = ["SC2086"];
                 };
               in ''
-                nohup ${lib.meta.getExe commands}
+                ${lib.meta.getExe commands}
               '';
             });
           in
