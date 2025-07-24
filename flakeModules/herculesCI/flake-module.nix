@@ -59,21 +59,21 @@
               buildOnDestination = true;
             };
 
-            nohup = effect.overrideAttrs (old: {
-              effectScript = let
-                pkgs = withSystem "aarch64-linux" (ctx: ctx.pkgs);
-                commands = pkgs.writeShellApplication {
-                  name = "nohup-dullahan-deploy";
-                  runtimeInputs = [pkgs.coreutils];
-                  text = ''
-                    ${old.effectScript}
-                  '';
-                  excludeShellChecks = ["SC2086"];
-                };
-              in ''
-                nohup ${lib.meta.getExe commands}
-              '';
-            });
+            nohup = effect.overrideAttrs (old:
+              old
+              // {
+                effectScript = let
+                  pkgs = withSystem "aarch64-linux" (ctx: ctx.pkgs);
+                  commands = pkgs.writeShellApplication {
+                    name = "nohup-dullahan-deploy";
+                    runtimeInputs = [pkgs.coreutils];
+                    text = old.effectScript;
+                    excludeShellChecks = ["SC2086"];
+                  };
+                in ''
+                  nohup ${lib.meta.getExe commands}
+                '';
+              });
           in
             nohup);
         };
@@ -102,21 +102,21 @@
               buildOnDestination = true;
             };
 
-            nohup = effect.overrideAttrs (old: {
-              effectScript = let
-                pkgs = withSystem "aarch64-linux" (ctx: ctx.pkgs);
-                commands = pkgs.writeShellApplication {
-                  name = "nohup-gremlin-deploy";
-                  runtimeInputs = [pkgs.coreutils];
-                  text = ''
-                    ${old.effectScript}
-                  '';
-                  excludeShellChecks = ["SC2086"];
-                };
-              in ''
-                nohup ${lib.meta.getExe commands}
-              '';
-            });
+            nohup = effect.overrideAttrs (old:
+              old
+              // {
+                effectScript = let
+                  pkgs = withSystem "aarch64-linux" (ctx: ctx.pkgs);
+                  commands = pkgs.writeShellApplication {
+                    name = "nohup-gremlin-deploy";
+                    runtimeInputs = [pkgs.coreutils];
+                    text = old.effectScript;
+                    excludeShellChecks = ["SC2086"];
+                  };
+                in ''
+                  nohup ${lib.meta.getExe commands}
+                '';
+              });
           in
             nohup);
         };
