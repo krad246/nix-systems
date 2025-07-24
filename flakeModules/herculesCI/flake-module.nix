@@ -61,7 +61,7 @@
 
             nohup = effect.overrideAttrs (old: {
               effectScript = let
-                pkgs = effect.ssh.destinationPkgs;
+                pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
                 commands = pkgs.writeShellApplication {
                   name = "nohup-dullahan-deploy";
                   runtimeInputs = [pkgs.coreutils];
@@ -102,7 +102,7 @@
 
             nohup = effect.overrideAttrs (old: {
               effectScript = let
-                pkgs = effect.ssh.destinationPkgs;
+                pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
                 commands = pkgs.writeShellApplication {
                   name = "nohup-gremlin-deploy";
                   runtimeInputs = [pkgs.coreutils];
