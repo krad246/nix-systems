@@ -39,8 +39,8 @@
     onSchedule = {
       dullahan-deploy = {
         outputs.effects = {
-          dullahan-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
-            hci-effects.runNixDarwin {
+          dullahan-deploy = withSystem "aarch64-darwin" ({hci-effects, ...}: let
+            effect = hci-effects.runNixDarwin {
               ssh = {
                 destination = "root@dullahan.tailb53085.ts.net";
                 destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
@@ -57,14 +57,30 @@
 
               configuration = self.darwinConfigurations.dullahan;
               buildOnDestination = true;
+            };
+
+            nohup = effect.overrideAttrs (old: {
+              effectScript = let
+                pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
+                commands = pkgs.writeShellApplication {
+                  name = "nohup-dullahan-deploy";
+                  runtimeInputs = [pkgs.coreutils];
+                  text = old.effectScript;
+                  excludeShellChecks = ["SC2086"];
+                };
+              in ''
+                nohup ${lib.meta.getExe commands}
+              '';
             });
+          in
+            nohup);
         };
       };
 
       gremlin-deploy = {
         outputs.effects = {
-          gremlin-deploy = withSystem "aarch64-linux" ({hci-effects, ...}:
-            hci-effects.runNixDarwin {
+          gremlin-deploy = withSystem "aarch64-darwin" ({hci-effects, ...}: let
+            effect = hci-effects.runNixDarwin {
               ssh = {
                 destination = "root@gremlin.tailb53085.ts.net";
                 destinationPkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
@@ -82,7 +98,23 @@
 
               configuration = self.darwinConfigurations.gremlin;
               buildOnDestination = true;
+            };
+
+            nohup = effect.overrideAttrs (old: {
+              effectScript = let
+                pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
+                commands = pkgs.writeShellApplication {
+                  name = "nohup-gremlin-deploy";
+                  runtimeInputs = [pkgs.coreutils];
+                  text = old.effectScript;
+                  excludeShellChecks = ["SC2086"];
+                };
+              in ''
+                nohup ${lib.meta.getExe commands}
+              '';
             });
+          in
+            nohup);
         };
       };
 
