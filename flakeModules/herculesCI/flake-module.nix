@@ -39,7 +39,7 @@
     onSchedule = {
       dullahan-deploy = {
         outputs.effects = {
-          dullahan-deploy = withSystem "aarch64-linux" ({hci-effects, ...}: let
+          dullahan-deploy = withSystem "aarch64-darwin" ({hci-effects, ...}: let
             effect = hci-effects.runNixDarwin {
               ssh = {
                 destination = "root@dullahan.tailb53085.ts.net";
@@ -61,7 +61,7 @@
 
             nohup = effect.overrideAttrs (old: {
               effectScript = let
-                pkgs = withSystem "aarch64-linux" (ctx: ctx.pkgs);
+                pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
                 commands = pkgs.writeShellApplication {
                   name = "nohup-dullahan-deploy";
                   runtimeInputs = [pkgs.coreutils];
@@ -78,7 +78,7 @@
 
       gremlin-deploy = {
         outputs.effects = {
-          gremlin-deploy = withSystem "aarch64-linux" ({hci-effects, ...}: let
+          gremlin-deploy = withSystem "aarch64-darwin" ({hci-effects, ...}: let
             effect = hci-effects.runNixDarwin {
               ssh = {
                 destination = "root@gremlin.tailb53085.ts.net";
@@ -101,7 +101,7 @@
 
             nohup = effect.overrideAttrs (old: {
               effectScript = let
-                pkgs = withSystem "aarch64-linux" (ctx: ctx.pkgs);
+                pkgs = withSystem "aarch64-darwin" (ctx: ctx.pkgs);
                 commands = pkgs.writeShellApplication {
                   name = "nohup-gremlin-deploy";
                   runtimeInputs = [pkgs.coreutils];
