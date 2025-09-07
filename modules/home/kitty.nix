@@ -23,8 +23,8 @@
         # "horizontal"
         # "splits"
         "stack"
-        "tall"
-        # "vertical"
+        # "tall"
+        "vertical"
       ];
     };
     keybindings =
@@ -33,6 +33,8 @@
 
         "kitty_mod+c" = "copy_to_clipboard";
         "cmd+c" = "copy_to_clipboard";
+
+        "ctrl+c" = "copy_and_clear_or_interrupt";
 
         "kitty_mod+v" = "paste_from_clipboard";
         "cmd+v" = "paste_from_clipboard";
@@ -67,20 +69,22 @@
         "kitty_mod+end" = "scroll_end";
         "cmd+end" = "scroll_end";
 
-        # "kitty_mod+z" = "";
-        # "kitty_mod+u" = "scroll_to_prompt -1";
+        "kitty_mod+z" = "scroll_to_prompt -1";
+        "kitty_mod+u" = "scroll_to_prompt -1";
 
-        # "kitty_mod+x" = "";
-        # "kitty_mod+d" = "scroll_to_prompt 1";
+        "kitty_mod+x" = "scroll_to_prompt 1";
+        "kitty_mod+d" = "scroll_to_prompt 1";
 
-        # "kitty_mod+h" = ""; # was 'show scrollback'
-        # "kitty_mod+g" = ""; # was 'show last command output'
+        "kitty_mod+h" = "show_scrollback"; # was 'show scrollback'
+        "kitty_mod+g" = "show_last_command_output"; # was 'show last command output'
       }
       // {
         # window management
 
-        "kitty_mod+enter" = "new_window";
-        "cmd+enter" = "new_window";
+        "kitty_mod+enter" = "launch --cwd=current";
+        "cmd+enter" = "launch --cwd=current";
+
+        # "ctrl+alt+enter" = "launch --cwd=current";
 
         "kitty_mod+n" = "new_os_window";
         "cmd+n" = "new_os_window";
@@ -89,12 +93,11 @@
         "shift+cmd+d" = "close_window";
 
         "kitty_mod+]" = "next_window";
-
         "kitty_mod+[" = "prev_window";
 
-        "kitty_mod+f" = "";
-        "kitty_mod+b" = "";
-        "kitty_mod+`" = "";
+        "kitty_mod+f" = "move_window_forward";
+        "kitty_mod+b" = "move_window_backward";
+        "kitty_mod+`" = ""; # was 'move window to top'
 
         "kitty_mod+r" = ""; # was 'window resize'
         "cmd+r" = "";
@@ -128,8 +131,7 @@
 
         "kitty_mod+0" = "";
 
-        "kitty_mod+f7" = "";
-
+        "kitty_mod+f7" = "focus_visible_window";
         "kitty_mod+f8" = "";
       }
       // {
@@ -146,28 +148,32 @@
         "kitty_mod+t" = "new_tab";
         "cmd+t" = "new_tab";
 
-        "kitty_mod+q" = "";
-        # "cmd+w" = "";
+        "kitty_mod+q" = "close_tab";
+        "cmd+w" = "close_tab";
         "shift+cmd+w" = "close_os_window";
 
         "kitty_mod+." = "";
+        "ctrl+alt+f" = "move_tab_forward";
+
         "kitty_mod+," = "";
-        "kitty_mod+alt+t" = "";
-        "shift+cmd+i" = "";
+        "ctrl+alt+b" = "move_tab_backward";
+
+        "kitty_mod+alt+t" = "set_tab_title";
+        "shift+cmd+i" = "set_tab_title";
       }
       // {
         # layout management
 
-        "kitty_mod+l" = ""; # was 'next layout'
+        "kitty_mod+l" = "next_layout";
         "shift+alt+l" = "next_layout";
 
-        "shift+alt+s" = "goto_layout stack";
-        "shift+alt+t" = "goto_layout tall";
-        "shift+alt+f" = "goto_layout fat";
+        # "shift+alt+t" = "goto_layout tall";
+        # "shift+alt+f" = "goto_layout fat";
         "shift+alt+g" = "goto_layout grid";
-        "shift+alt+x" = "goto_layout splits";
+        "shift+alt+s" = "goto_layout stack";
+        # "shift+alt+x" = "goto_layout splits";
         "shift+alt+v" = "goto_layout vertical";
-        "shift+alt+h" = "goto_layout horizontal";
+        # "shift+alt+h" = "goto_layout horizontal";
       }
       // {
         # font sizes
@@ -190,46 +196,62 @@
       // {
         # visible text manipulation
 
-        "kitty_mod+e" = ""; # was 'open link'
+        "kitty_mod+e" = "open_url_with_hints";
+
         "kitty_mod+p>f" = "kitten hints --type path --program -";
-        "kitty_mod+p>shift+f" = "kitten hints --type path";
+        "kitty_mod+p>shift+f" = "";
+
         "kitty_mod+p>l" = "kitten hints --type line --program -";
         "kitty_mod+p>w" = "kitten hints --type word --program -";
         "kitty_mod+p>h" = "kitten hints --type hash --program -";
-        "kitty_mod+p>n" = "kitten hints --type linenum";
-        "kitty_mod+p>y" = "kitten hints --type hyperlink";
+
+        "kitty_mod+p>n" = "";
+
+        "kitty_mod+p>y" = "";
       }
       // {
         # miscellaneous
 
-        "kitty_mod+f1" = "";
-        "kitty_mod+f11" = "";
-        "ctrl+cmd+f" = "";
-        "kitty_mod+f10" = "";
+        "kitty_mod+f1" = "show_kitty_doc overview";
+
+        "kitty_mod+f11" = "toggle_fullscreen";
+        "ctrl+cmd+f" = "toggle_fullscreen";
+
+        "kitty_mod+f10" = "toggle_maximized";
+
         "opt+cmd+s" = "";
+
         # "kitty_mod+u" = "";
         "ctrl+cmd+space" = "";
+
         "kitty_mod+f2" = "";
         "cmd+," = "";
-        # "kitty_mod+escape" = "";
+
+        "kitty_mod+escape" = "kitty_shell window";
+
         "kitty_mod+a>m" = "";
         "kitty_mod+a>l" = "";
         "kitty_mod+a>1" = "";
         "kitty_mod+a>d" = "";
-        # "kitty_mod+delete" = "";
-        "opt+cmd+r" = "";
-        # "cmd+k" = "";
-        "option+cmd+k" = "";
-        "cmd+ctrl+l" = "";
-        "kitty_mod+f5" = "";
+
+        "kitty_mod+delete" = "clear_terminal reset active";
+        "opt+cmd+r" = "clear_terminal reset active";
+        "cmd+k" = "clear_terminal to_cursor active";
+        "option+cmd+k" = "clear_terminal scrollback active";
+        "cmd+ctrl+l" = "clear_terminal to_cursor_scroll active";
+
+        "kitty_mod+f5" = "load_config_file";
         "ctrl+cmd+," = "";
+
         "kitty_mod+f6" = "";
         "opt+cmd+," = "";
+
         "shift+cmd+/" = "";
-        # "cmd+h" = "";
-        "opt+cmd+h" = "";
-        # "cmd+m" = "";
-        # "cmd+q" = "";
+
+        "cmd+h" = "hide_macos_app";
+        "opt+cmd+h" = "hide_macos_other_apps";
+        "cmd+m" = "minimize_macos_window";
+        "cmd+q" = "quit";
       };
     environment = {};
     extraConfig = ''
