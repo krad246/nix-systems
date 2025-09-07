@@ -10,21 +10,12 @@
   # stop on the first failure
   nix.settings.keep-going = false;
 
-  # secrets aliases, really
-  age.secrets = {
-    dullahan-binary-caches.name = "dullahan/binary-caches.json";
-    dullahan-cluster-join-token.name = "dullahan/cluster-join-token.key";
-    dullahan-secrets.name = "dullahan/secrets.json";
-    headless-penguin-binary-caches.name = "headless-penguin/binary-caches.json";
-    headless-penguin-cluster-join-token.name = "headless-penguin/cluster-join-token.key";
-  };
-
   # point the darwin CI agent to our secrets' runtime decryption paths.
   services.hercules-ci-agent = {
     settings = {
       concurrentTasks = 4;
-      binaryCachesPath = config.age.secrets.dullahan-binary-caches.path;
-      clusterJoinTokenPath = config.age.secrets.dullahan-cluster-join-token.path;
+      binaryCachesPath = config.age.secrets."dullahan/binary-caches.json".path;
+      clusterJoinTokenPath = config.age.secrets."dullahan/cluster-join-token.key".path;
     };
   };
 
@@ -45,6 +36,22 @@
 
     # give the only interactive user the ability to see the logs
     users.users.builder.extraGroups = ["systemd-journal"];
+
+    services.tailscale = {
+      enable = true;
+      authKeyFile = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+      extraUpFlags = ["--ssh"];
+    };
+
+    systemd.services.tailscaled-autoconnect.unitConfig.ConditionPathExists = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+
+    systemd.paths.tailscaled-autoconnect = {
+      wantedBy = ["multi-user.target"];
+      pathConfig = {
+        PathChanged = "/var/lib/hercules-ci-agent/secrets/tailscale-auth.key";
+        Unit = "tailscaled-autoconnect.service";
+      };
+    };
   };
 
   system.activationScripts = {
@@ -55,7 +62,12 @@
       rsync = lib.meta.getExe pkgs.rsync;
       ssh = lib.meta.getExe pkgs.openssh;
       sleep = lib.meta.getExe' pkgs.coreutils "sleep";
-      copyFiles = with config.age.secrets; [headless-penguin-binary-caches.path headless-penguin-cluster-join-token.path dullahan-secrets.path];
+      copyFiles = [
+        config.age.secrets."headless-penguin/binary-caches.json".path
+        config.age.secrets."headless-penguin/cluster-join-token.key".path
+        config.age.secrets."headless-penguin/tailscale-auth.key".path
+        config.age.secrets."dullahan/secrets.json".path
+      ];
     in {
       text = ''
         #!${pkgs.stdenv.shell}

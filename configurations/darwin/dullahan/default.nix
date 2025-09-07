@@ -2,8 +2,7 @@
   entrypoint = {system, ...}: {
     imports = [
       ./configuration.nix
-      ./hercules-ci.nix
-      ./secrets.nix
+      ./hercules-ci-agent
     ];
 
     nixpkgs.system = system;
