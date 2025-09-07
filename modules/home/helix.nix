@@ -37,19 +37,22 @@
       keys = {
         insert = {
           "C-s" = ":w";
+          "C-/" = "toggle_block_comments";
         };
 
         select = {
+          "C-s" = ":w";
           "C-/" = "toggle_block_comments";
         };
 
         normal = {
           # s = "no_op"; # disable select_regex
-          "C-s" = ":w"; # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
+          "C-s" = ":w";
           "C-w" = ":bc";
           "C-r" = ":rl";
           "C-q" = ":q";
-          "S-f" = ":fmt";
+
+          # "A-F" = ":fmt";
 
           # swap paste operations
           # default behavior is to now paste at the cursor position
@@ -78,16 +81,32 @@
           "C-[" = "goto_previous_buffer";
 
           "C-c" = "no_op";
-          "C-/" = "toggle_comments";
+          "C-/" = "toggle_block_comments";
 
-          # "C-f" = "no_op";
-          # "C-b" = "no_op";
+          t = "no_op";
+          f = "no_op";
 
-          # TODO:
-          # add_newline_below (<Space>j)
-          # add_newline_above (<Space>k)
+          T = "no_op";
+          F = "no_op";
 
-          # replace_with_yanked (R)
+          "C-f" = "no_op";
+          "C-b" = "no_op";
+
+          q = "no_op";
+          Q = "no_op";
+
+          "C-x" = "no_op";
+
+          space = {
+            c = "no_op";
+            C = "no_op";
+            "A-c" = "no_op";
+            p = "no_op";
+            P = "no_op";
+            G = "no_op";
+          };
+
+          "C-P" = "command_palette";
         };
       };
     };
@@ -99,6 +118,7 @@
         {
           name = "c";
           language-servers = ["clangd"];
+          auto-format = true;
         }
         {
           name = "just";
@@ -117,6 +137,7 @@
           };
 
           language-servers = ["nixd"];
+          auto-format = true;
         }
       ];
 

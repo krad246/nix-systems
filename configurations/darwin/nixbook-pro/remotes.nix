@@ -7,19 +7,19 @@
 
   krad246.remotes = {
     dullahan = {
-      enable = true;
+      enable = false;
       sshUser = "krad246";
       maxJobs = 24;
     };
 
     gremlin = {
-      enable = true;
+      enable = false;
       sshUser = "krad246";
       maxJobs = 72;
     };
 
     fortress = {
-      enable = true;
+      enable = false;
       sshUser = "krad246";
       maxJobs = 144;
       speedFactor = 2;
