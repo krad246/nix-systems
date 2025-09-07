@@ -57,17 +57,6 @@
         };
       };
 
-      "120" = {
-        enabled = true;
-        value = {
-          type = "standard";
-          parameters = [
-            65535
-            20
-            262144
-          ];
-        };
-      };
       "218" = {
         enabled = false;
         value = {
@@ -273,7 +262,7 @@
           parameters = [
             65535
             124
-            8650752
+            10878976
           ];
         };
       };
@@ -322,13 +311,35 @@
         };
       };
       "118" = {
-        enabled = false;
+        enabled = true;
         value = {
           type = "standard";
           parameters = [
             65535
             18
-            262144
+            393216
+          ];
+        };
+      };
+      "119" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            19
+            393216
+          ];
+        };
+      };
+      "120" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            20
+            393216
           ];
         };
       };
@@ -394,18 +405,7 @@
           parameters = [
             65535
             123
-            8650752
-          ];
-        };
-      };
-      "119" = {
-        enabled = true;
-        value = {
-          type = "standard";
-          parameters = [
-            65535
-            19
-            262144
+            10878976
           ];
         };
       };
@@ -549,7 +549,7 @@
           parameters = [
             65535
             126
-            10747904
+            10878976
           ];
         };
       };
@@ -585,7 +585,7 @@
           parameters = [
             65535
             125
-            10747904
+            10878976
           ];
         };
       };
@@ -817,6 +817,83 @@
             65535
             107
             8388608
+          ];
+        };
+      };
+      "250" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            126
+            8781824
+          ];
+        };
+      };
+      "251" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            125
+            8781824
+          ];
+        };
+      };
+      "248" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            123
+            8781824
+          ];
+        };
+      };
+      "249" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            124
+            8781824
+          ];
+        };
+      };
+      "256" = {
+        enabled = false;
+        value = {
+          type = "standard";
+          parameters = [
+            120
+            7
+            8781824
+          ];
+        };
+      };
+      "257" = {
+        enabled = false;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            65535
+            0
+          ];
+        };
+      };
+      "258" = {
+        enabled = false;
+        value = {
+          type = "standard";
+          parameters = [
+            65535
+            65535
+            0
           ];
         };
       };

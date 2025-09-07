@@ -18,13 +18,13 @@
     };
     settings = {
       enabled_layouts = lib.strings.concatStringsSep "," [
+        "vertical"
         # "fat"
         "grid"
         # "horizontal"
         # "splits"
         "stack"
         # "tall"
-        "vertical"
       ];
     };
     keybindings =
