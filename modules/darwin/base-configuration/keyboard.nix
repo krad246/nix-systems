@@ -683,7 +683,7 @@
           type = "standard";
           parameters = [
             65535
-            103
+            99
             8388608
           ];
         };
