@@ -48,8 +48,12 @@
         normal = {
           # s = "no_op"; # disable select_regex
           "C-s" = ":w";
-          "C-w" = ":bc";
+          "C-S" = ":wa";
+
           "C-r" = ":rl";
+          "C-R" = ":rl";
+
+          "C-w" = ":bc";
           "C-q" = ":q";
 
           # "A-F" = ":fmt";
@@ -88,9 +92,6 @@
 
           T = "no_op";
           F = "no_op";
-
-          "C-f" = "no_op";
-          "C-b" = "no_op";
 
           q = "no_op";
           Q = "no_op";
