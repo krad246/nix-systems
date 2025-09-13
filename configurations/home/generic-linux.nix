@@ -12,8 +12,8 @@
     // (
       if lib.trivial.inPureEvalMode
       then {
-        username = "standalone";
-        homeDirectory = "/home/standalone";
+        username = "generic-linux";
+        homeDirectory = "/home/generic-linux";
       }
       else {
         username = builtins.getEnv "USER";
