@@ -37,11 +37,49 @@
       keys = {
         insert = {
           "C-s" = ":w";
+          "C-S" = ":wa";
+
+          "C-r" = ":rl";
+          "C-R" = ":rl";
+
+          "C-w" = ":bc";
+          "C-q" = ":q";
+
+          "C-a" = [
+            "select_mode"
+            "select_all"
+          ];
+
+          "C-p" = "file_picker";
+
+          "C-]" = "goto_next_buffer";
+          "C-[" = "goto_previous_buffer";
+
+          "C-c" = "no_op";
           "C-/" = "toggle_block_comments";
         };
 
         select = {
           "C-s" = ":w";
+          "C-S" = ":wa";
+
+          "C-r" = ":rl";
+          "C-R" = ":rl";
+
+          "C-w" = ":bc";
+          "C-q" = ":q";
+
+          "C-a" = [
+            "select_mode"
+            "select_all"
+          ];
+
+          "C-p" = "file_picker";
+
+          "C-]" = "goto_next_buffer";
+          "C-[" = "goto_previous_buffer";
+
+          "C-c" = "no_op";
           "C-/" = "toggle_block_comments";
         };
 
