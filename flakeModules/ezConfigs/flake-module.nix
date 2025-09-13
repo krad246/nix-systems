@@ -55,18 +55,14 @@
           nameFunction = _name: "keerad@windex";
         };
 
-        ubuntu = {
-          nameFunction = _name: "ubuntu";
-
-          standalone = let
-            system = builtins.currentSystem;
-          in {
-            enable = true;
-            pkgs = withSystem system ({pkgs, ...}:
-              if pkgs.stdenv.isLinux
-              then pkgs
-              else throw "Only available for Linux");
-          };
+        generic-linux.standalone = {
+          enable = !lib.trivial.inPureEvalMode;
+          pkgs = withSystem builtins.currentSystem (ctx: let
+            inherit (ctx) pkgs;
+          in
+            if pkgs.stdenv.isLinux
+            then pkgs
+            else throw "Only available for Linux stdenvs.");
         };
       };
     };
