@@ -4,10 +4,16 @@
   pkgs,
   ...
 }: {
-  imports = [
-    self.homeModules.base-home
-    self.modules.generic.krad246-cachix
-  ];
+  imports =
+    [
+      self.homeModules.base-home
+    ]
+    ++ (with self.modules.generic; [
+      krad246-cachix
+      nix-core
+      flake-registry
+      home-link-registry
+    ]);
 
   home = {
     username = osConfig.users.users.krad246.name or "krad246";
