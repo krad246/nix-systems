@@ -6,6 +6,7 @@
 }: {
   imports = [
     self.homeModules.base-home
+    self.modules.generic.krad246-cachix
   ];
 
   home = {
