@@ -47,7 +47,6 @@
         safe.directory = "*";
       };
 
-      userEmail = "condor-janitor0e@icloud.com";
       userName = "Keerthi Radhakrishnan";
 
       # Prettier pager, adds syntax highlighting and line numbers
