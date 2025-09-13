@@ -25,4 +25,6 @@
         else "/home/krad246"
       );
   };
+
+  programs.git.userEmail = "condor-janitor0e@icloud.com";
 }
