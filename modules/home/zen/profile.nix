@@ -45,7 +45,7 @@ in {
 
       search = {
         default = "ddg";
-        force = false;
+        force = true;
         engines = {
           "GitHub" = {
             urls = [
@@ -81,7 +81,9 @@ in {
         };
       };
 
-      settings = (import ./prefs.nix) // (import ./extension-prefs.nix);
+      settings =
+        (import ./prefs.nix)
+        // (import ./extension-prefs.nix);
     };
   };
 
@@ -89,22 +91,18 @@ in {
   home.file =
     # Zen mods + UI customizations
     {
-      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/chrome" = {
+      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/chrome" = {
         source = ./profiles/zen/qnu52oxt.keerad/chrome;
         recursive = true;
       };
 
-      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/zen-themes.json" = {
+      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/zen-themes.json" = {
         source = ./profiles/zen/qnu52oxt.keerad/zen-themes.json;
-      };
-
-      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/xulstore.json" = {
-        source = ./profiles/zen/qnu52oxt.keerad/xulstore.json;
       };
     }
     # Zen keyboard shortcuts
     // {
-      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/zen-keyboard-shortcuts.json" = {
+      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/zen-keyboard-shortcuts.json" = {
         source = ./profiles/zen/qnu52oxt.keerad/zen-keyboard-shortcuts.json;
       };
     };
