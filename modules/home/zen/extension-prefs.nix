@@ -16,6 +16,11 @@
   # # 2) Allow extensions from all scopes
   # "extensions.enabledScopes" = 15;
 
-  # 3) Keep: don’t auto-disable newly detected add-ons
-  # "extensions.autoDisableScopes" = 0;
+  # # 3) Keep: don’t auto-disable newly detected add-ons
+  "extensions.autoDisableScopes" = 0;
+
+  # stop update churn between 1st and 2nd boot:
+  "extensions.update.enabled" = false;
+  "extensions.update.autoUpdateDefault" = false;
+  "extensions.systemAddon.update.enabled" = false;
 }
