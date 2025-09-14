@@ -13,6 +13,7 @@ in {
       discord
       kitty
       vscode
+      zen
     ]);
 
   home = {
