@@ -59,20 +59,16 @@ in {
 
       path = profilePath;
 
-      # Simple search setup
       search = {
         default = "ddg";
         force = true;
         engines = {
-          "ddg" = {
-            urls = [{template = "https://duckduckgo.com/?q={searchTerms}";}];
-          };
         };
       };
 
       settings = (import ./prefs.nix) // (import ./extension-prefs.nix);
 
-      # No custom CSS present in your upload—leave these null (or fill later)
+      # No custom CSS present
       # userChrome  = null;
       # userContent = null;
     };
