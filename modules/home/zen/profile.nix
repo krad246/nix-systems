@@ -46,6 +46,7 @@ in {
       search = {
         default = "ddg";
         force = true;
+
         engines = {
           "GitHub" = {
             urls = [
@@ -98,6 +99,10 @@ in {
 
       "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/zen-themes.json" = {
         source = ./profiles/zen/qnu52oxt.keerad/zen-themes.json;
+      };
+
+      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/xulstore.json" = {
+        source = ./profiles/zen/qnu52oxt.keerad/xulstore.json;
       };
     }
     # Zen keyboard shortcuts
