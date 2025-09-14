@@ -108,7 +108,6 @@
   "dom.push.userAgentID" = "7519c69e03054bf0908a80de95ba34a1";
   "dom.security.https_only_mode_ever_enabled" = true;
   "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
-  "extensions.autoDisableScopes" = 0;
   "extensions.blocklist.pingCountVersion" = -1;
   "extensions.colorway-builtin-themes-cleanup" = 1;
   "extensions.databaseSchema" = 37;

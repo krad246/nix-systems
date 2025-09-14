@@ -12,30 +12,13 @@ in {
   programs.firefox = {
     enable = true;
 
-    # Try profile-only (works on many channels); if it errors, remove this line.
+    # Profile installed only
     package = lib.mkForce null;
 
-    # Optional global policies
-    # Force-install add-ons in Zen via enterprise policies
+    # Enterprise policies management
     policies = {
       DisableAppUpdate = true;
       DontCheckDefaultBrowser = true;
-
-      ExtensionSettings = {
-        "@testpilot-containers" = {
-          installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/multi-account-containers/latest.xpi";
-        };
-        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-          # Bitwarden
-          installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/bitwarden-password-manager/latest.xpi";
-        };
-        "firefox@ghostery.com" = {
-          installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/ghostery/latest.xpi";
-        };
-      };
     };
 
     profiles.zen = {
@@ -51,6 +34,7 @@ in {
             rycee.firefox-addons.multi-account-containers
             rycee.firefox-addons.vimium
           ]);
+
         settings = {};
       };
 
@@ -61,7 +45,7 @@ in {
 
       search = {
         default = "ddg";
-        force = true;
+        force = false;
         engines = {
           "GitHub" = {
             urls = [
@@ -98,37 +82,30 @@ in {
       };
 
       settings = (import ./prefs.nix) // (import ./extension-prefs.nix);
-
-      # No custom CSS present
-      # userChrome  = null;
-      # userContent = null;
     };
   };
 
   # Zen-specific files that HM firefox doesn't model—declare them into the profile path.
-  home.file = {
-    # Write ~/.zen/profiles.ini to make Zen/Firefox start with this profile.
-    # "${profilesRoot}/profiles.ini".text = builtins.readFile ./profiles.ini;
+  home.file =
+    # Zen mods + UI customizations
+    {
+      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/chrome" = {
+        source = ./profiles/zen/qnu52oxt.keerad/chrome;
+        recursive = true;
+      };
 
-    "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/chrome" = {
-      source = ./profiles/zen/qnu52oxt.keerad/chrome;
-      recursive = true;
-    };
+      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/zen-themes.json" = {
+        source = ./profiles/zen/qnu52oxt.keerad/zen-themes.json;
+      };
 
-    "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/handlers.json" = {
-      source = ./profiles/zen/qnu52oxt.keerad/handlers.json;
+      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/xulstore.json" = {
+        source = ./profiles/zen/qnu52oxt.keerad/xulstore.json;
+      };
+    }
+    # Zen keyboard shortcuts
+    // {
+      "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/zen-keyboard-shortcuts.json" = {
+        source = ./profiles/zen/qnu52oxt.keerad/zen-keyboard-shortcuts.json;
+      };
     };
-
-    "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/xulstore.json" = {
-      source = ./profiles/zen/qnu52oxt.keerad/xulstore.json;
-    };
-
-    "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/zen-themes.json" = {
-      source = ./profiles/zen/qnu52oxt.keerad/zen-themes.json;
-    };
-
-    "Library/Application Support/Firefox/Profiles/${config.home.homeDirectory}/${profilesRoot}/${profileId}/zen-keyboard-shortcuts.json" = {
-      source = ./profiles/zen/qnu52oxt.keerad/zen-keyboard-shortcuts.json;
-    };
-  };
 }

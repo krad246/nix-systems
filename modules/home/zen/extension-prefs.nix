@@ -9,4 +9,13 @@
   "screenshots@mozilla.org" = "{'permissions': ['internal:privateBrowsingAllowed', 'internal:svgContextPropertiesAllowed'], 'origins': []}";
   "webcompat-reporter@mozilla.org" = "{'permissions': ['internal:privateBrowsingAllowed', 'internal:svgContextPropertiesAllowed'], 'origins': []}";
   "webcompat@mozilla.org" = "{'permissions': ['internal:privateBrowsingAllowed', 'internal:svgContextPropertiesAllowed'], 'origins': [], 'data_collection': []}";
+
+  # # 1) Scan every scope at startup (app, profile, user, system)
+  # "extensions.startupScanScopes" = 15;
+
+  # # 2) Allow extensions from all scopes
+  # "extensions.enabledScopes" = 15;
+
+  # 3) Keep: don’t auto-disable newly detected add-ons
+  # "extensions.autoDisableScopes" = 0;
 }
