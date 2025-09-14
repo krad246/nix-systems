@@ -63,6 +63,37 @@ in {
         default = "ddg";
         force = true;
         engines = {
+          "GitHub" = {
+            urls = [
+              {template = "https://github.com/search?q={searchTerms}";}
+            ];
+            definedAliases = ["@gh" "@github"];
+            icon = "https://github.githubassets.com/favicons/favicon.svg";
+          };
+
+          "Noogle" = {
+            urls = [
+              {template = "https://noogle.dev/q?term={searchTerms}";}
+            ];
+            definedAliases = ["@noogle"];
+            icon = "https://noogle.dev/favicon.ico";
+          };
+
+          "NixOS Options" = {
+            urls = [
+              {template = "https://search.nixos.org/options?query={searchTerms}";}
+            ];
+            definedAliases = ["@nixopts" "@options"];
+            icon = "https://nixos.org/favicon.ico";
+          };
+
+          "NixOS Packages" = {
+            urls = [
+              {template = "https://search.nixos.org/packages?query={searchTerms}";}
+            ];
+            definedAliases = ["@nixpkgs" "@pkgs"];
+            icon = "https://nixos.org/favicon.ico";
+          };
         };
       };
 
