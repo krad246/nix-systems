@@ -1,3 +1,3 @@
 {
-  imports = [./zen-hm-zen-profile.nix];
+  imports = [./profile.nix];
 }
