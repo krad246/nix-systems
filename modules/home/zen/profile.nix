@@ -3,11 +3,7 @@
   lib,
   pkgs,
   ...
-}: let
-  profilesRoot = ".zen";
-  profileId = "nix.default-release";
-  profilePath = "${config.home.homeDirectory}/${profilesRoot}/${profileId}";
-in {
+}: {
   programs.firefox = {
     enable = true;
 
@@ -38,8 +34,6 @@ in {
 
       extraConfig = ''
       '';
-
-      path = profilePath;
 
       search = {
         default = "ddg";
@@ -87,26 +81,31 @@ in {
   };
 
   # Zen-specific files that HM firefox doesn't model—declare them into the profile path.
-  home.file =
+  home.file = let
+    profile =
+      if pkgs.stdenv.isDarwin
+      then ./profiles/darwin
+      else ./profiles/linux;
+  in
     # Zen mods + UI customizations
     {
-      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/chrome" = {
-        source = ./profiles/zen/qnu52oxt.keerad/chrome;
+      "${config.programs.firefox.profilesPath}/${config.programs.firefox.profiles.zen.path}/chrome" = {
+        source = "${profile}/chrome";
         recursive = true;
       };
 
-      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/zen-themes.json" = {
-        source = ./profiles/zen/qnu52oxt.keerad/zen-themes.json;
+      "${config.programs.firefox.profilesPath}/${config.programs.firefox.profiles.zen.path}/zen-themes.json" = {
+        source = "${profile}/zen-themes.json";
       };
 
-      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/xulstore.json" = {
-        source = ./profiles/zen/qnu52oxt.keerad/xulstore.json;
+      "${config.programs.firefox.profilesPath}/${config.programs.firefox.profiles.zen.path}/xulstore.json" = {
+        source = "${profile}/xulstore.json";
       };
     }
     # Zen keyboard shortcuts
     // {
-      "Library/Application Support/Firefox/Profiles/${config.programs.firefox.profiles.zen.path}/zen-keyboard-shortcuts.json" = {
-        source = ./profiles/zen/qnu52oxt.keerad/zen-keyboard-shortcuts.json;
+      "${config.programs.firefox.profilesPath}/${config.programs.firefox.profiles.zen.path}/zen-keyboard-shortcuts.json" = {
+        source = "${profile}/zen-keyboard-shortcuts.json";
       };
     };
 }
