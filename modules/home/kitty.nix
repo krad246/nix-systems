@@ -99,8 +99,8 @@
         "kitty_mod+]" = "next_window";
         "kitty_mod+[" = "prev_window";
 
-        "kitty_mod+f" = "move_window_forward";
-        "kitty_mod+b" = "move_window_backward";
+        # "kitty_mod+f" = "move_window_forward";
+        # "kitty_mod+b" = "move_window_backward";
         "kitty_mod+`" = ""; # was 'move window to top'
 
         "kitty_mod+r" = ""; # was 'window resize'
@@ -135,7 +135,8 @@
 
         "kitty_mod+0" = "";
 
-        "kitty_mod+f7" = "focus_visible_window";
+        # "kitty_mod+f7" = "focus_visible_window";
+        "kitty_mod+f" = "focus_visible_window";
         "kitty_mod+f8" = "";
       }
       // {
@@ -157,10 +158,10 @@
         "shift+cmd+w" = "close_os_window";
 
         "kitty_mod+." = "";
-        "ctrl+alt+f" = "move_tab_forward";
+        # "ctrl+alt+f" = "move_tab_forward";
 
         "kitty_mod+," = "";
-        "ctrl+alt+b" = "move_tab_backward";
+        # "ctrl+alt+b" = "move_tab_backward";
 
         "kitty_mod+alt+t" = "set_tab_title";
         "shift+cmd+i" = "set_tab_title";
