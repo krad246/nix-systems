@@ -18,13 +18,13 @@
     };
     settings = {
       enabled_layouts = lib.strings.concatStringsSep "," [
+        "horizontal"
         "vertical"
-        # "fat"
         "grid"
-        # "horizontal"
         # "splits"
         "stack"
-        # "tall"
+        "tall"
+        "fat"
       ];
     };
     keybindings =
@@ -92,6 +92,10 @@
         "kitty_mod+w" = "close_window";
         "shift+cmd+d" = "close_window";
 
+        # "alt+]" = "next_window";
+        # "alt+[" = "prev_window";
+        # "kitty_mod+]" = "next_tab";
+        # "kitty_mod+[" = "prev_tab";
         "kitty_mod+]" = "next_window";
         "kitty_mod+[" = "prev_window";
 
@@ -167,13 +171,13 @@
         "kitty_mod+l" = "next_layout";
         "shift+alt+l" = "next_layout";
 
-        # "shift+alt+t" = "goto_layout tall";
-        # "shift+alt+f" = "goto_layout fat";
+        "shift+alt+t" = "goto_layout tall";
+        "shift+alt+f" = "goto_layout fat";
         "shift+alt+g" = "goto_layout grid";
         "shift+alt+s" = "goto_layout stack";
         # "shift+alt+x" = "goto_layout splits";
         "shift+alt+v" = "goto_layout vertical";
-        # "shift+alt+h" = "goto_layout horizontal";
+        "shift+alt+h" = "goto_layout horizontal";
       }
       // {
         # font sizes

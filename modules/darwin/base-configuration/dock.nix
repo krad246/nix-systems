@@ -26,7 +26,7 @@
       show-process-indicators = true;
       show-recents = false;
       showhidden = true;
-      slow-motion-allowed = true;
+      slow-motion-allowed = false;
       static-only = false;
       tilesize = 64;
 
