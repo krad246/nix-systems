@@ -156,6 +156,10 @@
       flake = false;
     };
 
+    nixGL = {
+      url = "github:nix-community/nixGL";
+    };
+
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
     zen-browser.url = "github:MarceColl/zen-browser-flake";
     nixpkgs-mozilla.url = "github:mozilla/nixpkgs-mozilla";
