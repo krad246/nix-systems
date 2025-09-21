@@ -70,7 +70,6 @@
           "C-S" = ":wa";
 
           "C-r" = ":rl";
-          "C-R" = ":rl";
 
           "C-w" = ":bc";
           "C-q" = ":q";
@@ -82,17 +81,20 @@
           ];
 
           "C-p" = "file_picker";
+          "C-P" = "command_palette";
 
           "C-]" = "goto_next_buffer";
           "C-[" = "goto_previous_buffer";
 
           "C-c" = "no_op";
-          "C-/" = "toggle_block_comments";
+          "C-/" = "toggle_comments";
 
-          # "A-e" = "no_op";
-          # "A-b" = "no_op";
+          "C-F" = "global_search";
 
-          # # uppercase / lowercase converters
+          "A-e" = "no_op";
+          "A-b" = "no_op";
+
+          # uppercase / lowercase converters
           # "`" = "no_op";
           # "A-`" = "no_op";
         };
@@ -119,6 +121,7 @@
             # C = "no_op";
             # "A-C" = "no_op";
             # ";" = "no_op";
+            # "," = "no_op";
 
             # selection splitting & merging
             S = "no_op";
@@ -129,21 +132,105 @@
             # multi-cursor direction
             # "A-;" = "no_op";
             # "A-:" = "no_op";
+
+            space = {
+              # file picker
+              f = "no_op";
+              F = "no_op";
+
+              # changed file picker
+              g = "no_op";
+
+              # buffer picker
+              b = "no_op";
+
+              # jumplist picker
+              j = "no_op";
+
+              # symbol picker
+              # s = "no_op";
+              # S = "no_op";
+
+              # last picker
+              "'" = "no_op";
+
+              # code actions
+              # a = "no_op";
+
+              # diagnostics view
+              # d = "no_op";
+              # D = "no_op";
+
+              # experimental debugging
+              G = "no_op";
+
+              # window management
+              # w = "no_op";
+
+              # yanking
+              y = "no_op";
+              Y = "no_op";
+
+              # pasting
+              p = "no_op";
+              P = "no_op";
+
+              # 'replace selections by clipboard contents'
+              R = "no_op";
+
+              # 'show documentation for item under cursor'
+              k = "no_op";
+
+              # symbol renaming
+              r = "no_op";
+              h = "no_op";
+
+              # Comments
+              c = "no_op";
+              C = "no_op";
+              "A-c" = "no_op";
+
+              # view management
+              w = "no_op";
+            };
+
+            "C-v" = {
+              "h" = "jump_view_left";
+              "C-h" = "jump_view_left";
+              "j" = "jump_view_down";
+              "C-j" = "jump_view_down";
+              "k" = "jump_view_up";
+              "C-k" = "jump_view_up";
+              "l" = "jump_view_right";
+              "C-l" = "jump_view_right";
+
+              "H" = "swap_view_left";
+              "C-H" = "swap_view_left";
+              "J" = "swap_view_down";
+              "C-J" = "swap_view_down";
+              "K" = "swap_view_up";
+              "C-K" = "swap_view_up";
+              "L" = "swap_view_right";
+              "C-L" = "swap_view_right";
+
+              "t" = "transpose_view";
+              "C-t" = "transpose_view";
+
+              "r" = "vsplit_new";
+              "C-r" = "vsplit_new";
+              "b" = "hsplit_new";
+              "C-b" = "hsplit_new";
+
+              "o" = "wonly";
+              "C-o" = "wonly";
+              "q" = "wclose";
+              "C-q" = "wclose";
+            };
           };
       in {
         normal =
           noedit
           // {
-            # space = {
-            #   c = "no_op";
-            #   C = "no_op";
-            #   "A-c" = "no_op";
-            #   p = "no_op";
-            #   P = "no_op";
-            #   G = "no_op";
-            # };
-
-            # "C-P" = "command_palette";
           };
 
         select =
