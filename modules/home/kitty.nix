@@ -18,13 +18,13 @@
     };
     settings = {
       enabled_layouts = lib.strings.concatStringsSep "," [
-        "horizontal"
         "vertical"
-        "grid"
+        "horizontal"
         # "splits"
         "stack"
-        "tall"
+        "grid"
         "fat"
+        "tall"
       ];
     };
     keybindings =
@@ -70,10 +70,7 @@
         "cmd+end" = "scroll_end";
 
         "kitty_mod+z" = "scroll_to_prompt -1";
-        "kitty_mod+u" = "scroll_to_prompt -1";
-
         "kitty_mod+x" = "scroll_to_prompt 1";
-        "kitty_mod+d" = "scroll_to_prompt 1";
 
         "kitty_mod+h" = "show_scrollback"; # was 'show scrollback'
         "kitty_mod+g" = "show_last_command_output"; # was 'show last command output'
@@ -84,27 +81,18 @@
         "kitty_mod+enter" = "launch --cwd=current";
         "cmd+enter" = "launch --cwd=current";
 
-        # "ctrl+alt+enter" = "launch --cwd=current";
-
         "kitty_mod+n" = "new_os_window";
         "cmd+n" = "new_os_window";
 
         "kitty_mod+w" = "close_window";
         "shift+cmd+d" = "close_window";
 
-        # "alt+]" = "next_window";
-        # "alt+[" = "prev_window";
-        # "kitty_mod+]" = "next_tab";
-        # "kitty_mod+[" = "prev_tab";
         "kitty_mod+]" = "next_window";
         "kitty_mod+[" = "prev_window";
 
+        "kitty_mod+`" = ""; # was 'move window to top'
         "kitty_mod+f" = "";
         "kitty_mod+b" = "";
-        "kitty_mod+`" = ""; # was 'move window to top'
-
-        "kitty_mod+r" = ""; # was 'window resize'
-        "cmd+r" = "";
 
         "kitty_mod+1" = "";
         "cmd+1" = "";
@@ -136,7 +124,7 @@
         "kitty_mod+0" = "";
 
         "kitty_mod+f7" = "focus_visible_window";
-        "kitty_mod+f8" = "";
+        "kitty_mod+f8" = "swap_with_window";
       }
       // {
         # tab management
@@ -157,10 +145,10 @@
         "shift+cmd+w" = "close_os_window";
 
         "kitty_mod+." = "";
-        # "ctrl+alt+f" = "move_tab_forward";
+        "ctrl+alt+f" = "move_tab_forward";
 
         "kitty_mod+," = "";
-        # "ctrl+alt+b" = "move_tab_backward";
+        "ctrl+alt+b" = "move_tab_backward";
 
         "kitty_mod+alt+t" = "set_tab_title";
         "shift+cmd+i" = "set_tab_title";
@@ -198,20 +186,8 @@
         "cmd+0" = "change_font_size all 0";
       }
       // {
+        # TODO:
         # visible text manipulation
-
-        "kitty_mod+e" = "open_url_with_hints";
-
-        "kitty_mod+p>f" = "kitten hints --type path --program -";
-        "kitty_mod+p>shift+f" = "";
-
-        "kitty_mod+p>l" = "kitten hints --type line --program -";
-        "kitty_mod+p>w" = "kitten hints --type word --program -";
-        "kitty_mod+p>h" = "kitten hints --type hash --program -";
-
-        "kitty_mod+p>n" = "";
-
-        "kitty_mod+p>y" = "";
       }
       // {
         # miscellaneous
@@ -225,7 +201,7 @@
 
         "opt+cmd+s" = "";
 
-        # "kitty_mod+u" = "";
+        "kitty_mod+u" = "";
         "ctrl+cmd+space" = "";
 
         "kitty_mod+f2" = "";
