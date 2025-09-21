@@ -99,8 +99,8 @@
         "kitty_mod+]" = "next_window";
         "kitty_mod+[" = "prev_window";
 
-        # "kitty_mod+f" = "move_window_forward";
-        # "kitty_mod+b" = "move_window_backward";
+        "kitty_mod+f" = "";
+        "kitty_mod+b" = "";
         "kitty_mod+`" = ""; # was 'move window to top'
 
         "kitty_mod+r" = ""; # was 'window resize'
@@ -135,8 +135,7 @@
 
         "kitty_mod+0" = "";
 
-        # "kitty_mod+f7" = "focus_visible_window";
-        "kitty_mod+f" = "focus_visible_window";
+        "kitty_mod+f7" = "focus_visible_window";
         "kitty_mod+f8" = "";
       }
       // {
