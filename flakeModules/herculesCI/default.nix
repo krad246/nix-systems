@@ -1,3 +1,3 @@
-{
-  imports = [./flake-module.nix];
+args @ {importApply, ...}: {
+  flakeModule = importApply ./flake-module.nix args;
 }

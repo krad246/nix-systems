@@ -1,5 +1,5 @@
 # outer / 'flake' scope
-{
+_: {
   perSystem = ctx @ {
     config,
     lib,
