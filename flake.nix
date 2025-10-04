@@ -184,7 +184,6 @@
       };
     }
     ({
-      inputs,
       self,
       lib,
       ...
@@ -210,10 +209,12 @@
       # the rest of our options perSystem, etc. are set through the flakeModules.
       # keeps code localized per directory
       imports =
-        (with inputs; [
-          flake-parts.flakeModules.modules
+        [
           flake-parts.flakeModules.flakeModules
-        ])
+          flake-parts.flakeModules.modules
+          flake-parts.flakeModules.easyOverlay
+          flake-parts.flakeModules.partitions
+        ]
         ++ [
           topLevel
         ];
