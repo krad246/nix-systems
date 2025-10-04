@@ -183,23 +183,75 @@
         inherit lib;
       };
     }
-    # Entrypoint
-    (let
-      # pull the flake module into this context
-      # this encompasses passing through a default.nix, capturing
-      # calling context, and then attaching it to a flake-module.nix that
-      # provides the actual implementation; it provides a callable through the flakeModule attribute
-      entrypoint = ./flakeModules;
-    in {
-      # Source files and other callables pulled in here are combined into this 'layer'.
-      # flake-parts specifies that flake-level functors and other reusable module logic
-      # are captured in flakeModules.
-      imports = [
-        entrypoint
-      ];
+    ({
+      inputs,
+      self,
+      lib,
+      ...
+    }: let
+      apps = ./flakeModules/apps;
+      checks = ./flakeModules/checks;
+      devShell = ./flakeModules/devShell;
+      ezConfigs = ./flakeModules/ezConfigs; # ties system and home configurations together
+      herculesCI = ./flakeModules/herculesCI;
+      packages = ./flakeModules/packages;
 
-      # export lib from above
-      flake = {inherit lib;};
+      topLevel = {
+        imports = [
+          apps
+          checks
+          devShell
+          ezConfigs
+          herculesCI
+          packages
+        ];
+      };
+    in {
+      # the rest of our options perSystem, etc. are set through the flakeModules.
+      # keeps code localized per directory
+      imports =
+        (with inputs; [
+          flake-parts.flakeModules.modules
+          flake-parts.flakeModules.flakeModules
+        ])
+        ++ [
+          topLevel
+        ];
+
+      flake = rec {
+        inherit lib;
+
+        # use these in building other flakes
+        flakeModules = {
+          default = topLevel;
+          inherit topLevel;
+
+          inherit apps;
+          inherit checks;
+          inherit devShell;
+          inherit ezConfigs;
+          inherit herculesCI;
+          inherit packages;
+        };
+
+        # use these for the options namespaces of system / home configurations
+        modules = {
+          flake = flakeModules; # alias output name
+
+          # ezConfigs does the heavy lifting of figuring these out for us
+
+          nixos = self.nixosModules;
+          darwin = self.darwinModules;
+          home = self.homeModules;
+
+          # can be used in all of the above contexts
+          generic = let
+            inherit (lib) krad246;
+            paths = krad246.fileset.filterExt "nix" ./modules/generic;
+          in
+            krad246.attrsets.genAttrs' paths (path: krad246.attrsets.stemValuePair path (import path));
+        };
+      };
 
       systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
     });
