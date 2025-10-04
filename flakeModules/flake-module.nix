@@ -1,15 +1,15 @@
-args @ {
+{
   inputs,
   self,
   lib,
   ...
 }: let
-  apps = import ./apps args;
-  checks = import ./checks args;
-  devShell = import ./devShell args;
-  ezConfigs = import ./ezConfigs args; # ties system and home configurations together
-  herculesCI = import ./herculesCI args;
-  packages = import ./packages args;
+  apps = ./apps;
+  checks = ./checks;
+  devShell = ./devShell;
+  ezConfigs = ./ezConfigs; # ties system and home configurations together
+  herculesCI = ./herculesCI;
+  packages = ./packages;
 in {
   # the rest of our options perSystem, etc. are set through the flakeModules.
   # keeps code localized per directory
@@ -19,12 +19,12 @@ in {
       flake-parts.flakeModules.flakeModules
     ])
     ++ [
-      apps.flakeModule
-      checks.flakeModule
-      devShell.flakeModule
-      ezConfigs.flakeModule
-      herculesCI.flakeModule
-      packages.flakeModule
+      apps
+      checks
+      devShell
+      ezConfigs
+      herculesCI
+      packages
     ];
 
   flake = rec {
@@ -32,12 +32,12 @@ in {
     flakeModules = {
       default = ./.;
 
-      apps = apps.flakeModule;
-      checks = checks.flakeModules;
-      devShells = devShell.flakeModule;
-      ezConfigs = ezConfigs.flakeModule;
-      herculesCI = herculesCI.flakeModule;
-      packages = packages.flakeModule;
+      inherit apps;
+      inherit checks;
+      inherit devShell;
+      inherit ezConfigs;
+      inherit herculesCI;
+      inherit packages;
     };
 
     # use these for the options namespaces of system / home configurations

@@ -169,11 +169,7 @@
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
   };
 
-  outputs = inputs @ {
-    self,
-    flake-parts,
-    ...
-  }: let
+  outputs = inputs @ {flake-parts, ...}: let
     lib = inputs.nixpkgs.lib.extend (_self: _super:
       import ./lib {
         lib = _super;
@@ -188,31 +184,18 @@
       };
     }
     # Entrypoint
-    ({
-      getSystem,
-      moduleWithSystem,
-      withSystem,
-      flake-parts-lib,
-      ...
-    }: let
-      args = {
-        inherit getSystem moduleWithSystem withSystem;
-        inherit (flake-parts-lib) importApply;
-        inherit inputs self;
-        inherit lib;
-      };
-
+    (let
       # pull the flake module into this context
       # this encompasses passing through a default.nix, capturing
       # calling context, and then attaching it to a flake-module.nix that
       # provides the actual implementation; it provides a callable through the flakeModule attribute
-      entrypoint = import ./flakeModules args;
+      entrypoint = ./flakeModules;
     in {
       # Source files and other callables pulled in here are combined into this 'layer'.
       # flake-parts specifies that flake-level functors and other reusable module logic
       # are captured in flakeModules.
       imports = [
-        entrypoint.flakeModule
+        entrypoint
       ];
 
       # export lib from above
