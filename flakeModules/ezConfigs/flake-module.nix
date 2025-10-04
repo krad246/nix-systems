@@ -1,13 +1,16 @@
+# importApply context
 {
+  importApply,
   getSystem,
   moduleWithSystem,
   withSystem,
   inputs,
   self,
   lib,
-  config,
   ...
-}: {
+}:
+# module context as seen by the flake
+{config, ...}: {
   imports = [inputs.ez-configs.flakeModule];
 
   # set ehllie/ez-configs modules options
@@ -17,6 +20,7 @@
   in {
     root = self;
     globalArgs = {
+      inherit importApply;
       inherit getSystem moduleWithSystem withSystem;
       inherit inputs self;
       inherit (lib) krad246;
