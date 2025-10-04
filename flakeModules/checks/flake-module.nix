@@ -1,4 +1,4 @@
-_: {
+{
   perSystem = {config, ...}: {
     treefmt = {
       inherit (config.flake-root) projectRootFile;

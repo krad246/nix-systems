@@ -1,10 +1,9 @@
-# outer / 'flake' scope
-args @ {
+{
   inputs,
   self,
   ...
 }: let
-  justfile = import ./just-flake args;
+  justfile = ./just-flake;
 in {
   imports =
     (with inputs; [
@@ -14,12 +13,12 @@ in {
       agenix-rekey.flakeModule
       agenix-shell.flakeModules.default
     ])
-    ++ [justfile.flakeModule];
+    ++ [justfile];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
     flakeModules = {
-      justfile = justfile.flakeModule;
+      inherit justfile;
     };
 
     modules.flake = flakeModules;

@@ -1,4 +1,4 @@
-forwarded @ {
+{
   inputs,
   self,
   lib,
@@ -6,22 +6,22 @@ forwarded @ {
 }: let
   # Sets up container image packages, custom devShell derivation within the container
   # VSCode *is* supported!
-  containers = import ./containers forwarded;
-  nixos-generators = import ./nixos-generators forwarded;
-  disko-config = import ./disko forwarded;
+  containers = ./containers;
+  nixos-generators = ./nixos-generators;
+  disko-config = ./disko;
 in {
   imports = [
-    containers.flakeModule
-    disko-config.flakeModule
-    nixos-generators.flakeModule
+    containers
+    disko-config
+    nixos-generators
   ];
 
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
     flakeModules = {
-      containers = containers.flakeModule;
-      nixos-generators = nixos-generators.flakeModule;
-      disko-config = disko-config.flakeModule;
+      inherit containers;
+      inherit disko-config;
+      inherit nixos-generators;
     };
 
     modules.flake = flakeModules;
