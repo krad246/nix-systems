@@ -1,6 +1,7 @@
 # outer / 'flake' scope
 {
   perSystem = {
+    self',
     config,
     lib,
     pkgs,
@@ -15,6 +16,30 @@
         type = "app";
         program = lib.meta.getExe runner;
         meta.description = "Run the devShell bootstrap script.";
+      };
+
+      fortress-disko-vm = let
+        vm = self'.packages.fortress-disko-vm;
+      in {
+        type = "app";
+        program = "${vm}/disko-vm";
+        meta.description = "Run a disko-images VM based on the fortress configuration.";
+      };
+
+      fortress-vm = let
+        vm = self'.packages.fortress-vm;
+      in {
+        type = "app";
+        program = "${vm}/run-fortress-vm";
+        meta.description = "Run a VM based on the fortress configuration.";
+      };
+
+      fortress-vm-bootloader = let
+        vm = self'.packages.fortress-vm-bootloader;
+      in {
+        type = "app";
+        program = "${vm}/run-fortress-vm";
+        meta.description = "Run a VM based on the fortress configuration, with bootloader.";
       };
     };
   };
