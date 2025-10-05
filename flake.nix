@@ -195,7 +195,7 @@
       herculesCI = ./flakeModules/herculesCI;
       packages = ./flakeModules/packages;
 
-      topLevel = {
+      toplevel = {
         imports = [
           apps
           checks
@@ -216,7 +216,7 @@
           flake-parts.flakeModules.partitions
         ]
         ++ [
-          topLevel
+          toplevel
         ];
 
       flake = rec {
@@ -224,8 +224,7 @@
 
         # use these in building other flakes
         flakeModules = {
-          default = topLevel;
-          inherit topLevel;
+          default = toplevel;
 
           inherit apps;
           inherit checks;
