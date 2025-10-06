@@ -1,6 +1,6 @@
 let
   mkConfig = extraConfig: let
-    module = {...}: rec {
+    module = {
       imports = [extraConfig];
 
       disko = {
@@ -17,7 +17,13 @@ let
 
   mkQemuConfig = extraConfig: let
     module = {modulesPath, ...}: {
-      imports = [(modulesPath + "/virtualisation/qemu-vm.nix")] ++ [(mkConfig extraConfig)];
+      imports =
+        [
+          (modulesPath + "/virtualisation/qemu-vm.nix")
+        ]
+        ++ [
+          (mkConfig extraConfig)
+        ];
 
       virtualisation = {
         cores = 6;
