@@ -193,6 +193,7 @@
       devShell = ./flakeModules/devShell;
       ezConfigs = ./flakeModules/ezConfigs; # ties system and home configurations together
       herculesCI = ./flakeModules/herculesCI;
+      legacyPackages = ./flakeModules/legacyPackages;
       packages = ./flakeModules/packages;
 
       toplevel = {
@@ -202,6 +203,7 @@
           devShell
           ezConfigs
           herculesCI
+          legacyPackages
           packages
         ];
       };
@@ -231,6 +233,7 @@
           inherit devShell;
           inherit ezConfigs;
           inherit herculesCI;
+          inherit legacyPackages;
           inherit packages;
         };
 
