@@ -1,5 +1,4 @@
 {
-  withSystem,
   config,
   lib,
   pkgs,
@@ -13,10 +12,7 @@
   keybindings = stripComments ./keybindings.json;
   settings = stripComments ./settings.json;
 in {
-  home.packages = with pkgs;
-    [nil nixd]
-    ++ (withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts.paths));
-
+  home.packages = with pkgs; ([nil nixd] ++ krad246.term-fonts.paths);
   programs.vscode = {
     enable = true;
 
@@ -24,12 +20,7 @@ in {
       if pkgs.stdenv.isLinux
       then
         pkgs.vscode.fhsWithPackages (ps:
-          withSystem ps.stdenv.system ({
-            self',
-            pkgs,
-            ...
-          }:
-            self'.packages.term-fonts.paths ++ [pkgs.nil pkgs.nixd]))
+          with ps; ([nil nixd] ++ krad246.term-fonts.paths))
       else pkgs.vscode;
 
     profiles.default = {

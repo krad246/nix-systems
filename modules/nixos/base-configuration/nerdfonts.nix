@@ -1,12 +1,7 @@
-{
-  withSystem,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   fonts = {
     enableDefaultPackages = true;
-    packages =
-      withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts.paths);
+    packages = pkgs.krad246.term-fonts.paths;
     fontDir = {
       enable = true;
     };
