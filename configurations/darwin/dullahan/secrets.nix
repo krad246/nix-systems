@@ -1,9 +1,9 @@
 {
-  specialArgs,
   config,
+  lib,
   ...
 }: let
-  inherit (specialArgs) krad246;
+  inherit (lib) krad246;
 in {
   age.secrets =
     (let

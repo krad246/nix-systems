@@ -19,7 +19,6 @@
     globalArgs = {
       inherit getSystem moduleWithSystem withSystem;
       inherit inputs self;
-      inherit (lib) krad246;
     };
 
     nixos = {
