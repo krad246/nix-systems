@@ -1,5 +1,4 @@
 {
-  withSystem,
   inputs,
   self,
   config,
@@ -35,7 +34,7 @@
       unfree
     ]);
 
-  fonts.packages = withSystem pkgs.stdenv.system ({self', ...}: self'.packages.term-fonts.paths);
+  fonts.packages = pkgs.krad246.term-fonts.paths;
 
   system.defaults = {
     NSGlobalDomain = {

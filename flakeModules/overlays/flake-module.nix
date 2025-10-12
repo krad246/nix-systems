@@ -4,11 +4,15 @@
     inputs.flake-parts.flakeModules.easyOverlay
   ];
 
-  perSystem = {pkgs, ...}: {
+  perSystem = {
+    config,
+    pkgs,
+    ...
+  }: {
     overlayAttrs = {
-      krad246 =
-        pkgs.lib.customisation.makeScope pkgs.newScope (_: {
-        });
+      krad246 = pkgs.lib.customisation.makeScope pkgs.newScope (_: {
+        inherit (config.packages) term-fonts;
+      });
     };
   };
 }
