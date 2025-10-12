@@ -194,6 +194,7 @@
       ezConfigs = ./flakeModules/ezConfigs; # ties system and home configurations together
       herculesCI = ./flakeModules/herculesCI;
       legacyPackages = ./flakeModules/legacyPackages;
+      overlays = ./flakeModules/overlays;
       packages = ./flakeModules/packages;
 
       toplevel = {
@@ -204,6 +205,7 @@
           ezConfigs
           herculesCI
           legacyPackages
+          overlays
           packages
         ];
       };
@@ -214,11 +216,12 @@
         [
           flake-parts.flakeModules.flakeModules
           flake-parts.flakeModules.modules
-          flake-parts.flakeModules.easyOverlay
-          flake-parts.flakeModules.partitions
         ]
         ++ [
           toplevel
+        ]
+        ++ [
+          flake-parts.flakeModules.partitions
         ];
 
       flake = rec {
@@ -234,6 +237,7 @@
           inherit ezConfigs;
           inherit herculesCI;
           inherit legacyPackages;
+          inherit overlays;
           inherit packages;
         };
 
