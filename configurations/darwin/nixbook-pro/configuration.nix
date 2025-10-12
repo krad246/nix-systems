@@ -1,6 +1,5 @@
 {
   self,
-  specialArgs,
   config,
   lib,
   ...
@@ -14,7 +13,7 @@
 
   # Parse the secrets directory
   age.secrets = let
-    inherit (specialArgs) krad246;
+    inherit (lib) krad246;
     paths = krad246.fileset.filterExt "age" ./secrets;
   in
     krad246.attrsets.genAttrs' paths (path:

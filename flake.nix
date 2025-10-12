@@ -169,25 +169,13 @@
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
   };
 
-  outputs = inputs @ {flake-parts, ...}: let
-    lib = inputs.nixpkgs.lib.extend (_self: _super:
-      import ./lib {
-        lib = _super;
-      });
-  in
+  outputs = inputs @ {flake-parts, ...}:
     flake-parts.lib.mkFlake
     # Environment
     {
       inherit inputs;
-      specialArgs = {
-        inherit lib;
-      };
     }
-    ({
-      self,
-      lib,
-      ...
-    }: let
+    ({self, ...}: let
       apps = ./flakeModules/apps;
       checks = ./flakeModules/checks;
       devShell = ./flakeModules/devShell;
@@ -225,7 +213,10 @@
         ];
 
       flake = rec {
-        inherit lib;
+        lib = inputs.nixpkgs.lib.extend (_self: _super:
+          import ./lib {
+            lib = _super;
+          });
 
         # use these in building other flakes
         flakeModules = {
