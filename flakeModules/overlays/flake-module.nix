@@ -8,6 +8,12 @@
     inputs.flake-parts.flakeModules.easyOverlay
   ];
 
+  flake = rec {
+    overlays.lib = import ./lib;
+
+    lib = inputs.nixpkgs.lib.extend overlays.lib;
+  };
+
   perSystem = {
     config,
     pkgs,
