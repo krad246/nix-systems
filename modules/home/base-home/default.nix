@@ -28,6 +28,7 @@ in {
     ]
     ++ [self.homeModules.helix]
     ++ (with self.modules.generic; [
+      overlays
       unfree
     ]);
 

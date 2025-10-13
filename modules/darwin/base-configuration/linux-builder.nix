@@ -5,8 +5,9 @@ global @ {
   lib,
   ...
 }: let
-  cfg = config.krad246.darwin.virtualisation.linux-builder;
   inherit (lib) options types;
+
+  cfg = config.krad246.darwin.virtualisation.linux-builder;
 in {
   options = {
     krad246.darwin.virtualisation.linux-builder = {

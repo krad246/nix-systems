@@ -20,6 +20,7 @@
       flake-registry
       lorri
       nix-core
+      overlays
       unfree
     ]);
 }
