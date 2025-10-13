@@ -1,11 +1,8 @@
-{withSystem, ...}: let
-  entrypoint = {system, ...}: {
-    imports = [
-      ./configuration.nix
-      ./remotes.nix
-    ];
+{
+  imports = [
+    ./configuration.nix
+    ./remotes.nix
+  ];
 
-    nixpkgs.system = system;
-  };
-in
-  withSystem "aarch64-darwin" entrypoint
+  nixpkgs.system = "aarch64-darwin";
+}
