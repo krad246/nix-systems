@@ -1,10 +1,4 @@
-{
-  self,
-  config,
-  lib,
-  pkgs,
-  ...
-}: {
+{self, ...}: {
   imports =
     [
       ./agenix.nix
@@ -19,6 +13,9 @@
       ./linux-builder.nix
       ./mac-app-util.nix
       ./menubar.nix
+      ./misc-prefs.nix
+      ./nix-daemon.nix
+      ./packages.nix
       ./pointer.nix
       ./single-user.nix
       ./spotlight.nix
@@ -34,47 +31,5 @@
       unfree
     ]);
 
-  fonts.packages = pkgs.krad246.term-fonts.paths;
-
-  system.defaults = {
-    NSGlobalDomain = {
-      NSDisableAutomaticTermination = false;
-      NSDocumentSaveNewDocumentsToCloud = true;
-
-      "com.apple.sound.beep.volume" = 0.5;
-      "com.apple.springing.enabled" = true;
-    };
-  };
-
-  networking = {
-    localHostName = config.networking.hostName;
-    computerName = config.networking.hostName;
-  };
-
-  nix = {
-    daemonIOLowPriority = lib.modules.mkDefault true;
-    daemonProcessType = lib.modules.mkDefault "Adaptive";
-
-    settings = {
-      auto-optimise-store = false;
-      extra-sandbox-paths = ["/nix/store"];
-      auto-allocate-uids = false;
-    };
-  };
-
   system.stateVersion = 5;
-
-  homebrew = {
-    brews = ["bash" "zsh"];
-  };
-
-  environment = {
-    shells = [
-      "${config.homebrew.brewPrefix}/bash"
-      "${config.homebrew.brewPrefix}/zsh"
-    ];
-
-    systemPackages = with pkgs; ([m-cli] ++ [coreutils just tldr safe-rm] ++ [duf dust]);
-    variables.NIX_REMOTE = "daemon";
-  };
 }
