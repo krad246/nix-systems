@@ -1,5 +1,4 @@
 {
-  inputs,
   self,
   config,
   lib,
@@ -31,6 +30,7 @@
       flake-registry
       lorri
       nix-core
+      overlays
       unfree
     ]);
 
@@ -77,8 +77,4 @@
     systemPackages = with pkgs; ([m-cli] ++ [coreutils just tldr safe-rm] ++ [duf dust]);
     variables.NIX_REMOTE = "daemon";
   };
-
-  nixpkgs.overlays = [
-    inputs.nixpkgs-firefox-darwin.overlay
-  ];
 }

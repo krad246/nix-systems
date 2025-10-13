@@ -20,7 +20,7 @@
     ...
   }: {
     overlayAttrs = {
-      inherit (self) lib;
+      lib = pkgs.lib.extend self.overlays.lib;
       krad246 = pkgs.lib.customisation.makeScope pkgs.newScope (_: {
         inherit (config.packages) term-fonts;
       });

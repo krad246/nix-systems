@@ -1,8 +1,9 @@
 {
   config,
-  lib,
+  pkgs,
   ...
 }: let
+  inherit (pkgs) lib;
   inherit (lib) krad246;
 in {
   age.secrets =
