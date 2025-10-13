@@ -1,8 +1,7 @@
 {
-  withSystem,
   config,
-  pkgs,
   lib,
+  pkgs,
   ...
 }: let
   profilesRoot = ".zen";
@@ -27,13 +26,12 @@ in {
 
       extensions = {
         force = true;
-        packages = withSystem pkgs.stdenv.system ({inputs', ...}:
-          with inputs'.nur.legacyPackages.repos; [
-            rycee.firefox-addons.bitwarden
-            rycee.firefox-addons.ghostery
-            rycee.firefox-addons.multi-account-containers
-            rycee.firefox-addons.vimium
-          ]);
+        packages = with pkgs.krad246.firefox-addons; [
+          bitwarden
+          ghostery
+          multi-account-containers
+          vimium
+        ];
 
         settings = {};
       };
