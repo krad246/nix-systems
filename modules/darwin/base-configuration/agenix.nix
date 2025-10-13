@@ -1,5 +1,4 @@
 {
-  withSystem,
   inputs,
   pkgs,
   ...
@@ -9,7 +8,6 @@ in {
   imports = [agenix.darwinModules.age];
 
   environment.systemPackages = [
-    (withSystem pkgs.stdenv.system ({inputs', ...}:
-        inputs'.agenix.packages.default))
+    pkgs.krad246.agenix
   ];
 }

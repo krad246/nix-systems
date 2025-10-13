@@ -1,10 +1,9 @@
 {
-  withSystem,
   lib,
   pkgs,
   ...
 }: let
-  nixvim = withSystem pkgs.stdenv.system ({inputs', ...}: inputs'.nixvim-config.packages.default);
+  inherit (pkgs.krad246) nixvim;
   inherit (lib) meta;
 in {
   home = {

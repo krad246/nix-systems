@@ -1,11 +1,7 @@
-{
-  withSystem,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   programs.rbw = {
     enable = true;
-    package = withSystem pkgs.stdenv.system (ctx: ctx.pkgs.rbw);
+    package = pkgs.rbw;
     settings = {
       email = "krad246@gmail.com";
       pinentry =
