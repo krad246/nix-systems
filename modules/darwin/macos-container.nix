@@ -1,12 +1,5 @@
-{
-  withSystem,
-  pkgs,
-  ...
-}: let
-  container =
-    withSystem pkgs.stdenv.system ({inputs', ...}: inputs'.nixos-unstable.legacyPackages.container);
-in {
+{pkgs, ...}: {
   home.packages = [
-    container
+    pkgs.unstable.container
   ];
 }
