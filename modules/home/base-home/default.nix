@@ -14,19 +14,19 @@ in {
       ./bat.nix
       ./bitwarden.nix
       ./bottom.nix
-      ./coreutils.nix
       ./direnv.nix
       ./fd.nix
       ./fzf.nix
       ./git.nix
+      ./helix.nix
       ./nerdfonts.nix
+      ./packages.nix
       ./ripgrep.nix
       ./spotify-player.nix
       ./starship.nix
       ./zoxide.nix
       ./zsh.nix
     ]
-    ++ [self.homeModules.helix]
     ++ (with self.modules.generic; [
       overlays
       unfree
