@@ -13,18 +13,8 @@
       "${config.homebrew.brewPrefix}/zsh"
     ];
 
-    systemPackages = with pkgs; ([
-        m-cli
-      ]
-      ++ [
-        coreutils
-        just
-        tldr
-        safe-rm
-      ]
-      ++ [
-        duf
-        dust
-      ]);
+    systemPackages = with pkgs; [
+      m-cli
+    ];
   };
 }
