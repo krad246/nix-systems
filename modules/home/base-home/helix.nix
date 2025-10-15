@@ -34,9 +34,19 @@
 
         end-of-line-diagnostics = "hint";
 
+        # clipboard-provider = {
+        # };
+
+        # statusline = {
+        # };
+
         lsp = {
           # diplay-progress-messages = true;
           display-inlay-hints = true;
+        };
+
+        file-picker = {
+          hidden = false;
         };
 
         cursor-shape = {
@@ -46,6 +56,12 @@
 
         auto-pairs = false;
 
+        # auto-save = {
+        # };
+
+        # search = {
+        # };
+
         whitespace = {
           render = "all";
         };
@@ -54,9 +70,15 @@
           render = true;
         };
 
+        # gutters = {
+        # };
+
         soft-wrap = {
           enable = true;
         };
+
+        # smart-tab = {
+        # };
 
         inline-diagnostics = {
           cursor-line = "warning";
@@ -97,6 +119,41 @@
           # uppercase / lowercase converters
           # "`" = "no_op";
           # "A-`" = "no_op";
+
+          C-i = "no_op";
+          C-o = "no_op";
+          "C-v" = {
+            "h" = "jump_view_left";
+            "C-h" = "jump_view_left";
+            "j" = "jump_view_down";
+            "C-j" = "jump_view_down";
+            "k" = "jump_view_up";
+            "C-k" = "jump_view_up";
+            "l" = "jump_view_right";
+            "C-l" = "jump_view_right";
+
+            "H" = "swap_view_left";
+            "C-H" = "swap_view_left";
+            "J" = "swap_view_down";
+            "C-J" = "swap_view_down";
+            "K" = "swap_view_up";
+            "C-K" = "swap_view_up";
+            "L" = "swap_view_right";
+            "C-L" = "swap_view_right";
+
+            "t" = "transpose_view";
+            "C-t" = "transpose_view";
+
+            "r" = "vsplit";
+            "C-r" = "vsplit";
+            "b" = "hsplit";
+            "C-b" = "hsplit";
+
+            "o" = "wonly";
+            "C-o" = "wonly";
+            "q" = "wclose";
+            "C-q" = "wclose";
+          };
         };
 
         noedit =
@@ -192,39 +249,6 @@
 
               # view management
               w = "no_op";
-            };
-
-            "C-v" = {
-              "h" = "jump_view_left";
-              "C-h" = "jump_view_left";
-              "j" = "jump_view_down";
-              "C-j" = "jump_view_down";
-              "k" = "jump_view_up";
-              "C-k" = "jump_view_up";
-              "l" = "jump_view_right";
-              "C-l" = "jump_view_right";
-
-              "H" = "swap_view_left";
-              "C-H" = "swap_view_left";
-              "J" = "swap_view_down";
-              "C-J" = "swap_view_down";
-              "K" = "swap_view_up";
-              "C-K" = "swap_view_up";
-              "L" = "swap_view_right";
-              "C-L" = "swap_view_right";
-
-              "t" = "transpose_view";
-              "C-t" = "transpose_view";
-
-              "r" = "vsplit_new";
-              "C-r" = "vsplit_new";
-              "b" = "hsplit_new";
-              "C-b" = "hsplit_new";
-
-              "o" = "wonly";
-              "C-o" = "wonly";
-              "q" = "wclose";
-              "C-q" = "wclose";
             };
           };
       in {
