@@ -1,5 +1,4 @@
 {
-  withSystem,
   lib,
   pkgs,
   ...
@@ -43,14 +42,12 @@
 
         containersForce = true;
 
-        extensions = withSystem pkgs.stdenv.system ({inputs', ...}:
-          with inputs'.nur.legacyPackages.repos; [
-            rycee.firefox-addons.bitwarden
-            rycee.firefox-addons.ghostery
-            rycee.firefox-addons.multi-account-containers
-            rycee.firefox-addons.tab-retitle
-            rycee.firefox-addons.vimium
-          ]);
+        extensions = with pkgs.krad246.firefox-addons; [
+          bitwarden
+          ghostery
+          multi-account-containers
+          vimium
+        ];
 
         search = {
           default = "DuckDuckGo";

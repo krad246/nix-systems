@@ -1,5 +1,4 @@
 {
-  withSystem,
   self,
   pkgs,
   ...
@@ -26,7 +25,7 @@
     name = "disko-install";
 
     text = let
-      installer = withSystem pkgs.stdenv.system ({self', ...}: self'.packages.disko-install);
+      installer = pkgs.krad246.disko-install;
       bin = lib.meta.getExe installer;
     in ''
       ${krad246.cli.toGNUCommandLineShell bin {

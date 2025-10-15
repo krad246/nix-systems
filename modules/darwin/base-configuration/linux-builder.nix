@@ -1,8 +1,8 @@
-global @ {
-  withSystem,
+host @ {
   self,
   config,
   lib,
+  pkgs,
   ...
 }: let
   inherit (lib) options types;
@@ -15,7 +15,7 @@ in {
 
       maxJobs = options.mkOption {
         default = 24;
-        inherit (global.options.nix.linux-builder.maxJobs) type defaultText example description;
+        inherit (host.options.nix.linux-builder.maxJobs) type defaultText example description;
       };
 
       cores = options.mkOption {
@@ -52,12 +52,12 @@ in {
       ephemeral = options.mkEnableOption "ephemeral";
 
       extraConfig = options.mkOption {
-        inherit (global.options.nix.linux-builder.config) type default example description;
+        inherit (host.options.nix.linux-builder.config) type default example description;
       };
 
       systems = options.mkOption {
         default = ["i686-linux" "x86_64-linux" "aarch64-linux"];
-        inherit (global.options.nix.linux-builder.systems) type description defaultText;
+        inherit (host.options.nix.linux-builder.systems) type description defaultText;
       };
     };
   };
@@ -88,20 +88,23 @@ in {
             darwin-builder = {
               inherit (cfg) diskSize memorySize;
             };
-            qemu.package = withSystem "aarch64-darwin" ({pkgs, ...}:
+            qemu.package = let
+              inherit (host) pkgs;
+            in
               pkgs.qemu.overrideAttrs (
-                _finalAttrs: previousAttrs: {
-                  patches =
-                    previousAttrs.patches
-                    ++ pkgs.lib.optional pkgs.stdenv.targetPlatform.isDarwin (
-                      pkgs.fetchpatch {
-                        name = "fix-sme-darwin.patch";
-                        url = "https://github.com/utmapp/UTM/raw/acbf2ba8cd91f382a5e163c49459406af0b462b7/patches/qemu-9.1.0-utm.patch";
-                        hash = "sha256-S7DJSFD7EAzNxyQvePAo5ZZyanFrwQqQ6f2/hJkTJGA=";
-                      }
-                    );
-                }
-              ));
+                _finalAttrs: previousAttrs:
+                  builtins.trace pkgs.stdenv.targetPlatform.isDarwin {
+                    patches =
+                      previousAttrs.patches
+                      ++ pkgs.lib.optional pkgs.stdenv.targetPlatform.isDarwin (
+                        pkgs.fetchpatch {
+                          name = "fix-sme-darwin.patch";
+                          url = "https://github.com/utmapp/UTM/raw/acbf2ba8cd91f382a5e163c49459406af0b462b7/patches/qemu-9.1.0-utm.patch";
+                          hash = "sha256-S7DJSFD7EAzNxyQvePAo5ZZyanFrwQqQ6f2/hJkTJGA=";
+                        }
+                      );
+                  }
+              );
           };
 
           environment = {
