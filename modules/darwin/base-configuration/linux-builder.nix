@@ -1,25 +1,25 @@
-host @ {
+{
   self,
   config,
   lib,
+  options,
   pkgs,
   ...
 }: let
-  inherit (lib) options types;
-
+  hostPkgs = pkgs;
   cfg = config.krad246.darwin.virtualisation.linux-builder;
 in {
   options = {
     krad246.darwin.virtualisation.linux-builder = {
-      enable = (options.mkEnableOption "linux-builder") // {default = true;};
+      enable = (lib.options.mkEnableOption "linux-builder") // {default = true;};
 
-      maxJobs = options.mkOption {
+      maxJobs = lib.options.mkOption {
         default = 24;
-        inherit (host.options.nix.linux-builder.maxJobs) type defaultText example description;
+        inherit (options.nix.linux-builder.maxJobs) type defaultText example description;
       };
 
-      cores = options.mkOption {
-        type = types.ints.positive;
+      cores = lib.options.mkOption {
+        type = lib.types.ints.positive;
         default = 6;
         description = ''
           Specify the number of cores the guest is permitted to use.
@@ -28,36 +28,36 @@ in {
         '';
       };
 
-      memorySize = options.mkOption {
+      memorySize = lib.options.mkOption {
         default = 6 * 1024;
-        type = types.ints.positive;
+        type = lib.types.ints.positive;
         example = 8192;
         description = "The runner's memory in MB";
       };
 
-      diskSize = options.mkOption {
+      diskSize = lib.options.mkOption {
         default = 64 * 1024;
-        type = types.ints.positive;
+        type = lib.types.ints.positive;
         example = 30720;
         description = "The maximum disk space allocated to the runner in MB";
       };
 
-      swapSize = options.mkOption {
+      swapSize = lib.options.mkOption {
         default = 16 * 1024;
-        type = types.ints.positive;
+        type = lib.types.ints.positive;
         example = 30720;
         description = "The maximum disk space allocated to the runner's swapfile in MB";
       };
 
-      ephemeral = options.mkEnableOption "ephemeral";
+      ephemeral = lib.options.mkEnableOption "ephemeral";
 
-      extraConfig = options.mkOption {
-        inherit (host.options.nix.linux-builder.config) type default example description;
+      extraConfig = lib.options.mkOption {
+        inherit (options.nix.linux-builder.config) type default example description;
       };
 
-      systems = options.mkOption {
+      systems = lib.options.mkOption {
         default = ["i686-linux" "x86_64-linux" "aarch64-linux"];
-        inherit (host.options.nix.linux-builder.systems) type description defaultText;
+        inherit (options.nix.linux-builder.systems) type description defaultText;
       };
     };
   };
@@ -69,7 +69,8 @@ in {
         protocol = "ssh-ng";
 
         config = {pkgs, ...}: let
-          inherit (pkgs.stdenv) system;
+          innerPkgs = pkgs;
+          inherit (innerPkgs.pkgs.stdenv) system;
           inherit (config.nix) linux-builder;
         in {
           imports =
@@ -88,27 +89,25 @@ in {
             darwin-builder = {
               inherit (cfg) diskSize memorySize;
             };
-            qemu.package = let
-              inherit (host) pkgs;
-            in
-              pkgs.qemu.overrideAttrs (
-                _finalAttrs: previousAttrs:
-                  builtins.trace pkgs.stdenv.targetPlatform.isDarwin {
-                    patches =
-                      previousAttrs.patches
-                      ++ pkgs.lib.optional pkgs.stdenv.targetPlatform.isDarwin (
-                        pkgs.fetchpatch {
-                          name = "fix-sme-darwin.patch";
-                          url = "https://github.com/utmapp/UTM/raw/acbf2ba8cd91f382a5e163c49459406af0b462b7/patches/qemu-9.1.0-utm.patch";
-                          hash = "sha256-S7DJSFD7EAzNxyQvePAo5ZZyanFrwQqQ6f2/hJkTJGA=";
-                        }
-                      );
-                  }
-              );
+            qemu.package = hostPkgs.qemu.overrideAttrs (
+              _finalAttrs: previousAttrs: {
+                patches = let
+                  patch = hostPkgs.fetchpatch {
+                    name = "fix-sme-darwin.patch";
+                    url = "https://github.com/utmapp/UTM/raw/acbf2ba8cd91f382a5e163c49459406af0b462b7/patches/qemu-9.1.0-utm.patch";
+                    hash = "sha256-S7DJSFD7EAzNxyQvePAo5ZZyanFrwQqQ6f2/hJkTJGA=";
+                  };
+                in
+                  previousAttrs.patches
+                  ++ [
+                    patch
+                  ];
+              }
+            );
           };
 
           environment = {
-            systemPackages = with pkgs; [bottom];
+            systemPackages = with innerPkgs; [bottom];
             sessionVariables = {
               TERM = "xterm-256color";
             };
