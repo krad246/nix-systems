@@ -155,14 +155,11 @@
           # some basic pickers
           "C-p" = "file_picker";
           "C-P" = "command_palette";
+          "C-?" = "global_search";
           "C-F" = "global_search";
 
           # shorthand text operations I like
           "C-/" = "toggle_comments";
-          "C-a" = [
-            "select_mode"
-            "select_all"
-          ];
 
           # TODO: figure out what to do with these
           "C-c" = "no_op";
@@ -172,6 +169,11 @@
         noedit =
           base
           // {
+            # 'bracket' menus
+            # "[" = "no_op";
+            # "]" = "no_op";
+
+            # pickers
             space = {
               # file picker
               f = "no_op";
@@ -230,20 +232,25 @@
               w = "no_op";
             };
 
-            t = "no_op";
-            f = "no_op";
+            # history management
+            "A-U" = "no_op";
+            "A-u" = {
+              "A-u" = "commit_undo_checkpoint";
 
-            T = "no_op";
-            F = "no_op";
+              "A-]" = "later";
+              "A-[" = "earlier";
+            };
 
+            # shell piping
+            "|" = "shell_pipe";
+            "A-|" = "no_op";
+
+            "!" = "shell_append_output";
+            "A-!" = "shell_insert_output";
+
+            # macros
             q = "no_op";
             Q = "no_op";
-
-            "^" = "goto_first_nonwhitespace";
-            V = [
-              "select_mode"
-              "extend_to_line_bounds"
-            ];
 
             # multi-cursor creation + collapse
             C = "copy_selection_on_next_line";
@@ -257,35 +264,11 @@
             "A-minus" = "no_op";
             "A-_" = "no_op";
             ";" = "collapse_selection";
-            "(" = "rotate_selections_backward";
-            ")" = "rotate_selections_forward";
+            "(" = "no_op";
+            # "[" = "rotate_selections_backward";
+            ")" = "no_op";
+            # "]" = "rotate_selections_forward";
             "A-," = "remove_primary_selection";
-
-            # text object selectors
-
-            "A-e" = "no_op";
-            "A-b" = "no_op";
-
-            "A-I" = "no_op";
-            "S-A-down" = "no_op";
-
-            "A-a" = "no_op";
-
-            "A-left" = "no_op";
-            "A-p" = "no_op";
-            # "A-N" = "select_prev_sibling";
-
-            # "A-n" = "select_next_sibling";
-            "A-n" = "no_op";
-            "A-right" = "no_op";
-
-            "A-i" = "no_op";
-            "A-down" = "no_op";
-            "A-o" = "no_op";
-            "A-up" = "no_op";
-
-            "A-(" = "no_op";
-            "A-)" = "no_op";
 
             # multi-cursor direction
             "A-;" = "no_op";
@@ -299,27 +282,47 @@
             "K" = "no_op";
             "A-K" = "no_op";
 
+            "A-(" = "no_op";
+            "A-)" = "no_op";
+
             # uppercase / lowercase converters
             "~" = "switch_case";
             "`" = "no_op";
             "A-`" = "no_op";
 
-            # history management
-            "A-U" = "no_op";
-            "A-u" = {
-              "A-u" = "commit_undo_checkpoint";
+            # some small text operations I like
+            "^" = "goto_first_nonwhitespace";
+            V = [
+              "select_mode"
+              "extend_to_line_bounds"
+            ];
+            "C-a" = [
+              "select_mode"
+              "select_all"
+            ];
 
-              "A-]" = "later";
-              "A-[" = "earlier";
-            };
+            # text object selectors
 
-            # shell piping
+            "A-e" = "expand_selection";
+            "A-b" = "shrink_selection";
 
-            "|" = "shell_pipe";
-            "A-|" = "no_op";
+            "A-I" = "no_op";
+            "S-A-down" = "no_op";
 
-            "!" = "shell_append_output";
-            "A-!" = "shell_insert_output";
+            "A-a" = "no_op";
+
+            "A-left" = "no_op";
+            "A-p" = "no_op";
+            "A-N" = "select_prev_sibling";
+
+            "A-n" = "select_next_sibling";
+            # "A-n" = "no_op";
+            "A-right" = "no_op";
+
+            "A-i" = "no_op";
+            "A-down" = "no_op";
+            "A-o" = "no_op";
+            "A-up" = "no_op";
           };
       in {
         normal =
@@ -345,6 +348,12 @@
             "A-d" = "no_op";
             "A-del" = "no_op";
             "C-del" = "delete_word_forward";
+
+            # jumping around text
+            "C-a" = "goto_first_nonwhitespace";
+            "C-e" = "goto_line_end";
+            "C-left" = "evil_prev_word_start";
+            "C-right" = "evil_next_word_start";
           };
       };
     };

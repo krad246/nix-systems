@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   ...
@@ -23,7 +24,7 @@ in {
 
   home = {
     shellAliases = {
-      cat = "bat -pp";
+      cat = "${meta.getExe config.programs.bat.package} -pp";
       brg = meta.getExe pkgs.bat-extras.batgrep;
       man = meta.getExe pkgs.bat-extras.batman;
       bdiff = meta.getExe batdiff;

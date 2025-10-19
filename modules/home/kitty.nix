@@ -72,8 +72,8 @@
         "kitty_mod+z" = "scroll_to_prompt -1";
         "kitty_mod+x" = "scroll_to_prompt 1";
 
-        "kitty_mod+h" = "show_scrollback"; # was 'show scrollback'
-        "kitty_mod+g" = "show_last_command_output"; # was 'show last command output'
+        "kitty_mod+h" = "show_scrollback";
+        "kitty_mod+g" = "show_last_command_output";
       }
       // {
         # window management
@@ -88,7 +88,9 @@
         "shift+cmd+d" = "close_window";
 
         "kitty_mod+]" = "next_window";
+        # "shift+alt+]" = "next_window";
         "kitty_mod+[" = "prev_window";
+        # "shift+alt+[" = "prev_window";
 
         "kitty_mod+`" = ""; # was 'move window to top'
         "kitty_mod+f" = "";
@@ -157,15 +159,15 @@
         # layout management
 
         "kitty_mod+l" = "next_layout";
-        "shift+alt+l" = "next_layout";
+        # "shift+alt+l" = "next_layout";
 
-        "shift+alt+t" = "goto_layout tall";
-        "shift+alt+f" = "goto_layout fat";
-        "shift+alt+g" = "goto_layout grid";
-        "shift+alt+s" = "goto_layout stack";
+        # "shift+alt+t" = "goto_layout tall";
+        # "shift+alt+f" = "goto_layout fat";
+        # "shift+alt+g" = "goto_layout grid";
+        # "shift+alt+s" = "goto_layout stack";
         # "shift+alt+x" = "goto_layout splits";
-        "shift+alt+v" = "goto_layout vertical";
-        "shift+alt+h" = "goto_layout horizontal";
+        # "shift+alt+v" = "goto_layout vertical";
+        # "shift+alt+h" = "goto_layout horizontal";
       }
       // {
         # font sizes
