@@ -3,6 +3,7 @@
   config,
   lib,
   pkgs,
+  modulesPath,
   ...
 }: let
   inherit (lib) meta;
@@ -56,7 +57,39 @@ in {
         '';
       };
 
-    packages = with pkgs; [cachix];
+    packages = let
+      docsPath = modulesPath + "/../docs";
+
+      docs = import docsPath {
+        inherit lib pkgs;
+        inherit (config.home.version) release isReleaseBranch;
+      };
+
+      htmlOpenTool = pkgs.symlinkJoin {
+        name = "home-manager";
+        paths = [docs.manual.htmlOpenTool];
+        buildInputs = [pkgs.makeWrapper];
+        postBuild = let
+          opener = pkgs.writeShellApplication {
+            name = "zen-browser-file-open";
+            text = ''
+              set -x
+              open -a Zen -u "file://$1"
+            '';
+          };
+        in ''
+          wrapProgram $out/bin/home-manager-help --set BROWSER ${lib.meta.getExe opener}
+        '';
+      };
+    in
+      with pkgs;
+        [
+          cachix
+        ]
+        ++ (with docs.manual; [
+          html
+          htmlOpenTool
+        ]);
     preferXdgDirectories = true;
 
     shellAliases = rec {
@@ -81,7 +114,7 @@ in {
   news.display = "silent";
 
   manual = {
-    html.enable = true;
+    # html.enable = true;
     json.enable = true;
   };
 
