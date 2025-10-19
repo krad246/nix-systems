@@ -1,37 +1,32 @@
 {
-  config,
   lib,
   pkgs,
   ...
 }: let
   inherit (lib) meta;
+
+  batdiff = pkgs.bat-extras.batdiff.override {withDelta = true;};
+  batwatch = pkgs.bat-extras.batwatch.override {withEntr = true;};
 in {
   programs.bat = {
     enable = true;
     config.theme = "gruvbox-dark";
     extraPackages = with pkgs.bat-extras; [
+      batdiff
       batgrep
       batman
-      batwatch
-      batdiff
       batpipe
+      batwatch
+      prettybat
     ];
   };
 
   home = {
-    shellAliases = rec {
-      cat = meta.getExe config.programs.bat.package;
+    shellAliases = {
+      cat = "bat -pp";
       brg = meta.getExe pkgs.bat-extras.batgrep;
       man = meta.getExe pkgs.bat-extras.batman;
-
-      watch = meta.getExe (pkgs.bat-extras.batwatch.override {
-        withEntr = true;
-      });
-
-      tail = watch;
-      diff = meta.getExe (pkgs.bat-extras.batdiff.override {
-        withDelta = true;
-      });
+      bdiff = meta.getExe batdiff;
     };
 
     sessionVariables = {

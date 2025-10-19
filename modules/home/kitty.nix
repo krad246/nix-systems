@@ -236,6 +236,7 @@
     environment = {};
     extraConfig = ''
       confirm_os_window_close 0
+      macos_option_as_alt yes
     '';
   };
 }
