@@ -1,15 +1,10 @@
 {
-  config,
-  lib,
-  ...
-}: {
-  programs.ripgrep = {
-    enable = true;
-    arguments = [
-    ];
-  };
-
-  home.shellAliases = {
-    ripgrep = lib.meta.getExe config.programs.ripgrep.package;
+  programs = {
+    ripgrep = {
+      enable = true;
+    };
+    ripgrep-all = {
+      enable = true;
+    };
   };
 }
