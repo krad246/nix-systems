@@ -471,13 +471,13 @@
         };
       };
       "184" = {
-        enabled = false;
+        enabled = true;
         value = {
           type = "standard";
           parameters = [
-            53
-            23
-            1179648
+            65535
+            96
+            9175040
           ];
         };
       };
@@ -486,9 +486,9 @@
         value = {
           type = "standard";
           parameters = [
-            52
-            21
-            1179648
+            65535
+            118
+            9175040
           ];
         };
       };
@@ -522,9 +522,9 @@
         value = {
           type = "standard";
           parameters = [
-            52
-            21
-            1441792
+            65535
+            118
+            9306112
           ];
         };
       };
@@ -671,9 +671,9 @@
         value = {
           type = "standard";
           parameters = [
-            51
-            20
-            1179648
+            65535
+            99
+            9175040
           ];
         };
       };
@@ -689,13 +689,13 @@
         };
       };
       "29" = {
-        enabled = false;
+        enabled = true;
         value = {
           type = "standard";
           parameters = [
-            51
-            20
-            1441792
+            65535
+            99
+            9306112
           ];
         };
       };
