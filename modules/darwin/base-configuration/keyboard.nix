@@ -128,9 +128,9 @@
         value = {
           type = "standard";
           parameters = [
-            65535
+            52
             21
-            262144
+            1179648
           ];
         };
       };
@@ -667,7 +667,7 @@
         };
       };
       "28" = {
-        enabled = false;
+        enabled = true;
         value = {
           type = "standard";
           parameters = [
@@ -894,6 +894,63 @@
             65535
             65535
             0
+          ];
+        };
+      };
+      "122" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            53
+            23
+            1179648
+          ];
+        };
+      };
+      "123" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            54
+            22
+            1179648
+          ];
+        };
+      };
+      "124" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            55
+            26
+            1179648
+          ];
+        };
+      };
+
+      "125" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            56
+            28
+            1179648
+          ];
+        };
+      };
+
+      "126" = {
+        enabled = true;
+        value = {
+          type = "standard";
+          parameters = [
+            57
+            25
+            1179648
           ];
         };
       };
