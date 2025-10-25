@@ -1,4 +1,5 @@
 {
+  osConfig,
   self,
   config,
   lib,
@@ -6,6 +7,7 @@
   ...
 }: let
   inherit (lib) meta;
+  isSystemPkgs = lib.attrsets.attrByPath ["home-manager" "useGlobalPkgs"] false osConfig;
 in {
   imports =
     [
@@ -27,10 +29,11 @@ in {
       ./zoxide.nix
       ./zsh.nix
     ]
-    ++ (with self.modules.generic; [
-      overlays
-      unfree
-    ]);
+    ++ (with self.modules.generic;
+      lib.lists.optionals (!isSystemPkgs) [
+        overlays
+        unfree
+      ]);
 
   services.lorri.enable = pkgs.stdenv.isLinux;
 
