@@ -14,14 +14,17 @@
   };
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
+    nixpkgs-unstable.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
 
     # WSL distribution on NixOS
     nixos-wsl.url = "github:nix-community/nixos-wsl/main";
 
     # Darwin shims for Nix
-    darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.05";
+    darwin = {
+      url = "https://flakehub.com/f/nix-darwin/nix-darwin/0";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Cross-platform (Linux / MacOS) userspace package management
     home-manager.url = "github:nix-community/home-manager/release-25.05";

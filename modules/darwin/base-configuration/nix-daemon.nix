@@ -1,5 +1,13 @@
-{lib, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
+  imports = [inputs.determinate.darwinModules.default];
+
   nix = {
+    enable = false;
+
     daemonIOLowPriority = lib.modules.mkDefault true;
     daemonProcessType = lib.modules.mkDefault "Adaptive";
 
