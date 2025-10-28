@@ -15,7 +15,7 @@
       lib = import ./lib;
 
       unstable = _final: prev: {
-        unstable = import inputs.nixos-unstable {
+        unstable = import inputs.nixpkgs-unstable {
           inherit (prev) config overlays system;
         };
       };
