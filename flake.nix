@@ -14,28 +14,8 @@
   };
 
   inputs = {
-    # generic rolling release branches
-    # they're always tracking the latest release
-    nixos-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-
-    # generic stable nixpkgs also points to it but can move ahead if desired
-    nixos-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
-
-    # specifically use stable NixOS for WSL, but otherwise flexible
-    nixpkgs-wsl.url = "github:NixOS/nixpkgs/nixos-25.05";
-
-    # nixpkgs for home has to be in the same release 'family'
-    # as the system channels
-    nixpkgs-nixos.url = "github:NixOS/nixpkgs/nixos-25.05";
-    nixpkgs-darwin.url = "github:NixOS/nixpkgs/nixpkgs-25.05-darwin";
-    nixpkgs-home.url = "github:NixOS/nixpkgs/nixos-25.05";
-
-    # the flake input 'nixpkgs' is the channel we are using in our flake for the evaluation, as
-    # we've overridden the nixpkgs inputs to all of our output derivations.
-    # thus nixpkgs is approximately the same thing as nixpkgs-lib for our purpose.
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    nixpkgs-lib.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     # WSL distribution on NixOS
     nixos-wsl.url = "github:nix-community/nixos-wsl/main";
@@ -90,13 +70,12 @@
     just-flake.url = "github:juspay/just-flake";
 
     # Swiss-army-knife formatter.
-    treefmt-nix.url = "github:numtide/treefmt-nix/48961f31e992e43203afb2ea9cb1402ad392d94b";
+    treefmt-nix.url = "github:numtide/treefmt-nix";
 
     # Code cleanliness checking for developers.
     pre-commit-hooks-nix.url = "github:cachix/pre-commit-hooks.nix";
 
     # hercules CI support
-
     hercules-ci-agent.url = "github:hercules-ci/hercules-ci-agent/hercules-ci-agent-0.10.5";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
 
@@ -104,11 +83,9 @@
     mac-app-util.url = "github:hraban/mac-app-util";
 
     # AGE encrypted secrets
-    agenix.url = "github:ryantm/agenix";
-
     # Handle rekeying via Yubikey, etc.
+    agenix.url = "github:ryantm/agenix";
     agenix-rekey.url = "github:oddlama/agenix-rekey";
-
     agenix-shell.url = "github:aciceri/agenix-shell";
 
     # window manager stuff
