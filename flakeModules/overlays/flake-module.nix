@@ -37,7 +37,6 @@
           inherit (inputs'.nur.legacyPackages.repos.rycee.firefox-addons) bitwarden ghostery multi-account-containers vimium;
         };
         inherit (config) formatter;
-        nixvim = inputs'.nixvim-config.packages.default;
         inherit (config.packages) term-fonts;
       };
     };
