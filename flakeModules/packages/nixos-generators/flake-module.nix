@@ -1,16 +1,16 @@
 {
   withSystem,
   self,
+  lib,
   ...
 }: let
   mkFormat = pkgs: host: format: let
-    inherit (pkgs) lib;
     inherit (lib) modules;
     e = self.nixosConfigurations.${host}.extendModules {
       modules = [
         {
-          nixpkgs.system = pkgs.lib.modules.mkForce pkgs.stdenv.system;
-          hardware = pkgs.lib.modules.mkIf pkgs.stdenv.isx86_64 rec {
+          nixpkgs.system = modules.mkForce pkgs.stdenv.system;
+          hardware = modules.mkIf pkgs.stdenv.isx86_64 rec {
             opengl.driSupport32Bit = modules.mkForce false;
             graphics.enable32Bit = opengl.driSupport32Bit;
           };

@@ -1,11 +1,9 @@
 {
   self,
   config,
-  pkgs,
+  lib,
   ...
-}: let
-  inherit (pkgs) lib;
-in {
+}: {
   imports = with self.darwinModules; [
     apps
     base-configuration

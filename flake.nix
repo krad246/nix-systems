@@ -132,19 +132,19 @@
     in {
       # the rest of our options perSystem, etc. are set through the flakeModules.
       # keeps code localized per directory
-      imports =
+      imports = with flake-parts.flakeModules;
         [
-          flake-parts.flakeModules.flakeModules
-          flake-parts.flakeModules.modules
+          flakeModules
+          modules
+          partitions
         ]
-        ++ [
-          toplevel
-        ]
-        ++ [
-          flake-parts.flakeModules.partitions
-        ];
+        ++ [toplevel];
+
+      systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
 
       flake = rec {
+        lib = inputs.nixpkgs.lib.extend self.overlays.lib;
+
         flakeModules = {
           default = toplevel;
 
@@ -176,7 +176,5 @@
             krad246.attrsets.genAttrs' paths (path: krad246.attrsets.stemValuePair path (import path));
         };
       };
-
-      systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
     });
 }

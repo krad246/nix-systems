@@ -1,6 +1,4 @@
 {
-  getSystem,
-  moduleWithSystem,
   withSystem,
   inputs,
   self,
@@ -17,7 +15,7 @@
   in {
     root = self;
     globalArgs = {
-      inherit getSystem moduleWithSystem withSystem;
+      # inherit getSystem moduleWithSystem withSystem;
       inherit inputs self;
     };
 
@@ -53,7 +51,6 @@
         generic-linux.standalone = {
           enable = !lib.trivial.inPureEvalMode;
           pkgs = withSystem builtins.currentSystem ({
-            config,
             inputs',
             system,
             ...

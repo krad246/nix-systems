@@ -1,11 +1,11 @@
 {
   self,
+  lib,
   pkgs,
   ...
 }: let
   machine = self.nixosConfigurations.fortress;
   inherit (machine.config.system) build;
-  inherit (pkgs) lib;
   inherit (lib) krad246;
 
   dependencies =

@@ -1,16 +1,10 @@
 # outer / 'flake' scope
-{
-  inputs,
-  self,
-  ...
-}: {
+{inputs, ...}: {
   imports = [
     inputs.flake-parts.flakeModules.easyOverlay
   ];
 
-  flake = rec {
-    lib = inputs.nixpkgs.lib.extend overlays.lib;
-
+  flake = {
     overlays = {
       lib = import ./lib;
 
@@ -25,7 +19,6 @@
   perSystem = {
     inputs',
     config,
-    pkgs,
     ...
   }: {
     overlayAttrs = {
