@@ -264,9 +264,9 @@
             "A-minus" = "no_op";
             "A-_" = "no_op";
             ";" = "collapse_selection";
-            "(" = "no_op";
+            # "(" = "no_op";
             # "[" = "rotate_selections_backward";
-            ")" = "no_op";
+            # ")" = "no_op";
             # "]" = "rotate_selections_forward";
             "A-," = "remove_primary_selection";
 
