@@ -77,8 +77,9 @@
           enable = true;
         };
 
-        # smart-tab = {
-        # };
+        smart-tab = {
+          enable = false;
+        };
 
         inline-diagnostics = {
           cursor-line = "warning";
