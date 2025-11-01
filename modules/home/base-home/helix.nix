@@ -257,6 +257,7 @@
             C = "copy_selection_on_next_line";
             "A-C" = "copy_selection_on_prev_line";
             "," = "keep_primary_selection";
+            "A-," = "remove_primary_selection";
 
             # selection splitting & merging
             S = "split_selection";
@@ -265,14 +266,11 @@
             "A-minus" = "no_op";
             "A-_" = "no_op";
             ";" = "collapse_selection";
-            # "(" = "no_op";
-            # "[" = "rotate_selections_backward";
-            # ")" = "no_op";
-            # "]" = "rotate_selections_forward";
-            "A-," = "remove_primary_selection";
+            "(" = "rotate_selections_backward";
+            ")" = "rotate_selections_forward";
 
             # multi-cursor direction
-            "A-;" = "no_op";
+            "A-;" = "flip_selections";
             "A-:" = "no_op";
 
             # structural selection editing
