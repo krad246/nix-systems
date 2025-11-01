@@ -26,6 +26,7 @@ in {
       ./ripgrep.nix
       ./spotify-player.nix
       ./starship.nix
+      ./yazi.nix
       ./zoxide.nix
       ./zsh.nix
     ]
