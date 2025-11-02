@@ -300,6 +300,7 @@
               "select_mode"
               "select_all"
             ];
+            "C-n" = ":new";
 
             # text object selectors
 
@@ -365,6 +366,9 @@
         {
           name = "bash";
           language-servers = ["bash-language-server"];
+          formatter = {
+            command = lib.meta.getExe pkgs.shfmt;
+          };
         }
         {
           name = "c";

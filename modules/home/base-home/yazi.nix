@@ -37,8 +37,68 @@
         prepend_keymap = [
           {
             on = "<C-[>";
+            run = "tab_switch --relative -1";
+          }
+          {
+            on = "<C-]>";
+            run = "tab_switch --relative 1";
+          }
+          {
+            on = "{";
             run = "noop";
           }
+          {
+            on = "}";
+            run = "noop";
+          }
+          {
+            on = "<C-c>";
+            run = "noop";
+          }
+          {
+            on = "<C-w>";
+            run = "close";
+          }
+          {
+            on = "<C-n>";
+            run = "tab_create --current";
+          }
+          {
+            on = "<C-p>";
+            run = "search --via=fd";
+          }
+          {
+            on = "<C-F>";
+            run = "search --via=rg";
+          }
+          {
+            on = "<C-?>";
+            run = "search --via=rg";
+          }
+          {
+            on = "s";
+            run = "noop";
+          }
+          {
+            on = "S";
+            run = "noop";
+          }
+          # {
+          #   on = ["c" "c"];
+          #   run = "noop";
+          # }
+          # {
+          #   on = ["c" "d"];
+          #   run = "noop";
+          # }
+          # {
+          #   on = ["c" "f"];
+          #   run = "noop";
+          # }
+          # {
+          #   on = ["c" "n"];
+          #   run = "noop";
+          # }
           # {
           #   on = "<Enter>";
           #   run = "noop";
@@ -94,14 +154,6 @@
         ];
 
         append_keymap = [
-          {
-            on = "<C-[>";
-            run = "tab_switch --relative -1";
-          }
-          {
-            on = "<C-]>";
-            run = "tab_switch --relative 1";
-          }
         ];
       };
     };
