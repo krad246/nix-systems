@@ -1,4 +1,10 @@
-{config, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: let
+  inherit (pkgs) lib;
+in {
   programs = {
     git = {
       enable = true;
@@ -24,13 +30,17 @@
         };
 
         diff = {
+          colorMoved = "default";
           renames = "copies";
           bin.textconv = "hexdump -v -C";
         };
 
         help.autocorrect = 1;
 
-        merge.log = true;
+        merge = {
+          conflictStyle = "zdiff3";
+          log = true;
+        };
 
         pull.rebase = true;
         push = {
@@ -55,12 +65,29 @@
         options = {
           navigate = true;
           line-numbers = true;
-          conflictstyle = "diff3";
+          hyperlinks = true;
+          side-by-side = true;
         };
       };
     };
 
-    lazygit.enable = true;
+    lazygit = {
+      enable = true;
+      settings = {
+        git.pagers = [
+          {
+            pager = let
+              inherit (config.programs.git.delta) enable package;
+              bin =
+                lib.meta.getExe package;
+            in
+              lib.modules.mkIf enable (lib.krad246.cli.toGNUCommandLineShell bin {
+                paging = "never";
+              });
+          }
+        ];
+      };
+    };
     git-credential-oauth.enable = true;
 
     gh = {
