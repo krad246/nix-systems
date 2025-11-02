@@ -1,4 +1,8 @@
 {
+  config,
+  lib,
+  ...
+}: {
   programs.bash = {
     enable = true;
 
@@ -12,6 +16,14 @@
       bind -r "\C-n"
 
       bind -r "\C-h"
+
+      function y() {
+      	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+      	${lib.meta.getExe config.programs.yazi.package} "$@" --cwd-file="$tmp"
+      	IFS= read -r -d \'\' cwd < "$tmp"
+      	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+      	rm -f -- "$tmp"
+      }
     '';
 
     historyControl = [
