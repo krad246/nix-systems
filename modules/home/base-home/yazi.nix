@@ -19,6 +19,7 @@
           "move"
           "drag"
         ];
+        title_format = "{cwd}";
       };
 
       preview = {
@@ -38,13 +39,68 @@
             on = "<C-[>";
             run = "noop";
           }
+          # {
+          #   on = "<Enter>";
+          #   run = "noop";
+          # }
+          # {
+          #   on = "<S-Enter>";
+          #   run = "noop";
+          # }
           {
-            on = "<Enter>";
+            on = "1";
             run = "noop";
           }
           {
-            on = "<S-Enter>";
+            on = "2";
             run = "noop";
+          }
+          {
+            on = "3";
+            run = "noop";
+          }
+          {
+            on = "4";
+            run = "noop";
+          }
+          {
+            on = "5";
+            run = "noop";
+          }
+          {
+            on = "6";
+            run = "noop";
+          }
+          {
+            on = "7";
+            run = "noop";
+          }
+          {
+            on = "8";
+            run = "noop";
+          }
+          {
+            on = "9";
+            run = "noop";
+          }
+          {
+            on = "[";
+            run = "noop";
+          }
+          {
+            on = "]";
+            run = "noop";
+          }
+        ];
+
+        append_keymap = [
+          {
+            on = "<C-[>";
+            run = "tab_switch --relative -1";
+          }
+          {
+            on = "<C-]>";
+            run = "tab_switch --relative 1";
           }
         ];
       };
