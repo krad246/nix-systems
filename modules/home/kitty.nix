@@ -18,13 +18,13 @@
     };
     settings = {
       enabled_layouts = lib.strings.concatStringsSep "," [
-        # "horizontal"
-        # "vertical"
-        # "splits"
-        "stack"
-        "grid"
-        "fat"
         "tall"
+        "fat"
+        # "splits"
+        "grid"
+        "horizontal"
+        "vertical"
+        "stack"
       ];
     };
     keybindings =

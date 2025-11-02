@@ -4,7 +4,7 @@
     enableBashIntegration = true;
 
     settings = {
-      mgr = {
+      manager = {
         # ratio
         sort_by = "natural";
         sort_sensitive = true;
@@ -31,6 +31,23 @@
       };
     };
 
-    keymap = {};
+    keymap = {
+      manager = {
+        prepend_keymap = [
+          {
+            on = "<C-[>";
+            run = "noop";
+          }
+          {
+            on = "<Enter>";
+            run = "noop";
+          }
+          {
+            on = "<S-Enter>";
+            run = "noop";
+          }
+        ];
+      };
+    };
   };
 }
