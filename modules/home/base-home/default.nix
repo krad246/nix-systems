@@ -89,10 +89,13 @@ in {
     json.enable = true;
   };
 
-  xdg.configFile = {
-    dotfiles = {
-      enable = false;
-      source = self;
+  xdg = {
+    enable = true;
+    configFile = {
+      dotfiles = {
+        enable = false;
+        source = self;
+      };
     };
   };
 }
