@@ -18,8 +18,8 @@
     };
     settings = {
       enabled_layouts = lib.strings.concatStringsSep "," [
-        "vertical"
-        "horizontal"
+        # "horizontal"
+        # "vertical"
         # "splits"
         "stack"
         "grid"
