@@ -30,6 +30,7 @@
   }: {
     overlayAttrs = {
       lib = pkgs.lib.extend self.overlays.lib;
+
       krad246 = {
         agenix = inputs'.agenix.packages.default;
         inherit (config.packages) disko-install;

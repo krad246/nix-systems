@@ -21,9 +21,9 @@
         "tall"
         "fat"
         # "splits"
-        "grid"
         "horizontal"
         "vertical"
+        "grid"
         "stack"
       ];
     };

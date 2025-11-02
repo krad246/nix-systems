@@ -397,9 +397,9 @@
         {
           name = "nix";
           language-servers = ["nixd"];
-          # formatter = {
-          #   command = lib.meta.getExe pkgs.alejandra;
-          # };
+          formatter = {
+            command = lib.meta.getExe pkgs.alejandra;
+          };
         }
         # {
         #   name = "python";
