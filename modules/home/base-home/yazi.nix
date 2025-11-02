@@ -19,7 +19,7 @@
           "move"
           "drag"
         ];
-        title_format = "{cwd}";
+        # title_format = "{cwd}";
       };
 
       preview = {
@@ -81,6 +81,34 @@
           }
           {
             on = "S";
+            run = "noop";
+          }
+          {
+            on = ["m" "s"];
+            run = "noop";
+          }
+          {
+            on = ["m" "p"];
+            run = "noop";
+          }
+          {
+            on = ["m" "b"];
+            run = "noop";
+          }
+          {
+            on = ["m" "m"];
+            run = "noop";
+          }
+          {
+            on = ["m" "o"];
+            run = "noop";
+          }
+          {
+            on = ["m" "n"];
+            run = "noop";
+          }
+          {
+            on = "C-s";
             run = "noop";
           }
           # {
