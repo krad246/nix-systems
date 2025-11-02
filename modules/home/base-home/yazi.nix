@@ -68,6 +68,10 @@
             run = "tab_create --current";
           }
           {
+            on = "t";
+            run = "noop";
+          }
+          {
             on = "<C-p>";
             run = "search --via=fd";
           }
