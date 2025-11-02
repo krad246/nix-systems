@@ -275,7 +275,8 @@
 
             # structural selection editing
             "=" = "no_op";
-            "&" = "no_op";
+            "&" = "align_selections";
+            "_" = "no_op";
             "J" = "no_op";
             "A-J" = "no_op";
             "K" = "no_op";
