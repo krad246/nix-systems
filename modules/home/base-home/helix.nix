@@ -304,26 +304,22 @@
 
             # text object selectors
 
-            "A-e" = "expand_selection";
-            "A-b" = "shrink_selection";
-
             "A-I" = "no_op";
             "S-A-down" = "no_op";
 
-            "A-a" = "no_op";
+            "A-a" = "select_all_siblings";
 
-            "A-left" = "no_op";
             "A-p" = "no_op";
+            "A-left" = "select_prev_sibling";
             "A-N" = "select_prev_sibling";
 
             "A-n" = "select_next_sibling";
-            # "A-n" = "no_op";
-            "A-right" = "no_op";
+            "A-right" = "select_next_sibling";
 
-            "A-i" = "no_op";
-            "A-down" = "no_op";
-            "A-o" = "no_op";
-            "A-up" = "no_op";
+            "A-i" = "shrink_selection";
+            "A-down" = "shrink_selection";
+            "A-o" = "expand_selection";
+            "A-up" = "expand_selection";
           };
       in {
         normal =
