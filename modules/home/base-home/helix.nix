@@ -362,15 +362,32 @@
     languages = {
       language = [
         {
+          name = "bash";
+          language-servers = ["bash-language-server"];
+        }
+        {
           name = "c";
           language-servers = ["clangd"];
-          auto-format = true;
+        }
+        {
+          name = "cmake";
+          language-servers = ["neocmakelsp"];
+        }
+        {
+          name = "cpp";
+          language-servers = ["clangd"];
+        }
+        {
+          name = "docker-compose";
+          language-servers = ["yaml-language-server"];
+        }
+        {
+          name = "dockerfile";
+          language-servers = ["docker-langserver"];
         }
         {
           name = "just";
-        }
-        {
-          name = "make";
+          language-servers = ["just-lsp"];
         }
         {
           name = "markdown";
@@ -378,18 +395,48 @@
         }
         {
           name = "nix";
-          formatter = {
-            command = lib.meta.getExe pkgs.alejandra;
-          };
-
           language-servers = ["nixd"];
-          auto-format = true;
+          # formatter = {
+          #   command = lib.meta.getExe pkgs.alejandra;
+          # };
+        }
+        # {
+        #   name = "python";
+        #   language-servers = [];
+        # }
+        {
+          name = "rust";
+          language-servers = ["rust-analyzer"];
+        }
+        # {
+        #   name = "systemd";
+        #   language-servers = ["systemd-lsp"];
+        # }
+        # {
+        #   name = "toml";
+        #   language-servers = ["tombi"];
+        # }
+        {
+          name = "yaml";
+          language-servers = ["yaml-language-server"];
         }
       ];
 
       language-server = {
+        bash-language-server.command = lib.meta.getExe pkgs.bash-language-server;
+        clangd.command = lib.meta.getExe' pkgs.clang-tools "clangd";
+        docker-langserver.command = lib.meta.getExe pkgs.docker-language-server;
+        just-lsp.command = lib.meta.getExe pkgs.just-lsp;
         marksman.command = lib.meta.getExe pkgs.marksman;
+        neocmakelsp.command = lib.meta.getExe pkgs.neocmakelsp;
         nixd.command = lib.meta.getExe pkgs.nixd;
+        rust-analyzer.command = lib.meta.getExe pkgs.rust-analyzer;
+        systemd-lsp.command = lib.meta.getExe (pkgs.systemd-language-server.overrideAttrs (_old: {
+          doCheck = false;
+        }));
+        # tombi.command = lib.meta.getExe pkgs.tombi;
+        # vscode-json-language-server.command = lib.meta.getExe pkgs.vscode-json-language-server;
+        yaml-language-server.command = lib.meta.getExe pkgs.yaml-language-server;
       };
     };
   };
