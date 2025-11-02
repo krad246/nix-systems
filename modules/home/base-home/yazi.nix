@@ -60,6 +60,10 @@
             run = "close";
           }
           {
+            on = "<C-q>";
+            run = "quit";
+          }
+          {
             on = "<C-n>";
             run = "tab_create --current";
           }
@@ -108,7 +112,39 @@
             run = "noop";
           }
           {
-            on = "C-s";
+            on = "<C-s>";
+            run = "noop";
+          }
+          # {
+          #   on = ["g" "h"];
+          #   run = "noop";
+          # }
+          # {
+          #   on = ["g" "c"];
+          #   run = "noop";
+          # }
+          # {
+          #   on = ["g" "d"];
+          #   run = "noop";
+          # }
+          # {
+          #   on = ["g" "<Space>"];
+          #   run = "noop";
+          # }
+          {
+            on = "<C-g>";
+            run = "cd --interactive";
+          }
+          {
+            on = "<A-c>";
+            run = "plugin fzf";
+          }
+          {
+            on = "z";
+            run = "plugin zoxide";
+          }
+          {
+            on = "Z";
             run = "noop";
           }
           # {
