@@ -22,7 +22,7 @@ in {
     ];
   };
 
-  home = {
+  programs.bash = {
     shellAliases = {
       cat = "${meta.getExe config.programs.bat.package} -pp";
       brg = meta.getExe pkgs.bat-extras.batgrep;
@@ -38,8 +38,8 @@ in {
     };
   };
 
-  home.packages = with pkgs; [
-    entr
-    delta
-  ];
+  # home.packages = with pkgs; [
+  #   entr
+  #   delta
+  # ];
 }

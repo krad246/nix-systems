@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: {
   programs.bash = {
@@ -32,5 +33,17 @@
     ];
 
     historyIgnore = ["exit" "reload"];
+
+    shellAliases = let
+      inherit (lib) meta;
+    in {
+      reload = ''
+        exec ${meta.getExe config.programs.bash.package} \
+          --rcfile <(${meta.getExe' pkgs.coreutils "echo"} \
+              'source ${config.home.homeDirectory}/.bashrc; \
+              ${meta.getExe pkgs.direnv} reload')
+      '';
+      tldr = meta.getExe pkgs.tldr;
+    };
   };
 }

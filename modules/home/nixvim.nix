@@ -13,7 +13,9 @@ in {
         nil
         nixd
       ]);
+  };
 
+  programs.bash = {
     shellAliases = {
       vi = meta.getExe nixvim;
       vim = meta.getExe nixvim;
