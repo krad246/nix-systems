@@ -6,7 +6,6 @@
   pkgs,
   ...
 }: let
-  inherit (lib) meta;
   isSystemPkgs = lib.attrsets.attrByPath ["home-manager" "useGlobalPkgs"] false osConfig;
 in {
   imports =
@@ -21,7 +20,7 @@ in {
       ./fzf.nix
       ./git.nix
       ./helix.nix
-      ./lsd.nix
+      ./lsd
       ./nerdfonts.nix
       ./packages.nix
       ./ripgrep.nix
