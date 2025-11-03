@@ -1,0 +1,31 @@
+{
+    "user": 0,
+    "group": 0,
+    "permission": {
+        "read": 14,
+        "write": 14,
+        "exec": 14,
+        "exec-sticky": 14,
+        "no-access": 14
+    },
+    "date": {
+        "hour-old": 2,
+        "day-old": 2,
+        "older": 2
+    },
+    "size": {
+        "none": 3,
+        "small": 3,
+        "medium": 3,
+        "large": 3
+    },
+    "inode": {
+        "valid": 0,
+        "invalid": 0
+    },
+    "links": {
+        "valid": 0,
+        "invalid": 0
+    },
+    "tree-edge": 0
+}
