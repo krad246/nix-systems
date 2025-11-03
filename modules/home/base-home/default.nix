@@ -21,6 +21,7 @@ in {
       ./fzf.nix
       ./git.nix
       ./helix.nix
+      ./lsd.nix
       ./nerdfonts.nix
       ./packages.nix
       ./ripgrep.nix
@@ -62,22 +63,6 @@ in {
 
     packages = with pkgs; [cachix];
     preferXdgDirectories = true;
-
-    shellAliases = rec {
-      l = meta.getExe pkgs.lsd;
-      ls = l;
-      ll = "${ls} -gl";
-      la = "${ll} -A";
-      lal = la;
-
-      reload = ''
-        exec ${meta.getExe pkgs.bashInteractive} \
-          --rcfile <(${meta.getExe' pkgs.coreutils "echo"} \
-              'source ${config.home.homeDirectory}/.bashrc; \
-              ${meta.getExe pkgs.direnv} reload')
-      '';
-      tldr = meta.getExe pkgs.tldr;
-    };
 
     stateVersion = lib.trivial.release;
   };
