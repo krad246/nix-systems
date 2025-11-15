@@ -13,10 +13,15 @@
     initExtra = ''
       set -o vi
 
-      bind -r "\C-p"
-      bind -r "\C-n"
+      # menu-complete-backward
+      # bind -r "\C-p"
 
+      # menu-complete-forward
+      # bind -r "\C-n"
+
+      # backward-delete-char
       bind -r "\C-h"
+      # bind -r "\C-?"
 
       function y() {
       	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd

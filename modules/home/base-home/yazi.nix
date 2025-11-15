@@ -5,7 +5,7 @@
 
     settings = {
       manager = {
-        # ratio
+        ratio = [1 3 4];
         sort_by = "natural";
         sort_sensitive = true;
         sort_dir_first = false;
