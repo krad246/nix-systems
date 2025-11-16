@@ -1,0 +1,8 @@
+{
+  "keyMappings": "# unmap j\nunmap <c-e>\n# unmap k\nunmap <c-y>\n# unmap d\n# unmap u\n# unmap h\n# unmap l\nunmap zH\nunmap zL\nunmap yy\nunmap p\nunmap P\nunmap yf\nunmap [[\nunmap ]]\n\nunmap o\nunmap O\nunmap b\nunmap B\nunmap T\nunmap ge\nunmap gE\n\nunmap /\nunmap n\nunmap N\nunmap *\nunmap #\n\nunmap t\n# unmap J\n# map J nextTab\nunmap gT\n# unmap K\n# map K previousTab\nunmap gt\n# unmap g0\n# unmap g$\nunmap <a-m>\nunmap x\nunmap <\nunmap >>\nunmap gs",
+  "ignoreKeyboardLayout": true,
+  "grabBackFocus": true,
+  "searchEngines": "",
+  "settingsVersion": "2.3",
+  "exclusionRules": []
+}
