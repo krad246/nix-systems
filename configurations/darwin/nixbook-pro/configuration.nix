@@ -10,6 +10,7 @@ in {
     apps
     base-configuration
     colima
+    macos-container
     tailscale
   ];
 
