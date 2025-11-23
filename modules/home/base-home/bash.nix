@@ -30,6 +30,10 @@
       	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
       	rm -f -- "$tmp"
       }
+
+      ${lib.strings.optionalString (config.programs.kitty.enable && config.programs.fzf.enable) ''
+        export FZF_PREVIEW_IMAGE_HANDLER=kitty
+      ''}
     '';
 
     historyControl = [
