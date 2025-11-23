@@ -130,6 +130,11 @@
         filepath-word = true;
 
         scheme = "path";
+
+        preview = ''
+          ${lib.meta.getExe (pkgs.unstable.fzf-preview.override {bat = config.programs.bat.package;})} {}
+        '';
+        preview-window = "up";
       };
     in [args];
   };
