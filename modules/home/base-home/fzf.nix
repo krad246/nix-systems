@@ -31,7 +31,7 @@
         #   ${lib.meta.getExe config.programs.bat.package} --color=always --style=numbers {}
         # '';
         preview = ''
-          ${lib.meta.getExe pkgs.unstable.fzf-preview} {}
+          ${lib.meta.getExe (pkgs.unstable.fzf-preview.override {bat = config.programs.bat.package;})} {}
         '';
         preview-window = "up";
 
