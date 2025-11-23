@@ -27,8 +27,11 @@
         track = true;
         filepath-word = true;
 
+        # preview = ''
+        #   ${lib.meta.getExe config.programs.bat.package} --color=always --style=numbers {}
+        # '';
         preview = ''
-          ${lib.meta.getExe config.programs.bat.package} --color=always --style=numbers {}
+          ${lib.meta.getExe pkgs.unstable.fzf-preview} {}
         '';
         preview-window = "up";
 
@@ -86,6 +89,7 @@
             lib.meta.getExe hx-nosuspend))
           (wrap "ctrl-v" (lib.meta.getExe config.programs.bat.package))
           "ctrl-r:reload(eval \"$FZF_CTRL_T_COMMAND\")"
+          "ctrl-/:change-preview-window(hidden|up)"
         ];
 
         scheme = "path";
