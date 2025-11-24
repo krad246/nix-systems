@@ -53,7 +53,7 @@ in {
           --rcfile <(${meta.getExe' pkgs.coreutils "echo"} \
               'source ${config.home.homeDirectory}/.bashrc; \
               ${strings.optionalString config.programs.direnv.enable ''
-          ${meta.getExe pkgs.direnv} reload
+          ${meta.getExe config.programs.direnv.package} reload
         ''}')
       '';
       tldr = meta.getExe pkgs.tldr;
