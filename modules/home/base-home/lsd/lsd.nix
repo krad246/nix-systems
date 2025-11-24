@@ -5,7 +5,9 @@
 }: {
   programs.lsd = {
     enable = true;
-    enableBashIntegration = true;
+    enableBashIntegration = config.programs.bash.enable;
+    enableZshIntegration = config.programs.zsh.enable;
+
     colors = lib.strings.fromJSON (builtins.readFile ./colors.json);
     icons = {};
     settings = {
