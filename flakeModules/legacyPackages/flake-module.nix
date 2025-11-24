@@ -8,6 +8,7 @@
       inherit system;
       overlays = [
         self.overlays.default
+        self.overlays.unstable
       ];
       config = {};
     };
