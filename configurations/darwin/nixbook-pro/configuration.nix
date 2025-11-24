@@ -14,16 +14,6 @@ in {
     tailscale
   ];
 
-  # Parse the secrets directory
-  age.secrets = let
-    inherit (lib) krad246;
-    paths = krad246.fileset.filterExt "age" ./secrets;
-  in
-    krad246.attrsets.genAttrs' paths (path:
-      krad246.attrsets.stemValuePair path {
-        file = path;
-      });
-
   system.defaults.dock.persistent-apps = lib.modules.mkBefore ["/Applications/Zen.app"];
 
   krad246.darwin = {
