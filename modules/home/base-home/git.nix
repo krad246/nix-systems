@@ -1,9 +1,11 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
-  inherit (pkgs) lib;
+  # inherit (pkgs) lib;
+  inherit (lib) meta modules;
 in {
   programs = {
     git = {
@@ -79,9 +81,9 @@ in {
             pager = let
               inherit (config.programs.git.delta) enable package;
               bin =
-                lib.meta.getExe package;
+                meta.getExe package;
             in
-              lib.modules.mkIf enable (lib.krad246.cli.toGNUCommandLineShell bin {
+              modules.mkIf enable (pkgs.lib.krad246.cli.toGNUCommandLineShell bin {
                 paging = "never";
               });
           }

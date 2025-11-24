@@ -4,7 +4,8 @@
   pkgs,
   ...
 }: let
-  inherit (lib) meta;
+  # inherit (pkgs) lib;
+  inherit (lib) meta trivial;
 
   batdiff = pkgs.bat-extras.batdiff.override {withDelta = true;};
   batwatch = pkgs.bat-extras.batwatch.override {withEntr = true;};
@@ -31,7 +32,7 @@ in {
     };
 
     sessionVariables = {
-      BATDIFF_USE_DELTA = lib.trivial.boolToString true;
+      BATDIFF_USE_DELTA = trivial.boolToString true;
       LESSOPEN = "|${meta.getExe pkgs.bat-extras.batpipe} %s";
       LESS = "$LESS -R";
       BATPIPE = "color";

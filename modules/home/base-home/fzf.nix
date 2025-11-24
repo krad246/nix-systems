@@ -4,6 +4,7 @@
   pkgs,
   ...
 }: let
+  # inherit (pkgs) lib;
   inherit (lib) cli meta strings;
 in {
   programs.fzf = let

@@ -4,15 +4,13 @@
   pkgs,
   ...
 }: let
-  profilesRoot = ".zen";
-  profileId = "nix.default-release";
-  profilePath = "${config.home.homeDirectory}/${profilesRoot}/${profileId}";
+  inherit (lib) modules;
 in {
   programs.firefox = {
     enable = true;
 
     # Profile installed only
-    package = lib.mkForce null;
+    package = modules.mkForce null;
 
     # Enterprise policies management
     policies = {
@@ -20,7 +18,11 @@ in {
       DontCheckDefaultBrowser = true;
     };
 
-    profiles.zen = {
+    profiles.zen = let
+      profilesRoot = ".zen";
+      profileId = "nix.default-release";
+      profilePath = "${config.home.homeDirectory}/${profilesRoot}/${profileId}";
+    in {
       containers = import ./containers.nix;
       containersForce = true;
 
