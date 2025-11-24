@@ -39,11 +39,11 @@
               text = ''
                 stty susp undef
                 find "$@" -type f -print0 | \
-                  xargs --no-run-if-empty -0 -o "${cmd}"
+                  xargs --no-run-if-empty -0 -o ${cmd}
               '';
             };
             bin = lib.meta.getExe script;
-          in "${key}:execute(${bin} {+})";
+          in "${key}:execute(${bin} -- {+})";
         in [
           (wrap "ctrl-o" (let
             hx-nosuspend = pkgs.symlinkJoin rec {
@@ -84,7 +84,7 @@
             };
           in
             lib.meta.getExe hx-nosuspend))
-          (wrap "ctrl-v" (lib.meta.getExe config.programs.bat.package))
+          (wrap "ctrl-v" "${lib.meta.getExe config.programs.bat.package} --paging always")
           "ctrl-r:reload(eval \"$FZF_CTRL_T_COMMAND\")"
           "ctrl-/:change-preview-window(hidden|up)"
         ];
