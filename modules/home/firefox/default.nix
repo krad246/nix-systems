@@ -1,11 +1,7 @@
-{
-  lib,
-  pkgs,
-  ...
-}: {
+{pkgs, ...}: {
   programs.firefox = {
     enable = true;
-    enableGnomeExtensions = lib.modules.mkIf pkgs.stdenv.isLinux true;
+    enableGnomeExtensions = pkgs.stdenv.isLinux;
 
     package = pkgs.firefox-bin;
 
@@ -49,9 +45,9 @@
           vimium
         ];
 
-        search = {
+        search = rec {
           default = "DuckDuckGo";
-          privateDefault = "DuckDuckDuckGo";
+          privateDefault = default;
 
           engines = {
             "Nix Packages" = {

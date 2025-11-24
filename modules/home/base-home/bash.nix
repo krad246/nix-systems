@@ -3,7 +3,9 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) meta strings;
+in {
   programs.bash = {
     enable = true;
 
@@ -23,15 +25,17 @@
       bind -r "\C-h"
       # bind -r "\C-?"
 
-      function y() {
-      	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-      	${lib.meta.getExe config.programs.yazi.package} "$@" --cwd-file="$tmp"
-      	IFS= read -r -d \'\' cwd < "$tmp"
-      	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
-      	rm -f -- "$tmp"
-      }
+      ${strings.optionalString config.programs.yazi.enable ''
+        function y() {
+        	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+        	${meta.getExe config.programs.yazi.package} "$@" --cwd-file="$tmp"
+        	IFS= read -r -d \'\' cwd < "$tmp"
+        	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
+        	rm -f -- "$tmp"
+        }
+      ''}
 
-      ${lib.strings.optionalString (config.programs.kitty.enable && config.programs.fzf.enable) ''
+      ${strings.optionalString (config.programs.kitty.enable && config.programs.fzf.enable) ''
         export FZF_PREVIEW_IMAGE_HANDLER=kitty
       ''}
     '';
@@ -43,14 +47,14 @@
 
     historyIgnore = ["exit" "reload"];
 
-    shellAliases = let
-      inherit (lib) meta;
-    in {
+    shellAliases = {
       reload = ''
         exec ${meta.getExe config.programs.bash.package} \
           --rcfile <(${meta.getExe' pkgs.coreutils "echo"} \
               'source ${config.home.homeDirectory}/.bashrc; \
-              ${meta.getExe pkgs.direnv} reload')
+              ${strings.optionalString config.programs.direnv.enable ''
+          ${meta.getExe pkgs.direnv} reload
+        ''}')
       '';
       tldr = meta.getExe pkgs.tldr;
     };
