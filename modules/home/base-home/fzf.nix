@@ -71,7 +71,8 @@ in {
     };
   in {
     enable = true;
-    enableBashIntegration = true;
+    enableBashIntegration = config.programs.bash.enable;
+    enableZshIntegration = config.programs.zsh.enable;
 
     changeDirWidgetCommand = strings.concatStringsSep " " [
       (meta.getExe config.programs.fd.package)

@@ -1,7 +1,8 @@
-{
+{config, ...}: {
   programs.yazi = {
     enable = true;
-    enableBashIntegration = true;
+    enableBashIntegration = config.programs.bash.enable;
+    enableZshIntegration = config.programs.zsh.enable;
 
     settings = rec {
       mgr = manager;

@@ -1,8 +1,12 @@
-{lib, ...}: {
+{
+  config,
+  lib,
+  ...
+}: {
   programs.starship = {
     enable = true;
-    enableBashIntegration = true;
-    enableZshIntegration = true;
+    enableBashIntegration = config.programs.bash.enable;
+    enableZshIntegration = config.programs.zsh.enable;
     settings = lib.trivial.importTOML ./starship.toml;
   };
 }

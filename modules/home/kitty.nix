@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   ...
@@ -8,7 +9,8 @@
     darwinLaunchOptions = ["--single-instance"];
     shellIntegration = {
       mode = "enabled";
-      enableBashIntegration = true;
+      enableBashIntegration = config.programs.bash.enable;
+      enableZshIntegration = config.programs.zsh.enable;
     };
     themeFile = "GruvboxMaterialDarkSoft";
     font = {
