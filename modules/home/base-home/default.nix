@@ -6,7 +6,8 @@
   pkgs,
   ...
 }: let
-  isSystemPkgs = lib.attrsets.attrByPath ["home-manager" "useGlobalPkgs"] false osConfig;
+  # inherit (pkgs) lib;
+  inherit (lib) attrsets hm lists meta trivial;
 in {
   imports =
     [
@@ -30,8 +31,10 @@ in {
       ./zoxide.nix
       ./zsh.nix
     ]
-    ++ (with self.modules.generic;
-      lib.lists.optionals (!isSystemPkgs) [
+    ++ (with self.modules.generic; let
+      isSystemPkgs = osConfig.home-manager.useGlobalPkgs or false;
+    in
+      lists.optionals (!isSystemPkgs) [
         overlays
         unfree
       ]);
@@ -43,17 +46,17 @@ in {
 
     # auto switch to default specialisation
     activation =
-      (lib.attrsets.optionalAttrs (config.specialisation != {}) {
+      (attrsets.optionalAttrs (config.specialisation != {}) {
         switchToSpecialisation = let
           cfg = config.specialisation.default.configuration;
         in
-          lib.hm.dag.entryAfter ["writeBoundary"] ''
-            $DRY_RUN_CMD ${lib.meta.getExe cfg.home.activationPackage}
+          hm.dag.entryAfter ["writeBoundary"] ''
+            $DRY_RUN_CMD ${meta.getExe cfg.home.activationPackage}
           '';
       })
       // {
-        syncDotfiles = lib.hm.dag.entryAfter ["writeBoundary"] ''
-          ${lib.meta.getExe pkgs.rsync} \
+        syncDotfiles = hm.dag.entryAfter ["writeBoundary"] ''
+          ${meta.getExe pkgs.rsync} \
                   --chmod=0755 \
                   --chown=${config.home.username}:nogroup \
                   --mkpath -auvh ${self}/* ${config.xdg.configHome}/dotfiles/
@@ -63,7 +66,7 @@ in {
     packages = with pkgs; [cachix];
     preferXdgDirectories = true;
 
-    stateVersion = lib.trivial.release;
+    stateVersion = trivial.release;
   };
 
   news.display = "silent";

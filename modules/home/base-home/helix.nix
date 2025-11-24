@@ -2,7 +2,10 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  # inherit (pkgs) lib;
+  inherit (lib) meta;
+in {
   programs.helix = {
     enable = true;
     defaultEditor = true;
@@ -363,7 +366,7 @@
           name = "bash";
           language-servers = ["bash-language-server"];
           formatter = {
-            command = lib.meta.getExe pkgs.shfmt;
+            command = meta.getExe pkgs.shfmt;
           };
         }
         {
@@ -398,7 +401,7 @@
           name = "nix";
           language-servers = ["nixd"];
           formatter = {
-            command = lib.meta.getExe pkgs.alejandra;
+            command = meta.getExe pkgs.alejandra;
           };
         }
         # {
@@ -424,20 +427,20 @@
       ];
 
       language-server = {
-        bash-language-server.command = lib.meta.getExe pkgs.bash-language-server;
-        clangd.command = lib.meta.getExe' pkgs.clang-tools "clangd";
-        docker-langserver.command = lib.meta.getExe pkgs.docker-language-server;
-        just-lsp.command = lib.meta.getExe pkgs.just-lsp;
-        marksman.command = lib.meta.getExe pkgs.marksman;
-        neocmakelsp.command = lib.meta.getExe pkgs.neocmakelsp;
-        nixd.command = lib.meta.getExe pkgs.nixd;
-        rust-analyzer.command = lib.meta.getExe pkgs.rust-analyzer;
-        systemd-lsp.command = lib.meta.getExe (pkgs.systemd-language-server.overrideAttrs (_old: {
+        bash-language-server.command = meta.getExe pkgs.bash-language-server;
+        clangd.command = meta.getExe' pkgs.clang-tools "clangd";
+        docker-langserver.command = meta.getExe pkgs.docker-language-server;
+        just-lsp.command = meta.getExe pkgs.just-lsp;
+        marksman.command = meta.getExe pkgs.marksman;
+        neocmakelsp.command = meta.getExe pkgs.neocmakelsp;
+        nixd.command = meta.getExe pkgs.nixd;
+        rust-analyzer.command = meta.getExe pkgs.rust-analyzer;
+        systemd-lsp.command = meta.getExe (pkgs.systemd-language-server.overrideAttrs (_old: {
           doCheck = false;
         }));
-        # tombi.command = lib.meta.getExe pkgs.tombi;
-        # vscode-json-language-server.command = lib.meta.getExe pkgs.vscode-json-language-server;
-        yaml-language-server.command = lib.meta.getExe pkgs.yaml-language-server;
+        # tombi.command = meta.getExe pkgs.tombi;
+        # vscode-json-language-server.command = meta.getExe pkgs.vscode-json-language-server;
+        yaml-language-server.command = meta.getExe pkgs.yaml-language-server;
       };
     };
   };

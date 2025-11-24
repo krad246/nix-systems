@@ -6,6 +6,7 @@
   ...
 }: let
   inherit (inputs) nix-flatpak;
+  inherit (lib) attrsets;
 in {
   imports = [nix-flatpak.homeManagerModules.nix-flatpak];
 
@@ -30,7 +31,7 @@ in {
         # Don't mutate dconf settings unless we can guarantee that dconf is running in the surrounding system.
         # For simplicity's sake this means that NixOS Gnome setups will enable this but in no other case will
         # these settings activate.
-        dconf.enable = lib.attrsets.attrByPath ["programs" "dconf" "enable"] false osConfig;
+        dconf.enable = attrsets.attrByPath ["programs" "dconf" "enable"] false osConfig;
 
         services = {
           flatpak = {

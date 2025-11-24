@@ -4,9 +4,10 @@
   pkgs,
   ...
 }: let
+  inherit (lib) meta;
   stripComments = path:
     pkgs.runCommand "strip-comments" {} ''
-      ${lib.meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
+      ${meta.getExe' pkgs.gcc "cpp"} -P -E "${path}" > "$out"
     '';
 
   keybindings = stripComments ./keybindings.json;

@@ -3,7 +3,9 @@
   lib,
   pkgs,
   ...
-}: {
+}: let
+  inherit (lib) strings;
+in {
   programs.kitty = {
     enable = true;
     darwinLaunchOptions = ["--single-instance"];
@@ -19,7 +21,7 @@
       package = pkgs.nerd-fonts.meslo-lg;
     };
     settings = {
-      enabled_layouts = lib.strings.concatStringsSep "," [
+      enabled_layouts = strings.concatStringsSep "," [
         "tall"
         "fat"
         # "splits"
