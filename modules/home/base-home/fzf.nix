@@ -69,7 +69,7 @@ in {
           })
         ];
     };
-  in {
+  in rec {
     enable = true;
     enableBashIntegration = config.programs.bash.enable;
     enableZshIntegration = config.programs.zsh.enable;
@@ -86,6 +86,7 @@ in {
     defaultCommand = meta.getExe config.programs.fd.package;
     defaultOptions = cli.toGNUCommandLine {} defaultArgs;
 
+    fileWidgetCommand = defaultCommand;
     fileWidgetOptions = cli.toGNUCommandLine {} (
       defaultArgs
       // fileArgs
