@@ -50,7 +50,11 @@ in {
         fzf-preview = pkgs.unstable.fzf-preview.override {
           bat = config.programs.bat.package;
         };
-      in "'${meta.getExe fzf-preview} {}'";
+      in
+        strings.escapeShellArg [
+          (meta.getExe fzf-preview)
+          "{}"
+        ];
 
       bind =
         defaultArgs.bind
