@@ -77,18 +77,51 @@ in {
       enable = true;
       package = pkgs.unstable.lazygit;
       settings = {
-        git.pagers = [
-          {
-            pager = let
-              inherit (config.programs.git.delta) enable package;
-              bin =
-                meta.getExe package;
-            in
-              modules.mkIf enable (pkgs.lib.krad246.cli.toGNUCommandLineShell bin {
-                paging = "never";
-              });
-          }
-        ];
+        gui = {
+          showNumstatInFilesView = true;
+          nerdFontsVersion = "3";
+          showBranchCommitHash = true;
+          showDivergenceFromBaseBranch = "arrowAndNumber";
+          # screenMode = "half";
+          statusPanelView = "allBranchesLog";
+        };
+        git = {
+          pagers = [
+            {
+              pager = let
+                inherit (config.programs.git.delta) enable package;
+                bin =
+                  meta.getExe package;
+              in
+                modules.mkIf enable (pkgs.lib.krad246.cli.toGNUCommandLineShell bin {
+                  no-gitconfig = true;
+                  paging = "never";
+                });
+            }
+          ];
+          merging = {manualCommit = true;};
+          autoForwardBranches = "allBranches";
+          parseEmoji = true;
+        };
+        update = {
+          method = "never";
+        };
+        keybinding = {
+          universal = {
+            # pushFiles = "p";
+            # pullFiles = "P";
+            increaseRenameSimilarityThreshold = "<disabled>";
+            decreaseRenameSimilarityThreshold = "<disabled>";
+          };
+          status = {
+            # checkForUpdate = "<disabled>";
+            recentRepos = "<c-r>";
+            allBranchesLogGraph = "<disabled>";
+          };
+          files = {
+            toggleTreeView = "<disabled>";
+          };
+        };
       };
     };
     git-credential-oauth.enable = true;
