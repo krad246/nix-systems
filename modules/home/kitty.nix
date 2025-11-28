@@ -22,11 +22,11 @@ in {
     };
     settings = {
       enabled_layouts = strings.concatStringsSep "," [
-        "tall"
         "fat"
+        "tall"
         # "splits"
-        "horizontal"
         "vertical"
+        "horizontal"
         "grid"
         "stack"
       ];

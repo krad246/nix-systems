@@ -269,8 +269,12 @@ in {
             "A-minus" = "no_op";
             "A-_" = "no_op";
             ";" = "collapse_selection";
-            "(" = "rotate_selections_backward";
-            ")" = "rotate_selections_forward";
+            "(" = "no_op";
+            ")" = "no_op";
+            "A-(" = "no_op";
+            "A-)" = "no_op";
+            "A-[" = "rotate_selections_backward";
+            "A-]" = "rotate_selections_forward";
 
             # multi-cursor direction
             "A-;" = "flip_selections";
@@ -278,15 +282,15 @@ in {
 
             # structural selection editing
             "=" = "no_op";
+            "A-F" = "format_selections";
             "&" = "align_selections";
             "_" = "no_op";
             "J" = "no_op";
             "A-J" = "no_op";
-            "K" = "no_op";
-            "A-K" = "no_op";
-
-            "A-(" = "no_op";
-            "A-)" = "no_op";
+            # "K" = "no_op";
+            # "A-K" = "no_op";
+            "A-{" = "rotate_selection_contents_backward";
+            "A-}" = "rotate_selection_contents_forward";
 
             # uppercase / lowercase converters
             "~" = "switch_case";
@@ -314,15 +318,23 @@ in {
 
             "A-p" = "no_op";
             "A-left" = "select_prev_sibling";
-            "A-N" = "select_prev_sibling";
+            # "A-N" = "select_prev_sibling";
 
-            "A-n" = "select_next_sibling";
+            "A-n" = "no_op";
             "A-right" = "select_next_sibling";
 
-            "A-i" = "shrink_selection";
+            "A-e" = "no_op";
+            # "A-e" = "select_next_sibling";
+            # "A-w" = "select_next_sibling";
+            "A-b" = "no_op";
+            # "A-b" = "select_prev_sibling";
+
+            "A-i" = "no_op";
             "A-down" = "shrink_selection";
-            "A-o" = "expand_selection";
+            # "A-B" = "shrink_selection";
+            "A-o" = "no_op";
             "A-up" = "expand_selection";
+            # "A-E" = "expand_selection";
           };
       in {
         normal =
