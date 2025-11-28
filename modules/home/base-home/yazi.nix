@@ -7,7 +7,7 @@
     settings = rec {
       mgr = manager;
       manager = {
-        ratio = [1 3 4];
+        ratio = [2 2 4];
         sort_by = "natural";
         sort_sensitive = true;
         sort_dir_first = false;
