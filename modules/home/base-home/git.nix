@@ -78,12 +78,15 @@ in {
       package = pkgs.unstable.lazygit;
       settings = {
         gui = {
+          scrollPastBottom = false;
+          expandFocusedSidePanel = true;
           showNumstatInFilesView = true;
           nerdFontsVersion = "3";
           showBranchCommitHash = true;
           showDivergenceFromBaseBranch = "arrowAndNumber";
           # screenMode = "half";
           statusPanelView = "allBranchesLog";
+          switchTabsWithPanelJumpKeys = true;
         };
         git = {
           pagers = [
@@ -108,10 +111,12 @@ in {
         };
         keybinding = {
           universal = {
+            quit-alt1 = "<disabled>";
             # pushFiles = "p";
             # pullFiles = "P";
-            increaseRenameSimilarityThreshold = "<disabled>";
-            decreaseRenameSimilarityThreshold = "<disabled>";
+            # copyToClipboard = "<disabled>";
+            # increaseRenameSimilarityThreshold = "<disabled>";
+            # decreaseRenameSimilarityThreshold = "<disabled>";
           };
           status = {
             # checkForUpdate = "<disabled>";
@@ -119,7 +124,12 @@ in {
             allBranchesLogGraph = "<disabled>";
           };
           files = {
+            findBaseCommitForFixup = "<c-b>";
             toggleTreeView = "<disabled>";
+            # openStatusFilter = "<c-f>";
+            openStatusFilter = "<disabled>";
+          };
+          branches = {
           };
         };
       };
