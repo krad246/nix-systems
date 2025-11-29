@@ -112,6 +112,8 @@ in {
         keybinding = {
           universal = {
             quit-alt1 = "<disabled>";
+            scrollUpMain-alt2 = "<disabled>";
+            scrollDownMain-alt2 = "<disabled>";
             # pushFiles = "p";
             # pullFiles = "P";
             # copyToClipboard = "<disabled>";
