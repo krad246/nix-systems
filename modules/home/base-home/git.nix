@@ -86,7 +86,7 @@ in {
           showDivergenceFromBaseBranch = "arrowAndNumber";
           # screenMode = "half";
           statusPanelView = "allBranchesLog";
-          switchTabsWithPanelJumpKeys = true;
+          switchTabsWithPanelJumpKeys = false;
         };
         git = {
           pagers = [
@@ -112,10 +112,31 @@ in {
         keybinding = {
           universal = {
             quit-alt1 = "<disabled>";
+
+            # prevItem = "<disabled>";
+            # nextItem = "<disabled>";
+
+            scrollLeft = "h";
+            scrollRight = "l";
+
+            prevBlock = "<disabled>";
+            nextBlock = "<disabled>";
+            prevBlock-alt = "<disabled>";
+            nextBlock-alt = "<disabled>";
+            # nextBlock-alt2 = "<c-]>";
+            # prevBlock-alt2 = "<c-[>";
+
+            scrollUpMain-alt1 = "<disabled>";
+            scrollDownMain-alt1 = "<disabled>";
             scrollUpMain-alt2 = "<disabled>";
             scrollDownMain-alt2 = "<disabled>";
+
             # pushFiles = "p";
             # pullFiles = "P";
+
+            # nextTab = "<tab>";
+            # prevTab = "<backtab>";
+
             # copyToClipboard = "<disabled>";
             # increaseRenameSimilarityThreshold = "<disabled>";
             # decreaseRenameSimilarityThreshold = "<disabled>";
