@@ -104,6 +104,7 @@ in {
           ];
           merging = {manualCommit = true;};
           autoForwardBranches = "allBranches";
+          ignoreWhitespaceInDiffView = true;
           parseEmoji = true;
         };
         update = {
@@ -122,15 +123,21 @@ in {
             scrollLeft = "h";
             scrollRight = "l";
 
-            gotoTop = "<disabled>";
-            gotoBottom = "<disabled>";
+            gotoTop = "<home>";
+            gotoBottom = "<end>";
+            gotoTop-alt = "<disabled>";
+            gotoBottom-alt = "<disabled>";
 
-            prevBlock = "<disabled>";
-            nextBlock = "<disabled>";
+            prevBlock = "<backtab>";
+            nextBlock = "<tab>";
             prevBlock-alt = "<disabled>";
             nextBlock-alt = "<disabled>";
-            # nextBlock-alt2 = "<disabled>";
-            # prevBlock-alt2 = "<disabled>";
+            nextBlock-alt2 = "<disabled>";
+            prevBlock-alt2 = "<disabled>";
+
+            # optionMenu = "<disabled>";
+
+            openFile = "<disabled>";
 
             scrollUpMain = "<disabled>";
             scrollDownMain = "<disabled>";
@@ -142,26 +149,45 @@ in {
             # pushFiles = "p";
             # pullFiles = "P";
 
+            # refresh = "<disabled>";
+
+            createPatchOptionsMenu = "<disabled>";
+
             # nextTab = "<tab>";
             # prevTab = "<backtab>";
 
-            # copyToClipboard = "<disabled>";
+            filteringMenu = "<c-f>";
+            diffingMenu = "<c-d>";
+            diffingMenu-alt = "<disabled>";
+
+            copyToClipboard = "<c-c>";
+
+            # openRecentRepos = "<c-p>";
+            openRecentRepos = "<disabled>";
+
+            toggleWhitespaceInDiffView = "<disabled>";
+
             # increaseRenameSimilarityThreshold = "<disabled>";
             # decreaseRenameSimilarityThreshold = "<disabled>";
           };
           status = {
             # checkForUpdate = "<disabled>";
-            recentRepos = "<c-r>";
             allBranchesLogGraph = "<disabled>";
           };
           files = {
+            commitChangesWithoutHook = "C";
+            commitChangesWithEditor = "<disabled>";
             findBaseCommitForFixup = "<disabled>";
-            stashAllChanges = "<disabled>";
+            refreshFiles = "<disabled>";
+            # stashAllChanges = "<disabled>";
+            fetch = "<disabled>";
             toggleTreeView = "<disabled>";
-            # openStatusFilter = "<c-f>";
             openStatusFilter = "<disabled>";
+            # openStatusFilter = "<c-s>";
           };
           branches = {
+            createPullRequest = "<disabled>";
+            # fetchRemote = "<disabled>";
           };
           commits = {
             viewResetOptions = "<disabled>";
