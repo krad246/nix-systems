@@ -155,12 +155,16 @@ in {
             allBranchesLogGraph = "<disabled>";
           };
           files = {
-            findBaseCommitForFixup = "<c-b>";
+            findBaseCommitForFixup = "<disabled>";
+            stashAllChanges = "<disabled>";
             toggleTreeView = "<disabled>";
             # openStatusFilter = "<c-f>";
             openStatusFilter = "<disabled>";
           };
           branches = {
+          };
+          commits = {
+            viewResetOptions = "<disabled>";
           };
         };
       };
