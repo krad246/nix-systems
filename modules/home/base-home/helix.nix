@@ -168,6 +168,10 @@ in {
           # TODO: figure out what to do with these
           "C-c" = "no_op";
           "C-x" = "no_op";
+
+          # jumping around text
+          "C-left" = "evil_prev_word_start";
+          "C-right" = "evil_next_word_start";
         };
 
         noedit =
@@ -335,10 +339,6 @@ in {
             "A-o" = "no_op";
             "A-up" = "expand_selection";
             # "A-E" = "expand_selection";
-
-            # jumping around text
-            "C-left" = "evil_prev_word_start";
-            "C-right" = "evil_next_word_start";
           };
       in {
         normal =
