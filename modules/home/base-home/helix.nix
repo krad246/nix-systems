@@ -307,7 +307,7 @@ in {
               "select_mode"
               "select_all"
             ];
-            "C-n" = ":new";
+            # "C-n" = ":new";
 
             # text object selectors
 
