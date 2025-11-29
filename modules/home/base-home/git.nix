@@ -111,21 +111,29 @@ in {
         };
         keybinding = {
           universal = {
-            quit-alt1 = "<disabled>";
+            quit-alt1 = "<c-q>";
 
             # prevItem = "<disabled>";
             # nextItem = "<disabled>";
 
+            prevPage = "<pgup>";
+            nextPage = "<pgdown>";
+
             scrollLeft = "h";
             scrollRight = "l";
+
+            gotoTop = "<disabled>";
+            gotoBottom = "<disabled>";
 
             prevBlock = "<disabled>";
             nextBlock = "<disabled>";
             prevBlock-alt = "<disabled>";
             nextBlock-alt = "<disabled>";
-            # nextBlock-alt2 = "<c-]>";
-            # prevBlock-alt2 = "<c-[>";
+            # nextBlock-alt2 = "<disabled>";
+            # prevBlock-alt2 = "<disabled>";
 
+            scrollUpMain = "<disabled>";
+            scrollDownMain = "<disabled>";
             scrollUpMain-alt1 = "<disabled>";
             scrollDownMain-alt1 = "<disabled>";
             scrollUpMain-alt2 = "<disabled>";
