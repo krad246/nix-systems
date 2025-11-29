@@ -335,6 +335,10 @@ in {
             "A-o" = "no_op";
             "A-up" = "expand_selection";
             # "A-E" = "expand_selection";
+
+            # jumping around text
+            "C-left" = "evil_prev_word_start";
+            "C-right" = "evil_next_word_start";
           };
       in {
         normal =
@@ -364,8 +368,6 @@ in {
             # jumping around text
             "C-a" = "goto_first_nonwhitespace";
             "C-e" = "goto_line_end";
-            "C-left" = "evil_prev_word_start";
-            "C-right" = "evil_next_word_start";
           };
       };
     };
