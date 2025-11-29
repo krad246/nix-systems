@@ -149,7 +149,7 @@ in {
             # pushFiles = "p";
             # pullFiles = "P";
 
-            # refresh = "<disabled>";
+            refresh = "<c-r>";
 
             createPatchOptionsMenu = "<disabled>";
 
@@ -177,9 +177,11 @@ in {
           files = {
             commitChangesWithoutHook = "C";
             commitChangesWithEditor = "<disabled>";
-            findBaseCommitForFixup = "<disabled>";
+            findBaseCommitForFixup = "b";
+            # confirmDiscard = "x";
             refreshFiles = "<disabled>";
             # stashAllChanges = "<disabled>";
+            viewResetOptions = "r";
             fetch = "<disabled>";
             toggleTreeView = "<disabled>";
             openStatusFilter = "<disabled>";
@@ -190,7 +192,7 @@ in {
             # fetchRemote = "<disabled>";
           };
           commits = {
-            viewResetOptions = "<disabled>";
+            # viewResetOptions = "R";
           };
         };
       };
