@@ -84,6 +84,7 @@ in {
           nerdFontsVersion = "3";
           showBranchCommitHash = true;
           showDivergenceFromBaseBranch = "arrowAndNumber";
+          commandLogSize = 16;
           # screenMode = "half";
           statusPanelView = "allBranchesLog";
           switchTabsWithPanelJumpKeys = false;
@@ -135,7 +136,7 @@ in {
             nextBlock-alt2 = "<disabled>";
             prevBlock-alt2 = "<disabled>";
 
-            # optionMenu = "<disabled>";
+            # optionMenu = "<c-P>";
 
             # openFile = "<disabled>";
 
@@ -192,6 +193,7 @@ in {
           };
           branches = {
             createPullRequest = "<disabled>";
+            viewPullRequestOptions = "o";
             # copyPullRequestURL =
             forceCheckoutBranch = "C";
             renameBranch = "B";
