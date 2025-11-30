@@ -1,17 +1,20 @@
 {
   lib,
-  pkgs,
+  writeShellApplication,
+  findutils,
+  bash,
+  coreutils,
   ...
 }: let
   inherit (lib) meta;
 in
-  pkgs.writeShellApplication {
+  writeShellApplication {
     name = "zen-snapshot";
 
     text = ''
-            ${meta.getExe' pkgs.findutils "xargs"} -r -I {} \
-              ${meta.getExe pkgs.bash} -c \
-                '${meta.getExe' pkgs.coreutils "cat"} <<- EOF
+            ${meta.getExe' findutils "xargs"} -r -I {} \
+              ${meta.getExe bash} -c \
+                '${meta.getExe' coreutils "cat"} <<- EOF
       {}/places.sqlite
       {}/cookies.sqlite
       {}/cert9.db
