@@ -83,7 +83,7 @@ in {
 
         term-fonts = pkgs.callPackage ./term-fonts.nix {};
 
-        zen-profile-manifest = pkgs.callPackage ./zen-profile-manifest.nix {};
+        zen-profile-manifest = pkgs.callPackage ./zen-profile-manifest {};
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         dconf2nix = pkgs.callPackage inputs.dconf2nix rec {
