@@ -163,7 +163,6 @@ in {
 
             copyToClipboard = "<c-c>";
 
-            # openRecentRepos = "<c-p>";
             openRecentRepos = "<disabled>";
 
             toggleWhitespaceInDiffView = "<disabled>";
@@ -183,11 +182,10 @@ in {
             # confirmDiscard = "x";
             refreshFiles = "<disabled>";
             # stashAllChanges = "<disabled>";
-            viewResetOptions = "r";
+            viewResetOptions = "D";
             # fetch = "<disabled>";
             toggleTreeView = "<disabled>";
-            openStatusFilter = "<disabled>";
-            # openStatusFilter = "<c-s>";
+            openStatusFilter = "<c-s>";
             collapseAll = "<disabled>";
             expandAll = "<disabled>";
           };
@@ -203,7 +201,7 @@ in {
           commits = {
             renameCommit = "r";
             renameCommitWithEditor = "<disabled>";
-            viewResetOptions = "R";
+            # viewResetOptions = "R";
           };
         };
       };
