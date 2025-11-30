@@ -137,7 +137,7 @@ in {
 
             # optionMenu = "<disabled>";
 
-            openFile = "<disabled>";
+            # openFile = "<disabled>";
 
             scrollUpMain = "<disabled>";
             scrollDownMain = "<disabled>";
@@ -169,6 +169,7 @@ in {
 
             # increaseRenameSimilarityThreshold = "<disabled>";
             # decreaseRenameSimilarityThreshold = "<disabled>";
+            openDiffTool = "<disabled>";
           };
           status = {
             # checkForUpdate = "<disabled>";
@@ -182,17 +183,25 @@ in {
             refreshFiles = "<disabled>";
             # stashAllChanges = "<disabled>";
             viewResetOptions = "r";
-            fetch = "<disabled>";
+            # fetch = "<disabled>";
             toggleTreeView = "<disabled>";
             openStatusFilter = "<disabled>";
             # openStatusFilter = "<c-s>";
+            collapseAll = "<disabled>";
+            expandAll = "<disabled>";
           };
           branches = {
             createPullRequest = "<disabled>";
+            # copyPullRequestURL =
+            forceCheckoutBranch = "C";
+            renameBranch = "B";
+            # renameBranch =
             # fetchRemote = "<disabled>";
           };
           commits = {
-            # viewResetOptions = "R";
+            renameCommit = "r";
+            renameCommitWithEditor = "<disabled>";
+            viewResetOptions = "R";
           };
         };
       };
