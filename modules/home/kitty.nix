@@ -27,8 +27,8 @@ in {
         # "splits"
         "vertical"
         "horizontal"
-        "grid"
         "stack"
+        "grid"
       ];
     };
     keybindings =
