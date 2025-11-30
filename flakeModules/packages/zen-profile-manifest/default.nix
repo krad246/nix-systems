@@ -27,8 +27,7 @@
     "zen-themes.json"
     "containers.json"
   ];
-in
-  writeShellApplication {
+  zen-profile-manifest = writeShellApplication {
     name = "zen-profile-manifest";
 
     runtimeInputs = [coreutils];
@@ -86,7 +85,11 @@ in
 
     passthru = {
       inherit manifest-files;
-      tests = {
-      };
+    };
+  };
+in
+  zen-profile-manifest
+  // {
+    passthru.tests = {
     };
   }
