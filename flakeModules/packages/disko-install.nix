@@ -1,24 +1,27 @@
 {
   self,
   lib,
-  pkgs,
+  writeShellApplication,
+  disko,
   ...
-}:
-pkgs.writeShellApplication {
-  name = "disko-install";
-  text = ''
-    disko() {
-      mode="$1"
-      shift
+}: let
+  inherit (lib) meta;
+in
+  writeShellApplication {
+    name = "disko-install";
+    text = ''
+      disko() {
+        mode="$1"
+        shift
 
-      ${lib.meta.getExe' pkgs.disko "disko-install"} \
-        --flake "${self}#{{ hostname }}" \
-        --mode "$mode" \
-      "$@"
-    }
+        ${meta.getExe' disko "disko-install"} \
+          --flake "${self}#{{ hostname }}" \
+          --mode "$mode" \
+        "$@"
+      }
 
-    disko format \
-      --write-efi-boot-entries \
-      "$@"
-  '';
-}
+      disko format \
+        --write-efi-boot-entries \
+        "$@"
+    '';
+  }
