@@ -48,10 +48,7 @@
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
 
     # Legacy and flake compatibility shims.
-    flake-compat = {
-      url = "github:edolstra/flake-compat";
-      flake = false;
-    };
+    flake-compat.url = "github:edolstra/flake-compat";
 
     # An opinionated Nix flake library (see flake-utils)
     flake-parts.url = "github:hercules-ci/flake-parts";
