@@ -102,6 +102,16 @@
             nix flake lock {{ ARGS }}
         '';
       };
+      update = {
+        enable = true;
+
+        justfile = ''
+          # Wraps `git add -A && nix flake update`.
+          [group('nix')]
+          update *ARGS: (add "-A")
+            nix flake update {{ ARGS }}
+        '';
+      };
 
       treefmt.enable = true;
     };
