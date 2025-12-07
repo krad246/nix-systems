@@ -268,7 +268,6 @@ in {
 
             # selection splitting & merging
             S = "split_selection";
-            "A-s" = "no_op";
             "A-S" = "merge_selections";
             "A-minus" = "no_op";
             "A-_" = "no_op";
@@ -318,7 +317,8 @@ in {
             "A-I" = "no_op";
             "S-A-down" = "no_op";
 
-            "A-a" = "select_all_siblings";
+            "A-s" = "select_all_siblings";
+            "A-c" = "select_all_children";
 
             "A-p" = "no_op";
             "A-left" = "select_prev_sibling";
