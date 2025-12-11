@@ -152,7 +152,7 @@ in {
 
             refresh = "<c-r>";
 
-            createPatchOptionsMenu = "<disabled>";
+            createPatchOptionsMenu = "<c-p>";
 
             # nextTab = "<tab>";
             # prevTab = "<backtab>";
