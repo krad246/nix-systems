@@ -150,7 +150,7 @@ in {
             # pushFiles = "p";
             # pullFiles = "P";
 
-            refresh = "<c-r>";
+            # refresh = "<c-r>";
 
             createPatchOptionsMenu = "<c-p>";
 
