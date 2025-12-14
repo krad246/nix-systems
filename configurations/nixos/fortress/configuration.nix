@@ -18,7 +18,8 @@
   # programs.dconf.enable = true; # FIXME
   services = {
     dbus.enable = true;
-    # flatpak.enable = true; # FIXME
+    # flatpak.enable = true; # FIXME: does not work on disko-vm-darwin
+    # TODO: investigate services.flatpak.update.onActivation = false
   };
 
   xdg.portal = {
