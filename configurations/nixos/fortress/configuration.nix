@@ -18,8 +18,7 @@
   programs.dconf.enable = true;
   services = {
     dbus.enable = true;
-    # flatpak.enable = true; # FIXME: does not work on disko-vm-darwin
-    # TODO: investigate services.flatpak.update.onActivation = false
+    flatpak.enable = true;
   };
 
   xdg.portal = {
