@@ -1,34 +1,16 @@
 {
-  specialArgs,
+  inputs,
   config,
   lib,
   ...
 }: let
-  # prefer flake inputs version of agenix, unless the arg is missing
-  # fall back to main of the repo otherwise
-  commit = "master";
-
-  disko = rec {
-    pinned = builtins.fetchTarball {
-      url = "https://github.com/nix-community/disko/archive/${commit}.tar.gz";
-      sha256 = "1ayxw37arc92frzq0080w7kixdmqbq4jm8a19nrgivb70ra1mqys";
-    };
-    repo = lib.attrsets.attrByPath ["inputs" "disko"] pinned specialArgs;
-  };
-
-  impermanence = rec {
-    pinned = builtins.fetchTarball {
-      url = "https://github.com/nix-community/impermanence/archive/${commit}.tar.gz";
-      sha256 = "1k30ig9b5bx51f0y617yvcn61bgpahf8r0i55mnl3hy6nqjbfw07";
-    };
-    repo = lib.attrsets.attrByPath ["inputs" "impermanence"] pinned specialArgs;
-  };
-
   inherit (config.disko) enableConfig;
-
   persistPath = "/nix/persist";
 in {
-  imports = ["${disko.repo}/module.nix"] ++ ["${impermanence.repo}/nixos.nix"];
+  imports = [
+    inputs.disko.nixosModules.disko
+    inputs.impermanence.nixosModules.impermanence
+  ];
 
   disko.devices = lib.modules.mkIf enableConfig {
     disk = {
