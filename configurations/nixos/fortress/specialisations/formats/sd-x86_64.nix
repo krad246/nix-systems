@@ -5,4 +5,5 @@ in {
     grub.enable = modules.mkForce false;
     generic-extlinux-compatible.enable = modules.mkForce true;
   };
+  disko.enableConfig = modules.mkForce false;
 }
