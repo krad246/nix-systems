@@ -3,10 +3,10 @@ let
     module = {
       imports = [extraConfig];
 
-      disko = {
-        enableConfig = false;
-        memSize = 6 * 1024;
-      };
+      # disko = {
+      #   enableConfig = true;
+      #   memSize = 6 * 1024;
+      # };
 
       virtualisation = {
         diskSize = 20 * 1024;
