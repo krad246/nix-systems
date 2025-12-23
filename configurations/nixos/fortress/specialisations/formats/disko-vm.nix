@@ -6,5 +6,7 @@
       "virtio_net"
       "virtio_blk"
     ];
+
+    virtualisation.cores = 8;
   };
 }
