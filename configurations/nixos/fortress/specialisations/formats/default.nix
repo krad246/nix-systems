@@ -1,35 +1,28 @@
 let
-  mkConfig = extraConfig: let
-    module = {
-      imports = [extraConfig];
+  mkConfig = module: {config, ...}: {
+    imports = [module];
 
-      # disko = {
-      #   enableConfig = true;
-      #   memSize = 6 * 1024;
-      # };
-
-      virtualisation = {
-        diskSize = 20 * 1024;
-      };
+    disko = {
+      memSize = 6 * 1024;
     };
-  in
-    module;
-  # mkQemuConfig = extraConfig: let
-  #   module = {modulesPath, ...}: {
-  #     imports =
-  #       [
-  #         (modulesPath + "/virtualisation/qemu-vm.nix")
-  #       ]
-  #       ++ [
-  #         (mkConfig extraConfig)
-  #       ];
-  #     virtualisation = {
-  #       cores = 6;
-  #       memorySize = 8 * 1024;
-  #     };
-  #   };
-  # in
-  #   module;
+
+    virtualisation = let
+      toMB = size: let
+        m = builtins.match "^([0-9]+)([MG])$" size;
+      in
+        if m == null
+        then throw "Invalid size string (expected <int>M or <int>G): ${size}"
+        else let
+          value = builtins.fromJSON (builtins.elemAt m 0);
+          unit = builtins.elemAt m 1;
+        in
+          if unit == "M"
+          then value
+          else value * 1024;
+    in {
+      diskSize = toMB config.disko.devices.disk.main.imageSize;
+    };
+  };
 in {
   disko-vm = mkConfig ./disko-vm.nix;
   disko-vm-darwin = mkConfig ./disko-vm-darwin.nix;
