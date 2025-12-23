@@ -30,12 +30,22 @@ in {
             empty = {
               size = "1G";
             };
+
             root = {
               size = "100%";
               content = {
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
+              };
+            };
+
+            swap = {
+              size = "2G";
+              content = {
+                type = "swap";
+                priority = 100;
+                resumeDevice = true;
               };
             };
           };
