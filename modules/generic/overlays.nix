@@ -1,6 +1,7 @@
 {self, ...}: {
   nixpkgs.overlays = [
-    self.overlays.default
+    (_final: prev: {lib = prev.lib.extend self.overlays.lib;})
+    self.overlays.krad246
     self.overlays.unstable
   ];
 }
