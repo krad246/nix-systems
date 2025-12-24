@@ -1,14 +1,20 @@
 # outer / 'flake' scope
 {
-  perSystem = ctx @ {
+  perSystem = {
     config,
     lib,
     pkgs,
     ...
   }: {
     apps = {
-      bootstrap = import ./bootstrap.nix {
-        inherit (ctx) config lib pkgs;
+      bootstrap = let
+        runner = pkgs.callPackage ./bootstrap.nix {
+          flake-root = config.flake-root.package;
+        };
+      in {
+        type = "app";
+        program = lib.meta.getExe runner;
+        meta.description = "Run the devShell bootstrap script.";
       };
     };
   };
