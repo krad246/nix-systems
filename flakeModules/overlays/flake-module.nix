@@ -70,12 +70,14 @@
       inherit (lib) fixedPoints;
       pkgs' = pkgs.extend (fixedPoints.composeManyExtensions [
         self.overlays.flake
-        self.overlays.lib
+        # self.overlays.lib
         self.overlays.krad246
         self.overlays.unstable
       ]);
     in {
-      inherit (pkgs') flake lib krad246 unstable;
+      inherit (pkgs') flake;
+      inherit (pkgs') krad246;
+      inherit (pkgs') unstable;
     };
   };
 }
