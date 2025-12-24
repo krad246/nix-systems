@@ -9,18 +9,18 @@
     inputs.flake-parts.flakeModules.easyOverlay
   ];
 
-  flake = rec {
-    lib = inputs.nixpkgs.lib.extend overlays.lib;
+  flake = {
+    lib = inputs.nixpkgs.lib.extend (import ./lib);
 
     overlays = {
-      lib = import ./lib;
-
+      # Unstable package set
       unstable = _final: prev: {
         unstable = import inputs.nixpkgs-unstable {
           inherit (prev) config overlays system;
         };
       };
 
+      # krad246 packages and custom behaviors
       krad246 = _final: prev:
         withSystem prev.stdenv.hostPlatform.system (
           {
@@ -28,6 +28,8 @@
             config,
             ...
           }: {
+            lib = prev.lib.extend (import ./lib);
+
             krad246 = {
               agenix = inputs'.agenix.packages.default;
 
@@ -42,6 +44,7 @@
           }
         );
 
+      # This flake's outputs
       flake = _final: prev:
         withSystem prev.stdenv.hostPlatform.system (
           {config, ...}: {
@@ -54,12 +57,20 @@
     };
   };
 
-  perSystem = {pkgs, ...}: {
-    overlayAttrs = {
-      lib = pkgs.lib.extend self.overlays.lib;
-      flake = pkgs.extend self.overlays.flake;
-      krad246 = pkgs.extend self.overlays.krad246;
-      unstable = pkgs.extend self.overlays.unstable;
+  perSystem = {
+    lib,
+    pkgs,
+    ...
+  }: {
+    overlayAttrs = let
+      inherit (lib) fixedPoints;
+      pkgs' = pkgs.extend (fixedPoints.composeManyExtensions [
+        self.overlays.flake
+        self.overlays.krad246
+        self.overlays.unstable
+      ]);
+    in {
+      inherit (pkgs') flake krad246 unstable;
     };
   };
 }
