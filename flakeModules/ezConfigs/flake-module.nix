@@ -20,10 +20,7 @@
     };
   in {
     root = self;
-    # globalArgs = {
-    #   inherit getSystem moduleWithSystem withSystem;
-    #   inherit inputs self;
-    # };
+    globalArgs = args;
 
     nixos = {
       earlyModuleArgs = args;
