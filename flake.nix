@@ -1,6 +1,6 @@
 {
   nixConfig = {
-    extra-experimental-features = "nix-command flakes";
+    # extra-experimental-features = "nix-command flakes";
     extra-substituters = [
       "https://cache.nixos.org"
       "https://nix-community.cachix.org"
@@ -11,6 +11,13 @@
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "krad246.cachix.org-1:N57J9SfNFtxMSYnlULH4l7ZkdNjIQb0ByyapaEb/8IM="
     ];
+
+    keep-going = true;
+    show-trace = true;
+    accept-flake-config = true;
+    builders-use-substitutes = true;
+    preallocate-contents = true;
+    allow-import-from-derivation = true;
   };
 
   inputs = {

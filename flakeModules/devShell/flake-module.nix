@@ -1,8 +1,4 @@
-{
-  inputs,
-  self,
-  ...
-}: let
+{inputs, ...}: let
   justfile = ./just-flake;
 in {
   imports =
@@ -25,7 +21,6 @@ in {
   };
 
   perSystem = {
-    self',
     config,
     lib,
     pkgs,
@@ -37,80 +32,78 @@ in {
       (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
         bubblewrap = pkgs.mkShell {
           inputsFrom = [
-            self'.devShells.interactive
+            config.devShells.interactive
           ];
 
           packages = [];
           shellHook = ''
-            ${lib.meta.getExe self'.packages.bubblewrap}
+            ${lib.meta.getExe config.packages.bubblewrap}
           '';
         };
       })
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isDarwin {
         devcontainer = pkgs.mkShell {
           inputsFrom = [
-            self'.devShells.interactive
+            config.devShells.interactive
           ];
 
-          packages = [];
+          packages = [
+            pkgs.coreutils
+          ];
 
           shellHook = let
             parse = lib.systems.parse.mkSystemFromString pkgs.stdenv.system;
             arch = parse.cpu.name;
-            makefile = self'.packages."makefile-${arch}-linux";
-            devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
+            makefile = config.packages."makefile-${arch}-linux";
+            devcontainer-json = config.packages."devcontainer-json-${arch}-linux";
           in ''
-            FLAKE_ROOT="$(${lib.meta.getExe config.flake-root.package})"
-            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
-            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
+            ln -snvrf ${makefile} $FLAKE_ROOT/Makefile
+            ln -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
           '';
         };
       })
       // {
         interactive = pkgs.mkShell {
-          inputsFrom = [
-            self'.devShells.nix-shell
-            config.just-flake.outputs.devShell
+          inputsFrom = with config; [
+            devShells.nix-shell
+            just-flake.outputs.devShell
           ];
 
           packages =
-            [
-              self.packages.${pkgs.stdenv.system}.devour-flake
-              self.packages.${pkgs.stdenv.system}.home-manager
+            [pkgs.lorri]
+            ++ [
+              config.packages.devour-flake
+              config.packages.home-manager
             ]
             ++ (lib.lists.optionals pkgs.stdenv.isLinux [
-              self.packages.${pkgs.stdenv.system}.nixos-rebuild
+              config.packages.nixos-rebuild
             ])
             ++ (lib.lists.optionals pkgs.stdenv.isDarwin [
-              self.packages.${pkgs.stdenv.system}.darwin-rebuild
+              config.packages.darwin-rebuild
             ]);
 
           shellHook = ''
-            FLAKE_ROOT="$(${lib.meta.getExe config.flake-root.package})"
-            eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
+            eval "$(lorri direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
           '';
         };
 
         nix-shell = pkgs.mkShell {
           packages = with pkgs;
-            [git delta]
-            ++ [direnv nix-direnv lorri]
+            [git]
+            ++ [direnv nix-direnv]
             ++ [just gnumake]
-            ++ [shellcheck nil]
-            ++ [self.packages.${pkgs.stdenv.system}.nix];
+            ++ [shellcheck nil];
+          # ++ [self.packages.${pkgs.stdenv.system}.nix];
 
-          inputsFrom = [
-            config.flake-root.devShell
-            config.treefmt.build.devShell
-            config.pre-commit.devShell
+          inputsFrom = with config; [
+            flake-root.devShell
+            treefmt.build.devShell
+            pre-commit.devShell
           ];
-
-          shellHook = ''
-          '';
         };
 
-        # prefer an interpreter-level venv by default
-        default = self'.devShells.nix-shell;
+        # prefer JUST the tools by default
+        default = config.devShells.nix-shell;
       };
   };
 }
