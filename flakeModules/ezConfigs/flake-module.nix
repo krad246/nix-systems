@@ -14,16 +14,22 @@
   ezConfigs = let
     configRoot = config.ezConfigs.root + "/configurations";
     modulesRoot = config.ezConfigs.root + "/modules";
-  in {
-    root = self;
-    globalArgs = {
+    args = {
       inherit getSystem moduleWithSystem withSystem;
       inherit inputs self;
     };
+  in {
+    root = self;
+    # globalArgs = {
+    #   inherit getSystem moduleWithSystem withSystem;
+    #   inherit inputs self;
+    # };
 
     nixos = {
-      configurationsDirectory = configRoot + "/nixos";
+      earlyModuleArgs = args;
       modulesDirectory = modulesRoot + "/nixos";
+
+      configurationsDirectory = configRoot + "/nixos";
       hosts = {
         windex.userHomeModules = ["keerad" "krad246"];
         fortress.userHomeModules = ["krad246"];
@@ -31,8 +37,10 @@
     };
 
     darwin = {
-      configurationsDirectory = configRoot + "/darwin";
+      earlyModuleArgs = args;
       modulesDirectory = modulesRoot + "/darwin";
+
+      configurationsDirectory = configRoot + "/darwin";
       hosts = {
         nixbook-air.userHomeModules = ["krad246"];
         nixbook-pro.userHomeModules = ["krad246"];
@@ -42,9 +50,10 @@
     };
 
     home = {
-      configurationsDirectory = configRoot + "/home";
+      earlyModuleArgs = args;
       modulesDirectory = modulesRoot + "/home";
 
+      configurationsDirectory = configRoot + "/home";
       users = {
         keerad = {
           nameFunction = _name: "keerad@windex";
