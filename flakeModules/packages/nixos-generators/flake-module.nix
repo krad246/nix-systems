@@ -26,7 +26,6 @@ in {
     };
 
     aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
-      fortress-disko-vm = mkFormat (withSystem "aarch64-linux" (ctx: ctx.pkgs)) "fortress" "disko-vm";
       fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
       fortress-sd-aarch64-installer = mkFormat pkgs "fortress" "sd-aarch64-installer";
     });
