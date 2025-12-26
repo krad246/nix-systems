@@ -1,20 +1,14 @@
 {
-  specialArgs,
+  inputs,
   config,
   lib,
   ...
 }: let
-  inherit (lib) attrsets modules;
-  disko = rec {
-    pinned = builtins.fetchTarball {
-      url = "https://github.com/nix-community/disko/archive/master.tar.gz";
-      sha256 = "1ayxw37arc92frzq0080w7kixdmqbq4jm8a19nrgivb70ra1mqys";
-    };
-
-    repo = attrsets.attrByPath ["inputs" "disko"] pinned specialArgs;
-  };
+  inherit (lib) modules;
 in {
-  imports = ["${disko.repo}/module.nix"];
+  imports = [
+    inputs.disko.nixosModules.disko
+  ];
 
   disko.devices = modules.mkDefault {
     disk = {
@@ -36,12 +30,22 @@ in {
             empty = {
               size = "1G";
             };
+
             root = {
               size = "100%";
               content = {
                 type = "filesystem";
                 format = "ext4";
                 mountpoint = "/";
+              };
+            };
+
+            swap = {
+              size = "2G";
+              content = {
+                type = "swap";
+                priority = 100;
+                resumeDevice = true;
               };
             };
           };

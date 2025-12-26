@@ -13,7 +13,7 @@ in {
     ];
 
   formatConfigs = import ./specialisations/formats;
-  specialisation = import ./specialisations/bootable;
+  # specialisation = import ./specialisations/bootable;
 
   nixpkgs.system = lib.modules.mkDefault "x86_64-linux";
 }
