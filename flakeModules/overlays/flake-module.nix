@@ -15,10 +15,6 @@
     lib = inputs.nixpkgs.lib.extend ext;
 
     overlays = {
-      lib = _final: prev: {
-        lib = prev.lib.extend ext;
-      };
-
       # Unstable package set
       unstable = _final: prev: {
         unstable = import inputs.nixpkgs-unstable {
@@ -34,6 +30,8 @@
             config,
             ...
           }: {
+            lib = prev.lib.extend ext;
+
             krad246 = {
               agenix = inputs'.agenix.packages.default;
 
@@ -70,12 +68,12 @@
       inherit (lib) fixedPoints;
       pkgs' = pkgs.extend (fixedPoints.composeManyExtensions [
         self.overlays.flake
-        # self.overlays.lib
         self.overlays.krad246
         self.overlays.unstable
       ]);
     in {
       inherit (pkgs') flake;
+      inherit (pkgs') lib;
       inherit (pkgs') krad246;
       inherit (pkgs') unstable;
     };
