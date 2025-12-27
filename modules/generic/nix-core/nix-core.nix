@@ -6,7 +6,7 @@
   inherit (lib) modules;
 in {
   nix = {
-    package = modules.mkDefault pkgs.nixVersions.stable;
+    # package = modules.mkDefault pkgs.nixVersions.stable;
     checkConfig = true;
     gc.automatic = true;
     settings =
