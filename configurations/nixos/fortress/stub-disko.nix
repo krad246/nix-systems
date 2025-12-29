@@ -56,5 +56,5 @@ in {
     };
   };
 
-  boot.loader.grub.device = lib.modules.mkDefault config.disko.devices.disk.main.device;
+  boot.loader.grub.device = modules.mkDefault config.disko.devices.disk.main.device;
 }

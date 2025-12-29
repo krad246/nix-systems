@@ -5,6 +5,7 @@
   ...
 }: let
   inherit (config.disko) enableConfig;
+  inherit (lib) modules;
   persistPath = "/nix/persist";
 in {
   imports = [
@@ -12,10 +13,10 @@ in {
     inputs.impermanence.nixosModules.impermanence
   ];
 
-  disko.devices = lib.modules.mkIf enableConfig {
+  disko.devices = modules.mkIf enableConfig {
     disk = {
       main = {
-        device = "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23026J804343";
+        device = modules.mkDefault "/dev/disk/by-id/nvme-WD_BLACK_SN850X_2000GB_23026J804343";
         type = "disk";
         content = {
           type = "gpt";
@@ -101,13 +102,13 @@ in {
     };
   };
 
-  fileSystems = lib.modules.mkIf enableConfig {
+  fileSystems = modules.mkIf enableConfig {
     "${persistPath}" = {
       neededForBoot = true;
     };
   };
 
-  environment.persistence = lib.modules.mkIf enableConfig {
+  environment.persistence = modules.mkIf enableConfig {
     "${persistPath}" = {
       hideMounts = true;
       directories = [
