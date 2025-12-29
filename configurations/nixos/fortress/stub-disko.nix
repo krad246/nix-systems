@@ -51,7 +51,7 @@ in {
           };
         };
 
-        imageSize = "16G";
+        imageSize = "24G";
       };
     };
   };
