@@ -1,7 +1,7 @@
-{self, ...}: {
+_: {
   formatAttr = "vmWithDisko";
   virtualisation.vmVariantWithDisko = {
-    imports = [./vm.nix] ++ [self.diskoConfigurations.fortress-desktop];
+    imports = [./vm.nix];
 
     boot.initrd.kernelModules = [
       "virtio_pci"
@@ -28,6 +28,7 @@
     #     device = "nodev";
     #   };
     # };
-    virtualisation.fileSystems."/nix/persist".neededForBoot = true;
+    # disko.devices.disk.main = { device = "/dev/vda"; type = "disk"; };
+    # virtualisation.fileSystems."/nix/persist".neededForBoot = true;
   };
 }
