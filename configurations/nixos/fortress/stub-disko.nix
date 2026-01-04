@@ -10,7 +10,7 @@ in {
     inputs.disko.nixosModules.disko
   ];
 
-  disko.devices = modules.mkDefault {
+  disko.devices = modules.mkIf (config.specialisation != {}) (modules.mkDefault {
     disk = {
       main = {
         device = "/dev/vda";
@@ -54,7 +54,7 @@ in {
         imageSize = "24G";
       };
     };
-  };
+  });
 
   boot.loader.grub.device = modules.mkDefault config.disko.devices.disk.main.device;
 }
