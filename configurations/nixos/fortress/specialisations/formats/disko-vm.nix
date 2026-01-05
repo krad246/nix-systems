@@ -29,6 +29,9 @@ _: {
     #   };
     # };
     # disko.devices.disk.main = { device = "/dev/vda"; type = "disk"; };
-    # virtualisation.fileSystems."/nix/persist".neededForBoot = true;
+    virtualisation.fileSystems = {
+      # "/home".neededForBoot = true;
+      "/nix/persist".neededForBoot = true;
+    };
   };
 }
