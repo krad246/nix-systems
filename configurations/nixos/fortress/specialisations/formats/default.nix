@@ -19,5 +19,7 @@ in {
   vagrant-virtualbox = mkConfig ./vagrant-virtualbox.nix;
   virtualbox = mkConfig ./virtualbox.nix;
   vm = mkConfig ./vm.nix;
+  vm-bootloader = mkConfig ./vm-bootloader.nix;
+  vm-nogui = mkConfig ./vm-nogui.nix;
   vmware = mkConfig ./vmware.nix;
 }
