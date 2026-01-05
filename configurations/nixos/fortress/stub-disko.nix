@@ -6,9 +6,9 @@
 }: let
   inherit (lib) modules;
 in {
-  imports = [
-    inputs.disko.nixosModules.disko
-    inputs.impermanence.nixosModules.impermanence
+  imports = with inputs; [
+    disko.nixosModules.disko
+    impermanence.nixosModules.impermanence
   ];
 
   boot.loader.grub = {
@@ -65,23 +65,15 @@ in {
       type = "lvm_vg";
 
       lvs = modules.mkDefault {
-        # root = {
-        #   size = "100%";
-        #   content = {
-        #     type = "filesystem";
-        #     format = "ext4";
-        #     mountpoint = "/";
-        #   };
-        # };
+        home = {
+          size = "20%VG";
+          content = {
+            type = "filesystem";
+            format = "ext4";
+            mountpoint = "/home";
+          };
+        };
 
-        # home = {
-        #   size = "20%VG";
-        #   content = {
-        #     type = "filesystem";
-        #     format = "ext4";
-        #     mountpoint = "/home";
-        #   };
-        # };
         persist = {
           size = "5%VG";
           content = {
@@ -112,7 +104,6 @@ in {
 
     nodev."/" = {
       fsType = "tmpfs";
-      mountOptions = ["defaults"] ++ ["mode=1755"];
     };
   };
 
