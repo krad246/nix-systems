@@ -1,27 +1,6 @@
 let
-  mkConfig = module: {config, ...}: {
+  mkConfig = module: {
     imports = [module];
-
-    disko = {
-      memSize = 6 * 1024;
-    };
-
-    virtualisation = let
-      toMB = size: let
-        m = builtins.match "^([0-9]+)([MG])$" size;
-      in
-        if m == null
-        then throw "Invalid size string (expected <int>M or <int>G): ${size}"
-        else let
-          value = builtins.fromJSON (builtins.elemAt m 0);
-          unit = builtins.elemAt m 1;
-        in
-          if unit == "M"
-          then value
-          else value * 1024;
-    in {
-      diskSize = toMB config.disko.devices.disk.main.imageSize;
-    };
   };
 in {
   disko-vm = mkConfig ./disko-vm.nix;
