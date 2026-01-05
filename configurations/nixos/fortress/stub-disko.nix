@@ -128,7 +128,7 @@ in {
     };
   };
 
-  fileSystems = {
+  fileSystems = modules.mkIf config.disko.enableConfig {
     "/nix/persist" = {
       neededForBoot = true;
     };
@@ -136,6 +136,7 @@ in {
 
   environment.persistence = {
     "/nix/persist" = {
+      enable = config.disko.enableConfig;
       hideMounts = true;
       directories = [
         "/var/log"
