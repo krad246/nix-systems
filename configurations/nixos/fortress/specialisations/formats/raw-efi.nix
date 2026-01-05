@@ -1,4 +1,4 @@
-{lib, ...}: {
-  boot.kernelParams = ["nomodeset"];
-  disko.enableConfig = lib.modules.mkForce false;
+{
+  imports = [./raw.nix];
+  # boot.kernelParams = ["nomodeset"];
 }

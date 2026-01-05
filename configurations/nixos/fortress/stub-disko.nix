@@ -12,7 +12,7 @@ in {
   ];
 
   boot.loader.grub = {
-    inherit (config.disko.devices.disk.main) device;
+    device = modules.mkDefault config.disko.devices.disk.main.device;
     efiSupport = true;
   };
 
