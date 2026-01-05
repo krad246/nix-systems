@@ -8,7 +8,13 @@
 in {
   imports = [
     inputs.disko.nixosModules.disko
+    inputs.impermanence.nixosModules.impermanence
   ];
+
+  boot.loader.grub = {
+    inherit (config.disko.devices.disk.main) device;
+    efiSupport = true;
+  };
 
   disko.devices = {
     disk = {
@@ -59,14 +65,14 @@ in {
       type = "lvm_vg";
 
       lvs = modules.mkDefault {
-        root = {
-          size = "100%";
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/";
-          };
-        };
+        # root = {
+        #   size = "100%";
+        #   content = {
+        #     type = "filesystem";
+        #     format = "ext4";
+        #     mountpoint = "/";
+        #   };
+        # };
 
         # home = {
         #   size = "20%VG";
@@ -76,6 +82,14 @@ in {
         #     mountpoint = "/home";
         #   };
         # };
+        persist = {
+          size = "5%VG";
+          content = {
+            type = "filesystem";
+            format = "ext4";
+            mountpoint = "/nix/persist";
+          };
+        };
 
         nix = {
           size = "45%VG";
@@ -90,16 +104,45 @@ in {
           size = "5%VG";
           content = {
             type = "swap";
-            priority = 100;
             resumeDevice = true;
           };
         };
       };
     };
+
+    nodev."/" = {
+      fsType = "tmpfs";
+      mountOptions = ["defaults"] ++ ["mode=1755"];
+    };
   };
 
-  boot.loader.grub = {
-    inherit (config.disko.devices.disk.main) device;
-    efiSupport = true;
+  fileSystems = {
+    "/nix/persist" = {
+      neededForBoot = true;
+    };
+  };
+
+  environment.persistence = {
+    "/nix/persist" = {
+      hideMounts = true;
+      directories = [
+        "/var/log"
+        "/var/lib/bluetooth"
+        "/var/lib/flatpak"
+        "/var/lib/nixos"
+        "/var/lib/systemd/coredump"
+        "/etc/NetworkManager/system-connections"
+        {
+          directory = "/var/lib/colord";
+          user = "colord";
+          group = "colord";
+          mode = "u=rwx,g=rx,o=";
+        }
+      ];
+      files = [
+        "/etc/machine-id"
+        "/etc/ssh/ssh_host_ed25519_key"
+      ];
+    };
   };
 }
