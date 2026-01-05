@@ -1,4 +1,4 @@
 {lib, ...}: {
-  boot.kernelParams = ["nomodeset"];
+  # boot.kernelParams = ["nomodeset"];
   disko.enableConfig = lib.modules.mkForce false;
 }
