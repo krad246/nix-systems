@@ -22,6 +22,8 @@ in {
           type = "gpt";
 
           partitions = {
+            ##### Hybrid MBR #####
+
             boot = {
               size = "1M";
               type = "EF02"; # for grub MBR
@@ -36,6 +38,8 @@ in {
                 mountpoint = "/boot";
               };
             };
+
+            ##### LVM #####
 
             # Override to LUKS or other desired layout.
             # We'll enforce a strict LVM architecture because of its flexibility as an interface.
@@ -64,23 +68,23 @@ in {
           };
         };
 
-        home = {
-          size = "20%VG";
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/home";
-          };
-        };
-
-        # nix = {
-        #   size = "45%VG";
+        # home = {
+        #   size = "20%VG";
         #   content = {
         #     type = "filesystem";
         #     format = "ext4";
-        #     mountpoint = "/nix";
+        #     mountpoint = "/home";
         #   };
         # };
+
+        nix = {
+          size = "45%VG";
+          content = {
+            type = "filesystem";
+            format = "ext4";
+            mountpoint = "/nix";
+          };
+        };
 
         swap = {
           size = "5%VG";
