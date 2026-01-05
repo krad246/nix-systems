@@ -16,94 +16,115 @@ in {
     efiSupport = true;
   };
 
-  disko.devices = {
-    disk = {
-      main = {
-        type = "disk";
+  virtualisation = let
+    toMB = size: let
+      m = builtins.match "^([0-9]+)([MG])$" size;
+    in
+      if m == null
+      then throw "Invalid size string (expected <int>M or <int>G): ${size}"
+      else let
+        value = builtins.fromJSON (builtins.elemAt m 0);
+        unit = builtins.elemAt m 1;
+      in
+        if unit == "M"
+        then value
+        else value * 1024;
+  in {
+    diskSize = toMB config.disko.devices.disk.main.imageSize;
+  };
 
-        device = modules.mkDefault "/dev/vda";
-        imageSize = "24G"; # for VMs
+  disko = {
+    memSize = 6 * 1024; # for VMs
 
-        content = {
-          type = "gpt";
+    devices = {
+      disk = {
+        main = {
+          type = "disk";
 
-          partitions = {
-            ##### Hybrid MBR #####
+          device = modules.mkDefault "/dev/vda";
+          imageSize = "24G"; # for VMs
 
-            boot = {
-              size = "1M";
-              type = "EF02"; # for grub MBR
-            };
+          content = {
+            type = "gpt";
 
-            ESP = {
-              type = "EF00";
-              size = "100M";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
+            partitions = {
+              ##### Hybrid MBR #####
+
+              boot = {
+                size = "1M";
+                type = "EF02"; # for grub MBR
               };
-            };
 
-            ##### LVM #####
+              ESP = {
+                type = "EF00";
+                size = "100M";
+                content = {
+                  type = "filesystem";
+                  format = "vfat";
+                  mountpoint = "/boot";
+                };
+              };
 
-            # Override to LUKS or other desired layout.
-            # We'll enforce a strict LVM architecture because of its flexibility as an interface.
-            root = modules.mkDefault {
-              size = "100%";
-              content = {
-                type = "lvm_pv";
-                vg = "pool";
+              ##### LVM #####
+
+              # Override to LUKS or other desired layout.
+              # We'll enforce a strict LVM architecture because of its flexibility as an interface.
+              root = modules.mkDefault {
+                size = "100%";
+                content = {
+                  type = "lvm_pv";
+                  vg = "pool";
+                };
               };
             };
           };
         };
       };
-    };
 
-    lvm_vg.pool = {
-      type = "lvm_vg";
+      lvm_vg.pool = {
+        type = "lvm_vg";
 
-      lvs = modules.mkDefault {
-        home = {
-          size = "20%VG";
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/home";
+        lvs = modules.mkDefault {
+          home = {
+            size = "20%VG";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/home";
+            };
           };
-        };
 
-        persist = {
-          size = "5%VG";
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/nix/persist";
+          persist = {
+            size = "5%VG";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/nix/persist";
+            };
           };
-        };
 
-        nix = {
-          size = "45%VG";
-          content = {
-            type = "filesystem";
-            format = "ext4";
-            mountpoint = "/nix";
+          nix = {
+            size = "45%VG";
+            content = {
+              type = "filesystem";
+              format = "ext4";
+              mountpoint = "/nix";
+            };
           };
-        };
 
-        swap = {
-          size = "5%VG";
-          content = {
-            type = "swap";
-            resumeDevice = true;
+          swap = {
+            size = "5%VG";
+            content = {
+              type = "swap";
+              resumeDevice = true;
+            };
           };
         };
       };
-    };
 
-    nodev."/" = {
-      fsType = "tmpfs";
+      nodev."/" = {
+        fsType = "tmpfs";
+      };
     };
   };
 
