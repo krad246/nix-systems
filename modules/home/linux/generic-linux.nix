@@ -1,15 +1,9 @@
 {
   inputs,
   self,
-  lib,
-  osConfig,
   ...
-}: let
-  inherit (inputs) nix-flatpak;
-  inherit (lib) attrsets;
-in {
-  imports = [nix-flatpak.homeManagerModules.nix-flatpak];
-
+}: {
+  imports = [inputs.nix-flatpak.homeManagerModules.nix-flatpak];
   targets.genericLinux.enable = true;
   systemd.user.startServices = "sd-switch";
 
@@ -20,18 +14,18 @@ in {
 
     generic-linux = {
       configuration = {
-        imports =
-          [./dconf.nix]
-          ++ (with self.homeModules; [
-            kitty
-            vscode
-            vscode-server
-          ]);
+        imports = with self.homeModules; [
+          dconf
+          kitty
+          vscode
+          vscode-server
+        ];
 
-        # Don't mutate dconf settings unless we can guarantee that dconf is running in the surrounding system.
-        # For simplicity's sake this means that NixOS Gnome setups will enable this but in no other case will
-        # these settings activate.
-        dconf.enable = attrsets.attrByPath ["programs" "dconf" "enable"] false osConfig;
+        # # Don't mutate dconf settings unless we can guarantee that dconf is running in the surrounding system.
+        # # For simplicity's sake this means that NixOS Gnome setups will enable this but in no other case will
+        # # these settings activate.
+        # dconf.enable = attrsets.attrByPath ["programs" "dconf" "enable"] false osConfig;
+        # dbus.enable = attrsets.attrByPath ["services" "dbus" "enable"] false osConfig;
 
         services = {
           flatpak = {
