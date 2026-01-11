@@ -121,13 +121,6 @@ with lib.hm.gvariant; {
       xkb-options = ["terminate:ctrl_alt_bksp"];
     };
 
-    "org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
-      cursor-theme = "WhiteSur-cursors";
-      gtk-theme = "WhiteSur-Dark";
-      icon-theme = "WhiteSur-dark";
-    };
-
     "org/gnome/desktop/notifications" = {
       application-children = ["vesktop" "gnome-power-panel" "org-kde-kdeconnect-daemon" "org-gnome-evolution-alarm-notify" "com-valvesoftware-steam" "org-signal-signal" "app-zen-browser-zen" "com-spotify-client"];
       show-banners = true;

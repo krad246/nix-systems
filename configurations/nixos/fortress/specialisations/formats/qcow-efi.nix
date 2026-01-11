@@ -1,3 +1,4 @@
-_: {
-  boot.kernelParams = ["nomodeset"];
+{
+  imports = [./qcow.nix];
+  # boot.kernelParams = ["nomodeset"];
 }

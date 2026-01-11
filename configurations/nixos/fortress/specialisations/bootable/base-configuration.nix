@@ -9,9 +9,6 @@
       ./remote-access.nix
     ]
     ++ [
-      self.diskoConfigurations.fortress-desktop
-    ]
-    ++ [
       self.modules.generic.dullahan
       self.modules.generic.gremlin
     ];
