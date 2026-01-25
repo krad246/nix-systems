@@ -5,5 +5,6 @@ inputs.flake-parts.lib.mkFlake {
   imports = [
     ./modules/inputs.nix
     ./modules/flake/flake-root.nix
+    ./modules/flake/treefmt.nix
   ];
 }

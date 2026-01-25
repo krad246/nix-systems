@@ -4,6 +4,8 @@
   ];
 
   flake-file = {
+    formatter = pkgs: pkgs.alejandra;
+
     inputs = {
       systems.url = "github:nix-systems/default";
       nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
