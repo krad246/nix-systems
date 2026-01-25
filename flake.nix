@@ -55,6 +55,8 @@
     # An opinionated Nix flake library (see flake-utils)
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    flake-file.url = "github:vic/flake-file";
+
     # Simple connection glue between direnv, nix-shell, and flakes to get
     # the absolute roots of various subflakes in a project.
     flake-root.url = "github:srid/flake-root";
