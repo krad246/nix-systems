@@ -14,6 +14,8 @@
   };
 
   inputs = {
+    systems.url = "github:nix-systems/default";
+
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
@@ -174,6 +176,6 @@
         };
       };
 
-      systems = ["x86_64-linux" "aarch64-darwin" "aarch64-linux"];
+      systems = import inputs.systems;
     });
 }
