@@ -8,6 +8,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-root.url = "github:srid/flake-root";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    pre-commit-hooks-nix.url = "github:cachix/pre-commit-hooks.nix";
     systems.url = "github:nix-systems/default";
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };

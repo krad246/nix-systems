@@ -6,5 +6,6 @@ inputs.flake-parts.lib.mkFlake {
     ./modules/inputs.nix
     ./modules/flake/flake-root.nix
     ./modules/flake/treefmt.nix
+    ./modules/flake/pre-commit.nix
   ];
 }
