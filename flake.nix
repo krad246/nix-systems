@@ -1,17 +1,12 @@
+# DO-NOT-EDIT. This file was auto-generated using github:vic/flake-file.
+# Use `nix run .#write-flake` to regenerate it.
 {
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    flake-file.url = "github:vic/flake-file";
-  };
+  outputs = inputs: import ./outputs.nix inputs;
 
-  outputs = inputs @ {flake-parts, ...}:
-    flake-parts.lib.mkFlake
-    {
-      inherit inputs;
-    }
-    {
-      imports = [];
-      systems = ["x86_64-linux" "aarch64-linux" "aarch64-darwin"];
-    };
+  inputs = {
+    flake-file.url = "github:vic/flake-file";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    systems.url = "github:nix-systems/default";
+  };
 }
