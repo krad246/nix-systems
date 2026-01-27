@@ -22,6 +22,16 @@ in {
       package = pkgs.nerd-fonts.meslo-lg;
     };
     settings = {
+      scrollbar = "scrolled-and-hovered";
+      scrollback_pager_history_size = 1;
+      scrollback_fill_enlarged_window = "yes";
+
+      show_hyperlink_targets = "yes";
+
+      copy_on_select = "clipboard";
+
+      strip_trailing_spaces = "smart";
+
       enabled_layouts = strings.concatStringsSep "," [
         "fat"
         "tall"
@@ -31,6 +41,9 @@ in {
         "stack"
         "grid"
       ];
+
+      confirm_os_window_close = 0;
+      macos_option_as_alt = "yes";
     };
     keybindings =
       {
@@ -162,10 +175,10 @@ in {
         "shift+cmd+w" = "close_os_window";
 
         "kitty_mod+." = "";
-        "ctrl+alt+f" = "move_tab_forward";
+        # "ctrl+alt+f" = "move_tab_forward";
 
         "kitty_mod+," = "";
-        "ctrl+alt+b" = "move_tab_backward";
+        # "ctrl+alt+b" = "move_tab_backward";
 
         "kitty_mod+alt+t" = "set_tab_title";
         "shift+cmd+i" = "set_tab_title";
@@ -251,9 +264,5 @@ in {
         "cmd+q" = "quit";
       };
     environment = {};
-    extraConfig = ''
-      confirm_os_window_close 0
-      macos_option_as_alt yes
-    '';
   };
 }
