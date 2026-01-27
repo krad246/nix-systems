@@ -78,6 +78,9 @@ in {
 
         "kitty_mod+h" = "show_scrollback";
         "kitty_mod+g" = "show_last_command_output";
+
+        "kitty_mod+/" = "search_scrollback";
+        "cmd+f" = "search_scrollback";
       }
       // {
         # window management
@@ -147,8 +150,11 @@ in {
         "shift+cmd+[" = "previous_tab";
         "kitty_mod+tab" = "previous_tab";
 
-        "kitty_mod+t" = "new_tab";
-        "cmd+t" = "new_tab";
+        "kitty_mod+t" = "new_tab !neighbor";
+        "kitty_mod+/" = "search_scrollback";
+        "cmd+f" = "search_scrollback";
+
+        "cmd+t" = "new_tab !neighbor";
 
         "kitty_mod+q" = "close_tab";
         "cmd+w" = "close_tab";
