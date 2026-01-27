@@ -1,3 +1,4 @@
-_: {
-  boot.kernelParams = ["nomodeset"];
+{
+  imports = [./raw.nix];
+  # boot.kernelParams = ["nomodeset"];
 }

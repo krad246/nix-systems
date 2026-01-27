@@ -42,7 +42,7 @@
     impermanence.url = "github:nix-community/impermanence";
     just-flake.url = "github:juspay/just-flake";
     mac-app-util.url = "github:hraban/mac-app-util";
-    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.6.0";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     nixGL.url = "github:nix-community/nixGL";
     nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";

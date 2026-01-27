@@ -93,7 +93,7 @@ in {
       # out-of-band package management
       nur.url = "github:nix-community/NUR";
       nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-      nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
+      nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.6.0";
 
       # Legacy and flake compatibility shims.
       flake-compat.url = "github:edolstra/flake-compat";
@@ -147,6 +147,8 @@ in {
       vscode-server.url = "github:nix-community/nixos-vscode-server";
       nixGL.url = "github:nix-community/nixGL";
     };
+
+    prune-lock.enable = true;
   };
 
   flake = rec {
