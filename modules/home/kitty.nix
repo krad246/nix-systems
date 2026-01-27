@@ -8,6 +8,7 @@
 in {
   programs.kitty = {
     enable = true;
+    package = pkgs.unstable.kitty;
     darwinLaunchOptions = ["--single-instance"];
     shellIntegration = {
       mode = "enabled";
