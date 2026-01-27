@@ -147,6 +147,8 @@ in {
       vscode-server.url = "github:nix-community/nixos-vscode-server";
       nixGL.url = "github:nix-community/nixGL";
     };
+
+    prune-lock.enable = true;
   };
 
   flake = rec {
