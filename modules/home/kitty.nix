@@ -129,8 +129,12 @@ in {
 
         "kitty_mod+0" = "";
 
-        "kitty_mod+f7" = "focus_visible_window";
-        "kitty_mod+f8" = "swap_with_window";
+        "kitty_mod+f7" = "";
+        # "kitty_mod+f7" = "focus_visible_window";
+        "ctrl+space" = "focus_visible_window";
+        "kitty_mod+f8" = "";
+        # "kitty_mod+f8" = "swap_with_window";
+        "ctrl+shift+space" = "swap_with_window";
       }
       // {
         # tab management
