@@ -8,6 +8,7 @@
     flake-file.url = "github:vic/flake-file";
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-root.url = "github:srid/flake-root";
+    just-flake.url = "github:juspay/just-flake";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     pre-commit-hooks-nix.url = "github:cachix/pre-commit-hooks.nix";
     systems.url = "github:nix-systems/default";

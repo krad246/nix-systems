@@ -8,5 +8,6 @@ inputs.flake-parts.lib.mkFlake {
     ./modules/flake/flake-root.nix
     ./modules/flake/pre-commit.nix
     ./modules/flake/treefmt.nix
+    ./modules/flake/justfile.nix
   ];
 }
