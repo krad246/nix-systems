@@ -1,9 +1,15 @@
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
   imports = [
     inputs.flake-file.flakeModules.default
   ];
 
   flake-file = {
+    formatter = lib.modules.mkDefault (pkgs: pkgs.alejandra);
+
     inputs = {
       systems.url = "github:nix-systems/default";
       nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
