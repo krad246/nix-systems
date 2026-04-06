@@ -10,6 +10,10 @@
     };
     agenix-shell.url = "github:aciceri/agenix-shell";
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+    disko = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/disko";
+    };
     flake-compat.url = "github:edolstra/flake-compat";
     flake-file.url = "github:vic/flake-file";
     flake-parts = {
