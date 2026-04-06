@@ -9,6 +9,13 @@
       url = "github:ryantm/agenix";
     };
     agenix-shell.url = "github:aciceri/agenix-shell";
+    cosmic-manager = {
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
+      url = "github:HeitorAugustoLN/cosmic-manager";
+    };
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
     disko = {
       inputs.nixpkgs.follows = "nixpkgs";
