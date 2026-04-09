@@ -32,6 +32,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/home-manager/release-25.11";
     };
+    impermanence = {
+      inputs = {
+        home-manager.follows = "";
+        nixpkgs.follows = "";
+      };
+      url = "github:nix-community/impermanence";
+    };
     import-tree.url = "github:vic/import-tree";
     just-flake.url = "github:juspay/just-flake";
     nix-auto-follow = {
