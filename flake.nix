@@ -16,6 +16,7 @@
     just-flake.url = "github:juspay/just-flake";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-lib.follows = "nixpkgs";
+    pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
     pre-commit-hooks-nix.url = "github:cachix/pre-commit-hooks.nix";
     systems.url = "github:nix-systems/default";
     treefmt-nix = {

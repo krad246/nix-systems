@@ -333,6 +333,21 @@
         "type": "github"
       }
     },
+    "pkgs-by-name-for-flake-parts": {
+      "locked": {
+        "lastModified": 1769286518,
+        "narHash": "sha256-F7VlUICvYp2wJKyQqM6d46BNEZCzMQ6dMH9zbmjuybc=",
+        "owner": "drupol",
+        "repo": "pkgs-by-name-for-flake-parts",
+        "rev": "7ba1cd4a9a72c9c6c272018a63f090f2c912a171",
+        "type": "github"
+      },
+      "original": {
+        "owner": "drupol",
+        "repo": "pkgs-by-name-for-flake-parts",
+        "type": "github"
+      }
+    },
     "pre-commit-hooks-nix": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -366,6 +381,7 @@
         "nixpkgs-lib": [
           "nixpkgs"
         ],
+        "pkgs-by-name-for-flake-parts": "pkgs-by-name-for-flake-parts",
         "pre-commit-hooks-nix": "pre-commit-hooks-nix",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix_2"
