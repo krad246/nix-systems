@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.kitty = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.kitty = {
     programs.kitty = {
       darwinLaunchOptions = ["--single-instance"];
 

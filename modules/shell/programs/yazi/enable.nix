@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.yazi = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.yazi = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

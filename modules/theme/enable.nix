@@ -1,4 +1,8 @@
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
   flake-file.inputs = {
     stylix = {
       url = "github:nix-community/stylix/release-25.11";
@@ -6,7 +10,7 @@
     };
   };
 
-  flake.modules.nixos.theme = {lib, ...}: {
+  flake.modules.nixos.theme = {
     imports = [inputs.stylix.nixosModules.stylix];
 
     stylix = {

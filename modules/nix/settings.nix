@@ -1,6 +1,10 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.modules = {
-    generic.nix = {lib, ...}: {
+    generic.nix = {
       nix.settings = {
         experimental-features = [
           "ca-derivations"
@@ -65,7 +69,7 @@
       };
     };
 
-    darwin.nix = {lib, ...}: {
+    darwin.nix = {
       imports = [self.modules.generic.nix];
 
       nix = {
@@ -81,7 +85,7 @@
       };
     };
 
-    nixos.nix = {lib, ...}: {
+    nixos.nix = {
       imports = [self.modules.generic.nix];
 
       nix.settings = {

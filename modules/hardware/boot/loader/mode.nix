@@ -1,9 +1,5 @@
-{
-  flake.modules.nixos.bootloader = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.nixos.bootloader = {config, ...}: let
     cfg = config.boot.loader;
   in {
     options.boot.loader.mode = lib.options.mkOption {

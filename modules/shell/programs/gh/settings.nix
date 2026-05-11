@@ -1,9 +1,5 @@
-{
-  flake.modules.homeManager.gh = {
-    config,
-    lib,
-    ...
-  }: {
+{lib, ...}: {
+  flake.modules.homeManager.gh = {config, ...}: {
     options.shell.programs.gh.identities = let
       schema = lib.types.submodule ({name, ...}: {
         options = {

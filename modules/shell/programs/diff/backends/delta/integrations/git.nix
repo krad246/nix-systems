@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.diff = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.diff = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

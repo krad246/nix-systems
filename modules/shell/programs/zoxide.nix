@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.zoxide = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.zoxide = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

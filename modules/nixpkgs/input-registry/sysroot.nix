@@ -1,9 +1,5 @@
-{
-  flake.modules.generic.input-registry = ctx @ {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.generic.input-registry = ctx @ {config, ...}: let
     cfg = config.input-registry.sysroot;
   in {
     options.input-registry.sysroot = {

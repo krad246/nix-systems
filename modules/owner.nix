@@ -1,6 +1,7 @@
 {
   self,
   config,
+  lib,
   ...
 }: let
   cfg = config.flake.meta.owner;
@@ -13,7 +14,7 @@ in {
     };
 
     modules = {
-      generic.owner = {lib, ...}: {
+      generic.owner = {
         options = {
           owner = {
             email = lib.options.mkOption {

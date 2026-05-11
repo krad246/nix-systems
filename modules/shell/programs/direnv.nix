@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.direnv = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.direnv = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

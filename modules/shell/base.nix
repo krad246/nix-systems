@@ -1,9 +1,9 @@
-{self, ...}: {
-  flake.modules.homeManager.shell = {
-    config,
-    lib,
-    ...
-  }: let
+{
+  self,
+  lib,
+  ...
+}: {
+  flake.modules.homeManager.shell = {config, ...}: let
     cfg = config.shell;
   in {
     imports = with self.modules.homeManager; [
@@ -23,22 +23,14 @@
 
     options.shell = {
       integrations = {
-        bat.enable =
-          lib.options.mkEnableOption "Whether to enable shell `bat` integration.";
-        direnv.enable =
-          lib.options.mkEnableOption "Whether to enable shell `direnv` integration.";
-        fzf.enable =
-          lib.options.mkEnableOption "Whether to enable shell `fzf` integration.";
-        lsd.enable =
-          lib.options.mkEnableOption "Whether to enable shell `lsd` integration.";
-        kitty.enable =
-          lib.options.mkEnableOption "Whether to enable shell `kitty` integration.";
-        starship.enable =
-          lib.options.mkEnableOption "Whether to enable shell `starship` integration.";
-        yazi.enable =
-          lib.options.mkEnableOption "Whether to enable shell `yazi` integration.";
-        zoxide.enable =
-          lib.options.mkEnableOption "Whether to enable shell `zoxide` integration.";
+        bat.enable = lib.options.mkEnableOption "Whether to enable shell `bat` integration.";
+        direnv.enable = lib.options.mkEnableOption "Whether to enable shell `direnv` integration.";
+        fzf.enable = lib.options.mkEnableOption "Whether to enable shell `fzf` integration.";
+        lsd.enable = lib.options.mkEnableOption "Whether to enable shell `lsd` integration.";
+        kitty.enable = lib.options.mkEnableOption "Whether to enable shell `kitty` integration.";
+        starship.enable = lib.options.mkEnableOption "Whether to enable shell `starship` integration.";
+        yazi.enable = lib.options.mkEnableOption "Whether to enable shell `yazi` integration.";
+        zoxide.enable = lib.options.mkEnableOption "Whether to enable shell `zoxide` integration.";
       };
     };
 

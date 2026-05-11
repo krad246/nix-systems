@@ -1,7 +1,6 @@
-{
+{lib, ...}: {
   flake.modules.homeManager.bat = {
     config,
-    lib,
     pkgs,
     ...
   }: let

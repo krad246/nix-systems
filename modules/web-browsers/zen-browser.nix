@@ -1,14 +1,10 @@
-{
+{lib, ...}: {
   flake.modules = {
     darwin.zen-browser = {
       homebrew.casks = ["zen"];
     };
 
-    homeManager.zen-browser = {
-      lib,
-      pkgs,
-      ...
-    }: {
+    homeManager.zen-browser = {pkgs, ...}: {
       config = lib.modules.mkMerge [
         (lib.modules.mkIf pkgs.stdenv.hostPlatform.isDarwin {
           home.sessionVariables.BROWSER = let

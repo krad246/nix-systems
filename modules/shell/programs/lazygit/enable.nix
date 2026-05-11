@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.lazygit = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.lazygit = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

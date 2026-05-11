@@ -1,9 +1,5 @@
-{
-  flake.modules.generic.input-registry = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.generic.input-registry = {config, ...}: let
     cfg = config.input-registry;
   in {
     options.input-registry.search-path = {

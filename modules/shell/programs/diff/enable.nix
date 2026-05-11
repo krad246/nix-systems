@@ -1,9 +1,5 @@
-{
-  flake.modules.homeManager.diff = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.homeManager.diff = {config, ...}: let
     cfg = config.shell.programs.diff;
   in {
     options.shell.programs.diff = {

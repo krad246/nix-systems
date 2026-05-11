@@ -1,9 +1,9 @@
-{self, ...}: {
-  flake.modules.homeManager.bottom = {
-    lib,
-    pkgs,
-    ...
-  }: {
+{
+  self,
+  lib,
+  ...
+}: {
+  flake.modules.homeManager.bottom = {pkgs, ...}: {
     imports = [self.modules.homeManager.nixpkgs-unstable];
 
     programs.bottom = {

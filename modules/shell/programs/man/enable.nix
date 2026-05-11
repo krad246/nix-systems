@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.man = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.man = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

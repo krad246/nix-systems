@@ -1,7 +1,6 @@
-{
+{lib, ...}: {
   flake.modules.homeManager.ripgrep = {
     config,
-    lib,
     pkgs,
     ...
   }: let

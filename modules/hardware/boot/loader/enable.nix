@@ -1,9 +1,9 @@
-{self, ...}: {
-  flake.modules.nixos.bootloader = {
-    config,
-    lib,
-    ...
-  }: let
+{
+  self,
+  lib,
+  ...
+}: {
+  flake.modules.nixos.bootloader = {config, ...}: let
     cfg = config.boot.loader;
   in {
     imports = with self.modules.nixos; [

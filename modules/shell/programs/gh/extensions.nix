@@ -1,7 +1,6 @@
-{
+{lib, ...}: {
   flake.modules.homeManager.gh = {
     config,
-    lib,
     pkgs,
     ...
   }: let
