@@ -1,7 +1,7 @@
 {lib, ...}: {
   nix = {
-    daemonIOLowPriority = lib.modules.mkDefault true;
-    daemonProcessType = lib.modules.mkDefault "Adaptive";
+    # daemonIOLowPriority = lib.modules.mkDefault true;
+    # daemonProcessType = lib.modules.mkDefault "Adaptive";
 
     settings = {
       auto-optimise-store = false;

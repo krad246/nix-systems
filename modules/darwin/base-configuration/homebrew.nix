@@ -9,13 +9,13 @@ in {
   imports = [nix-homebrew.darwinModules.nix-homebrew];
 
   nix-homebrew = {
-    enable = true;
+    enable = false;
     enableRosetta = true;
     autoMigrate = true;
   };
 
   homebrew = {
-    enable = true;
+    enable = false;
     onActivation = {
       autoUpdate = true;
       cleanup = "zap";
