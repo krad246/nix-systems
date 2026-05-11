@@ -4,6 +4,7 @@
   outputs = inputs: import ./outputs.nix inputs;
 
   inputs = {
+    agenix-shell.url = "github:aciceri/agenix-shell";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-file.url = "github:vic/flake-file";
     flake-parts.url = "github:hercules-ci/flake-parts";

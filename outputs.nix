@@ -9,5 +9,6 @@ inputs.flake-parts.lib.mkFlake {
     ./modules/flake/pre-commit.nix
     ./modules/flake/treefmt.nix
     ./modules/flake/justfile.nix
+    ./modules/flake/agenix-shell.nix
   ];
 }
