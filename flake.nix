@@ -12,6 +12,10 @@
       url = "github:hercules-ci/flake-parts";
     };
     flake-root.url = "github:srid/flake-root";
+    home-manager = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager/release-25.11";
+    };
     import-tree.url = "github:vic/import-tree";
     just-flake.url = "github:juspay/just-flake";
     nix-auto-follow = {
