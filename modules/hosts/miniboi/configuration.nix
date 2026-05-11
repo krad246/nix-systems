@@ -1,6 +1,7 @@
 {
   inputs,
   self,
+  lib,
   ...
 }: {
   flake.nixosConfigurations.miniboi = inputs.nixpkgs.lib.nixosSystem {
@@ -40,23 +41,20 @@
 
         boot.loader = {
           enable = true;
-          mode = "efi";
+          # mode = "efi";
+          mode = "bios";
         };
       }
-      ({lib, ...}: {
+      {
         nixpkgs.hostPlatform =
           if lib.trivial.inPureEvalMode
           then "aarch64-linux"
           else builtins.currentSystem;
-      })
+      }
     ];
   };
 
-  perSystem = {
-    lib,
-    pkgs,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     legacyPackages = let
       outputs = self.nixosConfigurations.miniboi.extendModules {
         modules = [
