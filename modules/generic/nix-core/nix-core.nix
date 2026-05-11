@@ -15,6 +15,7 @@ in {
           ["nix-command" "flakes"]
           ++ [
             "auto-allocate-uids"
+            "pipe-operators"
           ]
           ++ (lib.lists.optionals pkgs.stdenv.isLinux [
             "cgroups"

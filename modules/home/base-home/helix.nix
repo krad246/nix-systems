@@ -95,6 +95,7 @@ in {
         base = {
           # basic editor control
           "C-s" = ":w";
+          "A-]" = ":sh nix fmt %{buffer_name}";
           "C-r" = ":rla";
           "C-w" = ":bc";
           "C-q" = ":q";
@@ -285,7 +286,7 @@ in {
 
             # structural selection editing
             "=" = "no_op";
-            "A-F" = "format_selections";
+            "A-F" = "no_op";
             "&" = "align_selections";
             "_" = "no_op";
             "J" = "no_op";
@@ -411,13 +412,14 @@ in {
           name = "markdown";
           language-servers = ["marksman"];
         }
-        {
-          name = "nix";
-          language-servers = ["nixd"];
-          formatter = {
-            command = meta.getExe pkgs.alejandra;
-          };
-        }
+        # {
+        #   name = "nix";
+        #   language-servers = ["nixd"];
+        #   formatter = {
+        #     # command = meta.getExe pkgs.alejandra;
+        #     command = "nix fmt";
+        #   };
+        # }
         # {
         #   name = "python";
         #   language-servers = [];

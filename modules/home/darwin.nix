@@ -12,7 +12,7 @@ in {
     ++ (with self.homeModules; [
       discord
       kitty
-      vscode
+      # vscode
       zen
     ]);
 

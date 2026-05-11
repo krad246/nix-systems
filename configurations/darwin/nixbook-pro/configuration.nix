@@ -40,18 +40,18 @@ in {
 
     virtualisation = rec {
       # Configure onboard nix-builder VM specs
-      linux-builder = {
-        enable = true;
-        ephemeral = true;
-        maxJobs = 60;
-        cores = 8;
-        memorySize = 16 * 1024;
-      };
+     linux-builder = {
+       enable = true;
+       ephemeral = true;
+       maxJobs = 60;
+       cores = 8;
+       memorySize = 16 * 1024;
+     };
 
       colima = {
         enable = true;
-        inherit (linux-builder) memorySize;
-        inherit (linux-builder) cores;
+       inherit (linux-builder) memorySize;
+       inherit (linux-builder) cores;
       };
     };
   };
@@ -65,4 +65,13 @@ in {
   };
 
   ids.gids.nixbld = 350;
+
+  home-manager.users.krad246.imports = [
+    ({pkgs, ...}: {
+      programs.codex = {
+        enable = true;
+        package = pkgs.unstable.codex;
+      };
+    })
+  ];
 }

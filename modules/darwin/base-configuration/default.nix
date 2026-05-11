@@ -11,9 +11,10 @@
       ./homebrew.nix
       ./keyboard.nix
       ./linux-builder.nix
-      ./mac-app-util.nix
+      # ./mac-app-util.nix
       ./menubar.nix
       ./misc-prefs.nix
+      ./networking.nix
       ./nix-daemon.nix
       ./packages.nix
       ./pointer.nix
