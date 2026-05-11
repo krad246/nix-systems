@@ -1,9 +1,5 @@
-{
-  flake.modules.nixos.grub = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.nixos.grub = {config, ...}: let
     cfg = config.boot.loader.backends.grub;
   in {
     options.boot.loader.backends.grub.mode = lib.options.mkOption {

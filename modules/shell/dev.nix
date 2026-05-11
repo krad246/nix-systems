@@ -1,8 +1,11 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.modules = {
     homeManager.shell = {
       config,
-      lib,
       pkgs,
       ...
     }: let

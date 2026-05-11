@@ -1,5 +1,5 @@
-{
-  flake.modules.nixos.systemd-boot = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.nixos.systemd-boot = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

@@ -1,5 +1,5 @@
-{
-  flake.modules.nixos.grub = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.nixos.grub = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

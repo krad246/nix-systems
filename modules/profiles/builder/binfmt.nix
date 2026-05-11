@@ -1,9 +1,9 @@
-{config, ...}: {
-  flake.modules.nixos.binfmt = {
-    lib,
-    pkgs,
-    ...
-  }: {
+{
+  config,
+  lib,
+  ...
+}: {
+  flake.modules.nixos.binfmt = {pkgs, ...}: {
     boot.binfmt.emulatedSystems = lib.trivial.pipe config.systems [
       (lib.trivial.flip lib.lists.forEach lib.systems.parse.mkSystemFromString)
       (lib.lists.filter lib.systems.inspect.predicates.isLinux)

@@ -1,9 +1,5 @@
-{
-  flake.modules.homeManager.pager = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.homeManager.pager = {config, ...}: let
     cfg = config.shell.programs.pager;
   in {
     options.shell.programs.pager.enable = lib.options.mkEnableOption "Whether to enable an augmented `PAGER` program.";

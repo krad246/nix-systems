@@ -1,5 +1,9 @@
-{inputs, ...}: {
-  flake.modules.nixos.disko = {lib, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
+  flake.modules.nixos.disko = {
     imports = [inputs.disko.nixosModules.disko];
 
     disko = {

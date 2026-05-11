@@ -1,10 +1,10 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.modules = {
-    homeManager.minimal = {
-      lib,
-      pkgs,
-      ...
-    }: {
+    homeManager.minimal = {pkgs, ...}: {
       imports = with self.modules.homeManager; [
         # helix # TODO: editor backend interface
         input-registry # overridable
@@ -32,7 +32,7 @@
       ];
     };
 
-    nixos.minimal = {lib, ...}: {
+    nixos.minimal = {
       imports = with self.modules.nixos; [
         # hardware
         home-manager

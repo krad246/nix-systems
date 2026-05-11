@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.bat = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.bat = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

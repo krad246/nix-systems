@@ -1,7 +1,6 @@
-{
+{lib, ...}: {
   flake.modules.homeManager.vscode = {
     config,
-    lib,
     pkgs,
     ...
   }: let

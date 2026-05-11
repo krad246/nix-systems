@@ -1,9 +1,5 @@
-{
-  flake.modules.homeManager.shell = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.homeManager.shell = {config, ...}: let
     cfg = config.shell;
   in {
     options.shell.backends.nushell = {

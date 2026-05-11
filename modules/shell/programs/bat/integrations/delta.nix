@@ -1,9 +1,5 @@
-{
-  flake.modules.homeManager.bat = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.homeManager.bat = {config, ...}: let
     cfg = config.shell.programs.bat;
   in {
     options.shell.programs.bat.integrations.delta.enable =

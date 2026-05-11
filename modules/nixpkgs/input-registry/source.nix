@@ -1,7 +1,10 @@
-{inputs, ...}: {
+{
+  inputs,
+  lib,
+  ...
+}: {
   flake.modules.generic.input-registry = ctx @ {
     config,
-    lib,
     options,
     ...
   }: let

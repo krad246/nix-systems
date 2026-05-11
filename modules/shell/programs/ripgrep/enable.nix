@@ -1,9 +1,5 @@
-{
-  flake.modules.homeManager.ripgrep = {
-    config,
-    lib,
-    ...
-  }: let
+{lib, ...}: {
+  flake.modules.homeManager.ripgrep = {config, ...}: let
     cfg = config.shell.programs.ripgrep;
   in {
     imports = [

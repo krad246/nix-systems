@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.starship = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.starship = {
     imports = [
       (
         lib.modules.mkAliasOptionModule

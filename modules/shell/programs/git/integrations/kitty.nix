@@ -1,5 +1,5 @@
-{
-  flake.modules.homeManager.git = {lib, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.git = {
     imports = [
       (
         lib.modules.mkAliasOptionModule
