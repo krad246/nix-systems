@@ -9,6 +9,7 @@
       url = "github:ryantm/agenix";
     };
     agenix-shell.url = "github:aciceri/agenix-shell";
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-file.url = "github:vic/flake-file";
     flake-parts = {
