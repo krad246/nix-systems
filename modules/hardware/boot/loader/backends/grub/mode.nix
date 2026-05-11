@@ -21,9 +21,10 @@
           device = "nodev";
           efiSupport = true;
 
-        # TODO: use this only in deployments with disko.
-        # efiInstallAsRemovable = lib.modules.mkDefault false;
-      };
+          # TODO: use this only in deployments with disko.
+          # efiInstallAsRemovable = lib.modules.mkDefault false;
+        })
+      ];
     };
   };
 }
