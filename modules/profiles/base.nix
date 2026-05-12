@@ -4,7 +4,7 @@
   ...
 }: {
   flake.modules = {
-    homeManager.minimal = {pkgs, ...}: {
+    homeManager.base = {pkgs, ...}: {
       imports = with self.modules.homeManager; [
         # helix # TODO: editor backend interface
         input-registry # overridable
@@ -32,16 +32,18 @@
       ];
     };
 
-    nixos.minimal = {
-      imports = with self.modules.nixos; [
-        # hardware
-        home-manager
-        input-registry
-        locale
-        nix
-        nixpkgs-instance
-        owner
-      ];
+    nixos.base = {
+      imports = with self.modules.nixos; ([
+          home-manager
+          input-registry
+          nix
+          nixpkgs-instance
+          owner
+        ]
+        ++ [
+          # hardware
+          locale
+        ]);
 
       environment = {
         homeBinInPath = true;
@@ -58,7 +60,7 @@
       system.stateVersion = lib.trivial.release;
     };
 
-    darwin.minimal = {
+    darwin.base = {
       imports = with self.modules.darwin; [
         home-manager
         input-registry

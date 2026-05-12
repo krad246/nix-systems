@@ -1,7 +1,7 @@
 {self, ...}: {
   flake.modules.nixos.standard = {
     imports = [
-      self.modules.nixos.minimal
+      self.modules.nixos.base
     ];
 
     boot.tmp = {
