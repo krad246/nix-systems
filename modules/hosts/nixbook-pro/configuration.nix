@@ -9,9 +9,9 @@
       {
         imports = [
           self.modules.darwin.base
+          self.modules.darwin.desktop
           self.modules.darwin.dev
           self.modules.darwin.tailscale
-          self.modules.darwin.terminal
         ];
 
         networking.hostName = "nixbook-pro";
