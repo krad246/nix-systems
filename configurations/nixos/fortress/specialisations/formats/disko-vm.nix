@@ -1,5 +1,0 @@
-{
-  formatAttr = "vmWithDisko";
-  virtualisation.vmVariantWithDisko = {
-  };
-}

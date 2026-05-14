@@ -1,60 +1,72 @@
 # DO-NOT-EDIT. This file was auto-generated using github:vic/flake-file.
 # Use `nix run .#write-flake` to regenerate it.
 {
-  outputs = inputs: import ./outputs.nix inputs;
+  outputs = inputs: inputs.flake-parts.lib.mkFlake {inherit inputs;} (inputs.import-tree ./modules);
 
   nixConfig = {
-    extra-experimental-features = "nix-command flakes";
-    extra-substituters = [
-      "https://cache.nixos.org"
-      "https://nix-community.cachix.org"
-      "https://krad246.cachix.org"
-    ];
-    extra-trusted-public-keys = [
-      "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
-      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
-      "krad246.cachix.org-1:N57J9SfNFtxMSYnlULH4l7ZkdNjIQb0ByyapaEb/8IM="
-    ];
+    substituters = ["https://cache.nixos.org" "https://nix-community.cachix.org"];
+    trusted-public-keys = ["cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="];
   };
 
   inputs = {
-    agenix.url = "github:ryantm/agenix";
-    agenix-rekey.url = "github:oddlama/agenix-rekey";
+    agenix = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:ryantm/agenix";
+    };
     agenix-shell.url = "github:aciceri/agenix-shell";
-    darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.05";
-    dconf2nix = {
-      flake = false;
-      url = "github:nix-community/dconf2nix/master";
+    cosmic-manager = {
+      inputs = {
+        home-manager.follows = "home-manager";
+        nixpkgs.follows = "nixpkgs";
+      };
+      url = "github:HeitorAugustoLN/cosmic-manager";
     };
-    devour-flake = {
-      flake = false;
-      url = "github:srid/devour-flake";
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/3";
+    disko = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/disko";
     };
-    disko.url = "github:nix-community/disko";
-    ez-configs.url = "github:ehllie/ez-configs";
     flake-compat.url = "github:edolstra/flake-compat";
     flake-file.url = "github:vic/flake-file";
-    flake-parts.url = "github:hercules-ci/flake-parts";
+    flake-parts = {
+      inputs.nixpkgs-lib.follows = "nixpkgs-lib";
+      url = "github:hercules-ci/flake-parts";
+    };
     flake-root.url = "github:srid/flake-root";
-    hercules-ci-agent.url = "github:hercules-ci/hercules-ci-agent/hercules-ci-agent-0.10.5";
-    hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
-    impermanence.url = "github:nix-community/impermanence";
+    home-manager = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/home-manager/release-25.11";
+    };
+    impermanence = {
+      inputs = {
+        home-manager.follows = "";
+        nixpkgs.follows = "";
+      };
+      url = "github:nix-community/impermanence";
+    };
+    import-tree.url = "github:vic/import-tree";
     just-flake.url = "github:juspay/just-flake";
-    mac-app-util.url = "github:hraban/mac-app-util";
-    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
-    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    nixGL.url = "github:nix-community/nixGL";
-    nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
-    nixos-generators.url = "github:nix-community/nixos-generators";
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-    nixos-wsl.url = "github:nix-community/nixos-wsl/main";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nix-auto-follow = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:fzakaria/nix-auto-follow";
+    };
+    nixos-wsl = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nixos-wsl/release-25.11";
+    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    nixpkgs-lib.follows = "nixpkgs";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nur.url = "github:nix-community/NUR";
+    pkgs-by-name-for-flake-parts.url = "github:drupol/pkgs-by-name-for-flake-parts";
     pre-commit-hooks-nix.url = "github:cachix/pre-commit-hooks.nix";
+    stylix = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/stylix/release-25.11";
+    };
     systems.url = "github:nix-systems/default";
-    treefmt-nix.url = "github:numtide/treefmt-nix";
-    vscode-server.url = "github:nix-community/nixos-vscode-server";
+    treefmt-nix = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:numtide/treefmt-nix";
+    };
   };
 }
