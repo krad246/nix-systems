@@ -400,10 +400,10 @@ in {
           name = "docker-compose";
           language-servers = ["yaml-language-server"];
         }
-        {
-          name = "dockerfile";
-          language-servers = ["docker-langserver"];
-        }
+        # {
+        #   name = "dockerfile";
+        #   language-servers = ["docker-langserver"];
+        # }
         {
           name = "just";
           language-servers = ["just-lsp"];
@@ -445,7 +445,7 @@ in {
       language-server = {
         bash-language-server.command = meta.getExe pkgs.bash-language-server;
         clangd.command = meta.getExe' pkgs.clang-tools "clangd";
-        docker-langserver.command = meta.getExe pkgs.docker-language-server;
+        # docker-langserver.command = meta.getExe pkgs.docker-language-server;
         just-lsp.command = meta.getExe pkgs.just-lsp;
         marksman.command = meta.getExe pkgs.marksman;
         neocmakelsp.command = meta.getExe pkgs.neocmakelsp;

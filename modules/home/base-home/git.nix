@@ -8,16 +8,27 @@
   inherit (lib) meta modules;
 in {
   programs = {
+    # Prettier pager, adds syntax highlighting and line numbers
+    delta = {
+      enable = true;
+      options = {
+        navigate = true;
+        line-numbers = true;
+        hyperlinks = true;
+        side-by-side = true;
+      };
+    };
+
     git = {
       enable = true;
       lfs.enable = true;
 
-      aliases = {
-        whoami = "config user.name";
-        tree = "log --pretty=oneline --graph --decorate --all --reflog";
-      };
+      settings = {
+        alias = {
+          whoami = "config user.name";
+          tree = "log --pretty=oneline --graph --decorate --all --reflog";
+        };
 
-      extraConfig = {
         apply.whitespace = "fix";
         branch.sort = "-committerdate";
 
@@ -57,19 +68,7 @@ in {
         };
 
         safe.directory = "*";
-      };
-
-      userName = "Keerthi Radhakrishnan";
-
-      # Prettier pager, adds syntax highlighting and line numbers
-      delta = {
-        enable = true;
-        options = {
-          navigate = true;
-          line-numbers = true;
-          hyperlinks = true;
-          side-by-side = true;
-        };
+        user.name = "Keerthi Radhakrishnan";
       };
     };
 
@@ -93,7 +92,7 @@ in {
           pagers = [
             {
               pager = let
-                inherit (config.programs.git.delta) enable package;
+                inherit (config.programs.delta) enable package;
                 bin =
                   meta.getExe package;
               in
