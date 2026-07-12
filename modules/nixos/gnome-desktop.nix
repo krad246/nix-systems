@@ -3,12 +3,11 @@
     xserver = {
       enable = true;
       enableCtrlAltBackspace = true;
-
-      displayManager.gdm.enable = true;
-      desktopManager.gnome.enable = true;
-
       excludePackages = with pkgs; [xterm];
     };
+
+    desktopManager.gnome.enable = true;
+    displayManager.gdm.enable = true;
   };
 
   environment.gnome.excludePackages =
