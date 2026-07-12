@@ -26,5 +26,5 @@
       );
   };
 
-  programs.git.userEmail = "condor-janitor0e@icloud.com";
+  programs.git.settings.user.email = "condor-janitor0e@icloud.com";
 }

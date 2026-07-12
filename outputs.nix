@@ -62,17 +62,17 @@ in {
     inputs = {
       systems.url = "github:nix-systems/default";
 
-      nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+      nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
       nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
       # WSL distribution on NixOS
       nixos-wsl.url = "github:nix-community/nixos-wsl/main";
 
       # Darwin shims for Nix
-      darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.05";
+      darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.11";
 
       # Cross-platform (Linux / MacOS) userspace package management
-      home-manager.url = "github:nix-community/home-manager/release-25.05";
+      home-manager.url = "github:nix-community/home-manager/release-25.11";
 
       # Flake-Parts module gluing it together
       ez-configs.url = "github:ehllie/ez-configs";
