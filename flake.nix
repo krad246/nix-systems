@@ -21,7 +21,7 @@
     agenix.url = "github:ryantm/agenix";
     agenix-rekey.url = "github:oddlama/agenix-rekey";
     agenix-shell.url = "github:aciceri/agenix-shell";
-    darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.05";
+    darwin.url = "github:lnl7/nix-darwin/nix-darwin-25.11";
     dconf2nix = {
       flake = false;
       url = "github:nix-community/dconf2nix/master";
@@ -38,7 +38,7 @@
     flake-root.url = "github:srid/flake-root";
     hercules-ci-agent.url = "github:hercules-ci/hercules-ci-agent/hercules-ci-agent-0.10.5";
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
     impermanence.url = "github:nix-community/impermanence";
     just-flake.url = "github:juspay/just-flake";
     mac-app-util.url = "github:hraban/mac-app-util";
@@ -49,7 +49,7 @@
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixos-wsl.url = "github:nix-community/nixos-wsl/main";
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     nur.url = "github:nix-community/NUR";
     pre-commit-hooks-nix.url = "github:cachix/pre-commit-hooks.nix";

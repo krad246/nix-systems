@@ -42,4 +42,18 @@
       ];
     }
   ];
+
+  services = {
+    sunshine = {
+      enable = true;
+
+      capSysAdmin = true;
+      openFirewall = true;
+
+      settings = {
+        audio_sink = "auto";
+        virtual_sink = "sunshine-sink";
+      };
+    };
+  };
 }
