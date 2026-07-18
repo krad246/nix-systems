@@ -3,6 +3,12 @@
   lib,
   ...
 }: {
+  flake.modules.nixos.bottom = {pkgs, ...}: {
+    imports = [self.modules.nixos.nixpkgs-unstable];
+
+    environment.systemPackages = [pkgs.unstable.bottom];
+  };
+
   flake.modules.homeManager.bottom = {pkgs, ...}: {
     imports = [self.modules.homeManager.nixpkgs-unstable];
 
