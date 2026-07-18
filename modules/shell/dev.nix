@@ -12,6 +12,7 @@
       cfg = config.shell.profiles.dev;
     in {
       imports = with self.modules.homeManager; [
+        codex
         direnv
         gh
         git
@@ -26,6 +27,7 @@
           integrations.direnv.enable = lib.modules.mkDefault true;
 
           programs = {
+            codex.enable = lib.modules.mkDefault true;
             direnv.enable = true;
             diff.integrations = {
               git.enable = lib.modules.mkDefault true;
