@@ -9,6 +9,7 @@
     ++ [
       ./kdeconnect-ports.nix
       ./pipewire.nix
+      ./yubikey.nix
     ];
 
   hardware = rec {
