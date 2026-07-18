@@ -1,7 +1,10 @@
 {self, ...}: {
   flake.modules = {
     homeManager.dev = {
-      imports = [self.modules.homeManager.base];
+      imports = with self.modules.homeManager; [
+        base
+        editor
+      ];
 
       shell.profiles.dev.enable = true;
     };

@@ -1,8 +1,12 @@
 {
   flake.modules.homeManager.helix = {
+    config,
+    lib,
+    ...
+  }: {
     programs.helix = {
-      enable = true;
-      defaultEditor = true;
+      enable = lib.modules.mkDefault config.editor.backends.helix.enable;
+      defaultEditor = lib.modules.mkDefault config.editor.backends.helix.default;
     };
   };
 }
