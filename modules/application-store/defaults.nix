@@ -2,8 +2,8 @@
   flake.modules.darwin.app-stores = {
     imports = with self.modules.darwin; [
       app-store
-      app-store-homebrew-cask
-      app-store-mas
+      app-store-tool-homebrew-casks
+      app-store-tool-mas-apps
       homebrew
     ];
   };

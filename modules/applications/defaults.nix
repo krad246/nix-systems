@@ -5,17 +5,42 @@
 }: {
   flake.modules.darwin.applications = {
     imports = with self.modules.darwin; [
+      bluesnooze
       groupme
       magnet
+      signal
+      utm
+      zoom
     ];
 
     appStore = {
-      installations = {
-        groupme = lib.modules.mkDefault "mas";
-        magnet = lib.modules.mkDefault "mas";
-      };
+      install = lib.modules.mkDefault (
+        {
+          application,
+          variants,
+        }: let
+          tool =
+            {
+              bluesnooze = "homebrew.casks";
+              groupme = "mas.apps";
+              magnet = "mas.apps";
+              signal = "homebrew.casks";
+              utm = "homebrew.casks";
+              zen = "homebrew.casks";
+              zoom = "homebrew.casks";
+            }.${
+              application
+            };
+        in {
+          inherit tool;
+          value = variants.${tool};
+        }
+      );
 
-      backends.mas.enable = true;
+      tools = {
+        "homebrew.casks".enable = true;
+        "mas.apps".enable = true;
+      };
     };
   };
 }

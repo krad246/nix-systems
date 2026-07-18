@@ -6,14 +6,10 @@
 
       config = lib.modules.mkIf config.browser.backends.zen.enable {
         appStore = {
-          applications.zen.homebrew-cask = {
-            displayName = "Zen Browser";
-            identifier = "zen";
-            appPath = "/Applications/Zen.app";
+          applications.zen."homebrew.casks" = {
+            install = ["zen"];
           };
-
-          installations.zen = lib.modules.mkDefault "homebrew-cask";
-          backends.homebrew-cask.enable = true;
+          tools."homebrew.casks".enable = true;
         };
       };
     };

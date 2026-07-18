@@ -2,24 +2,46 @@
   flake.modules.darwin.app-store = {config, ...}: let
     cfg = config.appStore;
 
-    resolved = lib.attrsets.mapAttrs (application: tool:
-      cfg.applications.${application}.${tool}
-      // {
-        inherit application tool;
+    variantType = lib.types.submodule {
+      freeformType = lib.types.attrsOf lib.types.anything;
+
+      options.install = lib.options.mkOption {
+        type = lib.types.anything;
+        description = "Tool-private installation data consumed by the selected tool module.";
+      };
+    };
+
+    selections = lib.attrsets.mapAttrs (application: variants:
+      cfg.install {
+        inherit application variants;
       })
-    cfg.installations;
+    cfg.applications;
+
+    resolved = lib.attrsets.mapAttrs (application: selection:
+      selection
+      // {
+        inherit application;
+      })
+    selections;
   in {
     options.appStore = {
       applications = lib.options.mkOption {
-        type = lib.types.attrsOf (lib.types.attrsOf lib.types.attrs);
+        type = lib.types.attrsOf (lib.types.attrsOf variantType);
         default = {};
         description = "Logical applications keyed by installation tool, with tool-private variant values.";
       };
 
-      installations = lib.options.mkOption {
-        type = lib.types.attrsOf lib.types.str;
+      tools = lib.options.mkOption {
+        type = lib.types.attrsOf (lib.types.submodule {
+          options.enable = lib.options.mkEnableOption "application-store installation tool";
+        });
         default = {};
-        description = "Selected installation tool keyed by logical application.";
+        description = "Installation tools available to user selection policy.";
+      };
+
+      install = lib.options.mkOption {
+        type = lib.types.functionTo lib.types.attrs;
+        description = "User policy callback selecting and invoking a tool hook for a logical application.";
       };
 
       resolved = lib.options.mkOption {
@@ -29,8 +51,6 @@
       };
     };
 
-    config.appStore = {
-      inherit resolved;
-    };
+    config.appStore.resolved = resolved;
   };
 }

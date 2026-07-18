@@ -1,9 +1,7 @@
 {
   flake.modules.darwin.magnet = {
-    appStore.applications.magnet.mas = {
-      displayName = "Magnet";
-      identifier = "441258766";
-      appPath = "/Applications/Magnet.app";
+    appStore.applications.magnet."mas.apps" = {
+      install.Magnet = 441258766;
     };
   };
 }

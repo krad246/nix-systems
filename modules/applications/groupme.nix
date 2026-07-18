@@ -1,9 +1,7 @@
 {
   flake.modules.darwin.groupme = {
-    appStore.applications.groupme.mas = {
-      displayName = "Unite - GroupMe app";
-      identifier = "1152517150";
-      appPath = "/Applications/Unite.app";
+    appStore.applications.groupme."mas.apps" = {
+      install."Unite - GroupMe app" = 1152517150;
     };
   };
 }
