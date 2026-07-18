@@ -1,26 +1,27 @@
 {lib, ...}: {
-  flake.modules.homeManager.picker = {pkgs, ...}: {
-    options.picker = {
+  flake.modules.homeManager.picker = {
+    options.picker = let
+      operation = description: {
+        enable = lib.options.mkEnableOption description // {default = true;};
+        command = lib.options.mkOption {
+          type = lib.types.str;
+          default = "";
+          description = "Command implementing ${description}.";
+        };
+      };
+    in {
       backends.fzf.enable = lib.options.mkEnableOption "FZF picker backend";
 
       sources = {
-        files = {
-          package = lib.options.mkPackageOption pkgs "fd" {};
-          arguments = lib.options.mkOption {
-            type = lib.types.attrsOf lib.types.anything;
-            default = {};
-            description = "Arguments for producing file picker candidates.";
-          };
-        };
+        files = operation "file picker candidate production";
+        directories = operation "directory picker candidate production";
+        history = operation "shell history candidate production";
+      };
 
-        directories = {
-          package = lib.options.mkPackageOption pkgs "fd" {};
-          arguments = lib.options.mkOption {
-            type = lib.types.attrsOf lib.types.anything;
-            default.type = "d";
-            description = "Arguments for producing directory picker candidates.";
-          };
-        };
+      actions = {
+        preview = operation "selected-path previewing";
+        view = operation "selected-path viewing";
+        edit = operation "selected-path editing";
       };
 
       bindings = {

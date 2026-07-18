@@ -5,6 +5,14 @@
     ...
   }: let
     cfg = config.shell;
+    toReadlineBinding = binding: let
+      parsed = builtins.match "(ctrl|alt)-(.)" binding;
+    in
+      if parsed == null
+      then binding
+      else if builtins.elemAt parsed 0 == "ctrl"
+      then "\\C-${builtins.elemAt parsed 1}"
+      else "\\e${builtins.elemAt parsed 1}";
   in {
     options.shell.backends.bash = {
       enable = lib.options.mkEnableOption "Whether to manage `bash`.";
@@ -92,6 +100,22 @@
           programs.fzf = {
             enableBashIntegration = true;
           };
+
+          programs.bash.initExtra = let
+            bindWidget = binding: widget: ''
+              for keymap in emacs-standard vi-command vi-insertion; do
+                bind -m "$keymap" -x '"${toReadlineBinding binding}": ${widget}'
+              done
+            '';
+          in
+            lib.strings.concatStrings [
+              (lib.strings.optionalString config.picker.sources.files.enable
+                (bindWidget config.picker.bindings.shell.files "fzf-file-widget"))
+              (lib.strings.optionalString config.picker.sources.directories.enable
+                (bindWidget config.picker.bindings.shell.directories "fzf-cd-widget"))
+              (lib.strings.optionalString config.picker.sources.history.enable
+                (bindWidget config.picker.bindings.shell.history "fzf-history-widget"))
+            ];
         })
       (lib.modules.mkIf cfg.backends.bash.integrations.lsd.enable
         {

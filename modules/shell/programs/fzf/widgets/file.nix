@@ -41,98 +41,56 @@
         filepath-word = true;
       };
 
-      fileArgs = rec {
-        layout = "reverse-list";
-        scheme = "path";
-
-        preview-window = "up";
-        preview = let
-          fzf-preview = pkgs.unstable.fzf-preview.override {
-            bat = config.programs.bat.package;
-          };
-        in
-          strings.escapeShellArg [
-            (meta.getExe fzf-preview)
+      fileArgs = let
+        previewWindow = "up";
+      in
+        {
+          layout = "reverse-list";
+          scheme = "path";
+          bind =
+            lib.lists.optionals picker.actions.preview.enable [
+              (keybind {
+                key = picker.bindings.picker.togglePreview;
+                action = "change-preview-window(hidden|${previewWindow})";
+              })
+            ]
+            ++ lib.lists.optionals picker.sources.files.enable [
+              (keybind {
+                key = picker.bindings.picker.reload;
+                action = "reload(${picker.sources.files.command})";
+              })
+            ];
+        }
+        // lib.attrsets.optionalAttrs picker.actions.preview.enable {
+          preview-window = previewWindow;
+          preview = strings.escapeShellArg [
+            picker.actions.preview.command
             "{}"
           ];
-
-        bind = [
-          (keybind {
-            key = picker.bindings.picker.togglePreview;
-            action = "change-preview-window(hidden|${preview-window})";
-          })
-          (keybind {
-            key = picker.bindings.picker.reload;
-            action = "reload(eval '${config.programs.fzf.defaultCommand}')";
-          })
-        ];
-      };
+        };
     in {
-      fileWidgetCommand = strings.concatStringsSep " " [
-        (meta.getExe picker.sources.files.package)
-        (cli.toGNUCommandLineShell {} picker.sources.files.arguments)
-      ];
+      fileWidgetCommand = lib.strings.optionalString picker.sources.files.enable picker.sources.files.command;
       fileWidgetOptions = cli.toGNUCommandLine {} (
         defaultArgs
         // fileArgs
         // {
           bind =
             fileArgs.bind
-            ++ [
+            ++ lib.lists.optionals picker.actions.view.enable [
               (on-multiselect {
                 key = picker.bindings.picker.view;
                 command = ''
                   stty susp undef
-                  exec ${strings.concatStringsSep " " [
-                    (meta.getExe config.programs.bat.package)
-                    (cli.toGNUCommandLineShell {} {
-                      paging = "always";
-                    })
-                  ]} "$@"
+                  exec ${picker.actions.view.command} "$@"
                 '';
               })
+            ]
+            ++ lib.lists.optionals picker.actions.edit.enable [
               (on-multiselect {
                 key = picker.bindings.picker.edit;
-                command = let
-                  hx-no-ctrl-z = pkgs.symlinkJoin {
-                    name = "hx";
-                    paths = [config.programs.helix.package];
-                    buildInputs = [pkgs.makeWrapper];
-
-                    # nosusp helix to be started with ctrl-z disabled.
-                    postBuild = let
-                      # Deep rewrite: any attribute named "C-z" becomes "no_op"
-                      # TODO: there must be a library function that does this
-                      noCZ = let
-                        stripCZ = let
-                          go = v:
-                            if builtins.isAttrs v
-                            then
-                              lib.mapAttrs
-                              (
-                                name: val:
-                                  if name == "C-z"
-                                  then "no_op"
-                                  else go val
-                              )
-                              v
-                            else if lib.isList v
-                            then map go v
-                            else v;
-                        in
-                          go;
-                      in
-                        stripCZ config.programs.helix.settings;
-                    in ''
-                      wrapProgram $out/bin/hx --add-flags '-c ${let
-                        tomlFormat = pkgs.formats.toml {};
-                      in
-                        tomlFormat.generate "hx-nosusp-config.toml" noCZ}'
-                    '';
-                  };
-                in ''
+                command = ''
                   stty susp undef
-                  exec ${meta.getExe hx-no-ctrl-z} "$@"
+                  exec ${picker.actions.edit.command} "$@"
                 '';
               })
             ];

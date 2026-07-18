@@ -41,6 +41,11 @@
         };
       };
 
+      picker.backends.fzf.integrations = {
+        bat.enable = lib.modules.mkDefault true;
+        fd.enable = lib.modules.mkDefault true;
+      };
+
       home.packages = with pkgs; ([
           coreutils
           curl

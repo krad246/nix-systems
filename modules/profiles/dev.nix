@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.modules = {
     homeManager.dev = {
       imports = with self.modules.homeManager; [
@@ -7,6 +11,7 @@
       ];
 
       shell.profiles.dev.enable = true;
+      picker.backends.fzf.integrations.helix.enable = lib.modules.mkDefault true;
     };
 
     nixos.dev = {config, ...}: {
