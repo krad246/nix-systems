@@ -19,6 +19,14 @@
       }
       (
         {config, ...}: {
+          home-manager.users.${config.owner.username} = {
+            imports = [self.modules.homeManager.rbw];
+            identity.secrets.backends.rbw.enable = true;
+          };
+        }
+      )
+      (
+        {config, ...}: {
           users.users.${config.owner.username} = {
             uid = 501;
             gid = 20;

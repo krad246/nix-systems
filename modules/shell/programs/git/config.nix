@@ -1,15 +1,10 @@
-{
-  config,
-  lib,
-  ...
-}: {
-  flake.modules.homeManager.git = inner @ {osConfig, ...}: {
+{lib, ...}: {
+  flake.modules.homeManager.git = inner @ {config, ...}: {
     programs.git = {
       lfs.enable = true;
       settings = {
-        # FIXME: Need to be able to deal with missing osConfig.
-        user.name = osConfig.owner.name or config.owner.name;
-        user.email = lib.modules.mkDefault (osConfig.owner.email or config.owner.email);
+        user.name = lib.modules.mkDefault config.identity.person.name;
+        user.email = lib.modules.mkDefault config.identity.person.email;
 
         apply.whitespace = "fix";
         branch.sort = "-committerdate";

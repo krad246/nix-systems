@@ -6,7 +6,7 @@
   flake.modules = {
     homeManager.base = {pkgs, ...}: {
       imports = with self.modules.homeManager; [
-        # helix # TODO: editor backend interface
+        identity
         input-registry # overridable
         shell
       ];
