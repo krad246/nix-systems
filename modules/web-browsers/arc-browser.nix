@@ -1,5 +1,5 @@
 {
   flake.modules.darwin.arc-browser = {
-    homebrew.casks = ["arc"];
+    appStore.applications.arc."homebrew.casks".install = ["arc"];
   };
 }

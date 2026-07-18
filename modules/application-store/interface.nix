@@ -4,11 +4,6 @@
 
     variantType = lib.types.submodule {
       freeformType = lib.types.attrsOf lib.types.anything;
-
-      options.install = lib.options.mkOption {
-        type = lib.types.anything;
-        description = "Tool-private installation data consumed by the selected tool module.";
-      };
     };
 
     selections = lib.attrsets.mapAttrs (application: variants:
@@ -22,7 +17,7 @@
       // {
         inherit application;
       })
-    selections;
+    (lib.attrsets.filterAttrs (_: selection: selection != null) selections);
   in {
     options.appStore = {
       applications = lib.options.mkOption {
@@ -40,7 +35,7 @@
       };
 
       install = lib.options.mkOption {
-        type = lib.types.functionTo lib.types.attrs;
+        type = lib.types.functionTo (lib.types.nullOr lib.types.attrs);
         description = "User policy callback selecting and invoking a tool hook for a logical application.";
       };
 
