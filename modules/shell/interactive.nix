@@ -20,7 +20,7 @@
         };
         integrations = {
           bat.enable = true;
-          fzf.enable = lib.modules.mkDefault true;
+          fzf.enable = lib.modules.mkDefault config.picker.backends.fzf.enable;
           lsd.enable = true;
           starship.enable = true;
           yazi.enable = true;
@@ -31,7 +31,6 @@
           bottom.enable = true;
           diff.enable = true;
           fd.enable = true;
-          fzf.enable = lib.modules.mkDefault true;
           lsd.enable = true;
           man.enable = true;
           pager.enable = true;

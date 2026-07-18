@@ -15,10 +15,10 @@
       bottom
       diff
       fd
-      fzf
       lsd
       man
       pager
+      picker
       ripgrep
       starship
       yazi

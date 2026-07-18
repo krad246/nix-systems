@@ -11,6 +11,7 @@
     imports = [self.modules.homeManager.fd];
 
     programs.fzf = let
+      inherit (config) picker;
       # Construct an FZF keybind string
       keybind = {
         key,
@@ -34,11 +35,11 @@
 
         bind = [
           (keybind {
-            key = "ctrl-/";
+            key = picker.bindings.picker.togglePreview;
             action = "change-preview-window(hidden|${preview-window})";
           })
           (keybind {
-            key = "ctrl-r";
+            key = picker.bindings.picker.reload;
             action = "reload(eval '${config.programs.fzf.defaultCommand}')";
           })
         ];
@@ -46,10 +47,8 @@
     in {
       changeDirWidgetOptions = config.programs.fzf.defaultOptions ++ (lib.cli.toGNUCommandLine {} fileArgs);
       changeDirWidgetCommand = lib.strings.concatStringsSep " " [
-        (lib.meta.getExe config.programs.fd.package)
-        (lib.cli.toGNUCommandLineShell {} {
-          type = "d";
-        })
+        (lib.meta.getExe picker.sources.directories.package)
+        (lib.cli.toGNUCommandLineShell {} picker.sources.directories.arguments)
       ];
     };
   };

@@ -37,6 +37,8 @@
     };
 
     config = {
+      programs.fzf.enable = lib.modules.mkDefault config.picker.backends.fzf.enable;
+
       programs.fzf = {
         defaultCommand = lib.strings.concatStringsSep " " (
           lib.lists.filter (argument: argument != null && argument != "") [

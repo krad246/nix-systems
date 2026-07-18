@@ -8,6 +8,7 @@
     inherit (lib) cli meta strings;
   in {
     programs.fzf = let
+      inherit (config) picker;
       # Construct an FZF keybind string
       keybind = {
         key,
@@ -57,17 +58,20 @@
 
         bind = [
           (keybind {
-            key = "ctrl-/";
+            key = picker.bindings.picker.togglePreview;
             action = "change-preview-window(hidden|${preview-window})";
           })
           (keybind {
-            key = "ctrl-r";
+            key = picker.bindings.picker.reload;
             action = "reload(eval '${config.programs.fzf.defaultCommand}')";
           })
         ];
       };
     in {
-      fileWidgetCommand = lib.meta.getExe config.programs.fd.package;
+      fileWidgetCommand = strings.concatStringsSep " " [
+        (meta.getExe picker.sources.files.package)
+        (cli.toGNUCommandLineShell {} picker.sources.files.arguments)
+      ];
       fileWidgetOptions = cli.toGNUCommandLine {} (
         defaultArgs
         // fileArgs
@@ -76,7 +80,7 @@
             fileArgs.bind
             ++ [
               (on-multiselect {
-                key = "ctrl-v";
+                key = picker.bindings.picker.view;
                 command = ''
                   stty susp undef
                   exec ${strings.concatStringsSep " " [
@@ -88,7 +92,7 @@
                 '';
               })
               (on-multiselect {
-                key = "ctrl-o";
+                key = picker.bindings.picker.edit;
                 command = let
                   hx-no-ctrl-z = pkgs.symlinkJoin {
                     name = "hx";
