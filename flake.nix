@@ -54,6 +54,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-darwin/nix-darwin/nix-darwin-25.11";
     };
+    nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
     nixos-wsl = {
       inputs.nixpkgs.follows = "nixpkgs";
       url = "github:nix-community/nixos-wsl/release-25.11";

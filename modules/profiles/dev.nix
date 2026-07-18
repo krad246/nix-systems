@@ -6,7 +6,6 @@
   flake.modules = {
     homeManager.dev = {
       imports = with self.modules.homeManager; [
-        base
         editor
       ];
 

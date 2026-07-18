@@ -1,7 +1,22 @@
-{lib, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.modules = {
-    darwin.zen-browser = {
-      homebrew.casks = ["zen"];
+    darwin.zen-browser = {config, ...}: {
+      imports = [self.modules.darwin.homebrew];
+
+      options.browser.backends.zen.enable =
+        lib.options.mkEnableOption "Zen browser application backend";
+
+      config = {
+        appManagement.backends.homebrew.enable =
+          lib.modules.mkDefault config.browser.backends.zen.enable;
+
+        homebrew.casks =
+          lib.lists.optional config.browser.backends.zen.enable "zen";
+      };
     };
 
     homeManager.zen-browser = {

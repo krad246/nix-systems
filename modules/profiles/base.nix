@@ -32,7 +32,7 @@
       ];
     };
 
-    nixos.base = {
+    nixos.base = {config, ...}: {
       imports = with self.modules.nixos; ([
           home-manager
           input-registry
@@ -50,6 +50,10 @@
         localBinInPath = true;
       };
 
+      home-manager.users.${config.owner.username}.imports = [
+        self.modules.homeManager.base
+      ];
+
       # nix.settings.trusted-users = ["@wheel"];
 
       # security.sudo = {
@@ -60,7 +64,7 @@
       system.stateVersion = lib.trivial.release;
     };
 
-    darwin.base = {
+    darwin.base = {config, ...}: {
       imports = with self.modules.darwin; [
         home-manager
         input-registry
@@ -70,6 +74,10 @@
       ];
 
       system.stateVersion = 6;
+
+      home-manager.users.${config.owner.username}.imports = [
+        self.modules.homeManager.base
+      ];
     };
   };
 }

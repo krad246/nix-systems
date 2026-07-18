@@ -2,29 +2,62 @@
   config,
   inputs,
   self,
+  lib,
   ...
 }: {
   flake.darwinConfigurations.nixbook-pro = inputs.nix-darwin.lib.darwinSystem {
     modules = [
       {
         imports = [
-          self.modules.darwin.base
-          self.modules.darwin.desktop
-          self.modules.darwin.dev
+          self.modules.darwin.workstation
           self.modules.darwin.tailscale
         ];
 
         networking.hostName = "nixbook-pro";
         nixpkgs.hostPlatform = "aarch64-darwin";
-      }
-      (
-        {config, ...}: {
-          home-manager.users.${config.owner.username} = {
-            imports = [self.modules.homeManager.rbw];
-            identity.secrets.backends.rbw.enable = true;
+
+        nix.linux-builder = {
+          enable = true;
+          ephemeral = true;
+          maxJobs = 60;
+          protocol = "ssh-ng";
+          systems = lib.trivial.pipe config.systems [
+            (lib.trivial.flip lib.lists.forEach lib.systems.parse.mkSystemFromString)
+            (lib.lists.filter lib.systems.inspect.predicates.isLinux)
+            (lib.trivial.flip lib.lists.forEach lib.systems.parse.doubleFromSystem)
+          ];
+
+          config = {
+            # This is an ordinary deferred NixOS module. Keep its composition
+            # shaped like any other machine even while it remains inline.
+            imports = with self.modules.nixos; [
+              bottom
+              builder
+              nix
+              swapspace
+              terminfo
+              zram
+            ];
+
+            virtualisation = {
+              cores = 8;
+              darwin-builder = {
+                diskSize = 64 * 1024;
+                memorySize = 16 * 1024;
+              };
+            };
+
+            systemd.coredump.enable = false;
+
+            swapDevices = lib.mkOverride 9 [
+              {
+                device = "/swapfile";
+                size = 16 * 1024;
+              }
+            ];
           };
-        }
-      )
+        };
+      }
       (
         {config, ...}: {
           users.users.${config.owner.username} = {
@@ -83,49 +116,6 @@
       (
         {config, ...}: {
           nix.settings.trusted-users = [config.owner.username];
-        }
-      )
-      (
-        {lib, ...}: {
-          nix.linux-builder = {
-            enable = true;
-            ephemeral = true;
-            maxJobs = 60;
-            protocol = "ssh-ng";
-            systems = lib.trivial.pipe config.systems [
-              (lib.trivial.flip lib.lists.forEach lib.systems.parse.mkSystemFromString)
-              (lib.lists.filter lib.systems.inspect.predicates.isLinux)
-              (lib.trivial.flip lib.lists.forEach lib.systems.parse.doubleFromSystem)
-            ];
-
-            config = {
-              imports = with self.modules.nixos; [
-                bottom
-                builder
-                nix
-                swapspace
-                terminfo
-                zram
-              ];
-
-              virtualisation = {
-                cores = 8;
-                darwin-builder = {
-                  diskSize = 64 * 1024;
-                  memorySize = 16 * 1024;
-                };
-              };
-
-              systemd.coredump.enable = false;
-
-              swapDevices = lib.mkOverride 9 [
-                {
-                  device = "/swapfile";
-                  size = 16 * 1024;
-                }
-              ];
-            };
-          };
         }
       )
       {
