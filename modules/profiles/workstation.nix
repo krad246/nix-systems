@@ -20,6 +20,7 @@
 
     darwin.workstation = {
       imports = with self.modules.darwin; [
+        applications
         base
         desktop
         dev

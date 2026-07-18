@@ -14,7 +14,10 @@
     };
 
     darwin.desktop = {config, ...}: {
-      imports = [self.modules.darwin.browser];
+      imports = with self.modules.darwin; [
+        app-stores
+        browser
+      ];
 
       home-manager.users.${config.owner.username}.imports = [
         self.modules.homeManager.desktop
