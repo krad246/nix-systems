@@ -1,7 +1,10 @@
 {self, ...}: {
   flake.modules = {
     homeManager.desktop = {
-      imports = [self.modules.homeManager.terminal];
+      imports = with self.modules.homeManager; [
+        browser
+        terminal
+      ];
     };
 
     nixos.desktop = {config, ...}: {
