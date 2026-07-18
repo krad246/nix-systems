@@ -36,7 +36,9 @@
             gh.enable = true;
             git = {
               enable = true;
-              integrations.gh.enable = lib.modules.mkDefault true;
+              integrations = {
+                gh.enable = lib.modules.mkDefault true;
+              };
             };
 
             lazygit.enable = true;

@@ -3,7 +3,11 @@
   lib,
   ...
 }: {
-  flake.modules.homeManager.shell = {config, ...}: let
+  flake.modules.homeManager.shell = {
+    config,
+    options,
+    ...
+  }: let
     cfg = config.shell;
   in {
     imports = with self.modules.homeManager; [
@@ -34,16 +38,23 @@
       };
     };
 
-    config.shell = {
-      backends.bash.integrations.batpipe.enable = cfg.programs.pager.integrations.bat.enable;
+    config = lib.modules.mkMerge [
+      {
+        shell = {
+          backends.bash.integrations.batpipe.enable = cfg.programs.pager.integrations.bat.enable;
 
-      programs = {
-        bat.integrations.delta.enable = lib.modules.mkDefault cfg.programs.diff.backends.delta.enable;
+          programs = {
+            bat.integrations.delta.enable = lib.modules.mkDefault cfg.programs.diff.backends.delta.enable;
 
-        man.integrations.bat.enable = lib.modules.mkDefault cfg.integrations.bat.enable;
-        pager.integrations.bat.enable = lib.modules.mkDefault cfg.integrations.bat.enable;
-        ripgrep.integrations.bat.enable = lib.modules.mkDefault cfg.integrations.bat.enable;
-      };
-    };
+            man.integrations.bat.enable = lib.modules.mkDefault cfg.integrations.bat.enable;
+            pager.integrations.bat.enable = lib.modules.mkDefault cfg.integrations.bat.enable;
+            ripgrep.integrations.bat.enable = lib.modules.mkDefault cfg.integrations.bat.enable;
+          };
+        };
+      }
+      (lib.modules.mkIf (options ? terminal.backends.kitty.enable) {
+        shell.integrations.kitty.enable = lib.modules.mkDefault config.terminal.backends.kitty.enable;
+      })
+    ];
   };
 }
