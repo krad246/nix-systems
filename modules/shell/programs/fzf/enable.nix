@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.modules.homeManager.fzf = {
     config,
     pkgs,
@@ -6,10 +10,19 @@
   }: let
     cfg = config.shell.programs.fzf;
   in {
+    imports = [
+      self.modules.homeManager.nixpkgs-unstable
+      (
+        lib.modules.mkAliasOptionModule
+        ["shell" "programs" "fzf" "enable"]
+        ["programs" "fzf" "enable"]
+      )
+    ];
+
     options = {
       shell.programs.fzf = {
         defaultCommand = {
-          package = lib.options.mkPackageOption pkgs "fd";
+          package = lib.options.mkPackageOption pkgs "fd" {};
           args = lib.options.mkOption {
             type = lib.types.nullOr lib.types.str;
             default = null;
@@ -25,10 +38,12 @@
 
     config = {
       programs.fzf = {
-        defaultCommand = lib.strings.concatStringsSep " " [
-          (lib.meta.getExe cfg.defaultCommand.package)
-          cfg.defaultCommand.args
-        ];
+        defaultCommand = lib.strings.concatStringsSep " " (
+          lib.lists.filter (argument: argument != null && argument != "") [
+            (lib.meta.getExe cfg.defaultCommand.package)
+            cfg.defaultCommand.args
+          ]
+        );
 
         defaultOptions =
           lib.cli.toGNUCommandLine {}

@@ -15,7 +15,7 @@
       bottom
       diff
       fd
-      # fzf # FIXME: not ported
+      fzf
       lsd
       man
       pager
