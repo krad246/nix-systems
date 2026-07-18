@@ -3,12 +3,13 @@
   lib,
   ...
 }: {
-  flake.modules.generic.input-registry = ctx @ {
+  flake.modules.generic.input-registry = {
     config,
     options,
     ...
   }: let
     cfg = config.input-registry.registry;
+    isHomeManager = options ? home.file;
   in {
     options.input-registry = {
       registry = {
@@ -36,7 +37,7 @@
         locked = lib.options.mkOption {
           type = lib.types.bool;
           internal = true;
-          default = !(ctx ? osConfig); # TODO: figure out if this is safe on freestanding HM configs
+          default = !isHomeManager;
           readOnly = true;
         };
       };

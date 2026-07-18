@@ -30,19 +30,26 @@
       };
 
       config = lib.modules.mkIf config.browser.backends.zen.default {
-        browser.default.command = let
-          opener = pkgs.writeShellApplication {
-            name = "zen-browser-open";
-            text = ''
-              if command -v open >/dev/null 2>&1; then
-                exec open -a Zen "$@"
-              fi
+        browser.default = {
+          command = let
+            opener = pkgs.writeShellApplication {
+              name = "zen-browser-open";
+              text = ''
+                if command -v open >/dev/null 2>&1; then
+                  exec open -a Zen "$@"
+                fi
 
-              exec flatpak run app.zen_browser.zen "$@"
-            '';
-          };
-        in
-          lib.meta.getExe opener;
+                exec flatpak run app.zen_browser.zen "$@"
+              '';
+            };
+          in
+            lib.meta.getExe opener;
+
+          appPath =
+            if pkgs.stdenv.hostPlatform.isDarwin
+            then "/Applications/Zen.app"
+            else null;
+        };
       };
     };
 

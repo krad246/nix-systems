@@ -1,4 +1,8 @@
-{self, ...}: {
+{
+  self,
+  lib,
+  ...
+}: {
   flake.modules = {
     homeManager.workstation = {
       imports = with self.modules.homeManager; [
@@ -7,6 +11,11 @@
         dev
         secrets
       ];
+
+      browser.backends.zen = {
+        enable = lib.modules.mkDefault true;
+        default = lib.modules.mkDefault true;
+      };
     };
 
     darwin.workstation = {

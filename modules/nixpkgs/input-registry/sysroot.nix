@@ -1,6 +1,11 @@
 {lib, ...}: {
-  flake.modules.generic.input-registry = ctx @ {config, ...}: let
+  flake.modules.generic.input-registry = {
+    config,
+    options,
+    ...
+  }: let
     cfg = config.input-registry.sysroot;
+    isHomeManager = options ? home.file;
   in {
     options.input-registry.sysroot = {
       install = lib.options.mkOption {
@@ -14,7 +19,7 @@
           type = lib.types.str;
           internal = true;
           default =
-            if ctx ? osConfig
+            if isHomeManager
             then config.home.homeDirectory
             else "/etc";
           readOnly = true;
@@ -45,7 +50,7 @@
         );
 
       attrpath =
-        if (ctx ? osConfig)
+        if isHomeManager
         then ["home" "file"]
         else ["environment" "etc"];
     in

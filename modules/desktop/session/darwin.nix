@@ -122,7 +122,7 @@
               {
                 phone-mirroring = "/System/Applications/iPhone Mirroring.app";
                 launchpad = "/System/Applications/Launchpad.app";
-                browser = "/Applications/Zen.app";
+                browser = config.browser.default.appPath;
               }
                   .${
                 id

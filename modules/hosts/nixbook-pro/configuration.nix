@@ -1,5 +1,4 @@
 {
-  config,
   inputs,
   self,
   lib,
@@ -10,35 +9,21 @@
       {
         imports = [
           self.modules.darwin.workstation
+          self.modules.darwin.linux-builder
           self.modules.darwin.tailscale
         ];
 
         networking.hostName = "nixbook-pro";
         nixpkgs.hostPlatform = "aarch64-darwin";
 
-        nix.linux-builder = {
-          enable = true;
-          ephemeral = true;
+        remoteBuilder = {
           maxJobs = 60;
-          protocol = "ssh-ng";
-          systems = lib.trivial.pipe config.systems [
-            (lib.trivial.flip lib.lists.forEach lib.systems.parse.mkSystemFromString)
-            (lib.lists.filter lib.systems.inspect.predicates.isLinux)
-            (lib.trivial.flip lib.lists.forEach lib.systems.parse.doubleFromSystem)
-          ];
+          backends.linux-builder = {
+            enable = true;
+            ephemeral = true;
+          };
 
-          config = {
-            # This is an ordinary deferred NixOS module. Keep its composition
-            # shaped like any other machine even while it remains inline.
-            imports = with self.modules.nixos; [
-              bottom
-              builder
-              nix
-              swapspace
-              terminfo
-              zram
-            ];
-
+          configuration = {
             virtualisation = {
               cores = 8;
               darwin-builder = {
@@ -46,9 +31,6 @@
                 memorySize = 16 * 1024;
               };
             };
-
-            systemd.coredump.enable = false;
-
             swapDevices = lib.mkOverride 9 [
               {
                 device = "/swapfile";
