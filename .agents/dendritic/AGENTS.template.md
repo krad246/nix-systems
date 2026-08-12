@@ -46,8 +46,10 @@ requirements and accepted tradeoffs; the agent controls investigation,
 technical execution, and proof. For genuine requirement ambiguity, load
 `collaboration` and ask evidence-backed questions with alternatives,
 consequences, and a recommendation. Load `invariants` before defining public
-capability boundaries. Load `rootfs` whenever owner feedback teaches a durable
-new reasoning or collaboration rule.
+capability boundaries. Load `proof-budget` before rechecking a downstream fact
+already guaranteed by platform, overlay, input, or interface composition. Load
+`rootfs` whenever owner feedback teaches a durable new reasoning or
+collaboration rule.
 
 Current north star: fully and severably land the low-level Home Manager layer,
 push genuinely user-space `nixbook-pro` behavior into it, and prove it with two

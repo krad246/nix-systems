@@ -754,6 +754,61 @@ too broadly, stop treating it as established. Surface the conflict to the owner
 when it affects requirements, refine it, synchronize the bundle, and update its
 proof obligations.
 
+### Proof-carrying architecture and validation budget
+
+The purpose of a sound architecture is partly to make downstream work obvious
+and cheap. Once an invariant is established at the correct boundary, treat it
+as a reusable proof premise. Do not repeatedly relitigate that premise at every
+consumer, call site, or port.
+
+Canonical example: a family of Nix repositories consumes a platform repository
+through a base-derived package set and ordered overlay composition. If the
+platform contract guarantees that a symbol is present in the base or a shared
+overlay, and overlays in the supported chain extend/override without deleting
+that symbol, then the symbol is valid for downstream `callPackage` scopes. Do
+not repeatedly search every consumer to ask whether it exists. The composition
+relationship is the proof.
+
+Apply the same reasoning to Dendritic module work:
+
+- a consumer importing a declared virtual interface may rely on that interface;
+- a preset importing a backend may rely on its declared options;
+- a generic module proven applicable to HM and system contexts need not be
+  re-proven at every consumer;
+- an input guaranteed by the substrate/follows graph need not be rediscovered
+  at every module;
+- a backend replacement test established for an interface should become a
+  reusable gate rather than a repeated design debate.
+
+Validation effort belongs at boundaries and invalidation events. Revalidate an
+established premise only when one of these occurs:
+
+- base/package-set/platform source changes in a way relevant to the contract;
+- overlay ordering or composition changes;
+- an overlay replaces a containing attribute set non-monotonically, uses
+  `removeAttrs`, or otherwise may remove the guaranteed symbol;
+- a consumer stops using the supported platform-derived path;
+- module import/applicability rules change;
+- an input follow/deduplication relationship changes;
+- direct evaluation/build evidence contradicts the invariant;
+- the owner explicitly asks to reopen the invariant.
+
+Absent an invalidator, land straightforward code using the proven premise. Do
+not spend context, commands, or owner attention validating facts the
+architecture already guarantees. This is not permission to skip acceptance
+tests for new boundaries or behavior; it is a rule against duplicating proof
+after the relevant boundary has already supplied it.
+
+When defining an invariant, record its invalidators along with its proof
+obligation. This lets future agents cheaply decide whether existing evidence is
+still applicable. Prefer one strong substrate/interface test over many weak
+consumer-level existence checks.
+
+The target steady state is intentionally low-friction: most routine ports
+should follow recorded invariants mechanically, consume little context, require
+no architectural re-debate, and land correctly with only checks at genuinely
+changed boundaries.
+
 ### Evolving the context root filesystem
 
 Treat `.agents/dendritic/` as a content-addressed context root filesystem. It is
