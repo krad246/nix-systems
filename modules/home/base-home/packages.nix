@@ -8,10 +8,9 @@
         sd
       ]
       ++ [duf dust]
-      ++ [procps procs nodePackages.fkill-cli]
+      ++ [procps procs]
       ++ [
-        neofetch
-        nodePackages.undollar
+        undollar
         has
       ]
       ++ [

@@ -77,7 +77,9 @@ in {
           paths = [pkgs.nixVersions.stable];
           buildInputs = [pkgs.makeWrapper];
           postBuild = ''
-            wrapProgram $out/bin/nix ${wrapArgs}
+            wrapProgram $out/bin/nix ${wrapArgs} --add-flags ${lib.strings.escapeShellArg (lib.strings.trim ''
+              ''${NIX_GITHUB_ACCESS_TOKEN:+--option access-tokens "github.com=$NIX_GITHUB_ACCESS_TOKEN"}
+            '')}
           '';
         };
 

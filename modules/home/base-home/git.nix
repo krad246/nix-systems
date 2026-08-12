@@ -89,9 +89,9 @@ in {
           switchTabsWithPanelJumpKeys = false;
         };
         git = {
-          pagers = [
+          diffRenderer = [
             {
-              pager = let
+              command = let
                 inherit (config.programs.delta) enable package;
                 bin =
                   meta.getExe package;

@@ -53,7 +53,6 @@
         generic-linux.standalone = {
           enable = !lib.trivial.inPureEvalMode;
           pkgs = withSystem builtins.currentSystem ({
-            config,
             inputs',
             system,
             ...

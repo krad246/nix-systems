@@ -9,8 +9,8 @@
 
   environment = {
     shells = [
-      "${config.homebrew.brewPrefix}/bash"
-      "${config.homebrew.brewPrefix}/zsh"
+      "${config.homebrew.prefix}/bin/bash"
+      "${config.homebrew.prefix}/bin/zsh"
     ];
 
     systemPackages = with pkgs; [
