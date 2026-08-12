@@ -146,6 +146,7 @@ in {
 
       vscode-server.url = "github:nix-community/nixos-vscode-server";
       nixGL.url = "github:nix-community/nixGL";
+      multiverse.url = "github:fzakaria/nixpkgs-multiverse";
     };
   };
 
