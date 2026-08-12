@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `5601142cf07845736fedf4beaafdf64abe350f02475df7cf324da7fb7dd582ab`
+Canonical context proxy SHA-256: `f2226cfd8f64f57e18c90561ab17db2ae93fb418b7049c8d0606c802bd3fcba3`
 
 Run:
 
@@ -46,8 +46,10 @@ requirements and accepted tradeoffs; the agent controls investigation,
 technical execution, and proof. For genuine requirement ambiguity, load
 `collaboration` and ask evidence-backed questions with alternatives,
 consequences, and a recommendation. Load `invariants` before defining public
-capability boundaries. Load `rootfs` whenever owner feedback teaches a durable
-new reasoning or collaboration rule.
+capability boundaries. Load `proof-budget` before rechecking a downstream fact
+already guaranteed by platform, overlay, input, or interface composition. Load
+`rootfs` whenever owner feedback teaches a durable new reasoning or
+collaboration rule.
 
 Current north star: fully and severably land the low-level Home Manager layer,
 push genuinely user-space `nixbook-pro` behavior into it, and prove it with two
