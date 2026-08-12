@@ -13,6 +13,9 @@ parity	Behavioral parity ledger (evidence as of this handoff)	Darwin, applicatio
 closures	Known closure/evaluation concerns	Source/eval/derivation distinctions and accepted dispatch tax
 gates	Acceptance gates for the `nixbook-pro` slice	Non-negotiable verification gates
 bridge	Bridge-to-main constraints	Coexistence constraints and likely landing order
+collaboration	Contractor relationship and questioning style	Boss-agent responsibilities and evidence-backed question protocol
+invariants	Reasoning about invariants	How to define, test, refine, and persist invariants
+rootfs	Evolving the context root filesystem	How to extend the executable context bundle as feedback evolves
 decision-sync	Mandatory architectural decision synchronization	Required protocol for persisting owner pivots and corrections
 protocol	Working protocol for future agents	How to resume, analyze, edit, verify, and commit
 next	Immediate next work	Ordered continuation queue
