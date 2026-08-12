@@ -1,5 +1,9 @@
 {lib, ...}: {
-  perSystem = {config, ...}: {
+  perSystem = {
+    config,
+    pkgs,
+    ...
+  }: {
     treefmt = {
       inherit (config.flake-root) projectRootFile;
       flakeCheck = false;
@@ -23,10 +27,8 @@
       settings = {
         excludes = ["\\.(age)$"];
         hooks = {
-          write-flake = {
+          sync-flake = {
             enable = true;
-
-            name = "Regenerate flake.nix"; # Name of the git hook shown during its execution.
             description = "Keep the generated flake.nix synchronized with its module source";
 
             entry = lib.meta.getExe config.packages.write-flake;
@@ -35,6 +37,30 @@
             pass_filenames = false;
 
             stages = ["pre-merge-commit"];
+          };
+          check-flake = {
+            enable = true;
+            description = "Prevent pushing a flake that fails its checks";
+
+            entry = lib.meta.getExe (pkgs.writeShellApplication {
+              name = "check-flake";
+
+              text = ''
+                . ${config.checks.check-flake-file};
+              '';
+
+              extraShellCheckFlags = [
+                "-x"
+                config.checks.check-flake-file
+                "-s"
+                "bash"
+              ];
+            });
+
+            always_run = true;
+            pass_filenames = false;
+
+            stages = ["pre-push"];
           };
           alejandra.enable = true;
           check-added-large-files.enable = true;
