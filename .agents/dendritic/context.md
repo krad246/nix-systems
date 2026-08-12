@@ -361,6 +361,21 @@ maxJobs, TERM, bottom, coredumps, and protocol.
   preserved: its source/registry, filesystem sysroot projection, optional
   legacy search-path projection, and cross-context generic interface are a
   substantial improvement over the old registry plus home-link modules.
+- Zsh is intentionally removed and is not required in the first HM landing.
+- Preserve `condor-janitor0e@icloud.com` for Git through a local layered
+  override of the owner/general identity default.
+- Do not port HM Agenix in the thin HM slice. RBW remains selected.
+- Remove the old mutable dotfiles synchronization/link behavior.
+- Spotify Player is removed for now.
+- Do not port the current terminal-font architecture. It is incoherent and
+  inflates closures. Revisit fonts through a future theming capability lane and
+  its relationship to Stylix.
+
+The longer-term identity direction is a multi-identity software bus. Identity
+providers publish identities through a stable virtual interface; Git queries
+or selects from that bus and projects the selected identity through its own
+wrapping interface. The immediate local Git email override is a deliberate
+narrow bridge toward that design, not the final multi-identity API.
 
 ## Explicitly unfinished or exploratory areas
 
@@ -500,14 +515,14 @@ evidence rather than filename inference.
 |---|---|---|
 | username/home directory | preserved | Both evaluate to `krad246` and `/Users/krad246`. |
 | identity name | preserved | Both Git configurations use `Keerthi Radhakrishnan`; Dendritic derives it from `identity.person`. |
-| special Git email | missing/decision required | Main evaluates `condor-janitor0e@icloud.com`; Dendritic evaluates `krad246@gmail.com` from flake owner metadata. Decide whether Git needs a separate identity/account slot rather than changing the person default. |
+| special Git email | required local override | Preserve `condor-janitor0e@icloud.com` with a local layered Git override. Longer term select it from the multi-identity software bus rather than changing the general person default. |
 | RBW | preserved with better interface | Enabled in both. Dendritic derives email from `identity.person` and selects platform pinentry behind `identity.secrets.backends.rbw`. |
-| HM Agenix module/package | missing | Main has Agenix in the HM package closure; Dendritic does not import HM Agenix for this user. Decide whether Agenix and RBW are separate secret capabilities rather than alternatives. |
+| HM Agenix module/package | accepted removal | Do not port it in the thin HM slice. RBW remains selected. |
 | Cachix binary-cache policy | accepted omission for thin slice | Main user Nix settings include krad246 Cachix; Dendritic user Nix settings do not. Old broad daemon/cache policy need not block first HM landing. |
 | broad per-user Nix policy | accepted omission for thin slice | Main evaluates many performance, sandbox, retention, timeout, and cache settings; Dendritic HM evaluates only `experimental-features = [nix-command flakes]` through the registry. |
 | input flake registry | architecturally superseded/win | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Preserve Dendritic design. |
 | registry filesystem projection | changed, capability available | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has a general `input-registry.sysroot.install` projection and optional search-path projection, currently disabled for this consumer. Selection policy remains to decide; architecture is settled. |
-| dotfiles link/sync | missing/decision required | Main has `syncDotfiles`, `switchToSpecialisation`, and dotfiles file entries. Dendritic has none. Reassess whether mutable repo synchronization belongs in managed HM at all. |
+| dotfiles link/sync | accepted removal | Do not port the mutable synchronization/link behavior. |
 | XDG | changed | Main evaluates `xdg.enable=true`; Dendritic evaluates false, while both prefer XDG directories. Likely foundation parity item. |
 | manuals | changed | Effective Main: HTML false (Zen override), JSON true. Dendritic: HTML false, JSON false. Decide general HM manual policy independently of browser integration. |
 | state version | version drift | Main evaluates 26.05 and Dendritic 25.11 due branch input eras. Resolve intentionally during port; do not copy one blindly. |
@@ -519,7 +534,7 @@ evidence rather than filename inference.
 | Bash `tldr` alias | changed | Main defines executable-resolved alias; Dendritic installs `tldr` but does not define that alias. Likely harmless, verify desired UX. |
 | Bash-Yazi wrapper | preserved | Both provide `y()` with cwd-file behavior; Dendritic gates it through explicit integration. |
 | Bash integrations | architecturally improved, parity incomplete | Dendritic explicitly dispatches Direnv, FZF, LSD, Kitty, Starship, Yazi, and Zoxide. Old Kitty+FZF image-preview environment behavior is not visibly reproduced. |
-| Zsh | missing/decision required | Main enables and configures Zsh; Dendritic selected profile disables Nushell and does not enable Zsh. Determine whether Zsh remains a backend requirement or accepted removal. |
+| Zsh | accepted removal | Do not port or select Zsh for the first HM landing. |
 | Bat theme | preserved | Gruvbox dark in both; Dendritic also sets terminal title. |
 | Bat extras | changed | Main includes batdiff, batgrep, batman, batpipe, batwatch, prettybat. Dendritic effective closure includes batdiff, batgrep, batman, prettybat but not batpipe/batwatch as packages. Batpipe is invoked conditionally through a Bash integration and needs closure validation. |
 | Bat aliases/environment | changed | Main aliases `cat` to `bat -pp`, resolves `brg`/`man`/`bdiff` to store executables, and sets BATDIFF/LESSOPEN/LESS/BATPIPE. Dendritic aliases `bat` to `prettybat`, keeps `brg`/`man`/`bdiff` by command name, sets BATDIFF, and delegates LESS/PAGER to its pager capability. It drops the old `cat` alias and batpipe `LESSOPEN`/`BATPIPE` environment. Decide desired composition rather than blindly restore. |
@@ -535,11 +550,11 @@ evidence rather than filename inference.
 | Helix languages | regression plus deliberate additions | Dendritic adds Nix/nixd but drops Rust, docker-compose, Bash shfmt, rust-analyzer, and systemd server declaration. More seriously, evaluated output nests language entries under `languages.language` instead of top-level `language`, suggesting an erroneous extra `languages` level in the module. Fix before HM landing. |
 | FZF-Helix edit action | structurally preserved | Both build a no-suspend Helix wrapper; Dendritic exposes it through picker action vTable. Test produced command. |
 | LSD | preserved exactly | Normalized effective configuration hashes match. |
-| terminal fonts | missing/partial | Main HM closure includes Cascadia Code, Meslo, and symbols fonts; Dendritic gets Meslo through Kitty styling only. General terminal-font capability is absent. |
+| terminal fonts | accepted architectural removal/deferral | Do not port the old font bundle. It is incoherent and bloats closures. Kitty's direct font realization may remain only as backend-local behavior pending a future theme/Stylix capability design. |
 | Kitty terminal | preserved plus explicit integration | Enabled in both. Normalized effective settings, keybindings, theme, font, launch options, and shell-integration values match modulo store path. Dendritic additionally enables HM's Git integration through an explicit Git-Kitty capability relationship; Main leaves it false. |
 | base package set | changed | Main-only notable tools include `safe-rm`, `procs`, `has`; Dendritic adds a larger dev/interactive set including curl, file, jq, tree, archives, CMake/GDB/binutils, and Nix diagnostics. Classify by preset lane rather than demand exact set equality. |
 | Ripgrep + ripgrep-all | preserved | Both enabled. Dendritic integration split provides Bat behavior. |
-| Spotify Player | missing/decision required | Enabled on Main, disabled on Dendritic. Decide whether it belongs in the HM slice/profile. |
+| Spotify Player | accepted removal | Drop it for now. |
 | Starship | preserved exactly | Normalized settings hashes match; Dendritic shell integration is explicit. |
 | Yazi keymap | preserved exactly | Normalized keymap hashes match. |
 | Yazi settings | preserved modulo HM defaults | Normalized diff shows Dendritic adds only empty `opener`, `plugin`, and `which` sets; authored manager/input/preview behavior is otherwise equal. Keymap is exactly equal. |
