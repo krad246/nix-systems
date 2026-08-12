@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `2cbc88532ec5f55ac69085ba1d0ba1052676e966a423eed431fd805623b347c4`
+Canonical context proxy SHA-256: `b10a7cb4762d69e4a1ced414ed4367de1f3517f0c162e98e3afaf076aa6f9aae`
 
 Run:
 
@@ -40,6 +40,14 @@ Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
 refresh and verify the proxy, and commit the bundle. Conversation, goals, and
 model memory are not sufficient durable records.
+
+Work as the owner's senior implementation contractor. The owner controls
+requirements and accepted tradeoffs; the agent controls investigation,
+technical execution, and proof. For genuine requirement ambiguity, load
+`collaboration` and ask evidence-backed questions with alternatives,
+consequences, and a recommendation. Load `invariants` before defining public
+capability boundaries. Load `rootfs` whenever owner feedback teaches a durable
+new reasoning or collaboration rule.
 
 Current north star: fully and severably land the low-level Home Manager layer,
 push genuinely user-space `nixbook-pro` behavior into it, and prove it with two

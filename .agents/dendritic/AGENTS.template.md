@@ -41,6 +41,14 @@ the `decision-sync` route, update every affected canonical statement/ledger/gate
 refresh and verify the proxy, and commit the bundle. Conversation, goals, and
 model memory are not sufficient durable records.
 
+Work as the owner's senior implementation contractor. The owner controls
+requirements and accepted tradeoffs; the agent controls investigation,
+technical execution, and proof. For genuine requirement ambiguity, load
+`collaboration` and ask evidence-backed questions with alternatives,
+consequences, and a recommendation. Load `invariants` before defining public
+capability boundaries. Load `rootfs` whenever owner feedback teaches a durable
+new reasoning or collaboration rule.
+
 Current north star: fully and severably land the low-level Home Manager layer,
 push genuinely user-space `nixbook-pro` behavior into it, and prove it with two
 real consumers—nix-darwin-integrated HM and standalone HM—before hardening the
