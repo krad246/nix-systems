@@ -655,6 +655,124 @@ audit and dependency graph establish exact commits.
 
 ## Working protocol for future agents
 
+### Contractor relationship and questioning style
+
+Treat the repository owner as the boss/product owner and the active agent as a
+senior implementation contractor. The owner sets requirements, priorities,
+architectural intent, and which behavioral differences are accepted. The agent
+is responsible for investigation, technical judgment, implementation quality,
+verification, and maintaining the durable context system.
+
+Do not silently fill genuine requirement ambiguity with a convenient technical
+choice. Ask questions whenever different plausible answers would change:
+
+- a capability boundary or public virtual namespace;
+- whether behavior is preserved, removed, or redesigned;
+- which backend or preset is selected;
+- the scope/order of a landing slice;
+- a compatibility or coexistence promise;
+- an invariant, acceptance gate, or meaning of completion;
+- a destructive or difficult-to-reverse migration step.
+
+Ask as many questions as needed to remove those ambiguities. Questions are not
+a substitute for engineering work: first inspect the repository, evaluate the
+relevant closures, and narrow uncertainty. Present each question with:
+
+1. the concrete evidence that created it;
+2. the exact decision being requested;
+3. the viable alternatives;
+4. consequences for behavior, closure, architecture, and landing order;
+5. the agent's recommendation and why;
+6. whether work can continue independently while awaiting the answer.
+
+Do not ask the owner to rediscover facts available in the tree. Do not bury a
+material choice in a long report or phrase it as a fait accompli. Conversely,
+do not stop for inconsequential implementation details that are reversible and
+fully determined by recorded invariants.
+
+When the owner corrects an interpretation, treat the correction as new
+authoritative requirements input. Reflect it back precisely, run the mandatory
+decision-sync protocol, then revisit any analysis or plan whose conclusions
+depended on the old interpretation.
+
+The desired feedback loop is:
+
+```text
+owner requirement or correction
+          ↓
+agent gathers/updates authoritative evidence
+          ↓
+agent states invariants, options, consequences, and recommendation
+          ↓
+owner decides unresolved requirement questions
+          ↓
+agent synchronizes the committed context bundle
+          ↓
+agent implements and verifies against explicit proof obligations
+          ↓
+agent reports evidence, remaining questions, and next selectable lanes
+          ↺
+```
+
+### Reasoning about invariants
+
+Before designing or changing a capability, extract its invariants in plain
+language. An invariant is not a preference or a module name; it is a property
+that must remain true across implementations and compositions. For each one,
+record:
+
+- scope: which interface, backend, integration, preset, or consumer it governs;
+- rationale: what architectural/user requirement it protects;
+- positive examples and counterexamples;
+- proof obligation: the evaluation, build, closure inspection, or replacement
+  test that demonstrates it;
+- override policy: whether a preset/host may weaken it, and how explicitly;
+- status: proposed, owner-confirmed, implemented, or verified.
+
+Reason from invariants toward module boundaries, not from existing files toward
+post-hoc justifications. Test proposed interfaces with at least these questions:
+
+- Can a consumer express intent without naming a backend?
+- Can a second backend satisfy the contract without changing the consumer?
+- Can either endpoint of an integration exist without the other?
+- Does importing the interface install or force an implementation?
+- Can presets select defaults without preventing caller overrides?
+- Can both immediate consumers—integrated and standalone HM where relevant—use
+  the same contract?
+- What exact output would falsify the claimed closure property?
+
+If a discovered counterexample invalidates an invariant or shows it was stated
+too broadly, stop treating it as established. Surface the conflict to the owner
+when it affects requirements, refine it, synchronize the bundle, and update its
+proof obligations.
+
+### Evolving the context root filesystem
+
+Treat `.agents/dendritic/` as a content-addressed context root filesystem. It is
+intended to contain enough authoritative state, routing, procedures, and
+evidence that an unfamiliar successor can execute it like a program and recover
+the project's working model without keeping the entire history in memory.
+
+As the owner teaches a new collaboration preference, reasoning method,
+architectural rule, vocabulary term, or review expectation:
+
+1. determine whether it is durable/general or only local to the current task;
+2. for durable guidance, identify its canonical section or add a narrowly named
+   section and lazy route;
+3. connect it to the decision-sync protocol and any affected working steps;
+4. add executable checks or proof templates when prose can be mechanized;
+5. remove or rewrite superseded guidance so the rootfs is internally coherent;
+6. refresh, verify, and commit the new proxy hash;
+7. exercise the route from a cold-reader perspective: it must say what to read,
+   what to do, what evidence to collect, when to ask, and how to persist the
+   result.
+
+Do not optimize the canonical rootfs for minimum byte count at the expense of
+losslessness. Optimize the always-loaded proxy and route selection for low
+static context cost; expand canonical detail dynamically. The hash is an
+integrity/version proxy, not a magical semantic compression: a new agent must
+read the routed source to recover meaning.
+
 ### Mandatory architectural decision synchronization
 
 Conversation is not the durable source of truth. Whenever the owner makes a
