@@ -424,18 +424,18 @@ Status meanings:
 | console access disabled | missing | Old set `DisableConsoleAccess=true`; no current realization found. |
 | screensaver password | missing | Old set `screensaver.askForPassword=true`; current screensaver module is empty. |
 | custom preference dispatch | unverified | Old copied `CustomUserPreferences` to `CustomSystemPreferences`; new HM Darwin target writes domains through `targets.darwin.defaults`. Compare generated activation/defaults behavior. |
-| dark mode | static match | New desktop defaults request dark, nonautomatic style. Evaluate. |
-| Finder settings | static match | Hidden/extensions, desktop, search scope, view, trash cleanup, path/status bars, POSIX title, folders-first are mapped. |
-| menu/dialog preferences | static match | Expanded save/print panels, table mode, visible menu bar mapped. |
-| pointer/trackpad | static match | Flat mouse acceleration, non-natural scrolling, right-click, corner/scaling values represented. |
-| keyboard basics | static match through HM dispatcher | Full keyboard access, repeat rates, text substitutions, function-key mode, window animations, and Fn usage intent are represented in the Dendritic desktop vTable/Darwin dispatcher. Evaluate generated HM Darwin defaults rather than only nix-darwin `system.defaults`, because responsibility moved layers. |
+| dark mode | preserved through HM dispatcher | Evaluated HM Darwin defaults request dark, nonautomatic style. |
+| Finder settings | preserved through HM dispatcher | Evaluated defaults preserve hidden/extensions, desktop, search scope, view, trash cleanup, path/status bars, POSIX title, and folders-first. |
+| menu/dialog preferences | preserved through HM dispatcher | Evaluated defaults preserve expanded save/print panels, table mode, and visible menu bar. |
+| pointer/trackpad | preserved through HM dispatcher | Evaluated defaults preserve flat acceleration, non-natural scrolling, right-click, corner, and scaling values. |
+| keyboard basics | preserved through HM dispatcher | Evaluated HM defaults contain full keyboard access, repeat rates, text substitutions, function-key mode, window animations, and HIToolbox Fn usage. Responsibility moved from nix-darwin defaults to HM activation. |
 | symbolic keyboard shortcuts | missing | Main's evaluated nix-darwin configuration contains 87 `com.apple.symbolichotkeys.AppleSymbolicHotKeys` entries. Dendritic's `desktop.input.keyboard.shortcuts` interface is empty and no equivalent mapping exists. This is a substantial unported desktop lane, not covered by the basic keyboard options. |
-| Spotlight order | static match | Same explicit ordered list exists in Darwin HM dispatcher. |
-| window manager/spaces | mostly static match | Old values represented; evaluate exact domains/types. |
-| Dock constants | mostly static match | Old autohide, magnification, tile size, corners, recents, etc. represented. |
-| Dock apps | partial | Old pinned iPhone Mirroring + Launchpad, and host prepended Zen. New defaults request logical browser, phone-mirroring, launchpad, file-manager, terminal, editor. Darwin dispatcher only maps browser/phone/launchpad, filtering unknown IDs, so effective list is Zen + phone + launchpad. Confirm ordering and whether omitted logical roles need real backends. |
+| Spotlight order | preserved through HM dispatcher | Evaluated HM defaults contain the same explicit ordered list. |
+| window manager/spaces | preserved through HM dispatcher | Evaluated domains preserve the legacy WindowManager values and `spans-displays=false`. |
+| Dock constants | preserved through HM dispatcher | Evaluated HM defaults preserve old autohide, magnification, tile size, corners, recents, and related values. |
+| Dock apps | behavior preserved, interface partial | Effective Dendritic list is Zen, iPhone Mirroring, Launchpad, matching Main's host-prepended Zen plus two base pins and intended order. Defaults also request file-manager, terminal, and editor IDs, but the dispatcher silently filters them because no path providers exist. Current behavior matches while the logical dock contract remains incomplete. |
 | Tailscale | static match | Darwin service enabled. |
-| Linux builder | superseded/unverified | Better architecture. Both enable ephemeral builder with maxJobs 60; Main advertises i686/x86_64/aarch64 Linux while Dendritic advertises only x86_64/aarch64. Complete guest config and decide whether i686 removal is accepted. |
+| Linux builder | architecturally superseded; two regressions | Final embedded guest evaluation proves both preserve aarch64 host platform, 8 cores, 16 GiB RAM, 64 GiB disk, ccache, swapspace, zram, 16 GiB `/swapfile`, `TERM=xterm-256color`, Bottom, and disabled coredumps. Dendritic drops i686 from advertised/emulated systems. It also imports `environment.enableAllTerminfo`, pulling many terminal-emulator packages into the guest runtime closure; remove or replace this broad realization. Nix policy differs with branch era and should be classified separately. |
 | Dullahan/Gremlin/Fortress remotes | missing | Must be redesigned as capability/backends, not copied as host bundle. |
 
 Evaluated system package placement also confirms expected accepted removals:
@@ -445,6 +445,14 @@ Discord as a system Nix package. `m-cli` moves from Main's system package set to
 the Dendritic owner HM package set. Both retain Tailscale and the normal
 nix-darwin packages. The login shell changes from `/opt/homebrew/bin/bash` to
 Nixpkgs Bash as explicitly accepted.
+
+The three legacy remote modules are imported into the old logical source and
+option closure but all are disabled for `nixbook-pro`, so they contribute no
+effective builder/SSH configuration or derivation closure today. Their intent
+contains at least three separable concerns: named SSH endpoints, proxy-jump
+routes to nested builders (`headless-penguin`/`smeagol`), and Nix distributed
+build-machine scheduling. Future design should not assume one module per named
+host is the correct capability boundary.
 
 ### Applications and accepted removals
 
