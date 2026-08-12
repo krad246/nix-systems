@@ -1,4 +1,4 @@
-{
+{lib, ...}: {
   perSystem = {config, ...}: {
     treefmt = {
       inherit (config.flake-root) projectRootFile;
@@ -23,6 +23,19 @@
       settings = {
         excludes = ["\\.(age)$"];
         hooks = {
+          write-flake = {
+            enable = true;
+
+            name = "Regenerate flake.nix"; # Name of the git hook shown during its execution.
+            description = "Keep the generated flake.nix synchronized with its module source";
+
+            entry = lib.meta.getExe config.packages.write-flake;
+
+            always_run = true;
+            pass_filenames = false;
+
+            stages = ["pre-merge-commit"];
+          };
           alejandra.enable = true;
           check-added-large-files.enable = true;
           check-case-conflicts.enable = true;
