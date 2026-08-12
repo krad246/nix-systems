@@ -33,25 +33,25 @@ in {
         uid = 501;
         gid = 20;
 
-        shell = "${config.homebrew.brewPrefix}/bash";
+        shell = "${config.homebrew.prefix}/bin/bash";
         createHome = true;
       };
     };
 
     virtualisation = rec {
       # Configure onboard nix-builder VM specs
-     linux-builder = {
-       enable = true;
-       ephemeral = true;
-       maxJobs = 60;
-       cores = 8;
-       memorySize = 16 * 1024;
-     };
+      linux-builder = {
+        enable = true;
+        ephemeral = true;
+        maxJobs = 60;
+        cores = 8;
+        memorySize = 16 * 1024;
+      };
 
       colima = {
         enable = true;
-       inherit (linux-builder) memorySize;
-       inherit (linux-builder) cores;
+        inherit (linux-builder) memorySize;
+        inherit (linux-builder) cores;
       };
     };
   };

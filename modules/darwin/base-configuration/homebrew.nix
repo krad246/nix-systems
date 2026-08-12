@@ -29,7 +29,7 @@ in {
   };
 
   environment = {
-    systemPath = ["${config.homebrew.brewPrefix}"];
+    systemPath = ["${config.homebrew.prefix}/bin"];
     systemPackages = [pkgs.mas];
   };
 }

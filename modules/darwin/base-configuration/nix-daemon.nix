@@ -1,4 +1,4 @@
-{lib, ...}: {
+_: {
   nix = {
     # daemonIOLowPriority = lib.modules.mkDefault true;
     # daemonProcessType = lib.modules.mkDefault "Adaptive";

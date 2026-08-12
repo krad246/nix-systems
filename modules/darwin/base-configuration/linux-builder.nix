@@ -3,10 +3,8 @@
   config,
   lib,
   options,
-  pkgs,
   ...
 }: let
-  hostPkgs = pkgs;
   cfg = config.krad246.darwin.virtualisation.linux-builder;
 in {
   options = {

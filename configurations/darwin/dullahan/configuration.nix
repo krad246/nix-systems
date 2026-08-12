@@ -42,7 +42,7 @@
           uid = 501;
           gid = 20;
 
-          shell = "${config.homebrew.brewPrefix}/bash";
+          shell = "${config.homebrew.prefix}/bin/bash";
           createHome = true;
         };
       };

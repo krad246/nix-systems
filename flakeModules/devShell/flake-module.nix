@@ -15,6 +15,8 @@ in {
     ])
     ++ [justfile];
 
+  agenix-shell.secrets.NIX_GITHUB_ACCESS_TOKEN.file = ../../secrets/github-access-token.age;
+
   # export the flake modules we loaded to this context for user consumption
   flake = rec {
     flakeModules = {
@@ -86,6 +88,7 @@ in {
             ]);
 
           shellHook = ''
+            source ${lib.meta.getExe config.agenix-shell.installationScript}
             FLAKE_ROOT="$(${lib.meta.getExe config.flake-root.package})"
             eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
           '';
@@ -106,6 +109,7 @@ in {
           ];
 
           shellHook = ''
+            source ${lib.meta.getExe config.agenix-shell.installationScript}
           '';
         };
 
