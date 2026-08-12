@@ -355,6 +355,12 @@ maxJobs, TERM, bottom, coredumps, and protocol.
   capability; it was initially narrowed out because of porting friction.
 - Profiles are presets and may compose through imports and enable/default
   declarations.
+- The old broad per-user Nix daemon/cache policy may be omitted from the
+  thinnest HM landing slice. Its absence does not block that slice.
+- The Dendritic input-registry architecture is settled progress and must be
+  preserved: its source/registry, filesystem sysroot projection, optional
+  legacy search-path projection, and cross-context generic interface are a
+  substantial improvement over the old registry plus home-link modules.
 
 ## Explicitly unfinished or exploratory areas
 
@@ -409,11 +415,11 @@ Status meanings:
 | trusted owner | preserved | Host sets `nix.settings.trusted-users`. |
 | Touch ID for sudo | preserved | Set by host. |
 | nixbld GID 350 | preserved | Current `darwin.nix`. |
-| system Agenix module and custom Agenix package | missing | `darwin.secrets` only bridges HM RBW; it does not import `darwin.agenix` or install the prior tool. Decide desired system/HM secret capabilities. |
+| system Agenix module and custom Agenix package | missing | Evaluated Main system packages include Agenix; Dendritic does not. `darwin.secrets` only bridges HM RBW and does not import `darwin.agenix`. Decide desired system/HM secret capabilities. |
 | firewall | irrelevant | Old file contained comments only. |
-| system terminal fonts | missing | Old `fonts.packages = pkgs.krad246.term-fonts.paths`; no equivalent found in current host cone. |
+| system terminal fonts | no effective difference | Although the old source assigns `fonts.packages = pkgs.krad246.term-fonts.paths`, evaluated `fonts.packages` is empty on both configurations. The actual font difference is in the HM closure, not system fonts. |
 | HM bridge package universe | changed/unverified | Old had `useGlobalPkgs=true`, `useUserPackages=true`, `verbose=false`; new leaves global pkgs off, uses user packages, and is verbose. Audit package identity/overlays/unfree effects before choosing policy. |
-| Homebrew substrate | changed/unverified | Old imported nix-homebrew but defaulted it and Homebrew off, still added `mas` and prefix/shell declarations. Current app-store selection activates Homebrew. Compare effective behavior, not declarations. |
+| Homebrew substrate | changed, evaluated | Main has Homebrew disabled but declares Bash/Zsh brews, the six selected casks, and two MAS apps. Dendritic enables Homebrew, removes Bash/Zsh brews, and preserves the same six casks and two MAS apps. This activation/policy change is entangled with the exploratory app-store and requires later design; Nixpkgs Bash is accepted for thin slice. |
 | guest login disabled | missing | Old master-user module set `GuestEnabled=false`; current lock-screen modules are empty. |
 | console access disabled | missing | Old set `DisableConsoleAccess=true`; no current realization found. |
 | screensaver password | missing | Old set `screensaver.askForPassword=true`; current screensaver module is empty. |
@@ -422,13 +428,23 @@ Status meanings:
 | Finder settings | static match | Hidden/extensions, desktop, search scope, view, trash cleanup, path/status bars, POSIX title, folders-first are mapped. |
 | menu/dialog preferences | static match | Expanded save/print panels, table mode, visible menu bar mapped. |
 | pointer/trackpad | static match | Flat mouse acceleration, non-natural scrolling, right-click, corner/scaling values represented. |
+| keyboard basics | static match through HM dispatcher | Full keyboard access, repeat rates, text substitutions, function-key mode, window animations, and Fn usage intent are represented in the Dendritic desktop vTable/Darwin dispatcher. Evaluate generated HM Darwin defaults rather than only nix-darwin `system.defaults`, because responsibility moved layers. |
+| symbolic keyboard shortcuts | missing | Main's evaluated nix-darwin configuration contains 87 `com.apple.symbolichotkeys.AppleSymbolicHotKeys` entries. Dendritic's `desktop.input.keyboard.shortcuts` interface is empty and no equivalent mapping exists. This is a substantial unported desktop lane, not covered by the basic keyboard options. |
 | Spotlight order | static match | Same explicit ordered list exists in Darwin HM dispatcher. |
 | window manager/spaces | mostly static match | Old values represented; evaluate exact domains/types. |
 | Dock constants | mostly static match | Old autohide, magnification, tile size, corners, recents, etc. represented. |
 | Dock apps | partial | Old pinned iPhone Mirroring + Launchpad, and host prepended Zen. New defaults request logical browser, phone-mirroring, launchpad, file-manager, terminal, editor. Darwin dispatcher only maps browser/phone/launchpad, filtering unknown IDs, so effective list is Zen + phone + launchpad. Confirm ordering and whether omitted logical roles need real backends. |
 | Tailscale | static match | Darwin service enabled. |
-| Linux builder | superseded/unverified | Better architecture; perform detailed parity evaluation. |
+| Linux builder | superseded/unverified | Better architecture. Both enable ephemeral builder with maxJobs 60; Main advertises i686/x86_64/aarch64 Linux while Dendritic advertises only x86_64/aarch64. Complete guest config and decide whether i686 removal is accepted. |
 | Dullahan/Gremlin/Fortress remotes | missing | Must be redesigned as capability/backends, not copied as host bundle. |
+
+Evaluated system package placement also confirms expected accepted removals:
+Main includes Colima, the macOS container package, and Docker; Dendritic does
+not. Main includes system Agenix and Lorri; Dendritic does not. Dendritic adds
+Discord as a system Nix package. `m-cli` moves from Main's system package set to
+the Dendritic owner HM package set. Both retain Tailscale and the normal
+nix-darwin packages. The login shell changes from `/opt/homebrew/bin/bash` to
+Nixpkgs Bash as explicitly accepted.
 
 ### Applications and accepted removals
 
@@ -452,10 +468,10 @@ The current application-store design has known flaws, not migration invariants:
 Do not preserve these flaws for compatibility. Redesign after understanding
 actual machine/application lanes.
 
-### Home Manager legacy closure: required audit
+### Home Manager legacy closure: evaluated audit in progress
 
-This audit is not finished. The old `krad246` HM root sets username/home from
-the OS user, overrides Git email to `condor-janitor0e@icloud.com`, and imports:
+The old `krad246` HM root sets username/home from the OS user, overrides Git
+email to `condor-janitor0e@icloud.com`, and imports:
 
 - complete `base-home`;
 - `krad246-cachix`;
@@ -468,40 +484,72 @@ Git, Helix, LSD, terminal fonts, packages, Ripgrep, Spotify Player, Starship,
 Yazi, Zoxide, and Zsh. It also owns activation, XDG, manuals, state version, and
 dotfiles behavior.
 
-The next agent must make a row-by-row old/new ledger for at least:
+Both configurations have now been evaluated directly using current
+`dendritic` and `git+file://...?ref=main`; the following is effective-output
+evidence rather than filename inference.
 
-- identity name/username/email and the special Git email override;
-- Agenix HM module and package versus RBW capability;
-- Cachix configuration;
-- Nix settings and package universe;
-- flake registry and home/system link registries;
-- Bash behavior: vi mode, completion, VTE, Ctrl-H, reload alias, history rules,
-  `tldr`, Yazi wrapper, Kitty/FZF image preview integration;
-- Zsh behavior and whether its removal/nonselection is intentional;
-- Bat theme, extras, aliases, BATDIFF/LESSOPEN/BATPIPE behavior;
-- Bottom Linux desktop hiding;
-- Direnv/nix-direnv and per-shell integrations;
-- FD hidden/default options;
-- old FZF widgets, bindings, preview/view/edit commands, and source semantics;
-- Git identity, LFS, aliases, delta, GH credentials, Kitty integrations;
-- Helix package (`evil-helix` currently), languages, settings, keymaps, and FZF
-  editor integration;
-- LSD colors, hyperlinking, aliases, and shell integration;
-- terminal font packages and Linux fontconfig;
-- package lists, including lost/added tools (`safe-rm`, `procs`, `has`, etc.);
-- Ripgrep and ripgrep-all;
-- Spotify Player (apparently absent in current cone);
-- Starship settings and shell integration;
-- Yazi settings/keymaps/integrations;
-- Zoxide integrations;
-- Codex moved from host-local import to development preset;
-- old dotfiles sync activation and out-of-store link behavior;
-- manual HTML/JSON behavior, including old Zen manual opener behavior;
-- XDG configuration and Home Manager state version.
+| HM responsibility | Status | Evaluated/source evidence and follow-up |
+|---|---|---|
+| username/home directory | preserved | Both evaluate to `krad246` and `/Users/krad246`. |
+| identity name | preserved | Both Git configurations use `Keerthi Radhakrishnan`; Dendritic derives it from `identity.person`. |
+| special Git email | missing/decision required | Main evaluates `condor-janitor0e@icloud.com`; Dendritic evaluates `krad246@gmail.com` from flake owner metadata. Decide whether Git needs a separate identity/account slot rather than changing the person default. |
+| RBW | preserved with better interface | Enabled in both. Dendritic derives email from `identity.person` and selects platform pinentry behind `identity.secrets.backends.rbw`. |
+| HM Agenix module/package | missing | Main has Agenix in the HM package closure; Dendritic does not import HM Agenix for this user. Decide whether Agenix and RBW are separate secret capabilities rather than alternatives. |
+| Cachix binary-cache policy | accepted omission for thin slice | Main user Nix settings include krad246 Cachix; Dendritic user Nix settings do not. Old broad daemon/cache policy need not block first HM landing. |
+| broad per-user Nix policy | accepted omission for thin slice | Main evaluates many performance, sandbox, retention, timeout, and cache settings; Dendritic HM evaluates only `experimental-features = [nix-command flakes]` through the registry. |
+| input flake registry | architecturally superseded/win | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Preserve Dendritic design. |
+| registry filesystem projection | changed, capability available | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has a general `input-registry.sysroot.install` projection and optional search-path projection, currently disabled for this consumer. Selection policy remains to decide; architecture is settled. |
+| dotfiles link/sync | missing/decision required | Main has `syncDotfiles`, `switchToSpecialisation`, and dotfiles file entries. Dendritic has none. Reassess whether mutable repo synchronization belongs in managed HM at all. |
+| XDG | changed | Main evaluates `xdg.enable=true`; Dendritic evaluates false, while both prefer XDG directories. Likely foundation parity item. |
+| manuals | changed | Effective Main: HTML false (Zen override), JSON true. Dendritic: HTML false, JSON false. Decide general HM manual policy independently of browser integration. |
+| state version | version drift | Main evaluates 26.05 and Dendritic 25.11 due branch input eras. Resolve intentionally during port; do not copy one blindly. |
+| Lorri | preserved on Darwin | Disabled in both on this host. Dendritic dev preset enables it only on Linux. |
+| Bash selection | preserved | Bash enabled in both with completion, VTE, and vi mode. |
+| Bash history | changed | Main ignores `exit` and `reload`; Dendritic ignores only `exit`. Control values are semantically the same, reordered. |
+| Bash Ctrl-H binding | missing | Main explicitly unbinds Ctrl-H; Dendritic does not. |
+| Bash reload alias | missing | Main reconstructs Bash RC and reloads Direnv; Dendritic does not define it. |
+| Bash `tldr` alias | changed | Main defines executable-resolved alias; Dendritic installs `tldr` but does not define that alias. Likely harmless, verify desired UX. |
+| Bash-Yazi wrapper | preserved | Both provide `y()` with cwd-file behavior; Dendritic gates it through explicit integration. |
+| Bash integrations | architecturally improved, parity incomplete | Dendritic explicitly dispatches Direnv, FZF, LSD, Kitty, Starship, Yazi, and Zoxide. Old Kitty+FZF image-preview environment behavior is not visibly reproduced. |
+| Zsh | missing/decision required | Main enables and configures Zsh; Dendritic selected profile disables Nushell and does not enable Zsh. Determine whether Zsh remains a backend requirement or accepted removal. |
+| Bat theme | preserved | Gruvbox dark in both; Dendritic also sets terminal title. |
+| Bat extras | changed | Main includes batdiff, batgrep, batman, batpipe, batwatch, prettybat. Dendritic effective closure includes batdiff, batgrep, batman, prettybat but not batpipe/batwatch as packages. Batpipe is invoked conditionally through a Bash integration and needs closure validation. |
+| Bat aliases/environment | changed | Main aliases `cat` to `bat -pp`, resolves `brg`/`man`/`bdiff` to store executables, and sets BATDIFF/LESSOPEN/LESS/BATPIPE. Dendritic aliases `bat` to `prettybat`, keeps `brg`/`man`/`bdiff` by command name, sets BATDIFF, and delegates LESS/PAGER to its pager capability. It drops the old `cat` alias and batpipe `LESSOPEN`/`BATPIPE` environment. Decide desired composition rather than blindly restore. |
+| Bottom | preserved enablement, changed config | Enabled in both; Dendritic adds substantial settings and selects unstable. Old Linux no-display desktop entry is commented out in Dendritic and matters only to the standalone Linux consumer. |
+| Direnv/nix-direnv | preserved | Enabled in both; Dendritic makes shell integrations explicit. |
+| FD | preserved enablement, changed option | Both enabled. Main sets `hidden=false`; Dendritic adds `--hyperlink auto`. Confirm candidate semantics rather than option spelling. |
+| FZF | architecturally improved, effective config changed | Enabled in both. Dendritic factors picker sources/actions/bindings and FD/Bat/Helix integrations. Normalized output preserves Ctrl-T/Alt-C/Ctrl-R, preview, reload, multi-view, and edit behaviors. New reload commands correctly use the relevant logical source (directories reload `fd --type d`) instead of Main's shared/eval-wrapped default command. Option ordering/store versions differ. Full `programs.fzf` attrset cannot be serialized on either branch because HM exposes the removed `historyWidgetCommand` option; compare selected supported fields and generated shell environment instead. |
+| Git base settings/LFS/aliases | mostly preserved | Core settings, LFS, aliases, merge/push/rebase policy are present. Effective hash differs due email and credential integrations. |
+| Git credentials | regression/decision required | Main enables `git-credential-oauth` and GH helpers for GitHub/Gist. Dendritic evaluated Git credential map is empty because new GH identity slots default to null. Design identity slots and secret/token flow before claiming parity. |
+| Delta/Lazygit | mostly preserved, version-sensitive schema | Same core Delta flags and Lazygit preferences/keybindings are split into capabilities. Main 26.05 effective config uses `git.diffRenderer[].command`; Dendritic 25.11 uses `git.pagers[].pager`. Preserve the capability relationship but adapt its realization to the target HM/Lazygit schema during port. |
+| Helix package/default | preserved | Both enable `evil-helix` as default editor. |
+| Helix settings/keymaps | two known changes | Dendritic removes `Alt-] = nix fmt` in all modes and changes `Alt-F` from no-op to `format_selections` in normal/select. Everything else in normalized effective settings matches. Confirm changes. |
+| Helix languages | regression plus deliberate additions | Dendritic adds Nix/nixd but drops Rust, docker-compose, Bash shfmt, rust-analyzer, and systemd server declaration. More seriously, evaluated output nests language entries under `languages.language` instead of top-level `language`, suggesting an erroneous extra `languages` level in the module. Fix before HM landing. |
+| FZF-Helix edit action | structurally preserved | Both build a no-suspend Helix wrapper; Dendritic exposes it through picker action vTable. Test produced command. |
+| LSD | preserved exactly | Normalized effective configuration hashes match. |
+| terminal fonts | missing/partial | Main HM closure includes Cascadia Code, Meslo, and symbols fonts; Dendritic gets Meslo through Kitty styling only. General terminal-font capability is absent. |
+| Kitty terminal | preserved plus explicit integration | Enabled in both. Normalized effective settings, keybindings, theme, font, launch options, and shell-integration values match modulo store path. Dendritic additionally enables HM's Git integration through an explicit Git-Kitty capability relationship; Main leaves it false. |
+| base package set | changed | Main-only notable tools include `safe-rm`, `procs`, `has`; Dendritic adds a larger dev/interactive set including curl, file, jq, tree, archives, CMake/GDB/binutils, and Nix diagnostics. Classify by preset lane rather than demand exact set equality. |
+| Ripgrep + ripgrep-all | preserved | Both enabled. Dendritic integration split provides Bat behavior. |
+| Spotify Player | missing/decision required | Enabled on Main, disabled on Dendritic. Decide whether it belongs in the HM slice/profile. |
+| Starship | preserved exactly | Normalized settings hashes match; Dendritic shell integration is explicit. |
+| Yazi keymap | preserved exactly | Normalized keymap hashes match. |
+| Yazi settings | preserved modulo HM defaults | Normalized diff shows Dendritic adds only empty `opener`, `plugin`, and `which` sets; authored manager/input/preview behavior is otherwise equal. Keymap is exactly equal. |
+| Zoxide | preserved | Enabled in both; Dendritic shell integration is explicit. |
+| Codex | preserved, better placement | Enabled in both. Dendritic moves it from a host-local HM import into the development preset. |
+| Zen profile customization/manual opener | missing/changed | Main HM closure contains managed Zen/Firefox profile files and browser-specific manual behavior. Dendritic browser backend currently supplies default opener/app path but not profile management. High-level browser interface remains exploratory. |
 
-For each item classify preserved, accepted change, missing, irrelevant, or
-unverified and cite exact option/config evidence. Do not infer parity from a new
-file having the same tool name.
+The effective shell environment also reveals that Main's `xdg.enable=true`
+exports `XDG_BIN_HOME`, `XDG_CACHE_HOME`, `XDG_CONFIG_HOME`, `XDG_DATA_HOME`,
+and `XDG_STATE_HOME`, while Dendritic currently exports none of them. Dendritic
+adds `BROWSER`, `PAGER`, `LESS`, and BATDIFF through explicit capabilities.
+Both export editor and FZF/Starship values. Main additionally exports a TERMINFO
+path. Treat XDG and TERMINFO as concrete foundation/terminal parity work.
+
+Still complete Git/GH identity behavior, exact generated Bash/FZF integration
+scripts, terminal/Kitty behavior, and generated file/activation effects. Then
+classify every decision-required row with the owner before fixing or porting it.
+Do not turn old behavior into a requirement automatically.
 
 ## Known closure/evaluation concerns
 
@@ -606,6 +654,55 @@ Do not treat this likely sequence as approved implementation detail until the
 audit and dependency graph establish exact commits.
 
 ## Working protocol for future agents
+
+### Mandatory architectural decision synchronization
+
+Conversation is not the durable source of truth. Whenever the owner makes a
+decision that changes architectural direction, scope, priority, accepted
+behavior, terminology, a migration gate, or the status of an interface, the
+active agent must synchronize that decision into this playback bundle.
+
+This applies to explicit decisions and to corrections such as:
+
+- accepting or rejecting a parity difference;
+- declaring an interface settled, exploratory, superseded, or intentionally
+  omitted;
+- changing which lane lands first;
+- changing the relationship between bridge work and feature-branch work;
+- establishing a new invariant, exception, priority ordering, or closure rule;
+- correcting the old/new closure graph or branch mechanics;
+- answering an open question in a way that changes future implementation.
+
+Use this protocol immediately after the decision, before continuing work whose
+interpretation depends on it:
+
+1. restate the decision and its consequence to the owner, checking that the
+   interpretation is unambiguous;
+2. locate every affected statement, ledger row, acceptance gate, next step, and
+   route in `.agents/dendritic/context.md` and `routes.tsv`;
+3. update those locations consistently—do not merely append a contradictory
+   note while leaving stale instructions elsewhere;
+4. preserve relevant historical evidence and label the new status/decision;
+   distinguish a changed owner decision from a newly discovered fact;
+5. run `.agents/dendritic/context.sh refresh` to regenerate the manifest and
+   root `AGENTS.md` proxy hash;
+6. run `.agents/dendritic/context.sh verify`, route-expansion checks, shellcheck,
+   and `git diff --check`;
+7. inspect the canonical and generated diffs for accidental loss;
+8. commit the bundle update with the implementation that embodies the decision,
+   or make an immediate context-only commit when implementation will follow in
+   later work;
+9. report the commit and new proxy hash. Do not claim persistence before the
+   commit exists.
+
+If a later discovery contradicts a recorded decision, do not silently rewrite
+history or implement around it. Surface the contradiction, obtain direction if
+the resolution is not already implied, and then run this protocol again.
+
+The active long-running goal, conversation transcript, local caches, plans, and
+model memory are useful indexes but are not substitutes for this committed
+bundle. A future model must be able to reconstruct the current architecture and
+why it changed using repository state alone.
 
 At the start of every continuation:
 

@@ -36,6 +36,11 @@ commit the canonical files, manifest, and regenerated root `AGENTS.md` together.
 A verification mismatch means this proxy is stale: stop and refresh or inspect
 the canonical diff. Never reconstruct intent from the hash itself.
 
+Owner decisions that pivot architecture must be synchronized immediately. Load
+the `decision-sync` route, update every affected canonical statement/ledger/gate,
+refresh and verify the proxy, and commit the bundle. Conversation, goals, and
+model memory are not sufficient durable records.
+
 Current north star: fully and severably land the low-level Home Manager layer,
 push genuinely user-space `nixbook-pro` behavior into it, and prove it with two
 real consumers—nix-darwin-integrated HM and standalone HM—before hardening the
