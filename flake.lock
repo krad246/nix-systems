@@ -848,6 +848,21 @@
         "type": "github"
       }
     },
+    "multiverse": {
+      "locked": {
+        "lastModified": 1786563956,
+        "narHash": "sha256-h0aULdK5/dEMfAeOBoo6TO4rMlCW/7/cBsBRoSKkunc=",
+        "owner": "fzakaria",
+        "repo": "nixpkgs-multiverse",
+        "rev": "9039aa55ca2f0c3135ef13a55400a32e73df1534",
+        "type": "github"
+      },
+      "original": {
+        "owner": "fzakaria",
+        "repo": "nixpkgs-multiverse",
+        "type": "github"
+      }
+    },
     "nix-flatpak": {
       "locked": {
         "lastModified": 1711997201,
@@ -1553,6 +1568,7 @@
         "impermanence": "impermanence",
         "just-flake": "just-flake",
         "mac-app-util": "mac-app-util",
+        "multiverse": "multiverse",
         "nix-flatpak": "nix-flatpak",
         "nix-homebrew": "nix-homebrew",
         "nixGL": "nixGL",
