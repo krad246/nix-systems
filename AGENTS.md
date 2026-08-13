@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `52f16c40175b22360763fc3b2bb2f673ce144e67f70453cce194352828370c6a`
+Canonical context proxy SHA-256: `281c4396d9d1aa3f21dbe9fe67f68c01c12aaedd574bf4ed99e8cac2f2287f78`
 
 Run:
 
@@ -57,6 +57,14 @@ Exported environment is an implicit process-tree software bus; publish onto it
 only for an intentional consumer contract, otherwise keep state shell-local.
 Nix-direnv reload is intentionally manual to avoid reload churn; Lorri remains
 an exploratory asynchronous shell-state publisher, not settled bootstrap policy.
+Parallel agents own distinct worktrees and branches; verify the remote tip and
+publish with `git push --force-with-lease --atomic`, never to a shared branch.
+Legacy Generic Linux behavior is decision evidence, not automatic parity scope:
+inventory and classify deltas, then require owner retain/redesign/drop decisions.
+Kitty is a backend candidate for a multi-backend terminal interface, not the
+portable interface itself.
+VS Code and VS Code server integration are deferred outside current migration
+scope and are not parity or deletion gates.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,

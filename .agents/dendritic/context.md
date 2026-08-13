@@ -1169,6 +1169,22 @@ as single-writer state: delegate either the complete checkpoint operation or
 read-only verification, and do not concurrently edit its inputs or generated
 outputs from another agent.
 
+Parallel implementation agents must own distinct worktrees and branches. Fetch
+and verify the expected remote tip before publishing, then push with both
+`--force-with-lease` and `--atomic`; never let parallel agents publish to the
+same branch.
+
+Treat legacy Generic Linux behavior as decision evidence, not an architecture
+to reproduce verbatim. Before migration or deletion, inventory the delta from
+the new Home Manager base and classify each item as portable intent,
+platform-specific implementation, or incidental legacy choice. Port only after
+an explicit owner retain/redesign/drop decision. In particular, Kitty is a
+potential backend of a terminal interface that can also admit Ghostty,
+Alacritty, and other implementations; it is not itself the portable interface.
+VS Code, VS Code server, and their related integrations are deferred outside the
+current migration scope. Preserve their legacy source locations in the decision
+inventory, but do not port them or treat them as parity or deletion gates.
+
 ### Mandatory architectural decision synchronization
 
 Conversation is not the durable source of truth. Whenever the owner makes a
