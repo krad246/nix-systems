@@ -79,6 +79,8 @@ The frozen predecessor may be deliberately thawed to repair code it still
 owns, then verified, re-pinned, and frozen again. Do not duplicate a capability
 into the bridge merely to carry a repair. This main-based migration line owns
 the sole policy bundle; predecessor-local copies are stale and must be removed.
+Publish frozen/protected branch repairs as final PRs and wait for owner approval
+and merge; move the associated freeze tag only after that approved merge.
 Keep active migration/thaw work in dedicated temporary worktrees until the
 bridge is fully eliminated; remind the owner of this preference before an early
 move into their primary checkout, while allowing an explicit override.

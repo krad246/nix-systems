@@ -19,7 +19,7 @@ operationally frozen Dendritic flake and exposes its module registries beneath
 `self.dendritic`, so
 later slices can port capability cones without rebasing the reconstructed
 branch or deleting unrelated legacy closures. The `dendritic` source is frozen
-at `0846de2f` and tagged `dendritic-suspended-2026-08-12`; treat it as a
+at `b1e091f8` and tagged `dendritic-suspended-2026-08-12`; treat it as a
 predecessor/source archive while migration proceeds from current `main`. The
 lock file pins the exact commit; the input URL names the protected branch rather
 than the immutable tag, so branch protection is part of the freeze guarantee.
@@ -30,6 +30,14 @@ predecessor still owns. When migration uncovers such a defect, temporarily thaw
 freeze coordinate/tag and bridge pin, then freeze it again. Do not internalize
 or duplicate a capability merely to carry its repair; source-ownership transfer
 is a separate landing justified by a coherent consumer cone.
+
+Publish protected/frozen-branch repairs through pull requests. Prepare and
+validate the complete final branch state, open a draft PR, promote/present it as
+final when checks and review evidence are complete, then stop for the owner's
+approval and merge. Do not bypass this by directly updating a protected branch.
+Because a tag move is not itself representable in the PR diff, move the freeze
+tag only after the owner merges the final PR that establishes its target commit;
+then update downstream lock pins in a separate reviewable landing.
 
 The active main-based migration branch owns the sole context-policy bundle.
 The predecessor must not retain a divergent `.agents/dendritic` bundle or root
@@ -331,14 +339,14 @@ port supersedes it. Do not replace it with `nix flake check`, `nix build
 
 Current durable coordinates as of 2026-08-12:
 
-- frozen predecessor branch: `dendritic` at `0846de2f`;
+- frozen predecessor branch: `dendritic` at `b1e091f8`;
 - frozen tag: `dendritic-suspended-2026-08-12`;
 - bridge landed on `main`: `c116a095` (source bridge commit `b341ba3c`);
 - current main-based HM migration branch: `dendritic-hm-foundation` (the name is
   historical; the public module/interface name is `base`, never `foundation`);
 - initial cross-platform HM base commit: `7ba2dae3`;
-- the Home Manager input-registry cone remains predecessor-owned while its
-  canonical-path defect is repaired and the source is re-frozen;
+- the Home Manager input-registry cone remains predecessor-owned; its public
+  path was repaired through PR #435 and re-frozen at `b1e091f8`;
 - the Dendritic branch was reconstructed through roughly one hundred small
   sequential commits, beginning with `Clean everything out` and rebuilding the
   flake and modules from a blank baseline.
@@ -670,7 +678,7 @@ evidence rather than filename inference.
 | Cachix binary-cache policy | accepted omission for thin slice | Main user Nix settings include krad246 Cachix; Dendritic user Nix settings do not. Old broad daemon/cache policy need not block first HM landing. |
 | broad per-user Nix policy | accepted omission for thin slice | Main evaluates many performance, sandbox, retention, timeout, and cache settings; Dendritic HM evaluates only `experimental-features = [nix-command flakes]` through the registry. |
 | input flake registry | architecturally superseded/win; predecessor-owned | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Preserve that design and repair it at its authoritative source until an intentional ownership-transfer landing. |
-| registry filesystem projection | changed, capability available | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has `input-registry.sysroot.install` and optional search-path projection, currently disabled for this consumer. Its public absolute path exposed a noncanonical `/./` artifact; fix this in Dendritic and re-freeze rather than duplicating the cone into the bridge. Selection policy remains to decide. |
+| registry filesystem projection | changed, capability available; path repaired | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has `input-registry.sysroot.install` and optional search-path projection, currently disabled for this consumer. PR #435 repaired its public absolute path from `/Users/krad246/./nix/path` to `/Users/krad246/nix/path` at the authoritative predecessor source. Selection policy remains to decide. |
 | dotfiles link/sync | accepted removal | Do not port the mutable synchronization/link behavior. |
 | XDG | changed | Main evaluates `xdg.enable=true`; Dendritic evaluates false, while both prefer XDG directories. Likely foundation parity item. |
 | manuals | changed | Effective Main: HTML false (Zen override), JSON true. Dendritic: HTML false, JSON false. Decide general HM manual policy independently of browser integration. |
