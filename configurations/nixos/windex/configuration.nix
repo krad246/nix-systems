@@ -78,14 +78,6 @@ in {
         };
       };
     })
-
-    ({lib, ...}: {
-      # default specialisation is automatically switched to,
-      # so overriding it from generic-linux disables it.
-      specialisation = rec {
-        default.configuration = lib.modules.mkForce {};
-      };
-    })
   ];
 
   services.tailscale.enable = true;

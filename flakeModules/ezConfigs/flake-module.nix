@@ -4,7 +4,6 @@
   withSystem,
   inputs,
   self,
-  lib,
   config,
   ...
 }: {
@@ -48,39 +47,6 @@
       users = {
         keerad = {
           nameFunction = _name: "keerad@windex";
-        };
-
-        generic-linux.standalone = {
-          enable = !lib.trivial.inPureEvalMode;
-          pkgs = withSystem builtins.currentSystem ({
-            inputs',
-            system,
-            ...
-          }: let
-            pkgs = import inputs.nixpkgs {
-              inherit system;
-              config = {
-                allowUnfree = true;
-              };
-              overlays = [
-                (_: prev: {
-                  kitty = prev.symlinkJoin {
-                    name = "kitty-nixGL";
-                    paths = [prev.kitty];
-                    nativeBuildInputs = [prev.makeWrapper];
-                    postBuild = ''
-                      rm -f "$out/bin/kitty"
-                      makeWrapper ${lib.meta.getExe inputs'.nixGL.packages.nixGLDefault} "$out/bin/kitty" \
-                        --add-flags ${lib.meta.getExe prev.kitty}
-                    '';
-                  };
-                })
-              ];
-            };
-          in
-            if pkgs.stdenv.isLinux
-            then pkgs
-            else throw "Only available for Linux stdenvs.");
         };
       };
     };

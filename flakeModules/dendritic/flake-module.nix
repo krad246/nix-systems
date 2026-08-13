@@ -135,22 +135,13 @@
         modules = [
           config.flake.dendritic.modules.nixos.headless
           config.flake.dendritic.modules.nixos.interactive
-          ({
-            config,
-            lib,
-            ...
-          }: {
+          ({config, ...}: {
             image.modules.vm = import ./image-modules/vm.nix;
             image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
               vm = config.image.modules.vm;
             };
 
-            home-manager.users.krad246 = {
-              home.stateVersion = lib.mkForce "26.05";
-            };
-
             networking.hostName = "generic-headless-interactive";
-            system.stateVersion = lib.mkForce "25.11";
           })
         ];
       };
@@ -159,30 +150,44 @@
     perSystem = {system, ...}:
       lib.mkMerge [
         (lib.mkIf (system == "aarch64-darwin") {
-          checks.dendritic-hm-base = let
-            configuration = config.flake.dendritic.homeConfigurations.base-aarch64-darwin;
-            cfg = configuration.config;
-          in
-            assert cfg.home.username == "krad246";
-            assert cfg.home.homeDirectory == "/Users/krad246";
-            assert cfg.identity.person
-            == {
-              email = "krad246@gmail.com";
-              name = "Keerthi Radhakrishnan";
-              username = "krad246";
-            };
-            assert cfg.xdg.enable;
-            assert cfg.manual.json.enable;
-            assert !cfg.manual.html.enable;
-            assert cfg.programs.home-manager.enable;
-            assert !cfg.programs.bash.enable;
-            assert !cfg.programs.bat.enable;
-            assert !cfg.programs.fzf.enable;
-            assert !cfg.programs.git.enable;
-            assert !cfg.programs.helix.enable;
-            assert !cfg.programs.kitty.enable;
-            assert !cfg.programs.rbw.enable;
-              configuration.activationPackage;
+          checks = {
+            dendritic-hm-base = let
+              configuration = config.flake.dendritic.homeConfigurations.base-aarch64-darwin;
+              cfg = configuration.config;
+            in
+              assert cfg.home.username == "krad246";
+              assert cfg.home.homeDirectory == "/Users/krad246";
+              assert cfg.identity.person
+              == {
+                email = "krad246@gmail.com";
+                name = "Keerthi Radhakrishnan";
+                username = "krad246";
+              };
+              assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
+              assert cfg.xdg.enable;
+              assert cfg.manual.json.enable;
+              assert !cfg.manual.html.enable;
+              assert cfg.programs.home-manager.enable;
+              assert !cfg.programs.bash.enable;
+              assert !cfg.programs.bat.enable;
+              assert !cfg.programs.fzf.enable;
+              assert !cfg.programs.git.enable;
+              assert !cfg.programs.helix.enable;
+              assert !cfg.programs.kitty.enable;
+              assert !cfg.programs.rbw.enable;
+                configuration.activationPackage;
+
+            dendritic-nixbook-pro-hm = let
+              configuration = inputs.dendritic.darwinConfigurations.nixbook-pro;
+              cfg = configuration.config;
+              home = cfg.home-manager.users.${cfg.owner.username};
+            in
+              assert home.home.username == cfg.owner.username;
+              assert home.home.homeDirectory == "/Users/${cfg.owner.username}";
+              assert home.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
+              assert home.programs.home-manager.enable;
+                home.home.activationPackage;
+          };
         })
         (lib.mkIf (system == "x86_64-linux") {
           checks.dendritic-hm-base = let
@@ -191,6 +196,7 @@
           in
             assert cfg.home.username == "krad246";
             assert cfg.home.homeDirectory == "/home/krad246";
+            assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
             assert cfg.targets.genericLinux.enable;
             assert !cfg.targets.genericLinux.gpu.enable;
             assert cfg.systemd.user.startServices;

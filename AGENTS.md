@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `281c4396d9d1aa3f21dbe9fe67f68c01c12aaedd574bf4ed99e8cac2f2287f78`
+Canonical context proxy SHA-256: `fc1afd04ee546fe2b48101bc8f70ebe144d9943f7118c8f9ca34a957f7b26c0e`
 
 Run:
 
@@ -55,8 +55,9 @@ or PATH assumptions. Inherit environment roots only when the tool's state
 contract explicitly requires them.
 Exported environment is an implicit process-tree software bus; publish onto it
 only for an intentional consumer contract, otherwise keep state shell-local.
-Nix-direnv reload is intentionally manual to avoid reload churn; Lorri remains
-an exploratory asynchronous shell-state publisher, not settled bootstrap policy.
+Nix-direnv bootstraps a cold worktree automatically, then reload is
+intentionally manual to avoid reload churn; Lorri remains an exploratory
+asynchronous shell-state publisher, not settled bootstrap policy.
 Parallel agents own distinct worktrees and branches; verify the remote tip and
 publish with `git push --force-with-lease --atomic`, never to a shared branch.
 Legacy Generic Linux behavior is decision evidence, not automatic parity scope:

@@ -7,7 +7,6 @@
   imports = with self.darwinModules; [
     apps
     base-configuration
-    colima
     tailscale
   ];
 
@@ -35,7 +34,7 @@
       };
     };
 
-    virtualisation = rec {
+    virtualisation = {
       # Configure onboard nix-builder VM specs
       linux-builder = {
         enable = true;
@@ -44,12 +43,6 @@
         cores = 8;
         memorySize = 16 * 1024;
         diskSize = 96 * 1024;
-      };
-
-      colima = {
-        enable = true;
-        inherit (linux-builder) memorySize;
-        inherit (linux-builder) cores;
       };
     };
   };

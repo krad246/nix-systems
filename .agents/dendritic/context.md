@@ -19,7 +19,7 @@ operationally frozen Dendritic flake and exposes its module registries beneath
 `self.dendritic`, so
 later slices can port capability cones without rebasing the reconstructed
 branch or deleting unrelated legacy closures. The `dendritic` source is frozen
-at `b1e091f8` and tagged `dendritic-suspended-2026-08-12`; treat it as a
+at `dc774a7d` and tagged `dendritic-suspended-2026-08-12`; treat it as a
 predecessor/source archive while migration proceeds from current `main`. The
 lock file pins the exact commit; the input URL names the protected branch rather
 than the immutable tag, so branch protection is part of the freeze guarantee.
@@ -47,13 +47,20 @@ predecessor source change and removal of stale policy copies.
 
 The immediate sequence is now:
 
+The 2026-08-13 cleanup landing is intentionally one review unit: remove the
+leaking Colima/Lima stack, advance the bridge to the final merged predecessor
+tip, finish the portable two-consumer HM proof, delete legacy `generic-linux`,
+and synchronize all resulting context changes in the same PR. Do not publish
+partial PRs from this lane; retain commit-level checkpoints on its branch.
+
 1. completely port the standalone Home Manager `. #base` logical closure;
 2. prove that same base module on aarch64-darwin and x86_64-linux and through
    both standalone and system-integrated consumers;
-3. delete legacy `generic-linux` once its full behavior is represented by the
-   cross-platform base and platform dispatch; current HM uses
-   `targets.genericLinux`, while the final capability-level Linux/Darwin target
-   vocabulary remains to be settled by the port;
+3. delete legacy `generic-linux` now that the portable cross-platform base and
+   platform dispatch are proven. Preserve its desktop-only intent in the
+   follow-on interface agenda rather than retaining the host-shaped
+   implementation; current HM uses `targets.genericLinux`, while the final
+   capability-level Linux/Darwin target vocabulary remains to be settled;
 4. port Dendritic's redesigned flake-policy implementation instead of growing
    main's legacy checks/hooks into a competing architecture;
 5. continue porting capability lanes and machine closures in coherent,
@@ -146,6 +153,15 @@ unneeded, and `flake-file` lock pruning. Preserve this discipline and verify the
 generated lock graph rather than accepting duplicate Nixpkgs/Home Manager trees
 as incidental flake churn.
 
+The 2026-08-13 cleanup is an incremental contraction, not completion of this
+policy. It reduces current `main` from 134 lock nodes/34 root inputs to 129/32
+by deleting the obsolete `nixGL` and `nix-flatpak` roots and their five-node
+closure. The contemporary Dendritic graph is 68 nodes/25 roots, so the later
+flake-policy port still owns the larger auto-follow/auto-prune gap. Preserve
+required capabilities rather than matching counts mechanically: `agenix-rekey`
+is a current root consumed by the devshell and is absent from the predecessor,
+so it must remain or be deliberately incorporated when porting that policy.
+
 There is also a not-yet-realized ambition for flake-parts module-level
 severability/applicability—ideas such as `importApplies` and related machinery.
 Do not claim this exists today. Record cases where flake modules are resident or
@@ -193,6 +209,28 @@ Preserve these substrate laws when extending the architecture:
 - Choose outer versus inner `lib` and package scopes as part of the contract.
   Scope-sensitive dependencies must resolve through the intended derived
   package set; do not accidentally capture a convenient outer `pkgs`.
+- Publish one coherent flake-level library as `self.lib`, derived from the sole
+  followed Nixpkgs input. Use it for stable library operations and release
+  metadata in published modules. Use a distinctly named inner/extended library
+  only when its additional fixed-point behavior is required; do not couple
+  stable consumers to the assumption that upstream symbols are re-exported by
+  an overlaid `pkgs.lib`. Lexical capture of flake-parts' module argument is not
+  a substitute for this public fixed point.
+- Distinguish importing a definition from splicing a realized universe. A
+  module, overlay, extension, factory, or constructor may come from another
+  input and be applied inside this flake's fixed points; the resulting value
+  must still descend from this repository's locked/followed input closure.
+  Consuming another scope's already-realized `pkgs`, extended `lib`, module
+  evaluation, or package instance instead imports that universe's identity and
+  closure and must be an explicit interface decision. Prefer definitions and
+  factories when establishing coherence; splice realized universes only when
+  the semantic intent actually requires it.
+- Reproducible coherence is a provenance property, not merely value equality.
+  Cloning the repository and its lock must reconstruct every ordinary package
+  set, stable library, and module-system input from the declared sole roots.
+  Equal version/release strings do not prove this if parallel inputs or imports
+  realized independent Nixpkgs worlds. Use follows relationships, flake-parts
+  per-system fixed points, and overlay application to make provenance structural.
 - Reason about recursive package/module fixed points structurally. `final` and
   `prev` are semantic positions, not imperative time steps, and nested fixed
   points may behave like coupled gears rather than an inner computation that
@@ -364,16 +402,18 @@ port supersedes it. Do not replace it with `nix flake check`, `nix build
 
 ## Branch topology and migration hazard
 
-Current durable coordinates as of 2026-08-12:
+Current durable coordinates as of 2026-08-13:
 
-- frozen predecessor branch: `dendritic` at `b1e091f8`;
-- frozen tag: `dendritic-suspended-2026-08-12`;
+- frozen predecessor branch: `dendritic` at `dc774a7d` (merged PR #444; its
+  prerequisite coherent-library repair was merged as PR #443);
+- frozen tag: `dendritic-suspended-2026-08-12` at `dc774a7d`;
 - bridge landed on `main`: `c116a095` (source bridge commit `b341ba3c`);
-- current main-based HM migration branch: `dendritic-hm-foundation` (the name is
-  historical; the public module/interface name is `base`, never `foundation`);
+- current main-based cleanup/migration branch: `drop-colima-lima-stack`, based
+  on `main` at `af7a4b8f`; it is the single review unit for the 2026-08-13
+  cleanup sequence recorded above;
 - initial cross-platform HM base commit: `7ba2dae3`;
 - the Home Manager input-registry cone remains predecessor-owned; its public
-  path was repaired through PR #435 and re-frozen at `b1e091f8`;
+  path was repaired through PR #435 and subsequently re-frozen at `dc774a7d`;
 - the Dendritic branch was reconstructed through roughly one hundred small
   sequential commits, beginning with `Clean everything out` and rebuilding the
   flake and modules from a blank baseline.
@@ -420,7 +460,7 @@ closure therefore contains both:
    - `configurations/darwin/nixbook-pro/default.nix`;
    - `configuration.nix`;
    - `remotes.nix`;
-   - Darwin `apps`, `base-configuration`, `colima`, `macos-container`, and
+   - Darwin `apps`, `base-configuration`, `macos-container`, and
      `tailscale` imports;
 2. the user HM root:
    - `configurations/home/krad246.nix`;
@@ -531,7 +571,11 @@ maxJobs, TERM, bottom, coredumps, and protocol.
 - LaunchControl is removed.
 - Zen is retained.
 - Discord is added.
-- Colima is intentionally excluded from this port.
+- Colima/Lima is an accepted repository-wide removal. On 2026-08-13 the owner
+  directed removal of the whole Darwin Colima/Lima stack after the launchd
+  `KeepAlive` service repeatedly orphaned `.limactl-wrapped` processes under
+  PID 1 until the host exhausted its process limit. Do not restore the module,
+  host selections, packages, or launch agent as a Generic Linux parity item.
 - `macos-container` is intentionally excluded from this port.
 - Using Nixpkgs `bashInteractive` instead of the Homebrew Bash is acceptable for
   the narrowed slice.
@@ -638,8 +682,10 @@ Status meanings:
 | Dullahan/Gremlin/Fortress remotes | missing | Must be redesigned as capability/backends, not copied as host bundle. |
 
 Evaluated system package placement also confirms expected accepted removals:
-Main includes Colima, the macOS container package, and Docker; Dendritic does
-not. Main includes system Agenix and Lorri; Dendritic does not. Dendritic adds
+Main previously included Colima and Docker through its Colima module; that
+entire Colima/Lima stack is now an accepted removal after a demonstrated host
+process leak. The separate macOS container package remains outside the HM port.
+Main includes system Agenix and Lorri; Dendritic does not. Dendritic adds
 Discord as a system Nix package. `m-cli` moves from Main's system package set to
 the Dendritic owner HM package set. Both retain Tailscale and the normal
 nix-darwin packages. The login shell changes from `/opt/homebrew/bin/bash` to
@@ -804,7 +850,8 @@ All of these remain required unless the owner explicitly revises them:
 - every imported capability is used or required to expose a stable consumed
   interface;
 - all functional deviations from `main` are explicit and accepted;
-- Colima and `macos-container` remain intentionally excluded;
+- Colima/Lima is intentionally removed repository-wide; `macos-container`
+  remains intentionally excluded from the HM port;
 - application tools eventually activate from resolved demand, not mere
   availability;
 - remote-machine definitions are rearchitected rather than silently lost;
@@ -1155,13 +1202,34 @@ variables. Prefer explicit arguments, structural location, or typed inputs over
 reading ambient bus values; stale environment inherited from another devshell
 or worktree must not redirect bootstrap or mutation targets.
 
-The repository currently uses manual nix-direnv reloads deliberately. Automatic
-reload has caused persistent reload churn, so bootstrap success means reaching
-the valid manual-reload boundary; do not force a reload on every shell entry.
+The repository uses manual nix-direnv reloads after initial bootstrap.
+Automatic reload of an established cache has caused persistent reload churn,
+so do not force a rebuild on every shell entry. A fresh worktree with no cache
+for its selected devShell must bootstrap itself automatically on first entry;
+manual policy begins only after both its exact profile and profile RC exist.
 Lorri is an exploratory asynchronous publisher of richer devshell state and is
 useful but not yet a settled replacement. Preserve the current manual contract
 and revisit reload/publisher behavior in a separate lane rather than coupling it
 to bootstrap or hook-installation fixes.
+
+The intended follow-on direction is to remove Lorri rather than harden its
+opaque per-project cache. Investigate process-compose or another modular
+flake-owned services interface through which the repository can declare and
+orchestrate its development service fleet. Keep the interface choice open until
+the required service contracts are inventoried; `process-compose` is a candidate
+backend, not the public architecture. Prefer checkout-local, declarative,
+disposable runtime state so recovery of repository-owned state is equivalent to
+cleaning the checkout and re-entering it. Secrets, user data, and intentionally
+external service state remain outside that cleanup boundary and require explicit
+lifecycle contracts.
+
+When a Git hook in an isolated worktree reports missing repository environment
+state (for example, a pre-commit shim sees no generated hook configuration),
+enter the worktree through direnv. A cold worktree must build its first cache
+without an extra command; an established but stale cache requires the generated
+`nix-direnv-reload` helper. Retry the operation through `direnv exec .` and let the
+repository hook suite run. Do not default to `PRE_COMMIT_ALLOW_NO_CONFIG=1` or
+another hook bypass for this case.
 
 Checkpoint/propagation work may run in a bounded sub-agent while the primary
 agent continues an independent implementation lane. Treat the canonical bundle
@@ -1184,6 +1252,16 @@ Alacritty, and other implementations; it is not itself the portable interface.
 VS Code, VS Code server, and their related integrations are deferred outside the
 current migration scope. Preserve their legacy source locations in the decision
 inventory, but do not port them or treat them as parity or deletion gates.
+
+The owner accepted deletion of legacy `generic-linux` before its desktop-only
+behavior is redesigned. This deletes implementations, not capability intent:
+the removed sources remain decision evidence for later ports. Flatpak
+install/update policy, conditional dconf, desktop-entry visibility, Linux
+desktop presets, terminal-backend selection, and VS Code/server integration are
+explicit follow-on interface-design lanes. They are not portable-base parity or
+deletion gates; Kitty remains an optional terminal backend rather than the
+portable interface. Do not recreate the deleted host-shaped bundle merely to
+restore these behaviors.
 
 ### Mandatory architectural decision synchronization
 
@@ -1277,8 +1355,9 @@ Before committing:
 2. Keep the evaluated cross-platform base checks meaningful; during this
    migration, the temporary pre-push hook realizes their exact selected
    derivation through wrapped Nix while legacy `check-flake` remains intact.
-3. Prove standalone and system-integrated HM consumers, then delete
-   `generic-linux` when no behavior remains unique to it.
+3. Prove standalone and system-integrated HM consumers, delete legacy
+   `generic-linux`, and carry its intentionally deferred desktop behavior into
+   the explicit follow-on interface agenda.
 4. Port the Dendritic flake-policy interface, retaining a rich output surface
    while redesigning declaration/ownership/composition semantics.
 5. Continue normalized old/new `nixbook-pro` behavioral diffs, Linux-builder
