@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-root="$(git rev-parse --show-toplevel)"
-bundle="$root/.agents/dendritic"
+command="${1:-help}"
+root="${2:-$(git rev-parse --show-toplevel)}"
+bundle="${3:-$root/.agents/dendritic}"
 context="$bundle/context.md"
 routes="$bundle/routes.tsv"
 manifest="$bundle/manifest"
@@ -11,10 +12,21 @@ cache_dir="${CODEX_CONFIG_DIR:-$HOME/.config/codex}/cache/project-charters"
 cache_context="$cache_dir/dotfiles-dendritic-grand-vision.md"
 cache_ledger="$cache_dir/dotfiles-nixbook-pro-closure-ledger.md"
 
+validate_paths() {
+	[[ -d $root && -f $root/flake.nix ]] || {
+		printf 'invalid flake root: %s\n' "$root" >&2
+		return 1
+	}
+	[[ -f $context && -f $routes && -f $bundle/AGENTS.template.md ]] || {
+		printf 'invalid context bundle: %s\n' "$bundle" >&2
+		return 1
+	}
+}
+
 digest() {
 	(
-		cd "$root"
-		shasum -a 256 .agents/dendritic/context.md .agents/dendritic/routes.tsv
+		cd "$bundle"
+		shasum -a 256 context.md routes.tsv
 	) | shasum -a 256 | awk '{print $1}'
 }
 
@@ -124,7 +136,14 @@ refresh() {
 	printf 'refreshed %s\n' "$hash"
 }
 
-case "${1:-help}" in
+checkpoint() {
+	validate_paths
+	refresh
+	verify
+	verify_cache
+}
+
+case "$command" in
 verify)
 	verify
 	;;
@@ -162,6 +181,9 @@ verify-cache)
 	verify >/dev/null
 	verify_cache
 	;;
+checkpoint)
+	checkpoint
+	;;
 refresh)
 	refresh
 	;;
@@ -177,6 +199,7 @@ Usage: $0 COMMAND
   refresh         regenerate proxy files and local cache mirrors after edits
   sync-cache      replace local cache mirrors from verified canonical context
   verify-cache    fail if local cache mirrors differ from canonical context
+  checkpoint      refresh and verify canonical context and local mirrors
 
 For architecture changes, migration planning, or uncertainty, use 'full'.
 EOF

@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `8194b06fceb7054562a24080baddaa0fa15834c775b2202a1a5521a9a81796cc`
+Canonical context proxy SHA-256: `f9550df00d89e8ae8ec6df8cfa6798aa5f3ffe1f5c214e18f8147f0097820c19`
 
 Run:
 
@@ -44,6 +44,8 @@ refresh, verify, commit, and push it for the next machine/model to consume.
 During long sessions, periodically make this canonical checkpoint so an
 out-of-file-descriptors cache flush or process restart resumes from recent
 committed context rather than conversation memory.
+Use `nix run .#agent-checkpoint` as the stable checkpoint entry point. Its name
+is independent of the current Dendritic storage so the mechanics can evolve.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
