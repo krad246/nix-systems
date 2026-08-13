@@ -58,7 +58,7 @@
         {
           input-registry.sysroot.abspath = lib.strings.join "/" [
             cfg.destination.directory
-            cfg.destination.prefix
+            (lib.strings.removePrefix "./" cfg.destination.prefix)
           ];
         }
         (lib.modules.mkIf cfg.install (lib.attrsets.setAttrByPath attrpath (linkRegistryTo cfg.destination.prefix config.nix.registry)))
