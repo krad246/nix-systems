@@ -9,6 +9,8 @@
         apply.whitespace = "fix";
         branch.sort = "-committerdate";
 
+        clean.requireForce = false;
+
         core = {
           eol = "lf";
           autocrlf = "input";
