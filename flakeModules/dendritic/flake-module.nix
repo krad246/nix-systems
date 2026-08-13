@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  withSystem,
   ...
 }: {
   options.flake.homeConfigurations = lib.mkOption {
@@ -120,11 +121,10 @@
     flake = {
       homeConfigurations = lib.mkIf (!lib.inPureEvalMode) {
         base = inputs.home-manager.lib.homeManagerConfiguration {
-          pkgs = import inputs.nixpkgs {
-            system = builtins.currentSystem;
-            config.allowUnfree = true;
-          };
-          modules = let inherit (config.flake.dendritic.homeModules) standalone; in [standalone];
+          pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
+          modules = let
+            inherit (config.flake.dendritic.homeModules) standalone;
+          in [standalone];
         };
       };
 
@@ -138,19 +138,9 @@
             lib,
             ...
           }: {
-            image.modules.vm = {
-              config,
-              modulesPath,
-              ...
-            }: {
-              imports = ["${modulesPath}/virtualisation/qemu-vm.nix"];
-
-              system.build.image = config.system.build.vm;
-            };
-
-            image.modules.vm-nogui = {
-              imports = [config.image.modules.vm];
-              virtualisation.graphics = false;
+            image.modules.vm = import ./image-modules/vm.nix;
+            image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
+              vm = config.image.modules.vm;
             };
 
             home-manager.users.krad246 = {
@@ -193,9 +183,6 @@
               configuration.activationPackage;
         })
         (lib.mkIf (system == "x86_64-linux") {
-          packages.generic-headless-interactive-vm =
-            config.flake.nixosConfigurations.generic-headless-interactive.config.system.build.images.vm-nogui;
-
           checks.dendritic-hm-base = let
             configuration = config.flake.dendritic.homeConfigurations.base-x86_64-linux;
             cfg = configuration.config;
