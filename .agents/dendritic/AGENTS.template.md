@@ -48,6 +48,10 @@ Use `nix run .#agent-checkpoint` as the stable checkpoint entry point. Its name
 is independent of the current Dendritic storage so the mechanics can evolve.
 Bounded checkpoint, propagation, cache verification, and isolated validation
 may be delegated asynchronously when shared-file ownership is non-overlapping.
+For bootstrap tooling, close over immutable logic/tools through Nix, late-bind
+the writable workspace via argument/environment/local discovery, validate it
+before mutation, and preserve a baseline-shell recovery path without devshell
+or PATH assumptions.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
