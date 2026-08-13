@@ -1,6 +1,8 @@
 # key	heading	purpose
 mission	Mission and stopping condition	Objective, sequence, and two-consumer HM thesis
 architecture	Authoritative architectural intent	Capability vTables, backends, integrations, profiles, and closure priorities
+federation	Federated kConfig direction and native Nix substrate	Federated module-system goal, native Nix laws, fixed points, cross scopes, and forward rebasing
+online-import	Supplemental online-context reconciliation (2026-08-12)	Provenance, accepted additions, and superseded online uncertainties
 hm	First polished landing: low-level Home Manager	HM landing requirements
 flake	`ezConfigs` and flake composition	Flake substrate, input discipline, and ezConfigs disposition
 topology	Branch topology and migration hazard	Branch/worktree/input-version hazards
