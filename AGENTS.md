@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `f9550df00d89e8ae8ec6df8cfa6798aa5f3ffe1f5c214e18f8147f0097820c19`
+Canonical context proxy SHA-256: `1861fd3716c130c89b28ae755af620a2b5845f00ecb642ca3a3154ed68d4a166`
 
 Run:
 
@@ -46,6 +46,8 @@ out-of-file-descriptors cache flush or process restart resumes from recent
 committed context rather than conversation memory.
 Use `nix run .#agent-checkpoint` as the stable checkpoint entry point. Its name
 is independent of the current Dendritic storage so the mechanics can evolve.
+Bounded checkpoint, propagation, cache verification, and isolated validation
+may be delegated asynchronously when shared-file ownership is non-overlapping.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
@@ -73,3 +75,6 @@ The frozen predecessor may be deliberately thawed to repair code it still
 owns, then verified, re-pinned, and frozen again. Do not duplicate a capability
 into the bridge merely to carry a repair. This main-based migration line owns
 the sole policy bundle; predecessor-local copies are stale and must be removed.
+Keep active migration/thaw work in dedicated temporary worktrees until the
+bridge is fully eliminated; remind the owner of this preference before an early
+move into their primary checkout, while allowing an explicit override.

@@ -46,6 +46,8 @@ out-of-file-descriptors cache flush or process restart resumes from recent
 committed context rather than conversation memory.
 Use `nix run .#agent-checkpoint` as the stable checkpoint entry point. Its name
 is independent of the current Dendritic storage so the mechanics can evolve.
+Bounded checkpoint, propagation, cache verification, and isolated validation
+may be delegated asynchronously when shared-file ownership is non-overlapping.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
@@ -73,3 +75,6 @@ The frozen predecessor may be deliberately thawed to repair code it still
 owns, then verified, re-pinned, and frozen again. Do not duplicate a capability
 into the bridge merely to carry a repair. This main-based migration line owns
 the sole policy bundle; predecessor-local copies are stale and must be removed.
+Keep active migration/thaw work in dedicated temporary worktrees until the
+bridge is fully eliminated; remind the owner of this preference before an early
+move into their primary checkout, while allowing an explicit override.
