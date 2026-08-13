@@ -124,7 +124,9 @@
           pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
           modules = let
             inherit (config.flake.dendritic.homeModules) standalone;
-          in [standalone];
+          in [
+            standalone
+          ];
         };
       };
 
