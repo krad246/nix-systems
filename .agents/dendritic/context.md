@@ -14,23 +14,29 @@ later sessions can port coherent slices from `dendritic` without repeating its
 structural-rebase problem. Continue the epic until the remaining machine
 closures have been migrated.
 
-The immediate sequence is:
+The coexistence bridge is landed on `main` at `c116a095`. It consumes the
+operationally frozen Dendritic flake and exposes its module registries beneath
+`self.dendritic`, so
+later slices can port capability cones without rebasing the reconstructed
+branch or deleting unrelated legacy closures. The `dendritic` source is frozen
+at `0846de2f` and tagged `dendritic-suspended-2026-08-12`; treat it as a
+predecessor/source archive while migration proceeds from current `main`. The
+lock file pins the exact commit; the input URL names the protected branch rather
+than the immutable tag, so branch protection is part of the freeze guarantee.
 
-1. finish a behavioral and architectural diff of the complete old and new
-   `nixbook-pro` closures;
-2. polish the low-level Home Manager experience until it is independently
-   landable and production quality;
-3. derive an explicit dependency graph and concrete commit plan;
-4. create a bridge commit on `main` that permits legacy and Dendritic structures
-   to coexist;
-5. port capability lanes and machine closures in coherent, verified commits.
+The immediate sequence is now:
 
-The coexistence bridge is mandatory and urgent, not an optional cleanup after
-the HM design is perfected. The migration cannot land without converting this
-long-lived feature-branch effort into trunk-based incremental work. Do enough
-closure analysis to design the bridge correctly, then land the bridge on
-current `main` and route the polished HM slice through it. Do not continue
-accumulating a second unmergeable architecture on `dendritic`.
+1. completely port the standalone Home Manager `. #base` logical closure;
+2. prove that same base module on aarch64-darwin and x86_64-linux and through
+   both standalone and system-integrated consumers;
+3. delete legacy `generic-linux` once its full behavior is represented by the
+   cross-platform base and platform dispatch; current HM uses
+   `targets.genericLinux`, while the final capability-level Linux/Darwin target
+   vocabulary remains to be settled by the port;
+4. port Dendritic's redesigned flake-policy implementation instead of growing
+   main's legacy checks/hooks into a competing architecture;
+5. continue porting capability lanes and machine closures in coherent,
+   independently mergeable commits.
 
 The current highest-value landing hypothesis is a complete, correct, general,
 and severable Home Manager substrate with two immediate consumers:
@@ -286,29 +292,51 @@ desired replacement. None is currently known to fit this architecture well.
 `import-tree` currently provide generated-input and Dendritic module discovery,
 but host composition belongs to the project's own capability modules.
 
+### Flake policy and output surface
+
+Dendritic's redesigned flake-level policy is the durable implementation to
+port. Do not elaborate `main`'s legacy checks and hook machinery into a new
+general framework during migration. Preserve existing behavior, add only
+narrow and conspicuously disposable bridge glue where an immediate proof is
+needed, then replace that glue by consuming the Dendritic policy interface.
+
+A large, expressive flake output surface is desirable. The architectural
+problem is not output count; it is accidental declaration, ownership,
+composition, and consumption semantics. Retain or rebuild useful outputs behind
+the redesigned Dendritic module/policy structure. Never use schema shrinkage as
+a proxy for architectural quality.
+
+For the initial HM base port, retain `check-flake` and `check-flake-file`
+unchanged. A separate temporary `realize-dendritic-hm-base` pre-push hook may
+refer symbolically to `config.checks.dendritic-hm-base.drvPath`, discard its
+string context so hook installation does not realize it, and invoke the wrapped
+Nix distribution supplied by the devshell. Delete this hook when the HM/policy
+port supersedes it. Do not replace it with `nix flake check`, `nix build
+.#base`, or a generalized map over the checks namespace.
+
 ## Branch topology and migration hazard
 
-At the time this handoff was written:
+Current durable coordinates as of 2026-08-12:
 
-- working branch: `dendritic` at `5940c9bf` before this handoff commit;
-- remote tracking branch: `origin/dendritic` at the same commit;
-- `main` at `315488c2` in the primary repository branch listing;
-- a separate worktree at `./main` is on `general-longstanding-cleanup` at
-  `6e2ecfb4` and must not be mistaken for the `main` branch;
-- merge base between `main` and `dendritic`: `f851783b`;
-- `dendritic` was reconstructed through roughly one hundred small sequential
-  commits, beginning with `Clean everything out` and rebuilding the flake and
-  modules from a blank baseline.
+- frozen predecessor branch: `dendritic` at `0846de2f`;
+- frozen tag: `dendritic-suspended-2026-08-12`;
+- bridge landed on `main`: `c116a095` (source bridge commit `b341ba3c`);
+- current main-based HM migration branch: `dendritic-hm-foundation` (the name is
+  historical; the public module/interface name is `base`, never `foundation`);
+- initial cross-platform HM base commit: `7ba2dae3`;
+- the Dendritic branch was reconstructed through roughly one hundred small
+  sequential commits, beginning with `Clean everything out` and rebuilding the
+  flake and modules from a blank baseline.
 
 Always re-check these facts. They are historical coordinates, not permanent
 truth. Use `git status --short --branch`, `git branch -vv`, `git worktree list`,
 and `git merge-base main dendritic` before acting.
 
-The branches also differ in dependency era. Current `main` has moved to 26.05
-inputs in its generated flake, while `dendritic` currently uses 25.11 for
-Nixpkgs, Home Manager, and nix-darwin. Never treat lockfiles or generated
-`flake.nix` as mechanically interchangeable. Do not solve this with a giant
-rebase. The bridge must make coexistence and incremental ports possible.
+The branches also differ in dependency era. Current `main` uses 26.05 inputs,
+while frozen `dendritic` uses 25.11 for Nixpkgs, Home Manager, and nix-darwin.
+Never treat lockfiles or generated `flake.nix` as mechanically interchangeable.
+Do not solve this with a giant rebase. The landed predecessor bridge exists to
+make coexistence and incremental ports possible.
 
 The Dendritic branch's broad diff (previously measured as 475 files, about 6,374
 insertions and 12,402 deletions) is a consequence of reconstruction, not a
@@ -727,11 +755,8 @@ All of these remain required unless the owner explicitly revises them:
 
 ## Bridge-to-main constraints
 
-The bridge is not yet designed, but it is a required early milestone and the
-mechanism that makes every later migration slice feasible. Derive it from
-enough closure evidence to avoid baking in the wrong boundary; do not postpone
-it until every parity question or high-level interface is complete. Preserve
-these constraints:
+The bridge landed on `main` at `c116a095`. Preserve these constraints as later
+ports extend it:
 
 - it must land on current `main`, not make `main` adopt the reconstructed
   Dendritic tree wholesale;
@@ -749,18 +774,48 @@ these constraints:
 - record old-to-new behavior decisions so future ports are closure migrations,
   not archaeology repeats.
 
-Success means ordinary work can return to a trunk-based rhythm: introduce or
+Success means ordinary work proceeds in a trunk-based rhythm: introduce or
 polish one capability cone, integrate it with one or more real consumers, verify
 it alongside untouched legacy closures, and merge it to `main`. A bridge that
 still requires carrying a broad shadow tree, periodically rebasing the entire
 `dendritic` rewrite, or deleting legacy exports before their consumers move is
 not a successful bridge.
 
-A likely sequence, subject to evidence, is:
+### Operational trunk migration loop
 
-1. Dendritic virtual-module/export substrate compatible with existing outputs;
-2. inputs/Nixpkgs/Home Manager foundations required by the HM cone;
-3. identity and low-level shell program interfaces;
+Apply the bridge repeatedly as a consumer-driven closure migration:
+
+1. choose the smallest coherent capability cone needed by a real consumer,
+   starting with the complete standalone HM `. #base` logical closure;
+2. consume the frozen predecessor's virtual interfaces through `self.dendritic`
+   while defining main-owned replacements at the same registry boundary;
+3. reconstitute the target consumer from capability imports and prove behavior,
+   backend replaceability, and derivation closure on the current main-based
+   branch;
+4. deactivate or remove only the corresponding legacy `ezConfigs` code path and
+   old modules whose consumer count has reached zero; unrelated legacy hosts
+   and closures remain live;
+5. once a capability cone is proven, internalize/move its required module
+   sources into the current tree so main no longer depends on the predecessor
+   for that cone;
+6. merge the independently coherent slice to main and select the next consumer
+   cone rather than accumulating a second long-lived integration branch;
+7. repeat until `ezConfigs`, predecessor registries/input, and compatibility
+   adapters have no consumers;
+8. delete `ezConfigs`, the Dendritic bridge/input, temporary realization hooks,
+   and frozen-branch migration machinery as final cleanup—not before.
+
+Large deletions are therefore amortized by consumer migration. Never mirror the
+feature branch's original mass deletion onto main, and never require Dendritic
+to rebase over ongoing main development. Near the endpoint, the accumulated
+main tree becomes the successor architecture and the frozen branch ceases to be
+a dependency; this is a sequence of source-ownership transfers, not a final
+giant branch merge.
+
+A likely continuation sequence, subject to evidence, is:
+
+1. finish the main-owned cross-platform HM `base` and standalone shell;
+2. identity and low-level shell program interfaces;
 4. shell backends and explicit integrations;
 5. editor/terminal capabilities and standalone HM fixtures;
 6. provisional presets using `mkDefault`;
@@ -947,6 +1002,44 @@ static context cost; expand canonical detail dynamically. The hash is an
 integrity/version proxy, not a magical semantic compression: a new agent must
 read the routed source to recover meaning.
 
+#### Write-through cache and cross-machine continuation
+
+Use a deliberately simple single-writer, write-through coherence model. The
+repository bundle is authoritative memory; local Codex project-charter files
+are disposable read caches. There is no peer-to-peer merge protocol and no
+cache may become an independent source of truth.
+
+For every durable architectural memory write:
+
+1. edit `.agents/dendritic/context.md`, its routes, template, or supporting
+   bundle files first;
+2. run `.agents/dendritic/context.sh refresh`, which regenerates the proxy hash,
+   root `AGENTS.md`, manifest, and local project-charter mirrors;
+3. run `verify` and `verify-cache`;
+4. commit canonical and generated repository files together with the embodying
+   implementation, or in an immediate context-only commit;
+5. push the commit before relying on another machine/model to remember it.
+
+If an agent or human has already mutated a local cache file, do not run a sync
+that overwrites it blindly. Diff it against canonical context, reconcile every
+durable non-stale fact into the appropriate canonical sections, then refresh.
+Cache-only changes are dirty, non-durable writes and must not survive the turn.
+
+To continue on another computer or with another Codex instance:
+
+1. clone or pull the repository branch containing the newest context commit;
+2. read root `AGENTS.md` and run `.agents/dendritic/context.sh verify`;
+3. run `.agents/dendritic/context.sh sync-cache` followed by `verify-cache`;
+4. run `.agents/dendritic/context.sh full` before architectural work, or read
+   only routed sections for bounded implementation after full context has been
+   established;
+5. inspect current Git/evaluation state because recorded coordinates are
+   historical evidence, not a substitute for the live tree.
+
+This is write-through, not eventual consistency: a decision that affects
+subsequent work is synchronized before that work continues. Commit + push is
+the publication boundary; merely changing model memory or a local cache is not.
+
 ### Mandatory architectural decision synchronization
 
 Conversation is not the durable source of truth. Whenever the owner makes a
@@ -976,10 +1069,10 @@ interpretation depends on it:
    note while leaving stale instructions elsewhere;
 4. preserve relevant historical evidence and label the new status/decision;
    distinguish a changed owner decision from a newly discovered fact;
-5. run `.agents/dendritic/context.sh refresh` to regenerate the manifest and
-   root `AGENTS.md` proxy hash;
-6. run `.agents/dendritic/context.sh verify`, route-expansion checks, shellcheck,
-   and `git diff --check`;
+5. run `.agents/dendritic/context.sh refresh` to regenerate the manifest, root
+   `AGENTS.md` proxy hash, and local cache mirrors;
+6. run `.agents/dendritic/context.sh verify`, `verify-cache`, route-expansion
+   checks, shellcheck, and `git diff --check`;
 7. inspect the canonical and generated diffs for accidental loss;
 8. commit the bundle update with the implementation that embodies the decision,
    or make an immediate context-only commit when implementation will follow in
@@ -1034,20 +1127,21 @@ Before committing:
 
 ## Immediate next work
 
-1. Finish the HM program-by-program behavioral ledger listed above.
-2. Evaluate the old and new `nixbook-pro` configurations where feasible and
-   capture normalized option/output diffs, separating dependency-version drift
-   from architectural changes.
-3. Complete Linux-builder parity and independent guest evaluation.
-4. Inventory remote definitions by intent so a capability interface can be
-   designed later; do not copy `krad246.remotes.*` wholesale.
-5. Audit the current HM module graph for implicit activation and unstable-input
-   evaluation leaks.
-6. Define standalone HM composition/closure tests.
-7. From the minimum sufficient evidence, write the concrete coexistence bridge
-   and commit graph; do not wait for exploratory app/browser/dock APIs to settle.
-8. Implement the bridge on current `main` as a mandatory early deliverable and
-   immediately begin landing the HM capability cone through it.
+1. Finish total behavioral porting of `. #base`, using the program-by-program HM
+   ledger and explicit owner decisions rather than copying legacy bundles.
+2. Keep the evaluated cross-platform base checks meaningful; during this
+   migration, the temporary pre-push hook realizes their exact selected
+   derivation through wrapped Nix while legacy `check-flake` remains intact.
+3. Prove standalone and system-integrated HM consumers, then delete
+   `generic-linux` when no behavior remains unique to it.
+4. Port the Dendritic flake-policy interface, retaining a rich output surface
+   while redesigning declaration/ownership/composition semantics.
+5. Continue normalized old/new `nixbook-pro` behavioral diffs, Linux-builder
+   parity, and remote-definition intent inventory as their dependency lanes
+   become relevant.
+6. Audit implicit backend activation, input forcing, and derivation closure at
+   capability boundaries; reuse established invariants rather than relitigating
+   downstream symbol validity.
 
 The key mental model is: this is not a file migration, a naming cleanup, or a
 large rebase. It is the incremental extraction and landing of composable

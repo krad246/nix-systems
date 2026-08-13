@@ -62,6 +62,25 @@
 
             stages = ["pre-push"];
           };
+          realize-dendritic-hm-base = {
+            enable = true;
+            description = "Realize the Dendritic Home Manager base before pushing";
+
+            # FIXME(dendritic-migration): Delete this hook once the Home Manager
+            # closure has been ported. Discarding the string context keeps hook
+            # installation from realizing the check; pre-push still receives the
+            # exact derivation selected by the already-evaluated checks schema.
+            entry = "${config.packages.nix}/bin/nix-store --realise ${
+              lib.strings.escapeShellArg (
+                builtins.unsafeDiscardStringContext config.checks.dendritic-hm-base.drvPath
+              )
+            }";
+
+            always_run = true;
+            pass_filenames = false;
+
+            stages = ["pre-push"];
+          };
           alejandra.enable = true;
           check-added-large-files.enable = true;
           check-case-conflicts.enable = true;

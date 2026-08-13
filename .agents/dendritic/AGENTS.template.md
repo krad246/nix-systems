@@ -36,6 +36,12 @@ commit the canonical files, manifest, and regenerated root `AGENTS.md` together.
 A verification mismatch means this proxy is stale: stop and refresh or inspect
 the canonical diff. Never reconstruct intent from the hash itself.
 
+Local Codex project-charter caches are mirrors, not an authority. `refresh`
+also updates them. After cloning or pulling on another computer, run
+`.agents/dendritic/context.sh sync-cache` and `verify-cache`. Never leave a
+cache-only architectural mutation: reconcile it into the canonical bundle,
+refresh, verify, commit, and push it for the next machine/model to consume.
+
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
 refresh and verify the proxy, and commit the bundle. Conversation, goals, and
