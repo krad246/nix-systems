@@ -24,6 +24,19 @@ predecessor/source archive while migration proceeds from current `main`. The
 lock file pins the exact commit; the input URL names the protected branch rather
 than the immutable tag, so branch protection is part of the freeze guarantee.
 
+“Frozen” is an operational stability state, not a ban on correcting code the
+predecessor still owns. When migration uncovers such a defect, temporarily thaw
+`dendritic`, repair and verify the authoritative implementation, update the
+freeze coordinate/tag and bridge pin, then freeze it again. Do not internalize
+or duplicate a capability merely to carry its repair; source-ownership transfer
+is a separate landing justified by a coherent consumer cone.
+
+The active main-based migration branch owns the sole context-policy bundle.
+The predecessor must not retain a divergent `.agents/dendritic` bundle or root
+proxy after its next re-freeze. A repair performed in its worktree follows the
+active branch's policy through that worktree/revision, then commits only the
+predecessor source change and removal of stale policy copies.
+
 The immediate sequence is now:
 
 1. completely port the standalone Home Manager `. #base` logical closure;
@@ -324,9 +337,8 @@ Current durable coordinates as of 2026-08-12:
 - current main-based HM migration branch: `dendritic-hm-foundation` (the name is
   historical; the public module/interface name is `base`, never `foundation`);
 - initial cross-platform HM base commit: `7ba2dae3`;
-- main-owned Home Manager input-registry cone: the generic
-  source/sysroot/search-path interpreter and HM adapter no longer depend on the
-  frozen predecessor implementation;
+- the Home Manager input-registry cone remains predecessor-owned while its
+  canonical-path defect is repaired and the source is re-frozen;
 - the Dendritic branch was reconstructed through roughly one hundred small
   sequential commits, beginning with `Clean everything out` and rebuilding the
   flake and modules from a blank baseline.
@@ -647,8 +659,8 @@ evidence rather than filename inference.
 | HM Agenix module/package | accepted removal | Do not port it in the thin HM slice. RBW remains selected. |
 | Cachix binary-cache policy | accepted omission for thin slice | Main user Nix settings include krad246 Cachix; Dendritic user Nix settings do not. Old broad daemon/cache policy need not block first HM landing. |
 | broad per-user Nix policy | accepted omission for thin slice | Main evaluates many performance, sandbox, retention, timeout, and cache settings; Dendritic HM evaluates only `experimental-features = [nix-command flakes]` through the registry. |
-| input flake registry | architecturally superseded/win; main-owned | Both expose registries. The migration branch now owns the generic configurable input-registry source and locked/unlocked behavior instead of consuming that cone from the frozen predecessor. Cross-platform standalone checks prove managed, unlocked HM registries and required Nix features. |
-| registry filesystem projection | changed, capability available; main-owned | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. The migration branch now owns `input-registry.sysroot.install` and optional search-path projection, both disabled for the base consumers. Public sysroot paths are canonicalized without the frozen implementation's `/./` artifact. Selection policy remains to decide; architecture is settled. |
+| input flake registry | architecturally superseded/win; predecessor-owned | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Preserve that design and repair it at its authoritative source until an intentional ownership-transfer landing. |
+| registry filesystem projection | changed, capability available | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has `input-registry.sysroot.install` and optional search-path projection, currently disabled for this consumer. Its public absolute path exposed a noncanonical `/./` artifact; fix this in Dendritic and re-freeze rather than duplicating the cone into the bridge. Selection policy remains to decide. |
 | dotfiles link/sync | accepted removal | Do not port the mutable synchronization/link behavior. |
 | XDG | changed | Main evaluates `xdg.enable=true`; Dendritic evaluates false, while both prefer XDG directories. Likely foundation parity item. |
 | manuals | changed | Effective Main: HTML false (Zen override), JSON true. Dendritic: HTML false, JSON false. Decide general HM manual policy independently of browser integration. |
@@ -814,6 +826,11 @@ to rebase over ongoing main development. Near the endpoint, the accumulated
 main tree becomes the successor architecture and the frozen branch ceases to be
 a dependency; this is a sequence of source-ownership transfers, not a final
 giant branch merge.
+
+Do not confuse source repair with source-ownership transfer. Fix a defect in a
+still-predecessor-owned capability through controlled thaw/re-freeze; transfer
+that capability only when its consumer cone, boundary proofs, and commit scope
+independently justify internalization.
 
 A likely continuation sequence, subject to evidence, is:
 

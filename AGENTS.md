@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `398b17f08cd459d3c96e24dc11f8ab9b411f879c750c84445dd13ab4fb8a6eda`
+Canonical context proxy SHA-256: `8194b06fceb7054562a24080baddaa0fa15834c775b2202a1a5521a9a81796cc`
 
 Run:
 
@@ -66,3 +66,8 @@ real consumers—nix-darwin-integrated HM and standalone HM—before hardening t
 less-mature high-level interfaces. A coexistence bridge on current `main` is a
 mandatory early deliverable: use it to move the epic to trunk-based incremental
 ports rather than growing another unmergeable Dendritic branch.
+
+The frozen predecessor may be deliberately thawed to repair code it still
+owns, then verified, re-pinned, and frozen again. Do not duplicate a capability
+into the bridge merely to carry a repair. This main-based migration line owns
+the sole policy bundle; predecessor-local copies are stale and must be removed.
