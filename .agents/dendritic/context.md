@@ -347,6 +347,16 @@ Always re-check these facts. They are historical coordinates, not permanent
 truth. Use `git status --short --branch`, `git branch -vv`, `git worktree list`,
 and `git merge-base main dendritic` before acting.
 
+Keep migration and controlled predecessor-thaw work in dedicated temporary
+worktrees rather than moving it into the owner's primary
+`/Users/krad246/.config/dotfiles` worktree. The temporary names may be awkward,
+but their isolation protects the primary checkout and makes branch ownership
+explicit throughout the bridge effort. If the owner later proposes removing
+them early, remind them of this recorded decision and recommend retaining the
+isolation; the owner may explicitly override it. Perform the final primary-
+worktree changeover only after the predecessor repository/bridge machinery has
+been completely eliminated and the migration is ready to replace it.
+
 The branches also differ in dependency era. Current `main` uses 26.05 inputs,
 while frozen `dendritic` uses 25.11 for Nixpkgs, Home Manager, and nix-darwin.
 Never treat lockfiles or generated `flake.nix` as mechanically interchangeable.
@@ -908,6 +918,14 @@ agent reports evidence, remaining questions, and next selectable lanes
           ↺
 ```
 
+The owner permits bounded asynchronous sub-agent work for mechanical context
+checkpointing and propagation, cache-mirror verification, periodic recovery
+maintenance, and similarly isolated validation tasks. The primary agent retains
+architectural judgment, conflict resolution, and ownership of the active
+implementation lane. Before delegating shared-worktree mutations, assign
+non-overlapping files or make the sub-agent read-only; never allow concurrent
+agents to race on the canonical bundle or generated projections.
+
 ### Reasoning about invariants
 
 Before designing or changing a capability, extract its invariants in plain
@@ -1074,6 +1092,12 @@ public command generic: today it delegates to the Dendritic bundle's
 `checkpoint` primitive, but future agent-maintained internal documentation may
 replace or extend that storage without renaming the lifecycle action. A matching
 Just command namespace is a possible convenience layer, not current scope.
+
+Checkpoint/propagation work may run in a bounded sub-agent while the primary
+agent continues an independent implementation lane. Treat the canonical bundle
+as single-writer state: delegate either the complete checkpoint operation or
+read-only verification, and do not concurrently edit its inputs or generated
+outputs from another agent.
 
 ### Mandatory architectural decision synchronization
 
