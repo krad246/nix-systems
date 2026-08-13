@@ -34,6 +34,8 @@
       }
       {
         imports = [self.diskoConfigurations.simple];
+
+        disko.enableConfig = true;
       }
 
       {
