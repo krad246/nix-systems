@@ -63,9 +63,9 @@
 
             stages = ["pre-push"];
           };
-          realize-dendritic-hm-base = {
+          realize-dendritic-hm-standalone = {
             enable = true;
-            description = "Realize the Dendritic Home Manager base before pushing";
+            description = "Realize the Dendritic standalone Home Manager configuration before pushing";
 
             # FIXME(dendritic-migration): Delete this hook once the Home Manager
             # closure has been ported. Discarding the string context keeps hook
@@ -73,7 +73,7 @@
             # exact derivation selected by the already-evaluated checks schema.
             entry = "${config.packages.nix}/bin/nix-store --realise ${
               lib.strings.escapeShellArg (
-                builtins.unsafeDiscardStringContext config.checks.dendritic-hm-base.drvPath
+                builtins.unsafeDiscardStringContext config.checks.dendritic-hm-standalone.drvPath
               )
             }";
 
