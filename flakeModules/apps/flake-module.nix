@@ -11,7 +11,9 @@
       {
         agent-checkpoint = {
           type = "app";
-          program = lib.meta.getExe (pkgs.callPackage ./agent-checkpoint.nix {});
+          program = lib.meta.getExe (pkgs.callPackage ./agent-checkpoint.nix {
+            flake-root = config.flake-root.package;
+          });
           meta.description = "Checkpoint active agent-maintained context.";
         };
 

@@ -2,8 +2,9 @@
 set -euo pipefail
 
 command="${1:-help}"
-root="${2:-$(git rev-parse --show-toplevel)}"
-bundle="${3:-$root/.agents/dendritic}"
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+root="${2:-$(cd "$script_dir/../.." && pwd)}"
+bundle="${3:-$script_dir}"
 context="$bundle/context.md"
 routes="$bundle/routes.tsv"
 manifest="$bundle/manifest"

@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `2c456a9f2451df954f2440fb482d3e1b5c780a8ba209ad053f38017a000b751a`
+Canonical context proxy SHA-256: `37bcdaaead0217941da55193f5748ffd421b521cadd0cabf673a86cbeb4fe898`
 
 Run:
 
@@ -49,9 +49,10 @@ is independent of the current Dendritic storage so the mechanics can evolve.
 Bounded checkpoint, propagation, cache verification, and isolated validation
 may be delegated asynchronously when shared-file ownership is non-overlapping.
 For bootstrap tooling, close over immutable logic/tools through Nix, late-bind
-the writable workspace via argument/environment/local discovery, validate it
+the writable workspace via explicit argument or local discovery, validate it
 before mutation, and preserve a baseline-shell recovery path without devshell
-or PATH assumptions.
+or PATH assumptions. Inherit environment roots only when the tool's state
+contract explicitly requires them.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,

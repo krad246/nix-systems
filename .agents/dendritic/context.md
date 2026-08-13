@@ -1106,17 +1106,19 @@ tools and immutable logic; late-bind mutable workspace locations and recovery
 inputs. Nix applications should capture executables, libraries, and exact script
 implementations through typed derivations/store paths, but must not capture an
 immutable source-store copy as the writable checkout. Resolve mutable roots in
-this order: explicit command argument, explicit environment override such as
-`FLAKE_ROOT`, then an invocation-local fallback such as `$PWD`/ancestor
-discovery. Validate the selected root, expected markers, bundle contents, and
-root/bundle coherence before mutation.
+this order: explicit command argument, then an invocation-local fallback such as
+the live script location or `$PWD`/ancestor discovery. Use an environment
+override only when the tool's actual mutable-state contract requires
+coordination with external shell state; do not inherit one merely because a
+devshell exports it. Validate the selected root, expected markers, bundle
+contents, and root/bundle coherence before mutation.
 
 Keep the underlying recovery primitive directly runnable with a baseline shell
 and explicit arguments when `direnv`, the development shell, or repository PATH
 setup is broken. Nix apps and Just recipes are typed/convenient front doors over
 that primitive, not its only execution path. Ambient environment is an override
-and recovery seam for mutable inputs, not a substitute for statically declaring
-ordinary tool dependencies.
+and recovery seam only for tools that deliberately support it, not a substitute
+for statically declaring ordinary tool dependencies or local target discovery.
 
 Checkpoint/propagation work may run in a bounded sub-agent while the primary
 agent continues an independent implementation lane. Treat the canonical bundle
