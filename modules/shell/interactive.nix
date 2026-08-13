@@ -80,8 +80,6 @@
     };
 
     homeManager.interactive = {
-      imports = [self.modules.homeManager.shell];
-
       shell.profiles.interactive.enable = true;
     };
 
