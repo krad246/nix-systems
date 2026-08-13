@@ -8,6 +8,7 @@ flake-parts.lib.mkFlake
   apps = ./flakeModules/apps;
   checks = ./flakeModules/checks;
   devShell = ./flakeModules/devShell;
+  dendritic = ./flakeModules/dendritic;
   ezConfigs = ./flakeModules/ezConfigs; # ties system and home configurations together
   herculesCI = ./flakeModules/herculesCI;
   legacyPackages = ./flakeModules/legacyPackages;
@@ -19,6 +20,7 @@ flake-parts.lib.mkFlake
       apps
       checks
       devShell
+      dendritic
       ezConfigs
       herculesCI
       legacyPackages
@@ -157,6 +159,7 @@ in {
       inherit apps;
       inherit checks;
       inherit devShell;
+      inherit dendritic;
       inherit ezConfigs;
       inherit herculesCI;
       inherit legacyPackages;
