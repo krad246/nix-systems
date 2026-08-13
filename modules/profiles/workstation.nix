@@ -9,6 +9,7 @@
         base
         desktop
         dev
+        interactive
         secrets
       ];
 
@@ -24,6 +25,7 @@
         base
         desktop
         dev
+        interactive
         secrets
       ];
     };
@@ -33,6 +35,7 @@
         base
         desktop
         dev
+        interactive
         secrets
       ];
 
