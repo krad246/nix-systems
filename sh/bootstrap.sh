@@ -17,6 +17,12 @@ while IFS= read -r directory; do
   [[ $directory == "$root" ]] && safe=true
 done < <(git config --global --get-all safe.directory || true)
 if [[ $safe == false ]]; then
+  if [[ ! -t 0 ]]; then
+    printf 'bootstrap: refusing to change global Git config without interactive approval\n' >&2
+    exit 1
+  fi
+  read -r -p "Trust this checkout in global Git config? [y/N] " reply
+  [[ $reply == [yY] ]] || exit 1
   git config --global --add safe.directory "$root"
 fi
 
