@@ -1,15 +1,25 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-SCRIPT="$(realpath "$0")"
-SCRIPTPATH="$(dirname "$SCRIPT")"
+root="$(cd "$(dirname "$0")/.." && pwd -P)"
 
-allow() {
-  git config --global --add safe.directory "$(realpath "$1")"
-  git config --global --add safe.directory "$(realpath "$1/.git")"
+command -v git >/dev/null 2>&1 || {
+  printf 'bootstrap: git is required before entering the Nix bootstrap app\n' >&2
+  exit 1
+}
+command -v nix >/dev/null 2>&1 || {
+  printf 'bootstrap: nix is required; run setup.sh instead\n' >&2
+  exit 1
 }
 
-allow "$SCRIPTPATH/.."
+safe=false
+while IFS= read -r directory; do
+  [[ $directory == "$root" ]] && safe=true
+done < <(git config --global --get-all safe.directory || true)
+if [[ $safe == false ]]; then
+  git config --global --add safe.directory "$root"
+fi
 
 exec nix \
   --option experimental-features 'nix-command flakes' \
-  run "$SCRIPTPATH/../#bootstrap" -- "$@"
+  run "$root#bootstrap" -- "$root" "$@"

@@ -19,6 +19,9 @@ writeShellApplication {
       exit 1
     fi
 
-    bash ${../../.agents/dendritic/context.sh} checkpoint "$root" "$root/.agents/dendritic"
+    bash ${../../.agents/dendritic/context.sh} \
+      --root "$root" \
+      --bundle "$root/.agents/dendritic" \
+      checkpoint
   '';
 }

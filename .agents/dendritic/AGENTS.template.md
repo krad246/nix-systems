@@ -53,6 +53,8 @@ the writable workspace via explicit argument or local discovery, validate it
 before mutation, and preserve a baseline-shell recovery path without devshell
 or PATH assumptions. Inherit environment roots only when the tool's state
 contract explicitly requires them.
+Exported environment is an implicit process-tree software bus; publish onto it
+only for an intentional consumer contract, otherwise keep state shell-local.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
@@ -75,6 +77,11 @@ real consumers—nix-darwin-integrated HM and standalone HM—before hardening t
 less-mature high-level interfaces. A coexistence bridge on current `main` is a
 mandatory early deliverable: use it to move the epic to trunk-based incremental
 ports rather than growing another unmergeable Dendritic branch.
+
+Treat flake policy as repository execution policy and terraform the lock graph
+incrementally: use meaningful flake-parts partitions, remove inputs only after
+their consumers migrate, deduplicate with explicit follows, and require each
+lock change to correspond to a proven output/capability boundary.
 
 The frozen predecessor may be deliberately thawed to repair code it still
 owns, then verified, re-pinned, and frozen again. Do not duplicate a capability

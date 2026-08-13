@@ -327,6 +327,33 @@ composition, and consumption semantics. Retain or rebuild useful outputs behind
 the redesigned Dendritic module/policy structure. Never use schema shrinkage as
 a proxy for architectural quality.
 
+Treat `nixConfig` as repository execution policy, not host daemon policy. It
+should make evaluating and building this flake reliable and efficient across
+heterogeneous development machines by declaring required features, public and
+private caches/keys, substitution/fallback behavior, portable autoscaling
+defaults such as `cores = 0` and `max-jobs = auto`, and bounded connection plus
+long-running build/silence timeouts. Keep trusted users, build users, sandbox
+policy, store retention/free-space policy, remote-builder topology, and other
+machine facts in system capabilities. Ambient/user CLI configuration may
+override the repository preset.
+
+Use flake-parts partitions to separate expensive or specialized output lanes
+when their real input/evaluation cones justify it. The partition module is
+already imported on the main-based branch; turn that substrate into meaningful
+boundaries rather than cosmetic partitioning. A partition should reduce the
+inputs and modules forced by ordinary evaluation while preserving the rich
+output surface and an obvious consumer path.
+
+Terraform the main-based `flake.lock` incrementally toward Dendritic's disciplined
+graph as capability lanes land. For each coherent port, identify which inputs
+still have consumers, remove obsolete declarations only after those consumers
+move, apply explicit `follows`/deduplication, and prune nodes that become
+unreachable. Do not copy Dendritic's older lockfile wholesale or optimize for a
+node-count target. Every lock change must be attributable to a source consumer,
+partition boundary, or follows relationship and verified through the affected
+outputs. Large portions of the graph should disappear naturally as legacy
+frameworks and output lanes become worthless to the successor architecture.
+
 For the initial HM base port, retain `check-flake` and `check-flake-file`
 unchanged. A separate temporary `realize-dendritic-hm-base` pre-push hook may
 refer symbolically to `config.checks.dendritic-hm-base.drvPath`, discard its
@@ -1119,6 +1146,14 @@ setup is broken. Nix apps and Just recipes are typed/convenient front doors over
 that primitive, not its only execution path. Ambient environment is an override
 and recovery seam only for tools that deliberately support it, not a substitute
 for statically declaring ordinary tool dependencies or local target discovery.
+
+Treat an exported environment variable as publication onto a process-tree
+software bus: downstream programs consume it implicitly. Publish uppercase or
+exported state only when that bus is an intentional, documented contract with
+real consumers. Otherwise keep implementation state in lowercase shell-local
+variables. Prefer explicit arguments, structural location, or typed inputs over
+reading ambient bus values; stale environment inherited from another devshell
+or worktree must not redirect bootstrap or mutation targets.
 
 Checkpoint/propagation work may run in a bounded sub-agent while the primary
 agent continues an independent implementation lane. Treat the canonical bundle

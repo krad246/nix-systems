@@ -27,8 +27,13 @@ writeShellApplication {
     ]
     ++ [nixVersions.stable] ++ [flake-root];
   text = ''
-    TOP="$(flake-root)"
-    direnv allow "$TOP"
-    direnv exec "$TOP" true
+    root="''${1:-$(${flake-root}/bin/flake-root)}"
+    if [[ ! -f "$root/flake.nix" || ! -f "$root/.envrc" ]]; then
+      printf 'bootstrap: invalid flake root: %s\n' "$root" >&2
+      exit 1
+    fi
+
+    ${direnv}/bin/direnv allow "$root"
+    ${direnv}/bin/direnv exec "$root" true
   '';
 }
