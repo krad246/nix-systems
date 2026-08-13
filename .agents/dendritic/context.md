@@ -1040,6 +1040,15 @@ This is write-through, not eventual consistency: a decision that affects
 subsequent work is synchronized before that work continues. Commit + push is
 the publication boundary; merely changing model memory or a local cache is not.
 
+Long-running agent sessions have intermittently exhausted file descriptors.
+Until the leak is fixed, periodically checkpoint durable progress through the
+normal write-through path—canonical bundle first, then refresh, verify, commit,
+and push—so a cache flush or process restart has a recent recovery point. Do
+this after meaningful architectural/ledger milestones and before any planned
+flush; do not let an extended implementation session accumulate important
+context only in conversation or local caches. A cache flush is operational
+recovery, not publication, and does not replace the canonical checkpoint.
+
 ### Mandatory architectural decision synchronization
 
 Conversation is not the durable source of truth. Whenever the owner makes a

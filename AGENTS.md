@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `47a59104aaf785777da997888bff79c0c7c94dbebaba31582d50d25474e3e416`
+Canonical context proxy SHA-256: `b9bc27a4ffecc6c690c794926a7f69d768b14c66c6bdb02ee7aa69896d79f951`
 
 Run:
 
@@ -41,6 +41,9 @@ also updates them. After cloning or pulling on another computer, run
 `.agents/dendritic/context.sh sync-cache` and `verify-cache`. Never leave a
 cache-only architectural mutation: reconcile it into the canonical bundle,
 refresh, verify, commit, and push it for the next machine/model to consume.
+During long sessions, periodically make this canonical checkpoint so an
+out-of-file-descriptors cache flush or process restart resumes from recent
+committed context rather than conversation memory.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
