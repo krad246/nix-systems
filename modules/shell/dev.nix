@@ -58,7 +58,7 @@
           nix-du
           nix-fast-build
           nix-output-monitor
-          nodePackages.undollar
+          undollar
           # safe-rm
         ];
 
