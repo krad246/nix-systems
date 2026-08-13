@@ -129,6 +129,102 @@ Atomicity is semantic. A 150-line backend may be one correct capability. Ten
 five-line files are still a monolith if they always activate together or can
 only be consumed as a bundle.
 
+### Federated kConfig direction and native Nix substrate
+
+The broader architectural ambition is usefully described as reviving Linux
+`kConfig` as a federated module-system architecture over `pkgs`, implemented
+with Nix modules. Capabilities publish typed/mergeable declarations, multiple
+independent contributors extend them, and an owning interpreter lowers the
+completed namespace into package sets, modules, derivations, or platform
+configuration. Unlike a single global kernel configuration, the system is
+federated across nested module systems and package scopes; no central file must
+know every capability or implementation.
+
+This is a direction and evaluation model, not permission to invent one giant
+framework before the HM bridge lands. The owner has a successful work
+implementation as evidence that the model is viable, but this repository must
+discover and land its interfaces incrementally through real consumers.
+
+Preserve these substrate laws when extending the architecture:
+
+- Dendritic is a composition property, not a directory convention.
+- Prefer many contributors merging inert declarations followed by one owning
+  interpreter. Late interpretation gives the completed virtual namespace a
+  chance to reach a merge fixed point before lowering.
+- A framework may validate, normalize, or synthesize public data, but it must
+  not monopolize expression. A knowledgeable caller should be able to write an
+  equivalent public attrset/module declaration with ordinary Nix.
+- Higher abstractions must compose recognizable Nix machinery—module merging,
+  overlays, scopes, `callPackage`, fixed points, derivation extension, and
+  ordinary overrides—rather than hiding an incompatible parallel universe.
+- Merge semantics are a primary API. Test two independent contributors,
+  removal of an integration, replacement of a backend, and adversarial
+  transformation order, not only a single happy-path configuration.
+- Keep flake-level, NixOS/nix-darwin, Home Manager, and package-local module
+  systems conceptually distinct. Similar module arguments do not make their
+  fixed points, applicability, or ownership interchangeable.
+- Choose outer versus inner `lib` and package scopes as part of the contract.
+  Scope-sensitive dependencies must resolve through the intended derived
+  package set; do not accidentally capture a convenient outer `pkgs`.
+- Reason about recursive package/module fixed points structurally. `final` and
+  `prev` are semantic positions, not imperative time steps, and nested fixed
+  points may behave like coupled gears rather than an inner computation that
+  wholly finishes before an outer one begins.
+- Preserve ordinary Nix as an escape hatch and keep public APIs semantic. Do
+  not expose arbitrary fixed-point seeds, mirrored `finalAttrs`, or framework
+  internals as the lasting contract.
+
+Two longer-horizon research lanes came from the online architectural history.
+They are durable context but are not prerequisites for the current HM bridge:
+
+1. Hierarchical cross-package scopes must combine accumulated package-set
+   transformations with child subscopes. The motivating form was an MSP430
+   scope containing libc/runtime environments, MCU families, and concrete
+   members. Plain nested attrsets solve only half the problem; descendants must
+   inherit the relevant overlay/scope transformations, and the resulting
+   public representation must remain hand-writable. The final schema,
+   splicing, sysroot, toolchain, and node boundaries remain unresolved here.
+2. Module-configurable packages may expose a semantic operation such as
+   `pkg.withConfig moduleDelta`, returning another configurable package. The
+   non-negotiable adversarial law, if this API family is used, is
+   `withConfig A -> overrideAttrs B -> withConfig C`: `C` must forward-rebase
+   from the package currently in hand so `B` survives. Static variants are not
+   a substitute for dynamic rebasing. Historical `finalPackage` machinery is
+   evidence of the stale-base bug, not an implementation prescription.
+
+The same empirical method applies to future boot/provisioning design: derive
+interfaces from materially different proof cases (EFI, supported BIOS/non-EFI,
+encrypted/provisioned storage) instead of generalizing one working host. These
+lanes are provenance-preserved research, not current landing scope.
+
+### Supplemental online-context reconciliation (2026-08-12)
+
+The owner supplied an online architectural synthesis and proxy bundle as
+historical context. Source fingerprints at import time were:
+
+- `AGENTS.md — nix-systems Architectural Intent.md`:
+  `7c1b276e04103f0a88df95590355f7b2173ef8b933bceae8d32e12aef6d83060`
+- `dendritic-online-context.tar.gz`:
+  `82ff3a71627437710830450fcc45553c49be158364e485d958e1dd6fd6c3cfb2`
+
+The source files lived in the owner's Downloads directory and are not required
+for replay. The accepted, non-duplicative semantics are normalized above so
+this committed bundle remains self-producing. Provenance is
+`candidate online history, reconciled by local Codex on 2026-08-12`; current
+committed local context and later owner decisions remain authoritative.
+
+Do not resurrect the online bundle's stale uncertainties. Local context has
+already settled the input/follows priority, vTable framing, profiles as
+presets, trunk bridge, HM-first lane, sysroot/input registry, closure taxonomy,
+and current removals. Its tentative Helix-under-interactive-shell placement is
+not accepted; editor remains a separately reasoned capability. Its browser,
+fonts, desktop, applications, identity, secrets, and remote-builder gaps convey
+no design recommendation beyond the explicit local decisions in this file.
+
+The import added no reason to reopen the current HM closure choices. It adds
+composition laws and distant research lanes; it does not enlarge the first
+bridge slice.
+
 ### Profiles
 
 Profiles are intentionally opinionated presets. They compose through imports
