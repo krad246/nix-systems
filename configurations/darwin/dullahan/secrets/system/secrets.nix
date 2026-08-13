@@ -8,7 +8,7 @@ let
     };
   };
 
-  inherit (dullahan) system linux-builder;
+  inherit (dullahan) system;
 in {
   "./hercules-ci/headless-penguin/headless-penguin-binary-caches.age".publicKeys = [system.ed25519];
   "./hercules-ci/headless-penguin/headless-penguin-cluster-join-token.age".publicKeys = [system.ed25519];
