@@ -19,7 +19,7 @@ operationally frozen Dendritic flake and exposes its module registries beneath
 `self.dendritic`, so
 later slices can port capability cones without rebasing the reconstructed
 branch or deleting unrelated legacy closures. The `dendritic` source is frozen
-at `dc774a7d` and tagged `dendritic-suspended-2026-08-12`; treat it as a
+at `a99ff7e0` and tagged `dendritic-suspended-2026-08-12`; treat it as a
 predecessor/source archive while migration proceeds from current `main`. The
 lock file pins the exact commit; the input URL names the protected branch rather
 than the immutable tag, so branch protection is part of the freeze guarantee.
@@ -298,6 +298,14 @@ replace selections. Do not criticize a profile merely for choosing Bash,
 Helix, FZF, Kitty, or Zen. Do flag a profile if selecting one intended lane
 activates unrelated capabilities or prevents backend substitution.
 
+The exported Home Manager `base` profile intentionally provides interactive
+training wheels: its interactive mode defaults on so the result is immediately
+workable, but a consumer may carve it down with a stronger option definition.
+Explicitly importing the `interactive` profile is the strong symbolic selection
+that turns the same mode on non-defaultly. Capability/interface modules beneath
+these profiles remain independently importable; do not confuse an opinionated
+profile selection with an interface intrinsically enabling its backend.
+
 Keep these categories conceptually distinct:
 
 1. interface modules define vTables/contracts;
@@ -404,16 +412,16 @@ port supersedes it. Do not replace it with `nix flake check`, `nix build
 
 Current durable coordinates as of 2026-08-13:
 
-- frozen predecessor branch: `dendritic` at `dc774a7d` (merged PR #444; its
-  prerequisite coherent-library repair was merged as PR #443);
-- frozen tag: `dendritic-suspended-2026-08-12` at `dc774a7d`;
+- frozen predecessor branch: `dendritic` at `a99ff7e0` (merged PR #446; its
+  coherent-library prerequisites were merged as PRs #443 and #444);
+- frozen tag: `dendritic-suspended-2026-08-12` at `a99ff7e0`;
 - bridge landed on `main`: `c116a095` (source bridge commit `b341ba3c`);
 - current main-based cleanup/migration branch: `drop-colima-lima-stack`, based
   on `main` at `af7a4b8f`; it is the single review unit for the 2026-08-13
   cleanup sequence recorded above;
 - initial cross-platform HM base commit: `7ba2dae3`;
 - the Home Manager input-registry cone remains predecessor-owned; its public
-  path was repaired through PR #435 and subsequently re-frozen at `dc774a7d`;
+  path was repaired through PR #435 and subsequently re-frozen at `a99ff7e0`;
 - the Dendritic branch was reconstructed through roughly one hundred small
   sequential commits, beginning with `Clean everything out` and rebuilding the
   flake and modules from a blank baseline.
@@ -750,11 +758,11 @@ evidence rather than filename inference.
 | HM Agenix module/package | accepted removal | Do not port it in the thin HM slice. RBW remains selected. |
 | Cachix binary-cache policy | accepted omission for thin slice | Main user Nix settings include krad246 Cachix; Dendritic user Nix settings do not. Old broad daemon/cache policy need not block first HM landing. |
 | broad per-user Nix policy | accepted omission for thin slice | Main evaluates many performance, sandbox, retention, timeout, and cache settings; Dendritic HM evaluates only `experimental-features = [nix-command flakes]` through the registry. |
-| input flake registry | architecturally superseded/win; predecessor-owned | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Preserve that design and repair it at its authoritative source until an intentional ownership-transfer landing. |
+| input flake registry | architecturally superseded/win; bridged from predecessor | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Main now consumes it through the exported Dendritic `base`/`standalone` profiles rather than reconstructing the cone. |
 | registry filesystem projection | changed, capability available; path repaired | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has `input-registry.sysroot.install` and optional search-path projection, currently disabled for this consumer. PR #435 repaired its public absolute path from `/Users/krad246/./nix/path` to `/Users/krad246/nix/path` at the authoritative predecessor source. Selection policy remains to decide. |
 | dotfiles link/sync | accepted removal | Do not port the mutable synchronization/link behavior. |
-| XDG | changed | Main evaluates `xdg.enable=true`; Dendritic evaluates false, while both prefer XDG directories. Likely foundation parity item. |
-| manuals | changed | Effective Main: HTML false (Zen override), JSON true. Dendritic: HTML false, JSON false. Decide general HM manual policy independently of browser integration. |
+| XDG | preserved | PR #446 moved `xdg.enable=true` into the authoritative Dendritic `base`; both standalone and integrated bridge consumers now inherit it. |
+| manuals | preserved foundation policy | PR #446 established HTML false and JSON true in Dendritic `base`, independently of browser integration. |
 | state version | version drift | Main evaluates 26.05 and Dendritic 25.11 due branch input eras. Resolve intentionally during port; do not copy one blindly. |
 | Lorri | preserved on Darwin | Disabled in both on this host. Dendritic dev preset enables it only on Linux. |
 | Bash selection | preserved | Bash enabled in both with completion, VTE, and vi mode. |
@@ -1351,13 +1359,19 @@ Before committing:
 ## Immediate next work
 
 1. Finish total behavioral porting of `. #base`, using the program-by-program HM
-   ledger and explicit owner decisions rather than copying legacy bundles.
-2. Keep the evaluated cross-platform base checks meaningful; during this
-   migration, the temporary pre-push hook realizes their exact selected
-   derivation through wrapped Nix while legacy `check-flake` remains intact.
-3. Prove standalone and system-integrated HM consumers, delete legacy
-   `generic-linux`, and carry its intentionally deferred desktop behavior into
-   the explicit follow-on interface agenda.
+   ledger and explicit owner decisions rather than copying legacy bundles. The
+   bridge now consumes the predecessor's exported `base` and `standalone`
+   profiles directly; do not reconstruct their imports locally.
+2. Keep the evaluated cross-platform base checks meaningful. The standalone
+   factory publishes `checks.<system>.home-manager-base` as the pure,
+   deployable per-system activation artifact, while impure
+   `homeConfigurations.base` selects the same factory for
+   `builtins.currentSystem`; their derivations must remain identical on the
+   current system. During this migration, the temporary pre-push hook realizes
+   the exact selected check derivation while legacy `check-flake` remains intact.
+3. Continue proving both standalone and system-integrated HM consumers. Legacy
+   `generic-linux` is deleted; its intentionally deferred desktop behavior
+   remains in the explicit follow-on interface agenda.
 4. Port the Dendritic flake-policy interface, retaining a rich output surface
    while redesigning declaration/ownership/composition semantics.
 5. Continue normalized old/new `nixbook-pro` behavioral diffs, Linux-builder

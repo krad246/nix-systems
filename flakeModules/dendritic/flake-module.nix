@@ -4,7 +4,15 @@
   lib,
   withSystem,
   ...
-}: {
+}: let
+  homeManagerConfiguration = args:
+    inputs.home-manager.lib.homeManagerConfiguration (
+      args
+      // {
+        modules = [config.flake.dendritic.modules.homeManager.standalone] ++ (args.modules or []);
+      }
+    );
+in {
   options.flake.homeConfigurations = lib.mkOption {
     type = lib.types.lazyAttrsOf lib.types.raw;
     default = {};
@@ -40,93 +48,14 @@
 
     # Stable migration seam. Consumers use this namespace while its values are
     # progressively replaced with modules materialized in the current tree.
-    flake.dendritic = rec {
-      inherit (inputs.dendritic) darwinModules nixosModules;
-
-      modules =
-        inputs.dendritic.modules
-        // {
-          homeManager =
-            inputs.dendritic.modules.homeManager
-            // rec {
-              base = {
-                lib,
-                pkgs,
-                ...
-              }: {
-                imports = [
-                  inputs.dendritic.homeModules.home-manager
-                  inputs.dendritic.homeModules.identity
-                ];
-
-                config = lib.mkMerge [
-                  {
-                    home.preferXdgDirectories = true;
-                    manual = {
-                      html.enable = false;
-                      json.enable = true;
-                    };
-                    news.display = "silent";
-                    xdg.enable = true;
-                  }
-                  (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-                    targets.genericLinux = {
-                      enable = true;
-                      gpu.enable = lib.mkDefault false;
-                    };
-
-                    systemd.user.startServices = "sd-switch";
-                  })
-                ];
-              };
-
-              standalone = {
-                config,
-                pkgs,
-                ...
-              }: {
-                imports = [base];
-
-                home = {
-                  username = lib.mkDefault config.identity.person.username;
-                  homeDirectory = lib.mkDefault (
-                    if pkgs.stdenv.hostPlatform.isDarwin
-                    then "/Users/${config.identity.person.username}"
-                    else "/home/${config.identity.person.username}"
-                  );
-                };
-
-                nix.package = lib.mkDefault pkgs.nix;
-              };
-            };
-        };
-
-      homeModules = modules.homeManager;
-
-      homeConfigurations = let
-        inherit (config.flake.dendritic.homeModules) standalone;
-      in {
-        base-aarch64-darwin = inputs.home-manager.lib.homeManagerConfiguration {
-          pkgs = inputs.nixpkgs.legacyPackages.aarch64-darwin;
-          modules = [standalone];
-        };
-
-        base-x86_64-linux = inputs.home-manager.lib.homeManagerConfiguration {
-          pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-          modules = [standalone];
-        };
-      };
+    flake.dendritic = {
+      inherit (inputs.dendritic) darwinModules modules nixosModules;
     };
 
     flake = {
       homeConfigurations = lib.mkIf (!lib.inPureEvalMode) {
-        base = inputs.home-manager.lib.homeManagerConfiguration {
+        base = homeManagerConfiguration {
           pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-          modules = let
-            inherit (config.flake.dendritic.homeModules) standalone;
-          in [
-            standalone
-          ];
         };
       };
 
@@ -147,35 +76,49 @@
       };
     };
 
-    perSystem = {system, ...}:
+    perSystem = {
+      pkgs,
+      system,
+      ...
+    }: let
+      standalone = homeManagerConfiguration {inherit pkgs;};
+      cfg = standalone.config;
+    in
       lib.mkMerge [
+        {
+          checks.home-manager-base = standalone.activationPackage;
+        }
         (lib.mkIf (system == "aarch64-darwin") {
           checks = {
-            dendritic-hm-base = let
-              configuration = config.flake.dendritic.homeConfigurations.base-aarch64-darwin;
-              cfg = configuration.config;
-            in
-              assert cfg.home.username == "krad246";
-              assert cfg.home.homeDirectory == "/Users/krad246";
-              assert cfg.identity.person
-              == {
-                email = "krad246@gmail.com";
-                name = "Keerthi Radhakrishnan";
-                username = "krad246";
-              };
-              assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
-              assert cfg.xdg.enable;
-              assert cfg.manual.json.enable;
-              assert !cfg.manual.html.enable;
-              assert cfg.programs.home-manager.enable;
-              assert !cfg.programs.bash.enable;
-              assert !cfg.programs.bat.enable;
-              assert !cfg.programs.fzf.enable;
-              assert !cfg.programs.git.enable;
-              assert !cfg.programs.helix.enable;
-              assert !cfg.programs.kitty.enable;
-              assert !cfg.programs.rbw.enable;
-                configuration.activationPackage;
+            dendritic-hm-base = assert cfg.home.username == "krad246";
+            assert cfg.home.homeDirectory == "/Users/krad246";
+            assert cfg.identity.person
+            == {
+              email = "krad246@gmail.com";
+              name = "Keerthi Radhakrishnan";
+              username = "krad246";
+            };
+            assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
+            assert cfg.xdg.enable;
+            assert cfg.manual.json.enable;
+            assert !cfg.manual.html.enable;
+            assert cfg.input-registry.registry.managed;
+            assert !cfg.input-registry.registry.locked;
+            assert !cfg.input-registry.sysroot.install;
+            assert !cfg.input-registry.search-path.enable;
+            assert cfg.nix.registry ? nixpkgs;
+            assert cfg.nix.registry ? home-manager;
+            assert cfg.nix.settings.experimental-features == ["nix-command" "flakes"];
+            assert cfg.programs.home-manager.enable;
+            assert cfg.shell.profiles.interactive.enable;
+            assert cfg.programs.bash.enable;
+            assert cfg.programs.bat.enable;
+            assert cfg.programs.fzf.enable;
+            assert !cfg.programs.git.enable;
+            assert !cfg.programs.helix.enable;
+            assert !cfg.programs.kitty.enable;
+            assert !cfg.programs.rbw.enable;
+              standalone.activationPackage;
 
             dendritic-nixbook-pro-hm = let
               configuration = inputs.dendritic.darwinConfigurations.nixbook-pro;
@@ -186,21 +129,29 @@
               assert home.home.homeDirectory == "/Users/${cfg.owner.username}";
               assert home.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
               assert home.programs.home-manager.enable;
+              assert home.xdg.enable;
+              assert home.manual.json.enable;
+              assert !home.manual.html.enable;
                 home.home.activationPackage;
           };
         })
         (lib.mkIf (system == "x86_64-linux") {
-          checks.dendritic-hm-base = let
-            configuration = config.flake.dendritic.homeConfigurations.base-x86_64-linux;
-            cfg = configuration.config;
-          in
-            assert cfg.home.username == "krad246";
-            assert cfg.home.homeDirectory == "/home/krad246";
-            assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
-            assert cfg.targets.genericLinux.enable;
-            assert !cfg.targets.genericLinux.gpu.enable;
-            assert cfg.systemd.user.startServices;
-              configuration.activationPackage;
+          checks.dendritic-hm-base = assert cfg.home.username == "krad246";
+          assert cfg.home.homeDirectory == "/home/krad246";
+          assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
+          assert cfg.targets.genericLinux.enable;
+          assert !cfg.targets.genericLinux.gpu.enable;
+          assert cfg.systemd.user.startServices;
+          assert cfg.input-registry.registry.managed;
+          assert !cfg.input-registry.registry.locked;
+          assert !cfg.input-registry.sysroot.install;
+          assert !cfg.input-registry.search-path.enable;
+          assert cfg.nix.registry ? nixpkgs;
+          assert cfg.nix.registry ? home-manager;
+          assert cfg.nix.settings.experimental-features == ["nix-command" "flakes"];
+          assert cfg.shell.profiles.interactive.enable;
+          assert cfg.programs.bash.enable;
+            standalone.activationPackage;
 
           checks.generic-headless-interactive = let
             configuration = config.flake.nixosConfigurations.generic-headless-interactive;
