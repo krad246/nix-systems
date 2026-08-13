@@ -1093,6 +1093,23 @@ public command generic: today it delegates to the Dendritic bundle's
 replace or extend that storage without renaming the lifecycle action. A matching
 Just command namespace is a possible convenience layer, not current scope.
 
+Bootstrap and recovery tooling follows one boundary: statically close over
+tools and immutable logic; late-bind mutable workspace locations and recovery
+inputs. Nix applications should capture executables, libraries, and exact script
+implementations through typed derivations/store paths, but must not capture an
+immutable source-store copy as the writable checkout. Resolve mutable roots in
+this order: explicit command argument, explicit environment override such as
+`FLAKE_ROOT`, then an invocation-local fallback such as `$PWD`/ancestor
+discovery. Validate the selected root, expected markers, bundle contents, and
+root/bundle coherence before mutation.
+
+Keep the underlying recovery primitive directly runnable with a baseline shell
+and explicit arguments when `direnv`, the development shell, or repository PATH
+setup is broken. Nix apps and Just recipes are typed/convenient front doors over
+that primitive, not its only execution path. Ambient environment is an override
+and recovery seam for mutable inputs, not a substitute for statically declaring
+ordinary tool dependencies.
+
 Checkpoint/propagation work may run in a bounded sub-agent while the primary
 agent continues an independent implementation lane. Treat the canonical bundle
 as single-writer state: delegate either the complete checkpoint operation or
