@@ -1,5 +1,5 @@
 format=dendritic-context-v1
-proxy-sha256=52f16c40175b22360763fc3b2bb2f673ce144e67f70453cce194352828370c6a
+proxy-sha256=281c4396d9d1aa3f21dbe9fe67f68c01c12aaedd574bf4ed99e8cac2f2287f78
 canonical=.agents/dendritic/context.md
 routes=.agents/dendritic/routes.tsv
 generator=.agents/dendritic/context.sh
