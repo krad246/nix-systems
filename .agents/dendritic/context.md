@@ -324,6 +324,9 @@ Current durable coordinates as of 2026-08-12:
 - current main-based HM migration branch: `dendritic-hm-foundation` (the name is
   historical; the public module/interface name is `base`, never `foundation`);
 - initial cross-platform HM base commit: `7ba2dae3`;
+- main-owned Home Manager input-registry cone: the generic
+  source/sysroot/search-path interpreter and HM adapter no longer depend on the
+  frozen predecessor implementation;
 - the Dendritic branch was reconstructed through roughly one hundred small
   sequential commits, beginning with `Clean everything out` and rebuilding the
   flake and modules from a blank baseline.
@@ -644,8 +647,8 @@ evidence rather than filename inference.
 | HM Agenix module/package | accepted removal | Do not port it in the thin HM slice. RBW remains selected. |
 | Cachix binary-cache policy | accepted omission for thin slice | Main user Nix settings include krad246 Cachix; Dendritic user Nix settings do not. Old broad daemon/cache policy need not block first HM landing. |
 | broad per-user Nix policy | accepted omission for thin slice | Main evaluates many performance, sandbox, retention, timeout, and cache settings; Dendritic HM evaluates only `experimental-features = [nix-command flakes]` through the registry. |
-| input flake registry | architecturally superseded/win | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Preserve Dendritic design. |
-| registry filesystem projection | changed, capability available | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has a general `input-registry.sysroot.install` projection and optional search-path projection, currently disabled for this consumer. Selection policy remains to decide; architecture is settled. |
+| input flake registry | architecturally superseded/win; main-owned | Both expose registries. The migration branch now owns the generic configurable input-registry source and locked/unlocked behavior instead of consuming that cone from the frozen predecessor. Cross-platform standalone checks prove managed, unlocked HM registries and required Nix features. |
+| registry filesystem projection | changed, capability available; main-owned | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. The migration branch now owns `input-registry.sysroot.install` and optional search-path projection, both disabled for the base consumers. Public sysroot paths are canonicalized without the frozen implementation's `/./` artifact. Selection policy remains to decide; architecture is settled. |
 | dotfiles link/sync | accepted removal | Do not port the mutable synchronization/link behavior. |
 | XDG | changed | Main evaluates `xdg.enable=true`; Dendritic evaluates false, while both prefer XDG directories. Likely foundation parity item. |
 | manuals | changed | Effective Main: HTML false (Zen override), JSON true. Dendritic: HTML false, JSON false. Decide general HM manual policy independently of browser integration. |
