@@ -44,6 +44,8 @@ refresh, verify, commit, and push it for the next machine/model to consume.
 During long sessions, periodically make this canonical checkpoint so an
 out-of-file-descriptors cache flush or process restart resumes from recent
 committed context rather than conversation memory.
+Use `nix run .#agent-checkpoint` as the stable checkpoint entry point. Its name
+is independent of the current Dendritic storage so the mechanics can evolve.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,

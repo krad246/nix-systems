@@ -1069,6 +1069,12 @@ flush; do not let an extended implementation session accumulate important
 context only in conversation or local caches. A cache flush is operational
 recovery, not publication, and does not replace the canonical checkpoint.
 
+`nix run .#agent-checkpoint` is the stable mechanical entry point. Keep that
+public command generic: today it delegates to the Dendritic bundle's
+`checkpoint` primitive, but future agent-maintained internal documentation may
+replace or extend that storage without renaming the lifecycle action. A matching
+Just command namespace is a possible convenience layer, not current scope.
+
 ### Mandatory architectural decision synchronization
 
 Conversation is not the durable source of truth. Whenever the owner makes a
