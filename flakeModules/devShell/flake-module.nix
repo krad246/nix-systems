@@ -62,9 +62,9 @@ in {
             makefile = self'.packages."makefile-${arch}-linux";
             devcontainer-json = self'.packages."devcontainer-json-${arch}-linux";
           in ''
-            FLAKE_ROOT="$(${lib.meta.getExe config.flake-root.package})"
-            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} $FLAKE_ROOT/Makefile
-            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} $FLAKE_ROOT/.devcontainer.json
+            root="$(${lib.meta.getExe config.flake-root.package})"
+            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${makefile} "$root/Makefile"
+            ${lib.meta.getExe' pkgs.coreutils "ln"} -snvrf ${devcontainer-json} "$root/.devcontainer.json"
           '';
         };
       })
@@ -89,8 +89,8 @@ in {
 
           shellHook = ''
             source ${lib.meta.getExe config.agenix-shell.installationScript}
-            FLAKE_ROOT="$(${lib.meta.getExe config.flake-root.package})"
-            eval "$(${lib.meta.getExe pkgs.lorri} direnv --context $FLAKE_ROOT --flake $FLAKE_ROOT)"
+            root="$(${lib.meta.getExe config.flake-root.package})"
+            eval "$(${lib.meta.getExe pkgs.lorri} direnv --context "$root" --flake "$root")"
           '';
         };
 

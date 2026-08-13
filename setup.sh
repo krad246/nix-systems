@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-SCRIPT="$(realpath "$0")"
-SCRIPTPATH="$(dirname "$SCRIPT")"
+root="$(cd "$(dirname "$0")" && pwd -P)"
 
 # shellcheck source=sh/install-nix.sh
-source "$SCRIPTPATH/sh/install-nix.sh"
+source "$root/sh/install-nix.sh"
 
 # shellcheck source=sh/bootstrap.sh
-exec "$SCRIPTPATH/sh/bootstrap.sh" "$@"
+exec "$root/sh/bootstrap.sh" "$@"

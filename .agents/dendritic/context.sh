@@ -1,10 +1,38 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-command="${1:-help}"
 script_dir="$(cd "$(dirname "$0")" && pwd)"
-root="${2:-$(cd "$script_dir/../.." && pwd)}"
-bundle="${3:-$script_dir}"
+root="$(cd "$script_dir/../.." && pwd)"
+bundle="$script_dir"
+
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+	--root)
+		[[ $# -ge 2 ]] || {
+			printf '%s\n' 'context: --root requires a path' >&2
+			exit 2
+		}
+		root="$2"
+		shift 2
+		;;
+	--bundle)
+		[[ $# -ge 2 ]] || {
+			printf '%s\n' 'context: --bundle requires a path' >&2
+			exit 2
+		}
+		bundle="$2"
+		shift 2
+		;;
+	--)
+		shift
+		break
+		;;
+	*) break ;;
+	esac
+done
+
+command="${1:-help}"
+[[ $# -eq 0 ]] || shift
 context="$bundle/context.md"
 routes="$bundle/routes.tsv"
 manifest="$bundle/manifest"
@@ -157,11 +185,10 @@ list)
 	;;
 read)
 	verify >/dev/null
-	[[ $# -ge 2 ]] || {
+	[[ $# -ge 1 ]] || {
 		printf 'usage: %s read ROUTE...\n' "$0" >&2
 		exit 2
 	}
-	shift
 	for key in "$@"; do
 		heading="$(lookup "$key")" || {
 			printf 'unknown route: %s\n' "$key" >&2
@@ -190,7 +217,7 @@ refresh)
 	;;
 help | *)
 	cat <<EOF
-Usage: $0 COMMAND
+Usage: $0 [--root ROOT] [--bundle BUNDLE] COMMAND [ARGS...]
 
   verify          fail if canonical context/routes differ from the proxy hash
   hash            print the current canonical content hash
