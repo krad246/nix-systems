@@ -117,13 +117,50 @@
       };
     };
 
-    flake.homeConfigurations = lib.mkIf (!lib.inPureEvalMode) {
-      base = inputs.home-manager.lib.homeManagerConfiguration {
-        pkgs = import inputs.nixpkgs {
-          system = builtins.currentSystem;
-          config.allowUnfree = true;
+    flake = {
+      homeConfigurations = lib.mkIf (!lib.inPureEvalMode) {
+        base = inputs.home-manager.lib.homeManagerConfiguration {
+          pkgs = import inputs.nixpkgs {
+            system = builtins.currentSystem;
+            config.allowUnfree = true;
+          };
+          modules = let inherit (config.flake.dendritic.homeModules) standalone; in [standalone];
         };
-        modules = let inherit (config.flake.dendritic.homeModules) standalone; in [standalone];
+      };
+
+      nixosConfigurations.generic-headless-interactive = inputs.nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          config.flake.dendritic.modules.nixos.headless
+          config.flake.dendritic.modules.nixos.interactive
+          ({
+            config,
+            lib,
+            ...
+          }: {
+            image.modules.vm = {
+              config,
+              modulesPath,
+              ...
+            }: {
+              imports = ["${modulesPath}/virtualisation/qemu-vm.nix"];
+
+              system.build.image = config.system.build.vm;
+            };
+
+            image.modules.vm-nogui = {
+              imports = [config.image.modules.vm];
+              virtualisation.graphics = false;
+            };
+
+            home-manager.users.krad246 = {
+              home.stateVersion = lib.mkForce "26.05";
+            };
+
+            networking.hostName = "generic-headless-interactive";
+            system.stateVersion = lib.mkForce "25.11";
+          })
+        ];
       };
     };
 
@@ -156,6 +193,9 @@
               configuration.activationPackage;
         })
         (lib.mkIf (system == "x86_64-linux") {
+          packages.generic-headless-interactive-vm =
+            config.flake.nixosConfigurations.generic-headless-interactive.config.system.build.images.vm-nogui;
+
           checks.dendritic-hm-base = let
             configuration = config.flake.dendritic.homeConfigurations.base-x86_64-linux;
             cfg = configuration.config;
@@ -166,6 +206,15 @@
             assert !cfg.targets.genericLinux.gpu.enable;
             assert cfg.systemd.user.startServices;
               configuration.activationPackage;
+
+          checks.generic-headless-interactive = let
+            configuration = config.flake.nixosConfigurations.generic-headless-interactive;
+            image = configuration.config.system.build.images.vm-nogui;
+            cfg = image.passthru.config;
+          in
+            assert !cfg.virtualisation.graphics;
+            assert !cfg.services.xserver.enable;
+            assert cfg.home-manager.users.${cfg.owner.username}.shell.profiles.interactive.enable; image;
         })
       ];
   };
