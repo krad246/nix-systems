@@ -32,8 +32,8 @@
       ];
     };
 
-    homeManager.home-manager = {lib, ...}: {
-      home.stateVersion = lib.trivial.release;
+    homeManager.home-manager = {
+      home.stateVersion = self.lib.trivial.release;
       programs.home-manager.enable = true;
     };
   };
