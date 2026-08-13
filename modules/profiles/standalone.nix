@@ -31,6 +31,7 @@
         standalone
         desktop
         dev
+        interactive
         secrets
       ];
 
