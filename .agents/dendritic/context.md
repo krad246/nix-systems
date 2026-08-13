@@ -77,6 +77,16 @@ layer. The point is not to force system responsibilities into HM; it is to
 isolate and prove the user-experience closure once, against two real
 composition modes, before finishing the less-mature Darwin and host lanes.
 
+The initial two consumers are the first proofs of the already-intended full
+range, not a narrower final scope. The Home Manager trunk must support every
+ordinary Darwin and FHS Linux instantiation through one standard construction
+path. A host is a mergeable declaration over the module/profile namespaces,
+not a bespoke call to `homeManagerConfiguration`, `darwinSystem`, or
+`nixosSystem`. Windex must be restored through that path as an actual consumer;
+merely making one generic Linux check evaluate is not completion. This is a
+natural expansion of the same HM-first migration and federated architecture,
+not a change of direction or a competing stack item.
+
 Do not call the migration complete because `nixbook-pro` evaluates, because a
 subset of tests pass, or because the branch is mergeable. Completion means the
 architecture and subsequent machine ports described here are actually landed
@@ -313,6 +323,139 @@ Keep these categories conceptually distinct:
 3. integration modules connect contracts;
 4. profiles/presets import coherent capability sets and select defaults;
 5. hosts supply machine facts and exceptional policy.
+
+### Host declarations and late interpretation
+
+Host declarations are configurations of the same import-composed and
+enable-composed profiles published through the namespace vTables. They must be
+federated flake-level data: independent contributors may merge host facts,
+profile selections, overrides, overlays, and rare exceptional modules before
+one owning interpreter lowers the completed declaration into a NixOS,
+nix-darwin, or standalone Home Manager output.
+
+The lasting host API must not require a central hostname switch or a
+hostname-specific constructor. Profile selection must be open over the
+published module namespace rather than represented by a closed factory option
+for every known profile. Adding a host or profile must not require editing the
+interpreter. Constructor choice and Darwin/FHS-Linux platform adaptation belong
+below the host boundary and must use this repository's followed input closure;
+host declarations should ordinarily contain only identity and machine facts,
+symbolic profile selections, and explicit overrides or overlays. Reusable
+implementation code in a host declaration is evidence that a capability,
+profile, or platform adapter is still missing.
+
+The first implementation must prove the merge API, not only the happy path:
+two independent contributors to one host survive the fixed point, unknown
+profile names fail before construction, explicit selections can replace
+profile defaults, and the same Home Manager profile modules work through both
+standalone and system-integrated consumers. Windex is the first missing Linux
+consumer proof, while Darwin and generic FHS Linux must share the same standard
+Home Manager construction semantics.
+
+The host interpreter is intentionally a repository-owned hybrid of the useful
+public semantics in the flake-parts ecosystem's `easy-hosts` and `ez-configs`
+adapters. Preserve `easy-hosts`-style mergeable shared, per-class, per-system or
+architecture, and multi-tag contributions, together with `ez-configs`-style
+host/user/output projection, but do not inherit either implementation's
+filesystem discovery, implicit defaults, closed assumptions, or realized input
+universes. Hand-roll the small flake module around ordinary typed options and
+this repository's coherent constructors.
+
+The declaration's semantic unit is not merely one hostname mapped to one
+system output. One completed declaration may project into N deployment and
+build outputs: the primary switchable system configuration, system-switchable
+specialisations, image or other build variants, standalone and integrated Home
+Manager activations for concrete users, and deployment records. These are
+named projections of the same merged intent, not independently maintained host
+copies. Design option syntax around the distinctions among profiles,
+specialisations, variants, users, artifacts, and deployments; do not flatten
+them all into tags or a raw module list merely because an upstream adapter does.
+
+Do not begin that host/deployment framework until the lowest-tier Home Manager
+composition vocabulary is complete enough to consume. First express and prove
+the portable terminal range entirely through ordinary Home Manager module
+imports and option configuration. Treat existing Dendritic profile names as
+candidate mirrored standalone presets where the name represents genuine HM
+semantics: `base` is the portable CLI home, `interactive` is its strong
+interactive selection, and `dev` adds development/editor intent. `base` remains
+a reusable module substrate but need not be a public output configuration. A
+concrete standalone configuration is an evaluated root; derived configurations
+such as `dev` must use that result's `extendModules` operation with the profile
+delta, preserving package/module provenance and making the derivation
+relationship explicit. Home Manager's own specialisation machinery is evidence
+for this construction model, not a requirement to rebuild each variant from
+the constructor. Do not publish a redundant HM configuration merely for name
+symmetry—`homeManager.headless` currently adds nothing beyond `base`, while its
+distinct `terminfo` behavior is system-owned. Rich workstation/desktop profiles
+remain later tiers.
+
+Variant declaration and materialization policy are separate. One flake-level
+`attrsOf` declaration stores each Home Manager root's ordinary constructor
+arguments and the `attrsOf` module-list deltas for its variants. Two independent
+Dendritic booleans orchestrate projections of that same data:
+`dendritic.homeManager.variants.publish` exposes independently buildable
+flake-level configurations, while `dendritic.homeManager.variants.ship`
+projects the variants into each root's native `specialisation` namespace for
+runtime switching. The four combinations—neither, publish only, ship only, and
+both—must work without duplicating declarations. The production default is
+publish on and ship off.
+
+Do not place the exhaustive four-mode proof in ordinary flake `checks`:
+`nix flake show` enumerates checks and would thereby force the resident
+specialisation lane even when production selects publish-only. Exercise that
+truth table through an explicit isolated evaluator test. Ordinary checks cover
+only the selected production projection so the unused runtime vTable remains
+lazy.
+
+Published variant names are generated from their root and local variant names
+through `dendritic.homeManager.variants.nameFunction`, following ezConfigs'
+established naming-interface vocabulary. Its default is
+`configuration: variant: "${configuration}-${variant}"`, yielding names such
+as `standalone-dev`; native specialization tables continue using the local
+`dev` key. Generated names must be unique and must not collide with root names.
+
+When both lanes are enabled, the flake-level variant view must point at the
+already embedded specialization rather than independently evaluating the same
+module delta again. Home Manager exposes an embedded specialization as its
+evaluated `config`, not the full `homeManagerConfiguration` result wrapper, so
+the flake projection is a thin adapter whose `config` and `activationPackage`
+refer directly to the embedded value. Do not claim an `extendModules` operation
+on that resident view unless Home Manager later exposes the underlying module
+evaluation without reconstruction. Publish-only variants retain the complete
+`homeManagerConfiguration` result and its ordinary `extendModules` operation.
+
+Shipping intentionally pays an evaluation and closure-residency cost because
+Home Manager's native specialisation implementation forces every registered
+variant activation while producing the parent generation. These are global
+orchestrator policies, not properties repeated by individual roots or variants.
+
+Measured evidence on 2026-08-13 with the flake evaluation cache disabled:
+standalone stabilized near 3.6 seconds, a separately published `dev`
+`extendModules` result near 4.0 seconds, the parent with embedded native
+`specialisation.dev` near 5.4 seconds, and extending that specialized parent
+again near 6.2 seconds. The implementation cause is not specialization as a
+semantic concept: Home Manager's parent activation enumerates specialization
+activation packages to construct its link farm, thereby forcing another module
+fixed point for each resident variant. Recheck this policy if Home Manager gains
+lazy/on-demand specialization projection or Nix module evaluation gains an
+applicable incremental-sharing mechanism.
+
+Keep portable profile semantics distinct from target realization, but do not
+over-separate harmless Home Manager target defaults. The owner accepts
+`targets.genericLinux` as a soft default for every Linux Home Manager context:
+it works on generic FHS Linux, NixOS, and WSL. Preserve an ordinary stronger
+override path rather than moving the setting solely to standalone construction.
+WSL is an integrated NixOS consumer of the same portable terminal profiles plus
+its own system/platform capabilities; it is not another copy of the removed
+Generic Linux host bundle.
+
+This low-tier matrix must cover concrete users and Darwin/FHS-Linux targets,
+including SSH/terminal and builder use cases where those consumers genuinely
+have managed home environments. Prove interface imports, preset selections,
+overrides, and closure removal here. Once those HM compositions are stable,
+hosted systems should import the same modules symmetrically; the later
+N-output host interpreter then performs projection rather than inventing user
+environment semantics.
 
 The highest-level interfaces and presets are expected to be the least mature.
 Do not prematurely freeze them merely to make the current tree look finished.
@@ -591,6 +734,9 @@ maxJobs, TERM, bottom, coredumps, and protocol.
   capability; it was initially narrowed out because of porting friction.
 - Profiles are presets and may compose through imports and enable/default
   declarations.
+- Hosts are mergeable, nearly code-free declarations over namespace vTables.
+  One late interpreter owns constructor and platform dispatch; do not add
+  per-host constructors, a central hostname map, or a closed profile schema.
 - The old broad per-user Nix daemon/cache policy may be omitted from the
   thinnest HM landing slice. Its absence does not block that slice.
 - The Dendritic input-registry architecture is settled progress and must be
@@ -1362,22 +1508,49 @@ Before committing:
    ledger and explicit owner decisions rather than copying legacy bundles. The
    bridge now consumes the predecessor's exported `base` and `standalone`
    profiles directly; do not reconstruct their imports locally.
-2. Keep the evaluated cross-platform base checks meaningful. The standalone
-   factory publishes `checks.<system>.home-manager-base` as the pure,
-   deployable per-system activation artifact, while impure
-   `homeConfigurations.base` selects the same factory for
-   `builtins.currentSystem`; their derivations must remain identical on the
-   current system. During this migration, the temporary pre-push hook realizes
-   the exact selected check derivation while legacy `check-flake` remains intact.
-3. Continue proving both standalone and system-integrated HM consumers. Legacy
-   `generic-linux` is deleted; its intentionally deferred desktop behavior
-   remains in the explicit follow-on interface agenda.
-4. Port the Dendritic flake-policy interface, retaining a rich output surface
+2. Keep the evaluated cross-platform base checks meaningful without requiring
+   `base` to remain a public configuration name. A concrete standalone root may
+   privately import the reusable base module and publish its activation as a
+   pure per-system artifact plus an impure local convenience output. Derived
+   configurations such as `dev` use `extendModules` on that evaluated root.
+   During this migration, the temporary pre-push hook realizes the exact
+   selected check derivation while legacy `check-flake` remains intact.
+3. Build and prove the complete low-tier Home Manager preset matrix before the
+   host framework. Derive `dev` from the evaluated standalone root with
+   `extendModules`, and reconcile WSL as an integrated NixOS consumer of the
+   same portable terminal modules. The soft `targets.genericLinux` default may
+   remain active in all Linux contexts. Add any distinct
+   SSH/terminal or builder user-space composition only when justified by real
+   consumers; do not mirror semantically empty profile names for symmetry.
+4. Add the federated N-output host/deployment registry and its single late
+   interpreter, then restore Windex as a consumer through it. Use the already
+   proven Home Manager modules for standalone, nix-darwin-integrated,
+   NixOS-integrated, and generic FHS Linux instantiations; host declarations
+   should contain only facts, profile selections, and explicit
+   overrides/overlays. Legacy `generic-linux` remains deleted; its deferred
+   desktop behavior stays in the interface agenda rather than returning as a
+   host bundle.
+5. Port the Dendritic flake-policy interface, retaining a rich output surface
    while redesigning declaration/ownership/composition semantics.
-5. Continue normalized old/new `nixbook-pro` behavioral diffs, Linux-builder
+   Inventory and eliminate every import-from-derivation consumer, especially
+   legacy Fortress image/application projections, then enforce
+   `allow-import-from-derivation = false` as repository execution policy. The
+   owner does not claim IFD is universally incorrect; this repository bans it
+   because its forcing behavior and evaluation cost undermine shallow discovery
+   such as `nix flake show`. Do not enable the ban while known required outputs
+   still depend on IFD; a future exception requires an explicit policy change.
+   In the same audit, remove non-flake evaluation-time fetchers such as nested
+   `fetchTarball`/`fetchGit` calls that hard-code and shadow declared inputs.
+   These are provenance violations often introduced to compensate for missing
+   propagation from the flake-parts fixed point into Home Manager or system
+   modules. Replace them with sole-root followed flake inputs and propagate
+   definitions through published modules, lexical flake scope,
+   `moduleWithSystem`, or typed options—not `specialArgs`. After migrating known
+   consumers, add a repository check that rejects new shadow fetchers.
+6. Continue normalized old/new `nixbook-pro` behavioral diffs, Linux-builder
    parity, and remote-definition intent inventory as their dependency lanes
    become relevant.
-6. Audit implicit backend activation, input forcing, and derivation closure at
+7. Audit implicit backend activation, input forcing, and derivation closure at
    capability boundaries; reuse established invariants rather than relitigating
    downstream symbol validity.
 
