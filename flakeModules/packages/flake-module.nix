@@ -88,15 +88,17 @@ in {
         zen-profile-manifest = pkgs.callPackage ./zen-profile-manifest {};
       }
       // (lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-        dconf2nix = pkgs.callPackage inputs.dconf2nix rec {
-          compiler = import (inputs.dconf2nix + "/nix/ghc-version.nix");
-          packages = {
-            inherit pkgs;
-            hp = pkgs.haskell.packages.${compiler}.override {
-              overrides = _newPkgs: _oldPkgs: {};
-            };
-          };
-        };
+        # FIXME: dconf2nix pins ghc964, which is absent from current Nixpkgs.
+        # Restore this projection after its compiler selection is updated.
+        # dconf2nix = pkgs.callPackage inputs.dconf2nix rec {
+        #   compiler = import (inputs.dconf2nix + "/nix/ghc-version.nix");
+        #   packages = {
+        #     inherit pkgs;
+        #     hp = pkgs.haskell.packages.${compiler}.override {
+        #       overrides = _newPkgs: _oldPkgs: {};
+        #     };
+        #   };
+        # };
 
         disko-install = pkgs.callPackage ./disko-install.nix {inherit self;};
 
