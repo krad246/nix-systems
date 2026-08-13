@@ -16,7 +16,13 @@ in {
             stateVersion = lib.trivial.release;
           };
 
+          manual = {
+            html.enable = false;
+            json.enable = true;
+          };
+
           news.display = "silent";
+          xdg.enable = true;
         }
         (lib.modules.mkIf pkgs.stdenv.hostPlatform.isLinux {
           # FIXME: once intel-media-driver is conditionally included for x86_64-linux,
