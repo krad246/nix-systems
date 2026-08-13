@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `df99908f701340c9a8c2587de53429e470049c109bfeddc8e012a9001c13d0c1`
+Canonical context proxy SHA-256: `2c456a9f2451df954f2440fb482d3e1b5c780a8ba209ad053f38017a000b751a`
 
 Run:
 
@@ -79,6 +79,8 @@ The frozen predecessor may be deliberately thawed to repair code it still
 owns, then verified, re-pinned, and frozen again. Do not duplicate a capability
 into the bridge merely to carry a repair. This main-based migration line owns
 the sole policy bundle; predecessor-local copies are stale and must be removed.
+Publish frozen/protected branch repairs as final PRs and wait for owner approval
+and merge; move the associated freeze tag only after that approved merge.
 Keep active migration/thaw work in dedicated temporary worktrees until the
 bridge is fully eliminated; remind the owner of this preference before an early
 move into their primary checkout, while allowing an explicit override.
