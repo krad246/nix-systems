@@ -1,8 +1,6 @@
-{
-  self,
-  lib,
-  ...
-}: {
+{self, ...}: let
+  inherit (self) lib;
+in {
   flake.modules = {
     homeManager.base = {pkgs, ...}: {
       imports = with self.modules.homeManager; [
