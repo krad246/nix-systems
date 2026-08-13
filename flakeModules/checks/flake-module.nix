@@ -7,6 +7,7 @@
     treefmt = {
       inherit (config.flake-root) projectRootFile;
       flakeCheck = false;
+      settings.global.excludes = ["*.age"];
       programs = {
         alejandra.enable = true;
         deadnix = {

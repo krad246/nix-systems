@@ -55,8 +55,9 @@ or PATH assumptions. Inherit environment roots only when the tool's state
 contract explicitly requires them.
 Exported environment is an implicit process-tree software bus; publish onto it
 only for an intentional consumer contract, otherwise keep state shell-local.
-Nix-direnv reload is intentionally manual to avoid reload churn; Lorri remains
-an exploratory asynchronous shell-state publisher, not settled bootstrap policy.
+Nix-direnv bootstraps a cold worktree automatically, then reload is
+intentionally manual to avoid reload churn; Lorri remains an exploratory
+asynchronous shell-state publisher, not settled bootstrap policy.
 Parallel agents own distinct worktrees and branches; verify the remote tip and
 publish with `git push --force-with-lease --atomic`, never to a shared branch.
 Legacy Generic Linux behavior is decision evidence, not automatic parity scope:

@@ -67,9 +67,7 @@
     just-flake.url = "github:juspay/just-flake";
     mac-app-util.url = "github:hraban/mac-app-util";
     multiverse.url = "github:fzakaria/nixpkgs-multiverse";
-    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.4.1";
     nix-homebrew.url = "github:zhaofengli-wip/nix-homebrew";
-    nixGL.url = "github:nix-community/nixGL";
     nixos-cosmic.url = "github:lilyinstarlight/nixos-cosmic";
     nixos-generators.url = "github:nix-community/nixos-generators";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
