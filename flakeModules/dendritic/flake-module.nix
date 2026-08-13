@@ -45,137 +45,9 @@
       modules =
         inputs.dendritic.modules
         // {
-          generic =
-            inputs.dendritic.modules.generic
-            // {
-              input-registry = {
-                config,
-                options,
-                ...
-              }: let
-                cfg = config.input-registry;
-                isHomeManager = options ? home.file;
-              in {
-                options.input-registry = {
-                  registry = {
-                    managed = lib.mkOption {
-                      type = lib.types.bool;
-                      default = true;
-                      description = "Enable the input registry aspect.";
-                    };
-
-                    source =
-                      options.nix.registry
-                      // {
-                        default = let
-                          isFlake = _: lib.types.isType "flake";
-                          toEntry = _: flake: {inherit flake;};
-                        in
-                          lib.pipe inputs [
-                            (lib.filterAttrs isFlake)
-                            (lib.mapAttrs toEntry)
-                          ];
-
-                        readOnly = cfg.registry.locked;
-                      };
-
-                    locked = lib.mkOption {
-                      type = lib.types.bool;
-                      internal = true;
-                      default = !isHomeManager;
-                      readOnly = true;
-                    };
-                  };
-
-                  sysroot = {
-                    install = lib.mkOption {
-                      type = lib.types.bool;
-                      default = false;
-                      description = "Install input registry entries into the filesystem.";
-                    };
-
-                    destination = {
-                      directory = lib.mkOption {
-                        type = lib.types.str;
-                        internal = true;
-                        default =
-                          if isHomeManager
-                          then config.home.homeDirectory
-                          else "/etc";
-                        readOnly = true;
-                      };
-
-                      prefix = lib.mkOption {
-                        type = lib.types.str;
-                        default = "/nix/path";
-                        description = "Subpath under the destination directory for input links.";
-                        apply = value: lib.path.subpath.normalise ("./" + value);
-                      };
-                    };
-
-                    abspath = lib.mkOption {
-                      type = lib.types.str;
-                      internal = true;
-                      readOnly = true;
-                    };
-                  };
-
-                  search-path.enable = lib.mkOption {
-                    type = lib.types.bool;
-                    default = false;
-                    description = "Expose the installed input registry through legacy NIX_PATH.";
-                  };
-                };
-
-                config = lib.mkMerge [
-                  (lib.mkIf cfg.registry.managed {
-                    nix = {
-                      registry = cfg.registry.source;
-                      settings.experimental-features = ["nix-command" "flakes"];
-                    };
-                  })
-                  {
-                    assertions = [
-                      {
-                        assertion = cfg.search-path.enable -> cfg.sysroot.install;
-                        message = "The input-registry search path requires its filesystem projection.";
-                      }
-                    ];
-
-                    input-registry.sysroot.abspath = lib.concatStringsSep "/" [
-                      cfg.sysroot.destination.directory
-                      (lib.removePrefix "./" cfg.sysroot.destination.prefix)
-                    ];
-
-                    nix.nixPath = lib.mkIf cfg.search-path.enable [cfg.sysroot.abspath];
-                  }
-                  (lib.mkIf cfg.sysroot.install (let
-                    prefix = cfg.sysroot.destination.prefix;
-                    links =
-                      lib.mapAttrs' (
-                        name: value: {
-                          name = lib.path.subpath.join [prefix name];
-                          value.source = value.to.path;
-                        }
-                      )
-                      config.nix.registry;
-                    attrPath =
-                      if isHomeManager
-                      then ["home" "file"]
-                      else ["environment" "etc"];
-                  in
-                    lib.setAttrByPath attrPath links))
-                ];
-              };
-            };
-
           homeManager =
             inputs.dendritic.modules.homeManager
             // rec {
-              input-registry = {
-                imports = [modules.generic.input-registry];
-              };
-
               base = {
                 lib,
                 pkgs,
@@ -184,7 +56,6 @@
                 imports = [
                   inputs.dendritic.homeModules.home-manager
                   inputs.dendritic.homeModules.identity
-                  input-registry
                 ];
 
                 config = lib.mkMerge [
@@ -274,12 +145,6 @@
             assert cfg.xdg.enable;
             assert cfg.manual.json.enable;
             assert !cfg.manual.html.enable;
-            assert cfg.input-registry.registry.managed;
-            assert !cfg.input-registry.registry.locked;
-            assert !cfg.input-registry.sysroot.install;
-            assert !cfg.input-registry.search-path.enable;
-            assert cfg.input-registry.sysroot.abspath == "/Users/krad246/nix/path";
-            assert cfg.nix.settings.experimental-features == ["nix-command" "flakes"];
             assert cfg.programs.home-manager.enable;
             assert !cfg.programs.bash.enable;
             assert !cfg.programs.bat.enable;
@@ -300,11 +165,6 @@
             assert cfg.targets.genericLinux.enable;
             assert !cfg.targets.genericLinux.gpu.enable;
             assert cfg.systemd.user.startServices;
-            assert cfg.input-registry.registry.managed;
-            assert !cfg.input-registry.registry.locked;
-            assert !cfg.input-registry.sysroot.install;
-            assert !cfg.input-registry.search-path.enable;
-            assert cfg.input-registry.sysroot.abspath == "/home/krad246/nix/path";
               configuration.activationPackage;
         })
       ];
