@@ -10,17 +10,13 @@
     };
 
     config = lib.modules.mkIf cfg.enable {
-      boot.loader.grub = lib.modules.mkMerge [
-        # (
-        {device = "/dev/vda";}
-        (lib.modules.mkIf (cfg.mode == "efi") {
-          device = "nodev";
-          efiSupport = true;
+      boot.loader.grub = lib.modules.mkIf (cfg.mode == "efi") {
+        device = "nodev";
+        efiSupport = true;
 
-          # TODO: use this only in deployments with disko.
-          # efiInstallAsRemovable = lib.modules.mkDefault false;
-        })
-      ];
+        # TODO: use this only in deployments with disko.
+        # efiInstallAsRemovable = lib.modules.mkDefault false;
+      };
     };
   };
 }
