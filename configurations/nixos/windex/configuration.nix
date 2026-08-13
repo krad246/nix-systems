@@ -58,7 +58,6 @@ in {
 
   home-manager.sharedModules = [
     (inner @ {
-      config,
       lib,
       pkgs,
       ...
