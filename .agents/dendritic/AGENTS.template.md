@@ -55,6 +55,8 @@ or PATH assumptions. Inherit environment roots only when the tool's state
 contract explicitly requires them.
 Exported environment is an implicit process-tree software bus; publish onto it
 only for an intentional consumer contract, otherwise keep state shell-local.
+Nix-direnv reload is intentionally manual to avoid reload churn; Lorri remains
+an exploratory asynchronous shell-state publisher, not settled bootstrap policy.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
