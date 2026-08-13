@@ -41,6 +41,9 @@ also updates them. After cloning or pulling on another computer, run
 `.agents/dendritic/context.sh sync-cache` and `verify-cache`. Never leave a
 cache-only architectural mutation: reconcile it into the canonical bundle,
 refresh, verify, commit, and push it for the next machine/model to consume.
+During long sessions, periodically make this canonical checkpoint so an
+out-of-file-descriptors cache flush or process restart resumes from recent
+committed context rather than conversation memory.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
