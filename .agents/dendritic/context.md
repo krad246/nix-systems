@@ -1155,6 +1155,14 @@ variables. Prefer explicit arguments, structural location, or typed inputs over
 reading ambient bus values; stale environment inherited from another devshell
 or worktree must not redirect bootstrap or mutation targets.
 
+The repository currently uses manual nix-direnv reloads deliberately. Automatic
+reload has caused persistent reload churn, so bootstrap success means reaching
+the valid manual-reload boundary; do not force a reload on every shell entry.
+Lorri is an exploratory asynchronous publisher of richer devshell state and is
+useful but not yet a settled replacement. Preserve the current manual contract
+and revisit reload/publisher behavior in a separate lane rather than coupling it
+to bootstrap or hook-installation fixes.
+
 Checkpoint/propagation work may run in a bounded sub-agent while the primary
 agent continues an independent implementation lane. Treat the canonical bundle
 as single-writer state: delegate either the complete checkpoint operation or

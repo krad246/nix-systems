@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `694f15d791feda17f71bb3d42e6a80b6d8e8bc71aa2b3605ec3708cb57e76655`
+Canonical context proxy SHA-256: `52f16c40175b22360763fc3b2bb2f673ce144e67f70453cce194352828370c6a`
 
 Run:
 
@@ -55,6 +55,8 @@ or PATH assumptions. Inherit environment roots only when the tool's state
 contract explicitly requires them.
 Exported environment is an implicit process-tree software bus; publish onto it
 only for an intentional consumer contract, otherwise keep state shell-local.
+Nix-direnv reload is intentionally manual to avoid reload churn; Lorri remains
+an exploratory asynchronous shell-state publisher, not settled bootstrap policy.
 
 Owner decisions that pivot architecture must be synchronized immediately. Load
 the `decision-sync` route, update every affected canonical statement/ledger/gate,
