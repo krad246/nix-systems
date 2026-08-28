@@ -21,12 +21,13 @@
       ];
 
     # Prefer to idle in LPM only when explicitly requested
-    systemd.sleep.extraConfig = ''
-      AllowSuspend=no
-      AllowHibernation=yes
-      AllowHybridSleep=yes
-      AllowSuspendThenHibernate=yes
-    '';
+    # FIXME: systemd.sleep.extraConfig no longer has any effect; use systemd.sleep.settings.Sleep instead.
+    # systemd.sleep.extraConfig = ''
+    #   AllowSuspend=no
+    #   AllowHibernation=yes
+    #   AllowHybridSleep=yes
+    #   AllowSuspendThenHibernate=yes
+    # '';
 
     nix = {
       settings.max-substitution-jobs = 144;

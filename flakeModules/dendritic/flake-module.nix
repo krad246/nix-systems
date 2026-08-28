@@ -5,22 +5,19 @@
   withSystem,
   ...
 }: {
-  options.dendritic.homeManager = {
-    variants = {
-      publish = lib.mkEnableOption "independently buildable Home Manager variant outputs";
-      ship = lib.mkEnableOption "all Home Manager variants in their parent activation generations";
+  imports = [inputs.home-manager.flakeModules.default];
 
-      nameFunction = lib.mkOption {
-        type = lib.types.functionTo (lib.types.functionTo lib.types.str);
-        # TODO(dendritic): Workshop the public root/variant naming vocabulary.
-        default = configuration: variant: "${configuration}-${variant}";
-        defaultText = lib.literalExpression ''configuration: variant: "''${configuration}-''${variant}"'';
-        description = "Function generating a flake output name from configuration and variant names.";
-      };
+  options.dendritic.homeManager = {
+    nameFunction = lib.mkOption {
+      type = lib.types.functionTo (lib.types.functionTo lib.types.str);
+      # TODO(dendritic): Workshop the public root/variant naming vocabulary.
+      default = configuration: variant: "${configuration}-${variant}";
+      defaultText = lib.literalExpression ''configuration: variant: "''${configuration}-''${variant}"'';
+      description = "Function generating a flake output name from configuration and variant names.";
     };
 
     configurations = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
+      type = lib.types.attrsOf (lib.types.submodule ({config, ...}: {
         options = {
           modules = lib.mkOption {
             type = lib.types.listOf lib.types.deferredModule;
@@ -28,107 +25,103 @@
             description = "Caller-supplied modules; the interpreter supplies pkgs to homeManagerConfiguration.";
           };
 
+          includeSpecialisations = lib.mkEnableOption "embedding this configuration's variants as Home Manager specialisations in its own activation generation";
+
           variants = lib.mkOption {
             type = lib.types.attrsOf (lib.types.submodule {
-              options.modules = lib.mkOption {
-                type = lib.types.listOf lib.types.deferredModule;
-                default = [];
-                description = "Home Manager module deltas for this variant.";
+              options = {
+                modules = lib.mkOption {
+                  type = lib.types.listOf lib.types.deferredModule;
+                  default = [];
+                  description = "Home Manager module deltas for this variant.";
+                };
+
+                # Home Manager's `specialisation` option has no per-entry
+                # enable of its own, so entries are filtered on our side
+                # before being handed to it. Defaults from the configuration's
+                # master switch; a variant may still override it individually.
+                includeSpecialisation = lib.mkOption {
+                  type = lib.types.bool;
+                  default = config.includeSpecialisations;
+                  defaultText = lib.literalExpression "the configuration's includeSpecialisations";
+                  description = "Whether this variant is embedded as a Home Manager specialisation in the parent configuration's activation generation.";
+                };
               };
             });
             default = {};
             description = "Named module deltas derived from this configuration.";
           };
         };
-      });
+      }));
       default = {};
       description = "Standalone Home Manager configuration declarations.";
     };
   };
 
-  options.flake.homeConfigurations = lib.mkOption {
-    type = lib.types.lazyAttrsOf lib.types.raw;
-    default = {};
-    description = "Mergeable registry of standalone Home Manager configurations.";
-  };
-
   config = let
-    materializeHomeConfigurations = pkgs: policy: let
+    homeConfigurationEntries = pkgs: let
       declarations = config.dendritic.homeManager.configurations;
-
-      # Preserve each declaration's attrset shape while detecting names that a merge would hide.
-      outputNameSets = lib.pipe declarations [
-        (lib.mapAttrsToList (
-          rootName: declaration:
-            [{${rootName} = null;}]
-            ++ lib.mapAttrsToList (variantName: _: {
-              ${policy.nameFunction rootName variantName} = null;
-            })
-            declaration.variants
-        ))
-        lib.concatLists
-      ];
-      duplicateOutputNames = lib.pipe outputNameSets [
-        (lib.zipAttrsWith (_: builtins.length))
-        (lib.filterAttrs (_: count: count > 1))
-        builtins.attrNames
-      ];
+      inherit (config.dendritic.homeManager) nameFunction;
     in
-      assert lib.assertMsg (duplicateOutputNames == [])
-      "dendritic Home Manager root and generated variant output names must be unique";
-        lib.concatMapAttrs (
+      lib.pipe declarations [
+        (lib.mapAttrsToList (
           rootName: declaration: let
             root = inputs.home-manager.lib.homeManagerConfiguration {
               inherit pkgs;
               inherit (declaration) modules;
             };
-            rootWithVariants =
-              if policy.ship
-              then
-                root.extendModules {
-                  modules = [
-                    {
-                      specialisation =
-                        lib.mapAttrs (_: variant: {
-                          configuration.imports = variant.modules;
-                        })
-                        declaration.variants;
-                    }
-                  ];
+            rootWithSpecialisations = root.extendModules {
+              modules = [
+                {
+                  specialisation = lib.mapAttrs (_: variant:
+                    lib.mkIf variant.includeSpecialisation {
+                      configuration.imports = variant.modules;
+                    })
+                  declaration.variants;
                 }
-              else root;
+              ];
+            };
           in
-            # The root optionally carries its variants as embedded specialisations.
-            {
-              ${rootName} = rootWithVariants;
-            }
-            # Published variants are convenience handles generated from the same declarations.
-            // lib.optionalAttrs policy.publish (
-              lib.mapAttrs' (variantName: variant:
-                lib.nameValuePair (policy.nameFunction rootName variantName) (
-                  if policy.ship
-                  then let
-                    embedded = rootWithVariants.config.specialisation.${variantName}.configuration;
-                  in {
-                    # Home Manager exposes only the embedded config, not its evaluation wrapper.
-                    config = embedded;
-                    activationPackage = embedded.home.activationPackage;
-                  }
-                  else
-                    root.extendModules {
-                      inherit (variant) modules;
-                    }
-                ))
-              declaration.variants
+            # The root, with any opted-in variants embedded as specialisations.
+            [(lib.nameValuePair rootName rootWithSpecialisations)]
+            # Every declared variant is always reachable as its own
+            # lightweight Home Manager configuration - a genuine
+            # `extendModules` result, not a hand-built stand-in - regardless
+            # of whether the root embeds it as a specialisation.
+            ++ lib.mapAttrsToList (
+              variantName: variant:
+                lib.nameValuePair (nameFunction rootName variantName) (
+                  root.extendModules {inherit (variant) modules;}
+                )
             )
-        )
-        declarations;
+            declaration.variants
+        ))
+        lib.concatLists
+      ];
   in {
-    dendritic.homeManager.variants.publish = lib.mkDefault true;
+    dendritic = {
+      homeManager.configurations.standalone = {
+        modules = [config.flake.dendritic.modules.homeManager.standalone];
+        includeSpecialisations = lib.mkDefault true;
+        variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
+      };
 
-    dendritic.homeManager.configurations.standalone = {
-      modules = [config.flake.dendritic.modules.homeManager.standalone];
-      variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
+      hosts.nixos.configurations.generic-headless-interactive = {
+        includeSpecialisations = lib.mkDefault true;
+        modules = [
+          config.flake.dendritic.modules.nixos.headless
+          config.flake.dendritic.modules.nixos.interactive
+          ({config, ...}: {
+            nixpkgs.hostPlatform = "x86_64-linux";
+            image.modules.vm = import ./image-modules/vm.nix;
+            image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
+              vm = config.image.modules.vm;
+            };
+            networking.hostName = "generic-headless-interactive";
+          })
+        ];
+        variants.dev.modules = [{virtualisation.docker.enable = true;}];
+      };
     };
 
     flake-file.inputs.dendritic = {
@@ -165,26 +158,12 @@
 
     flake = {
       homeConfigurations = lib.mkIf (!lib.inPureEvalMode) (
-        materializeHomeConfigurations
-        (withSystem builtins.currentSystem ({pkgs, ...}: pkgs))
-        config.dendritic.homeManager.variants
+        lib.mkMerge (
+          map (entry: {${entry.name} = entry.value;}) (
+            homeConfigurationEntries (withSystem builtins.currentSystem ({pkgs, ...}: pkgs))
+          )
+        )
       );
-
-      nixosConfigurations.generic-headless-interactive = inputs.nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          config.flake.dendritic.modules.nixos.headless
-          config.flake.dendritic.modules.nixos.interactive
-          ({config, ...}: {
-            image.modules.vm = import ./image-modules/vm.nix;
-            image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
-              vm = config.image.modules.vm;
-            };
-
-            networking.hostName = "generic-headless-interactive";
-          })
-        ];
-      };
     };
 
     perSystem = {
@@ -192,9 +171,10 @@
       system,
       ...
     }: let
-      variants = materializeHomeConfigurations pkgs config.dendritic.homeManager.variants;
-      publishVariants = config.dendritic.homeManager.variants.publish;
-      shipVariants = config.dendritic.homeManager.variants.ship;
+      # Uniqueness is already proven at the flake level; this system's
+      # entries are indexed directly since nothing here needs to re-validate
+      # that guarantee.
+      variants = builtins.listToAttrs (homeConfigurationEntries pkgs);
       inherit (variants) standalone;
       dev = variants.standalone-dev;
       cfg = standalone.config;
@@ -211,119 +191,115 @@
           };
         }
         (lib.mkIf (system == "aarch64-darwin") {
-          checks =
-            {
-              dendritic-hm-standalone = assert cfg.home.username == "krad246";
-              assert cfg.home.homeDirectory == "/Users/krad246";
-              assert cfg.identity.person
-              == {
-                email = "krad246@gmail.com";
-                name = "Keerthi Radhakrishnan";
-                username = "krad246";
-              };
-              assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
-              assert cfg.xdg.enable;
-              assert cfg.manual.json.enable;
-              assert !cfg.manual.html.enable;
-              assert cfg.input-registry.registry.managed;
-              assert !cfg.input-registry.registry.locked;
-              assert !cfg.input-registry.sysroot.install;
-              assert !cfg.input-registry.search-path.enable;
-              assert cfg.nix.registry ? nixpkgs;
-              assert cfg.nix.registry ? home-manager;
-              assert cfg.nix.settings.experimental-features == ["nix-command" "flakes"];
-              assert cfg.programs.home-manager.enable;
-              assert cfg.shell.profiles.interactive.enable;
-              assert cfg.programs.bash.enable;
-              assert cfg.programs.bat.enable;
-              assert cfg.programs.fzf.enable;
-              assert !cfg.programs.git.enable;
-              assert !cfg.programs.helix.enable;
-              assert !cfg.programs.kitty.enable;
-              assert !cfg.programs.rbw.enable;
-                standalone.activationPackage;
-
-              dendritic-nixbook-pro-hm = let
-                configuration = inputs.dendritic.darwinConfigurations.nixbook-pro;
-                cfg = configuration.config;
-                home = cfg.home-manager.users.${cfg.owner.username};
-              in
-                assert home.home.username == cfg.owner.username;
-                assert home.home.homeDirectory == "/Users/${cfg.owner.username}";
-                assert home.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
-                assert home.programs.home-manager.enable;
-                assert home.xdg.enable;
-                assert home.manual.json.enable;
-                assert !home.manual.html.enable;
-                  home.home.activationPackage;
-            }
-            // lib.optionalAttrs publishVariants {
-              home-manager-standalone-dev = dev.activationPackage;
-
-              dendritic-hm-dev = assert devCfg.home.username == cfg.home.username;
-              assert devCfg.home.homeDirectory == cfg.home.homeDirectory;
-              assert devCfg.shell.profiles.dev.enable;
-              assert devCfg.shell.programs.git.enable;
-              assert devCfg.shell.programs.gh.enable;
-              assert devCfg.shell.programs.direnv.enable;
-              assert devCfg.editor.backends.helix.enable;
-              assert devCfg.editor.backends.helix.default;
-              assert shipVariants || !carvedDev.config.shell.profiles.interactive.enable;
-              assert shipVariants || !carvedDev.config.programs.bash.enable;
-              assert shipVariants || !carvedDev.config.programs.bat.enable;
-              assert shipVariants || carvedDev.config.shell.profiles.dev.enable;
-              assert shipVariants || carvedDev.config.editor.backends.helix.enable;
-                dev.activationPackage;
+          checks = {
+            dendritic-hm-standalone = assert cfg.home.username == "krad246";
+            assert cfg.home.homeDirectory == "/Users/krad246";
+            assert cfg.identity.person
+            == {
+              email = "krad246@gmail.com";
+              name = "Keerthi Radhakrishnan";
+              username = "krad246";
             };
+            assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
+            assert cfg.xdg.enable;
+            assert cfg.manual.json.enable;
+            assert !cfg.manual.html.enable;
+            assert cfg.input-registry.registry.managed;
+            assert !cfg.input-registry.registry.locked;
+            assert !cfg.input-registry.sysroot.install;
+            assert !cfg.input-registry.search-path.enable;
+            assert cfg.nix.registry ? nixpkgs;
+            assert cfg.nix.registry ? home-manager;
+            assert cfg.nix.settings.experimental-features == ["nix-command" "flakes"];
+            assert cfg.programs.home-manager.enable;
+            assert cfg.shell.profiles.interactive.enable;
+            assert cfg.programs.bash.enable;
+            assert cfg.programs.bat.enable;
+            assert cfg.programs.fzf.enable;
+            assert !cfg.programs.git.enable;
+            assert !cfg.programs.helix.enable;
+            assert !cfg.programs.kitty.enable;
+            assert !cfg.programs.rbw.enable;
+              standalone.activationPackage;
+
+            dendritic-nixbook-pro-hm = let
+              configuration = inputs.dendritic.darwinConfigurations.nixbook-pro;
+              cfg = configuration.config;
+              home = cfg.home-manager.users.${cfg.owner.username};
+            in
+              assert home.home.username == cfg.owner.username;
+              assert home.home.homeDirectory == "/Users/${cfg.owner.username}";
+              assert home.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
+              assert home.programs.home-manager.enable;
+              assert home.xdg.enable;
+              assert home.manual.json.enable;
+              assert !home.manual.html.enable;
+                home.home.activationPackage;
+
+            home-manager-standalone-dev = dev.activationPackage;
+
+            dendritic-hm-dev = assert devCfg.home.username == cfg.home.username;
+            assert devCfg.home.homeDirectory == cfg.home.homeDirectory;
+            assert devCfg.shell.profiles.dev.enable;
+            assert devCfg.shell.programs.git.enable;
+            assert devCfg.shell.programs.gh.enable;
+            assert devCfg.shell.programs.direnv.enable;
+            assert devCfg.editor.backends.helix.enable;
+            assert devCfg.editor.backends.helix.default;
+            assert !carvedDev.config.shell.profiles.interactive.enable;
+            assert !carvedDev.config.programs.bash.enable;
+            assert !carvedDev.config.programs.bat.enable;
+            assert carvedDev.config.shell.profiles.dev.enable;
+            assert carvedDev.config.editor.backends.helix.enable;
+              dev.activationPackage;
+          };
         })
         (lib.mkIf (system == "x86_64-linux") {
-          checks =
-            {
-              dendritic-hm-standalone = assert cfg.home.username == "krad246";
-              assert cfg.home.homeDirectory == "/home/krad246";
-              assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
-              assert cfg.targets.genericLinux.enable;
-              assert !cfg.targets.genericLinux.gpu.enable;
-              assert cfg.systemd.user.startServices;
-              assert cfg.input-registry.registry.managed;
-              assert !cfg.input-registry.registry.locked;
-              assert !cfg.input-registry.sysroot.install;
-              assert !cfg.input-registry.search-path.enable;
-              assert cfg.nix.registry ? nixpkgs;
-              assert cfg.nix.registry ? home-manager;
-              assert cfg.nix.settings.experimental-features == ["nix-command" "flakes"];
-              assert cfg.shell.profiles.interactive.enable;
-              assert cfg.programs.bash.enable;
-                standalone.activationPackage;
+          checks = {
+            dendritic-hm-standalone = assert cfg.home.username == "krad246";
+            assert cfg.home.homeDirectory == "/home/krad246";
+            assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
+            assert cfg.targets.genericLinux.enable;
+            assert !cfg.targets.genericLinux.gpu.enable;
+            assert cfg.systemd.user.startServices;
+            assert cfg.input-registry.registry.managed;
+            assert !cfg.input-registry.registry.locked;
+            assert !cfg.input-registry.sysroot.install;
+            assert !cfg.input-registry.search-path.enable;
+            assert cfg.nix.registry ? nixpkgs;
+            assert cfg.nix.registry ? home-manager;
+            assert cfg.nix.settings.experimental-features == ["nix-command" "flakes"];
+            assert cfg.shell.profiles.interactive.enable;
+            assert cfg.programs.bash.enable;
+              standalone.activationPackage;
 
-              generic-headless-interactive = let
-                configuration = config.flake.nixosConfigurations.generic-headless-interactive;
-                image = configuration.config.system.build.images.vm-nogui;
-                cfg = image.passthru.config;
-              in
-                assert !cfg.virtualisation.graphics;
-                assert !cfg.services.xserver.enable;
-                assert cfg.home-manager.users.${cfg.owner.username}.shell.profiles.interactive.enable; image;
-            }
-            // lib.optionalAttrs publishVariants {
-              home-manager-standalone-dev = dev.activationPackage;
+            generic-headless-interactive = let
+              configuration = config.flake.nixosConfigurations.generic-headless-interactive;
+              image = configuration.config.system.build.images.vm-nogui;
+              cfg = image.passthru.config;
+            in
+              assert !cfg.virtualisation.graphics;
+              assert !cfg.services.xserver.enable;
+              assert cfg.home-manager.users.${cfg.owner.username}.shell.profiles.interactive.enable; image;
 
-              dendritic-hm-dev = assert devCfg.home.username == cfg.home.username;
-              assert devCfg.home.homeDirectory == cfg.home.homeDirectory;
-              assert devCfg.targets.genericLinux.enable;
-              assert devCfg.shell.profiles.dev.enable;
-              assert devCfg.shell.programs.git.enable;
-              assert devCfg.shell.programs.gh.enable;
-              assert devCfg.shell.programs.direnv.enable;
-              assert devCfg.editor.backends.helix.enable;
-              assert devCfg.editor.backends.helix.default;
-              assert shipVariants || !carvedDev.config.shell.profiles.interactive.enable;
-              assert shipVariants || !carvedDev.config.programs.bash.enable;
-              assert shipVariants || !carvedDev.config.programs.bat.enable;
-              assert shipVariants || carvedDev.config.shell.profiles.dev.enable;
-              assert shipVariants || carvedDev.config.editor.backends.helix.enable;
-                dev.activationPackage;
-            };
+            home-manager-standalone-dev = dev.activationPackage;
+
+            dendritic-hm-dev = assert devCfg.home.username == cfg.home.username;
+            assert devCfg.home.homeDirectory == cfg.home.homeDirectory;
+            assert devCfg.targets.genericLinux.enable;
+            assert devCfg.shell.profiles.dev.enable;
+            assert devCfg.shell.programs.git.enable;
+            assert devCfg.shell.programs.gh.enable;
+            assert devCfg.shell.programs.direnv.enable;
+            assert devCfg.editor.backends.helix.enable;
+            assert devCfg.editor.backends.helix.default;
+            assert !carvedDev.config.shell.profiles.interactive.enable;
+            assert !carvedDev.config.programs.bash.enable;
+            assert !carvedDev.config.programs.bat.enable;
+            assert carvedDev.config.shell.profiles.dev.enable;
+            assert carvedDev.config.editor.backends.helix.enable;
+              dev.activationPackage;
+          };
         })
       ];
   };
