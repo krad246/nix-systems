@@ -114,6 +114,7 @@
   in
     backend.definitions null config.dendritic.systems.outputs.nameFunction selectedDeclarations;
 
+  # Images are materialized in perSystem because their package value is build-system specific.
   imageOutputs = buildSystem: declarations: let
     candidates = lib.concatMap (rootName: let
       declaration = declarations.${rootName};
