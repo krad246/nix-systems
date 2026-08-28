@@ -400,9 +400,9 @@ remain later tiers.
 
 Variant declaration and materialization policy are separate. The flake-level
 `dendritic.configurations` `attrsOf` registry stores each root once; its typed
-`standalone` and `hosts` contexts carry the relevant constructor arguments and
+`users` and `hosts` contexts carry the relevant constructor arguments and
 `attrsOf` module-list deltas. Their defaults live beneath
-`dendritic.defaults.standalone` and `dendritic.defaults.hosts`, while each
+`dendritic.defaults.users` and `dendritic.defaults.hosts`, while each
 selected context and each variant may override publication and specialisation inclusion.
 Publishing exposes an independently buildable output; inclusion projects the
 same delta into the root's native `specialisation` namespace for runtime
