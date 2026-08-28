@@ -21,9 +21,9 @@
     e.config.formats.${format};
 in {
   flake.packages = {
-    aarch64-darwin = {
-      fortress-disko-vm = mkFormat (withSystem "aarch64-linux" (ctx: ctx.pkgs)) "fortress" "disko-vm-darwin";
-    };
+    # FIXME(fortress-images): Restore with the generator projection backend.
+    # aarch64-darwin.fortress-disko-vm =
+    #   mkFormat (withSystem "aarch64-linux" (ctx: ctx.pkgs)) "fortress" "disko-vm-darwin";
 
     aarch64-linux = withSystem "aarch64-linux" ({pkgs, ...}: {
       fortress-sd-aarch64 = mkFormat pkgs "fortress" "sd-aarch64";
@@ -46,7 +46,8 @@ in {
     ...
   }: {
     packages = lib.attrsets.optionalAttrs pkgs.stdenv.isLinux {
-      fortress-disko-vm = mkFormat pkgs "fortress" "disko-vm";
+      # FIXME(fortress-images): Restore with the generator projection backend.
+      # fortress-disko-vm = mkFormat pkgs "fortress" "disko-vm";
 
       fortress-hyperv = mkFormat pkgs "fortress" "hyperv";
       fortress-iso = mkFormat pkgs "fortress" "iso";

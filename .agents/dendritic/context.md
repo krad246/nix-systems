@@ -241,6 +241,15 @@ Preserve these substrate laws when extending the architecture:
   Equal version/release strings do not prove this if parallel inputs or imports
   realized independent Nixpkgs worlds. Use follows relationships, flake-parts
   per-system fixed points, and overlay application to make provenance structural.
+- Package-set identity is not the coherence invariant. Standalone Home Manager,
+  integrated Home Manager, NixOS, nix-darwin, and flake-parts `perSystem` may
+  deliberately instantiate distinct `pkgs` fixed points from the same followed
+  Nixpkgs source. In particular, Dendritic intentionally leaves
+  `home-manager.useGlobalPkgs` disabled so integrated Home Manager owns its
+  package evaluation. Require every ordinary fixed point to descend from the
+  declared source graph; do not replace that design merely to make the Nix
+  values identical. Overlay, unfree, and platform policy may differ only where
+  the owning context declares that difference intentionally.
 - Reason about recursive package/module fixed points structurally. `final` and
   `prev` are semantic positions, not imperative time steps, and nested fixed
   points may behave like coupled gears rather than an inner computation that
@@ -392,13 +401,25 @@ remain later tiers.
 Variant declaration and materialization policy are separate. One flake-level
 `attrsOf` declaration stores each Home Manager root's ordinary constructor
 arguments and the `attrsOf` module-list deltas for its variants. Two independent
-Dendritic booleans orchestrate projections of that same data:
+Dendritic booleans provide global projection defaults:
 `dendritic.homeManager.variants.publish` exposes independently buildable
-flake-level configurations, while `dendritic.homeManager.variants.ship`
-projects the variants into each root's native `specialisation` namespace for
-runtime switching. The four combinations—neither, publish only, ship only, and
-both—must work without duplicating declarations. The production default is
-publish on and ship off.
+flake-level configurations, while `dendritic.homeManager.variants.embed`
+projects variants into each root's native `specialisation` namespace for
+runtime switching. Each root may override both defaults, and each variant may
+independently override publication and specialisation inclusion. Effective
+policy resolves leaf override, then root override, then global default. The four
+root-level combinations—neither, publish only, embed only, and both—and mixed
+leaf selections must work without duplicating declarations. The production
+default is publish on and embed off.
+
+The reusable projection core speaks only in `publish` and `embed`; native
+`specialisation` vocabulary belongs to the Home Manager or NixOS backend
+adapter. Its materialization law is: normalize each leaf policy, construct one
+bare root, optionally embed the selected deltas into that root, and
+independently extend the same bare root for every published delta. A backend's
+embedding capability is represented by supplying its embedding operation, not
+by declaration metadata. Backends without that operation still support
+publication and fail only when a selected coordinate requests embedding.
 
 Do not place the exhaustive four-mode proof in ordinary flake `checks`:
 `nix flake show` enumerates checks and would thereby force the resident
@@ -414,17 +435,45 @@ established naming-interface vocabulary. Its default is
 as `standalone-dev`; native specialization tables continue using the local
 `dev` key. Generated names must be unique and must not collide with root names.
 
-When both lanes are enabled, the flake-level variant view must point at the
-already embedded specialization rather than independently evaluating the same
-module delta again. Home Manager exposes an embedded specialization as its
-evaluated `config`, not the full `homeManagerConfiguration` result wrapper, so
-the flake projection is a thin adapter whose `config` and `activationPackage`
-refer directly to the embedded value. Do not claim an `extendModules` operation
-on that resident view unless Home Manager later exposes the underlying module
-evaluation without reconstruction. Publish-only variants retain the complete
-`homeManagerConfiguration` result and its ordinary `extendModules` operation.
+Published variants always extend the unspecialised evaluated root and retain
+the complete `homeManagerConfiguration` result, including its ordinary
+`extendModules` operation. This is the lightweight, independently buildable
+view. Embedded specialisations are a separate heavier projection of the same
+module delta. When both are selected they may perform distinct evaluations,
+but equivalent declarations must resolve to the same activation derivation.
+Do not replace the published result with a thin adapter over Home Manager's
+embedded `config`; that loses the normal Home Manager result interface and
+couples publication cost to the resident specialisation table.
 
-Shipping intentionally pays an evaluation and closure-residency cost because
+Treat the later unified configuration interpreter as a sparse projection
+matrix rooted in one mergeable declaration. Its typed coordinates are root
+intent, build/evaluation platform, target platform, variant delta, projection
+backend, and publication/embedding policy. NixOS, nix-darwin, standalone Home
+Manager, integrated Home Manager, generator images, specialisations, and
+deployment records are projections of that declaration rather than bespoke
+host constructors. Backends remain open registries; enabled coordinates alone
+materialize, so adding an axis must not force the full Cartesian product.
+
+Cross compilation is a relationship between build and target platforms, not a
+free-floating boolean substitute for them. A hierarchical `cross.enable`
+policy may globally prohibit or permit cross projections and allow narrower
+root/variant/artifact overrides, but each selected projection must still name
+or derive its build and target platforms explicitly. Native means those
+platforms coincide; cross means they differ. Keep target `pkgs` distinct from
+host-side generator/runner `pkgs`, while deriving ordinary package universes
+from the same declared Nixpkgs source graph.
+
+Current supported flake-parts enumeration deliberately filters out
+`x86_64-darwin`: Nixpkgs unstable no longer supports it after 26.05. Keep the
+FIXME until a pinned legacy package universe or an explicit compatibility
+backend justifies restoring that coordinate. The legacy `fortress-disko-vm`
+package/app exposure is likewise disabled until the generator projection
+backend owns it; do not revive it as another bespoke per-system exception.
+NetworkManager's NixOS module owns its wpa_supplicant relationship—the portable
+base must not independently set `networking.wireless.enable` and conflict with
+image modules.
+
+Embedding intentionally pays an evaluation and closure-residency cost because
 Home Manager's native specialisation implementation forces every registered
 variant activation while producing the parent generation. These are global
 orchestrator policies, not properties repeated by individual roots or variants.
@@ -439,6 +488,16 @@ activation packages to construct its link farm, thereby forcing another module
 fixed point for each resident variant. Recheck this policy if Home Manager gains
 lazy/on-demand specialization projection or Nix module evaluation gains an
 applicable incremental-sharing mechanism.
+
+The per-root/leaf policy refactor was remeasured on 2026-08-27 against the real
+standalone development composition with the evaluation cache disabled. The
+independently published `standalone-dev` activation evaluated in 6.10 seconds;
+the parent activation with the same `dev` delta embedded evaluated in 9.19
+seconds. Absolute times vary with machine and branch state, but the result
+supports retaining publication as the lightweight complete Home Manager result
+and treating embedding as an explicitly heavier runtime projection. The
+isolated evaluator also proves that the published and embedded dev activations
+have the same derivation when their declarations match.
 
 Keep portable profile semantics distinct from target realization, but do not
 over-separate harmless Home Manager target defaults. The owner accepts
@@ -815,7 +874,7 @@ Status meanings:
 | system Agenix module and custom Agenix package | missing | Evaluated Main system packages include Agenix; Dendritic does not. `darwin.secrets` only bridges HM RBW and does not import `darwin.agenix`. Decide desired system/HM secret capabilities. |
 | firewall | irrelevant | Old file contained comments only. |
 | system terminal fonts | no effective difference | Although the old source assigns `fonts.packages = pkgs.krad246.term-fonts.paths`, evaluated `fonts.packages` is empty on both configurations. The actual font difference is in the HM closure, not system fonts. |
-| HM bridge package universe | changed/unverified | Old had `useGlobalPkgs=true`, `useUserPackages=true`, `verbose=false`; new leaves global pkgs off, uses user packages, and is verbose. Audit package identity/overlays/unfree effects before choosing policy. |
+| HM bridge package universe | deliberate separate fixed point; policy audit remains | Old had `useGlobalPkgs=true`, `useUserPackages=true`, `verbose=false`; Dendritic intentionally leaves global pkgs off, uses user packages, and is verbose. Its private HM `pkgs` evaluation must descend from the same followed Nixpkgs source, but need not be the identical system or `perSystem` fixed point. Audit overlay/unfree/platform policy without reopening that ownership decision. |
 | Homebrew substrate | changed, evaluated | Main has Homebrew disabled but declares Bash/Zsh brews, the six selected casks, and two MAS apps. Dendritic enables Homebrew, removes Bash/Zsh brews, and preserves the same six casks and two MAS apps. This activation/policy change is entangled with the exploratory app-store and requires later design; Nixpkgs Bash is accepted for thin slice. |
 | guest login disabled | missing | Old master-user module set `GuestEnabled=false`; current lock-screen modules are empty. |
 | console access disabled | missing | Old set `DisableConsoleAccess=true`; no current realization found. |
@@ -1328,6 +1387,12 @@ public command generic: today it delegates to the Dendritic bundle's
 `checkpoint` primitive, but future agent-maintained internal documentation may
 replace or extend that storage without renaming the lifecycle action. A matching
 Just command namespace is a possible convenience layer, not current scope.
+
+The `agent` devshell exposes `verify-dendritic-context`, and the same executable
+backs the scoped `verify-dendritic-context` pre-commit hook. The hook is
+read-only: it runs when the canonical bundle or generated `AGENTS.md` changes
+and rejects stale hashes/proxies. Refresh remains an explicit checkpoint action
+because commit hooks must not silently rewrite architectural state.
 
 Bootstrap and recovery tooling follows one boundary: statically close over
 tools and immutable logic; late-bind mutable workspace locations and recovery

@@ -5,18 +5,19 @@
   withSystem,
   ...
 }: {
-  options.dendritic.homeManager = {
-    variants = {
-      publish = lib.mkEnableOption "independently buildable Home Manager variant outputs";
-      ship = lib.mkEnableOption "all Home Manager variants in their parent activation generations";
+  imports = [inputs.home-manager.flakeModules.default];
 
-      nameFunction = lib.mkOption {
-        type = lib.types.functionTo (lib.types.functionTo lib.types.str);
-        # TODO(dendritic): Workshop the public root/variant naming vocabulary.
-        default = configuration: variant: "${configuration}-${variant}";
-        defaultText = lib.literalExpression ''configuration: variant: "''${configuration}-''${variant}"'';
-        description = "Function generating a flake output name from configuration and variant names.";
-      };
+  options.dendritic.homeManager = {
+    nameFunction = lib.mkOption {
+      type = lib.types.functionTo (lib.types.functionTo lib.types.str);
+      default = configuration: variant: "${configuration}-${variant}";
+      defaultText = lib.literalExpression ''configuration: variant: "''${configuration}-''${variant}"'';
+      description = "Function generating a flake output name from configuration and variant names.";
+    };
+
+    variants = {
+      publish = lib.mkEnableOption "independently buildable Home Manager variant outputs by default";
+      embed = lib.mkEnableOption "Home Manager variants in their parent activation generations by default";
     };
 
     configurations = lib.mkOption {
@@ -30,14 +31,40 @@
 
           variants = lib.mkOption {
             type = lib.types.attrsOf (lib.types.submodule {
-              options.modules = lib.mkOption {
-                type = lib.types.listOf lib.types.deferredModule;
-                default = [];
-                description = "Home Manager module deltas for this variant.";
+              options = {
+                modules = lib.mkOption {
+                  type = lib.types.listOf lib.types.deferredModule;
+                  default = [];
+                  description = "Home Manager module deltas for this variant.";
+                };
+
+                publish = lib.mkOption {
+                  type = lib.types.nullOr lib.types.bool;
+                  default = null;
+                  description = "Whether to publish this variant independently; null inherits configuration policy.";
+                };
+
+                embed = lib.mkOption {
+                  type = lib.types.nullOr lib.types.bool;
+                  default = null;
+                  description = "Whether to embed this variant in its parent generation; null inherits configuration policy.";
+                };
               };
             });
             default = {};
             description = "Named module deltas derived from this configuration.";
+          };
+
+          publishVariants = lib.mkOption {
+            type = lib.types.nullOr lib.types.bool;
+            default = null;
+            description = "Default publication policy for this configuration's variants; null inherits global policy.";
+          };
+
+          embedVariants = lib.mkOption {
+            type = lib.types.nullOr lib.types.bool;
+            default = null;
+            description = "Default embedding policy for this configuration's variants; null inherits global policy.";
           };
         };
       });
@@ -46,83 +73,29 @@
     };
   };
 
-  options.flake.homeConfigurations = lib.mkOption {
-    type = lib.types.lazyAttrsOf lib.types.raw;
-    default = {};
-    description = "Mergeable registry of standalone Home Manager configurations.";
-  };
-
   config = let
-    materializeHomeConfigurations = pkgs: policy: let
-      declarations = config.dendritic.homeManager.configurations;
-
-      # Preserve each declaration's attrset shape while detecting names that a merge would hide.
-      outputNameSets = lib.pipe declarations [
-        (lib.mapAttrsToList (
-          rootName: declaration:
-            [{${rootName} = null;}]
-            ++ lib.mapAttrsToList (variantName: _: {
-              ${policy.nameFunction rootName variantName} = null;
-            })
-            declaration.variants
-        ))
-        lib.concatLists
-      ];
-      duplicateOutputNames = lib.pipe outputNameSets [
-        (lib.zipAttrsWith (_: builtins.length))
-        (lib.filterAttrs (_: count: count > 1))
-        builtins.attrNames
-      ];
-    in
-      assert lib.assertMsg (duplicateOutputNames == [])
-      "dendritic Home Manager root and generated variant output names must be unique";
-        lib.concatMapAttrs (
-          rootName: declaration: let
-            root = inputs.home-manager.lib.homeManagerConfiguration {
-              inherit pkgs;
-              inherit (declaration) modules;
-            };
-            rootWithVariants =
-              if policy.ship
-              then
-                root.extendModules {
-                  modules = [
-                    {
-                      specialisation =
-                        lib.mapAttrs (_: variant: {
-                          configuration.imports = variant.modules;
-                        })
-                        declaration.variants;
-                    }
-                  ];
-                }
-              else root;
-          in
-            # The root optionally carries its variants as embedded specialisations.
+    homeManagerConfigurations = import ./configuration-projections.nix {
+      inherit lib;
+      construct = pkgs: declaration:
+        inputs.home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          inherit (declaration) modules;
+        };
+      embed = root: specialisations:
+        root.extendModules {
+          modules = [
             {
-              ${rootName} = rootWithVariants;
+              specialisation =
+                lib.mapAttrs (_: delta: {
+                  configuration.imports = delta.modules;
+                })
+                specialisations;
             }
-            # Published variants are convenience handles generated from the same declarations.
-            // lib.optionalAttrs policy.publish (
-              lib.mapAttrs' (variantName: variant:
-                lib.nameValuePair (policy.nameFunction rootName variantName) (
-                  if policy.ship
-                  then let
-                    embedded = rootWithVariants.config.specialisation.${variantName}.configuration;
-                  in {
-                    # Home Manager exposes only the embedded config, not its evaluation wrapper.
-                    config = embedded;
-                    activationPackage = embedded.home.activationPackage;
-                  }
-                  else
-                    root.extendModules {
-                      inherit (variant) modules;
-                    }
-                ))
-              declaration.variants
-            )
-        )
-        declarations;
+          ];
+        };
+    };
+
+    declarations = homeManagerConfigurations.resolve config.dendritic.homeManager.variants config.dendritic.homeManager.configurations;
   in {
     dendritic.homeManager.variants.publish = lib.mkDefault true;
 
@@ -164,11 +137,12 @@
     };
 
     flake = {
-      homeConfigurations = lib.mkIf (!lib.inPureEvalMode) (
-        materializeHomeConfigurations
+      homeConfigurations = lib.mkIf (!lib.inPureEvalMode) (lib.mkMerge (
+        homeManagerConfigurations.definitions
         (withSystem builtins.currentSystem ({pkgs, ...}: pkgs))
-        config.dendritic.homeManager.variants
-      );
+        config.dendritic.homeManager.nameFunction
+        declarations
+      ));
 
       nixosConfigurations.generic-headless-interactive = inputs.nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
@@ -192,11 +166,10 @@
       system,
       ...
     }: let
-      variants = materializeHomeConfigurations pkgs config.dendritic.homeManager.variants;
-      publishVariants = config.dendritic.homeManager.variants.publish;
-      shipVariants = config.dendritic.homeManager.variants.ship;
-      inherit (variants) standalone;
-      dev = variants.standalone-dev;
+      declaration = declarations.standalone;
+      publishVariants = lib.any (variant: variant.publish) (builtins.attrValues declaration.variants);
+      standalone = homeManagerConfigurations.configuration pkgs declaration;
+      dev = homeManagerConfigurations.variant pkgs declaration declaration.variants.dev;
       cfg = standalone.config;
       devCfg = dev.config;
 
@@ -207,13 +180,33 @@
       lib.mkMerge [
         {
           checks = {
+            dendritic-hm-standalone = standalone.activationPackage;
             home-manager-standalone = standalone.activationPackage;
+          };
+
+          pre-commit.settings.hooks.realize-dendritic-hm-standalone = {
+            enable = true;
+            description = "Realize the Dendritic standalone Home Manager configuration before pushing";
+
+            # FIXME(dendritic-migration): Delete this hook once the Home Manager
+            # closure has been ported. Discarding the string context keeps hook
+            # installation from realizing the check; pre-push still receives the
+            # exact derivation selected by the adjacent checks schema.
+            entry = "${lib.meta.getExe' pkgs.nix "nix-store"} --realise ${
+              lib.strings.escapeShellArg (
+                builtins.unsafeDiscardStringContext standalone.activationPackage.drvPath
+              )
+            }";
+
+            always_run = true;
+            pass_filenames = false;
+            stages = ["pre-push"];
           };
         }
         (lib.mkIf (system == "aarch64-darwin") {
           checks =
             {
-              dendritic-hm-standalone = assert cfg.home.username == "krad246";
+              dendritic-hm-contract = assert cfg.home.username == "krad246";
               assert cfg.home.homeDirectory == "/Users/krad246";
               assert cfg.identity.person
               == {
@@ -268,18 +261,18 @@
               assert devCfg.shell.programs.direnv.enable;
               assert devCfg.editor.backends.helix.enable;
               assert devCfg.editor.backends.helix.default;
-              assert shipVariants || !carvedDev.config.shell.profiles.interactive.enable;
-              assert shipVariants || !carvedDev.config.programs.bash.enable;
-              assert shipVariants || !carvedDev.config.programs.bat.enable;
-              assert shipVariants || carvedDev.config.shell.profiles.dev.enable;
-              assert shipVariants || carvedDev.config.editor.backends.helix.enable;
+              assert !carvedDev.config.shell.profiles.interactive.enable;
+              assert !carvedDev.config.programs.bash.enable;
+              assert !carvedDev.config.programs.bat.enable;
+              assert carvedDev.config.shell.profiles.dev.enable;
+              assert carvedDev.config.editor.backends.helix.enable;
                 dev.activationPackage;
             };
         })
         (lib.mkIf (system == "x86_64-linux") {
           checks =
             {
-              dendritic-hm-standalone = assert cfg.home.username == "krad246";
+              dendritic-hm-contract = assert cfg.home.username == "krad246";
               assert cfg.home.homeDirectory == "/home/krad246";
               assert cfg.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
               assert cfg.targets.genericLinux.enable;
@@ -317,11 +310,11 @@
               assert devCfg.shell.programs.direnv.enable;
               assert devCfg.editor.backends.helix.enable;
               assert devCfg.editor.backends.helix.default;
-              assert shipVariants || !carvedDev.config.shell.profiles.interactive.enable;
-              assert shipVariants || !carvedDev.config.programs.bash.enable;
-              assert shipVariants || !carvedDev.config.programs.bat.enable;
-              assert shipVariants || carvedDev.config.shell.profiles.dev.enable;
-              assert shipVariants || carvedDev.config.editor.backends.helix.enable;
+              assert !carvedDev.config.shell.profiles.interactive.enable;
+              assert !carvedDev.config.programs.bash.enable;
+              assert !carvedDev.config.programs.bat.enable;
+              assert carvedDev.config.shell.profiles.dev.enable;
+              assert carvedDev.config.editor.backends.helix.enable;
                 dev.activationPackage;
             };
         })
