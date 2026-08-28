@@ -6,6 +6,12 @@
 }: let
   projection = import ./configuration-projections.nix;
 
+  userModules = declaration:
+    lib.mapAttrsToList (username: user: {
+      home-manager.users.${username}.imports = user.modules;
+    })
+    declaration.users;
+
   nixos = projection {
     inherit lib;
     construct = _: declaration:
@@ -17,6 +23,7 @@
           ++ lib.optional (declaration.cross && declaration.buildSystem != declaration.system) {
             nixpkgs.buildPlatform = declaration.buildSystem;
           }
+          ++ userModules declaration
           ++ declaration.modules;
       };
     embed = root: variants:
@@ -44,6 +51,7 @@
           ++ lib.optional (declaration.cross && declaration.buildSystem != declaration.system) {
             nixpkgs.buildPlatform = declaration.buildSystem;
           }
+          ++ userModules declaration
           ++ declaration.modules;
       };
   };
@@ -179,6 +187,17 @@ in {
             default = [];
             description = "Modules passed to the selected system evaluator.";
           };
+          users = lib.mkOption {
+            type = lib.types.attrsOf (lib.types.submodule {
+              options.modules = lib.mkOption {
+                type = lib.types.listOf lib.types.deferredModule;
+                default = [];
+                description = "Home Manager modules for this integrated system user.";
+              };
+            });
+            default = {};
+            description = "Named Home Manager users projected into the system evaluator.";
+          };
           publishVariants = lib.mkOption {
             type = lib.types.nullOr lib.types.bool;
             default = null;
@@ -284,6 +303,9 @@ in {
           config.flake.dendritic.modules.darwin.linux-builder
           config.flake.dendritic.modules.darwin.tailscale
           (_: {networking.hostName = "nixbook-pro-composed";})
+        ];
+        users.krad246.modules = [
+          {home.sessionVariables.DENDRITIC_SYSTEM_USER = "true";}
         ];
       };
     };

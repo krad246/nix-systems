@@ -484,6 +484,10 @@ An artifact declaration names that variant and an attribute path; `perSystem`
 materializes it for the matching build coordinate. Thus
 `generic-headless-interactive-vm-nogui-x86_64-linux` is a package projection of
 `config.system.build.images.vm-nogui`, not a second system declaration.
+System declarations also accept named `users.<name>.modules` deltas. The
+selected evaluator injects these into its integrated Home Manager namespace;
+the composed Darwin proof host contributes a user delta without re-importing
+the workstation's already-owned shared HM profile module.
 
 Current supported flake-parts enumeration deliberately filters out
 `x86_64-darwin`: Nixpkgs unstable no longer supports it after 26.05. Keep the
