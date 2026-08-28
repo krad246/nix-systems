@@ -1,6 +1,6 @@
 {
   construct,
-  embed ? null,
+  includeSpecialisation ? null,
   lib,
 }: let
   # A leaf policy is the first defined value in leaf -> root -> global order.
@@ -21,8 +21,8 @@
               _: delta:
                 delta
                 // {
-                  publish = inheritPolicy delta.publish declaration.publishVariants policy.publish;
-                  embed = inheritPolicy delta.embed declaration.embedVariants policy.embed;
+                  publish = inheritPolicy delta.publish declaration.publish policy.publish;
+                  includeSpecialisation = inheritPolicy delta.includeSpecialisation declaration.includeSpecialisation policy.includeSpecialisation;
                 }
             )
             declaration.variants;
@@ -37,13 +37,13 @@
     };
 
   configurationFrom = root: declaration: let
-    embedded = lib.filterAttrs (_: delta: delta.embed) declaration.variants;
+    embedded = lib.filterAttrs (_: delta: delta.includeSpecialisation) declaration.variants;
   in
     if embedded == {}
     then root
-    else if embed == null
+    else if includeSpecialisation == null
     then throw "this configuration backend does not support embedded variants"
-    else embed root embedded;
+    else includeSpecialisation root embedded;
 
   configuration = context: declaration:
     configurationFrom (bare context declaration) declaration;

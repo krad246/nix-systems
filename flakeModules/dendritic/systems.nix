@@ -26,7 +26,7 @@
           ++ userModules declaration
           ++ declaration.modules;
       };
-    embed = root: variants:
+    includeSpecialisation = root: variants:
       root.extendModules {
         modules = [
           {
@@ -70,15 +70,15 @@
             publish =
               if variant.publish != null
               then variant.publish
-              else if declaration.publishVariants != null
-              then declaration.publishVariants
+              else if declaration.publish != null
+              then declaration.publish
               else policy.publish;
-            embed =
-              if variant.embed != null
-              then variant.embed
-              else if declaration.embedVariants != null
-              then declaration.embedVariants
-              else policy.embed;
+            includeSpecialisation =
+              if variant.includeSpecialisation != null
+              then variant.includeSpecialisation
+              else if declaration.includeSpecialisation != null
+              then declaration.includeSpecialisation
+              else policy.includeSpecialisation;
           })
         declaration.variants;
       })
@@ -164,7 +164,7 @@ in {
 
     variants = {
       publish = lib.mkEnableOption "independently buildable system variant outputs by default";
-      embed = lib.mkEnableOption "system variants in their parent specialisation tables by default";
+      includeSpecialisation = lib.mkEnableOption "system variants in their parent specialisation tables by default";
     };
 
     cross = lib.mkEnableOption "cross-system system projections by default";
@@ -202,15 +202,15 @@ in {
             default = {};
             description = "Named Home Manager users projected into the system evaluator.";
           };
-          publishVariants = lib.mkOption {
+          publish = lib.mkOption {
             type = lib.types.nullOr lib.types.bool;
             default = null;
             description = "Default publication policy for this declaration's variants.";
           };
-          embedVariants = lib.mkOption {
+          includeSpecialisation = lib.mkOption {
             type = lib.types.nullOr lib.types.bool;
             default = null;
-            description = "Default embedding policy for this declaration's variants.";
+            description = "Default inclusion policy for this declaration's variants.";
           };
           variants = lib.mkOption {
             type = lib.types.attrsOf (lib.types.submodule {
@@ -223,7 +223,7 @@ in {
                   type = lib.types.nullOr lib.types.bool;
                   default = null;
                 };
-                embed = lib.mkOption {
+                includeSpecialisation = lib.mkOption {
                   type = lib.types.nullOr lib.types.bool;
                   default = null;
                 };
@@ -255,7 +255,7 @@ in {
     declarations =
       resolve {
         publish = config.dendritic.systems.variants.publish;
-        embed = config.dendritic.systems.variants.embed;
+        includeSpecialisation = config.dendritic.systems.variants.includeSpecialisation;
         cross = config.dendritic.systems.cross;
       }
       config.dendritic.systems.configurations;
@@ -291,7 +291,7 @@ in {
                 };
               })
             ];
-            embed = true;
+            includeSpecialisation = true;
           };
         };
         images.vm-nogui = {

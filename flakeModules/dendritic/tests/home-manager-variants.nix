@@ -9,7 +9,7 @@ let
         pkgs = context;
         inherit (declaration) modules;
       };
-    embed = root: specialisations:
+    includeSpecialisation = root: specialisations:
       root.extendModules {
         modules = [
           {
@@ -23,10 +23,10 @@ let
       };
   };
   declaration = {
-    publishVariants,
-    embedVariants,
+    publish,
+    includeSpecialisation,
   }: {
-    inherit publishVariants embedVariants;
+    inherit publish includeSpecialisation;
     modules = [
       {
         home = {
@@ -39,7 +39,7 @@ let
     variants.dev = {
       modules = [{home.sessionVariables.DENDRITIC_VARIANT = "dev";}];
       publish = null;
-      embed = null;
+      includeSpecialisation = null;
     };
   };
 
@@ -57,7 +57,7 @@ let
         {
           outputs = lib.mkMerge (materialize.definitions pkgs nameFunction (materialize.resolve {
               publish = false;
-              embed = false;
+              includeSpecialisation = false;
             } {
               standalone = root;
             }));
@@ -68,39 +68,39 @@ let
   outputsFor = policy: outputsForDeclaration (declaration policy);
 
   neither = outputsFor {
-    publishVariants = false;
-    embedVariants = false;
+    publish = false;
+    includeSpecialisation = false;
   };
   publishOnly = outputsFor {
-    publishVariants = true;
-    embedVariants = false;
+    publish = true;
+    includeSpecialisation = false;
   };
   embedOnly = outputsFor {
-    publishVariants = false;
-    embedVariants = true;
+    publish = false;
+    includeSpecialisation = true;
   };
   both = outputsFor {
-    publishVariants = true;
-    embedVariants = true;
+    publish = true;
+    includeSpecialisation = true;
   };
   leafEnabled = outputsForDeclaration (lib.recursiveUpdate
     (declaration {
-      publishVariants = false;
-      embedVariants = false;
+      publish = false;
+      includeSpecialisation = false;
     })
     {
       variants.dev.publish = true;
-      variants.dev.embed = true;
+      variants.dev.includeSpecialisation = true;
     });
 
   inherited =
     materialize.resolve {
       publish = true;
-      embed = false;
+      includeSpecialisation = false;
     } {
       standalone = declaration {
-        publishVariants = null;
-        embedVariants = null;
+        publish = null;
+        includeSpecialisation = null;
       };
     };
 
@@ -117,15 +117,15 @@ let
         {
           outputs = lib.mkMerge (materialize.definitions pkgs nameFunction (materialize.resolve {
               publish = true;
-              embed = false;
+              includeSpecialisation = false;
             } {
               standalone = declaration {
-                publishVariants = null;
-                embedVariants = null;
+                publish = null;
+                includeSpecialisation = null;
               };
               standalone-dev = declaration {
-                publishVariants = false;
-                embedVariants = false;
+                publish = false;
+                includeSpecialisation = false;
               };
             }));
         }
@@ -136,7 +136,7 @@ let
     outputs.standalone.config.specialisation.dev.configuration;
 
   publicationTests = let
-    # Publication-only cases intentionally use the projection core without an embed capability.
+    # Publication-only cases intentionally use the projection core without an inclusion capability.
     publicationOnly = import ../configuration-projections.nix {
       inherit lib;
       construct = context: declaration:
@@ -148,21 +148,21 @@ let
     unsupportedDeclaration =
       (publicationOnly.resolve {
           publish = false;
-          embed = false;
+          includeSpecialisation = false;
         } {
           standalone = declaration {
-            publishVariants = false;
-            embedVariants = true;
+            publish = false;
+            includeSpecialisation = true;
           };
         }).standalone;
     supportedDeclaration =
       (publicationOnly.resolve {
           publish = true;
-          embed = false;
+          includeSpecialisation = false;
         } {
           standalone = declaration {
-            publishVariants = null;
-            embedVariants = null;
+            publish = null;
+            includeSpecialisation = null;
           };
         }).standalone;
   in {
@@ -189,7 +189,7 @@ in
   assert leafEnabled.standalone-dev ? extendModules;
   assert (embeddedDev leafEnabled).home.sessionVariables.DENDRITIC_VARIANT == "dev";
   assert inherited.standalone.variants.dev.publish;
-  assert !inherited.standalone.variants.dev.embed;
+  assert !inherited.standalone.variants.dev.includeSpecialisation;
   assert !publicationTests.unsupportedEmbedding.success;
   assert publicationTests.supportedPublication.config.home.sessionVariables.DENDRITIC_VARIANT == "dev";
   assert !collision.success; true
