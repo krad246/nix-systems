@@ -1,6 +1,5 @@
 {
   config,
-  composeProjection,
   inputs,
   lib,
   ...
@@ -13,7 +12,7 @@
     })
     declaration.users;
 
-  nixos = composeProjection {
+  nixos = (import ./compositions.nix {inherit lib;}).composeProjection {
     construct = _: declaration:
       inputs.nixpkgs.lib.nixosSystem {
         modules =
@@ -40,7 +39,7 @@
       };
   };
 
-  darwin = composeProjection {
+  darwin = (import ./compositions.nix {inherit lib;}).composeProjection {
     construct = _: declaration:
       inputs.darwin.lib.darwinSystem {
         modules =
@@ -147,7 +146,7 @@
   in
     lib.mkMerge candidates;
 in {
-  imports = [inputs.darwin.flakeModules.default ./compositions.nix];
+  imports = [inputs.darwin.flakeModules.default];
 
   options.dendritic.systems = {
     outputs = {
