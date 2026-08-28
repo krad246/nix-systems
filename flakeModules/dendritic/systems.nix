@@ -14,6 +14,9 @@
           [
             {nixpkgs.hostPlatform = declaration.system;}
           ]
+          ++ lib.optional (declaration.cross && declaration.buildSystem != declaration.system) {
+            nixpkgs.buildPlatform = declaration.buildSystem;
+          }
           ++ declaration.modules;
       };
     embed = root: variants:
@@ -38,14 +41,51 @@
           [
             {nixpkgs.hostPlatform = declaration.system;}
           ]
+          ++ lib.optional (declaration.cross && declaration.buildSystem != declaration.system) {
+            nixpkgs.buildPlatform = declaration.buildSystem;
+          }
           ++ declaration.modules;
       };
   };
 
-  inherit (nixos) resolve;
+  resolve = policy: declarations:
+    lib.mapAttrs (_: declaration:
+      declaration
+      // {
+        cross =
+          if declaration.cross != null
+          then declaration.cross
+          else policy.cross;
+        variants = lib.mapAttrs (_: variant:
+          variant
+          // {
+            publish =
+              if variant.publish != null
+              then variant.publish
+              else if declaration.publishVariants != null
+              then declaration.publishVariants
+              else policy.publish;
+            embed =
+              if variant.embed != null
+              then variant.embed
+              else if declaration.embedVariants != null
+              then declaration.embedVariants
+              else policy.embed;
+          })
+        declaration.variants;
+      })
+    declarations;
 
   selected = system: declarations:
-    lib.mapAttrs (_: declaration: declaration // {inherit system;})
+    lib.mapAttrs (_: declaration: let
+      buildSystem =
+        if declaration.buildSystem == null
+        then system
+        else declaration.buildSystem;
+    in
+      if buildSystem != system && !declaration.cross
+      then throw "dendritic.systems: ${system} requires cross.enable for build system ${buildSystem}"
+      else declaration // {inherit system buildSystem;})
     (lib.filterAttrs (_: declaration: builtins.elem system declaration.systems) declarations);
 
   is = predicate: system:
@@ -68,7 +108,6 @@ in {
     nameFunction = lib.mkOption {
       type = lib.types.functionTo (lib.types.functionTo lib.types.str);
       default = configuration: variant: "${configuration}-${variant}";
-      defaultText = lib.literalExpression ''configuration: variant: "''${configuration}-''${variant}"'';
       description = "Function generating output names from a system declaration and variant.";
     };
 
@@ -77,12 +116,24 @@ in {
       embed = lib.mkEnableOption "system variants in their parent specialisation tables by default";
     };
 
+    cross = lib.mkEnableOption "cross-system system projections by default";
+
     configurations = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           systems = lib.mkOption {
             type = lib.types.listOf lib.types.str;
             description = "Target platform systems; each selects an internal evaluator projection.";
+          };
+          buildSystem = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "Build platform; null means the selected target system.";
+          };
+          cross = lib.mkOption {
+            type = lib.types.nullOr lib.types.bool;
+            default = null;
+            description = "Whether differing build and target systems are permitted.";
           };
           modules = lib.mkOption {
             type = lib.types.listOf lib.types.deferredModule;
@@ -126,7 +177,13 @@ in {
   };
 
   config = let
-    declarations = resolve config.dendritic.systems.variants config.dendritic.systems.configurations;
+    declarations =
+      resolve {
+        publish = config.dendritic.systems.variants.publish;
+        embed = config.dendritic.systems.variants.embed;
+        cross = config.dendritic.systems.cross;
+      }
+      config.dendritic.systems.configurations;
     targetSystems = lib.unique (lib.concatMap (declaration: declaration.systems) (builtins.attrValues declarations));
     linuxSystems = lib.filter (system: is lib.systems.inspect.predicates.isLinux system) targetSystems;
     darwinSystems = lib.filter (system: is lib.systems.inspect.predicates.isDarwin system) targetSystems;
