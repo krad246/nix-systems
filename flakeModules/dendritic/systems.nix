@@ -5,6 +5,7 @@
   ...
 }: let
   projection = import ./configuration-projections.nix;
+  platformSystem = platform: platform.system or platform;
 
   userModules = declaration:
     lib.mapAttrsToList (username: user: {
@@ -18,10 +19,10 @@
       inputs.nixpkgs.lib.nixosSystem {
         modules =
           [
-            {nixpkgs.hostPlatform = declaration.system;}
+            {nixpkgs.hostPlatform = declaration.hostPlatform.system;}
           ]
-          ++ lib.optional (declaration.cross && declaration.buildSystem != declaration.system) {
-            nixpkgs.buildPlatform = declaration.buildSystem;
+          ++ lib.optional (declaration.cross && declaration.buildPlatform.system != declaration.hostPlatform.system) {
+            nixpkgs.buildPlatform = declaration.buildPlatform.system;
           }
           ++ userModules declaration
           ++ declaration.modules;
@@ -46,10 +47,10 @@
       inputs.darwin.lib.darwinSystem {
         modules =
           [
-            {nixpkgs.hostPlatform = declaration.system;}
+            {nixpkgs.hostPlatform = declaration.hostPlatform.system;}
           ]
-          ++ lib.optional (declaration.cross && declaration.buildSystem != declaration.system) {
-            nixpkgs.buildPlatform = declaration.buildSystem;
+          ++ lib.optional (declaration.cross && declaration.buildPlatform.system != declaration.hostPlatform.system) {
+            nixpkgs.buildPlatform = declaration.buildPlatform.system;
           }
           ++ userModules declaration
           ++ declaration.modules;
@@ -61,9 +62,7 @@
       declaration
       // {
         cross =
-          if declaration.cross != null
-          then declaration.cross
-          else policy.cross;
+          declaration.cross || policy.cross;
         variants = lib.mapAttrs (_: variant:
           variant
           // {
@@ -87,14 +86,19 @@
   selected = system: declarations:
     lib.mapAttrs (_: declaration: let
       buildSystem =
-        if declaration.buildSystem == null
-        then system
-        else declaration.buildSystem;
+        if declaration.buildPlatform == null
+        then {inherit system;}
+        else declaration.buildPlatform;
     in
-      if buildSystem != system && !declaration.cross
-      then throw "dendritic.systems: ${system} requires cross.enable for build system ${buildSystem}"
-      else declaration // {inherit system buildSystem;})
-    (lib.filterAttrs (_: declaration: builtins.elem system declaration.systems) declarations);
+      if buildSystem.system != system && !declaration.cross
+      then throw "dendritic.systems: ${system} requires cross.enable for build system ${buildSystem.system}"
+      else
+        declaration
+        // {
+          hostPlatform = {inherit system;};
+          buildPlatform = buildSystem;
+        })
+    (lib.filterAttrs (_: declaration: builtins.elem system (map platformSystem declaration.hostPlatforms)) declarations);
 
   is = predicate: system:
     predicate (lib.systems.parse.mkSystemFromString system);
@@ -115,12 +119,12 @@
       declaration = declarations.${rootName};
       targetSystems = lib.filter (target: let
         configuredBuild =
-          if declaration.buildSystem == null
+          if declaration.buildPlatform == null
           then target
-          else declaration.buildSystem;
+          else declaration.buildPlatform.system;
       in
         configuredBuild == buildSystem)
-      declaration.systems;
+      (map platformSystem declaration.hostPlatforms);
     in
       lib.concatMap (target: let
         selectedDeclaration = (selected target declarations).${rootName};
@@ -172,19 +176,19 @@ in {
     configurations = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
-          systems = lib.mkOption {
-            type = lib.types.nonEmptyListOf lib.types.str;
-            description = "Target platform systems; each selects an internal evaluator projection.";
+          hostPlatforms = lib.mkOption {
+            type = lib.types.nonEmptyListOf (lib.types.submodule {options.system = lib.mkOption {type = lib.types.str;};});
+            description = "Target host platforms; each selects an internal evaluator projection.";
           };
-          buildSystem = lib.mkOption {
-            type = lib.types.nullOr lib.types.str;
+          buildPlatform = lib.mkOption {
+            type = lib.types.nullOr (lib.types.submodule {options.system = lib.mkOption {type = lib.types.str;};});
             default = null;
-            description = "Build platform; null means the selected target system.";
+            description = "Build platform; null means the selected host platform.";
           };
           cross = lib.mkOption {
-            type = lib.types.nullOr lib.types.bool;
-            default = null;
-            description = "Whether differing build and target systems are permitted.";
+            type = lib.types.bool;
+            default = false;
+            description = "Whether differing build and host platforms are permitted.";
           };
           modules = lib.mkOption {
             type = lib.types.listOf lib.types.deferredModule;
@@ -262,7 +266,7 @@ in {
     # Union target systems as attribute keys so duplicate declarations merge naturally.
     targetSystems = lib.pipe declarations [
       builtins.attrValues
-      (lib.foldl' (systems: declaration: systems // lib.genAttrs declaration.systems (_: true)) {})
+      (lib.foldl' (systems: declaration: systems // lib.genAttrs (map platformSystem declaration.hostPlatforms) (_: true)) {})
       builtins.attrNames
     ];
     linuxSystems = lib.filter (system: is lib.systems.inspect.predicates.isLinux system) targetSystems;
@@ -272,7 +276,7 @@ in {
       variants.publish = lib.mkDefault true;
 
       configurations.generic-headless-interactive = {
-        systems = ["x86_64-linux"];
+        hostPlatforms = [{system = "x86_64-linux";}];
         modules = [
           config.flake.dendritic.modules.nixos.headless
           config.flake.dendritic.modules.nixos.interactive
@@ -307,7 +311,7 @@ in {
       };
 
       configurations.nixbook-pro-composed = {
-        systems = ["aarch64-darwin"];
+        hostPlatforms = [{system = "aarch64-darwin";}];
         modules = [
           config.flake.dendritic.modules.darwin.workstation
           config.flake.dendritic.modules.darwin.linux-builder
