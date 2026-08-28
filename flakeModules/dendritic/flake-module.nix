@@ -17,7 +17,7 @@
 
     variants = {
       publish = lib.mkEnableOption "independently buildable Home Manager variant outputs by default";
-      embed = lib.mkEnableOption "Home Manager variants in their parent activation generations by default";
+      includeSpecialisation = lib.mkEnableOption "Home Manager variants in their parent activation generations by default";
     };
 
     configurations = lib.mkOption {
@@ -44,10 +44,10 @@
                   description = "Whether to publish this variant independently; null inherits configuration policy.";
                 };
 
-                embed = lib.mkOption {
+                includeSpecialisation = lib.mkOption {
                   type = lib.types.nullOr lib.types.bool;
                   default = null;
-                  description = "Whether to embed this variant in its parent generation; null inherits configuration policy.";
+                  description = "Whether to include this variant in its parent generation; null inherits configuration policy.";
                 };
               };
             });
@@ -55,16 +55,16 @@
             description = "Named module deltas derived from this configuration.";
           };
 
-          publishVariants = lib.mkOption {
+          publish = lib.mkOption {
             type = lib.types.nullOr lib.types.bool;
             default = null;
             description = "Default publication policy for this configuration's variants; null inherits global policy.";
           };
 
-          embedVariants = lib.mkOption {
+          includeSpecialisation = lib.mkOption {
             type = lib.types.nullOr lib.types.bool;
             default = null;
-            description = "Default embedding policy for this configuration's variants; null inherits global policy.";
+            description = "Default inclusion policy for this configuration's variants; null inherits global policy.";
           };
         };
       });
@@ -81,7 +81,7 @@
           inherit pkgs;
           inherit (declaration) modules;
         };
-      embed = root: specialisations:
+      includeSpecialisation = root: specialisations:
         root.extendModules {
           modules = [
             {
@@ -151,7 +151,7 @@
       ...
     }: let
       declaration = declarations.standalone;
-      publishVariants = lib.any (variant: variant.publish) (builtins.attrValues declaration.variants);
+      publishedVariants = lib.any (variant: variant.publish) (builtins.attrValues declaration.variants);
       standalone = homeManagerConfigurations.configuration pkgs declaration;
       dev = homeManagerConfigurations.variant pkgs declaration declaration.variants.dev;
       cfg = standalone.config;
@@ -234,7 +234,7 @@
                 assert !home.manual.html.enable;
                   home.home.activationPackage;
             }
-            // lib.optionalAttrs publishVariants {
+            // lib.optionalAttrs publishedVariants {
               home-manager-standalone-dev = dev.activationPackage;
 
               dendritic-hm-dev = assert devCfg.home.username == cfg.home.username;
@@ -282,7 +282,7 @@
                 assert !cfg.services.xserver.enable;
                 assert cfg.home-manager.users.${cfg.owner.username}.shell.profiles.interactive.enable; image;
             }
-            // lib.optionalAttrs publishVariants {
+            // lib.optionalAttrs publishedVariants {
               home-manager-standalone-dev = dev.activationPackage;
 
               dendritic-hm-dev = assert devCfg.home.username == cfg.home.username;
