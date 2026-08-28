@@ -402,6 +402,19 @@ in {
     };
 
     declarations = homeManagerConfigurations.resolve config.dendritic.defaults.users homeManagerDeclarations;
+
+    nixbookProUserModules = with config.flake.dendritic.modules.homeManager; [
+      desktop
+      dev
+      interactive
+      secrets
+      {
+        browser.backends.zen = {
+          enable = lib.mkDefault true;
+          default = lib.mkDefault true;
+        };
+      }
+    ];
   in {
     dendritic.defaults = {
       users.publish = lib.mkDefault true;
@@ -417,6 +430,14 @@ in {
       }
       {
         standalone.users.variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
+      }
+      {
+        nixbook-pro.users = {
+          enable = true;
+          modules =
+            [config.flake.dendritic.modules.homeManager.standalone]
+            ++ nixbookProUserModules;
+        };
       }
       {
         generic-headless-interactive.hosts = {
@@ -457,14 +478,15 @@ in {
           enable = true;
           hostPlatforms = [{system = "aarch64-darwin";}];
           modules = [
-            config.flake.dendritic.modules.darwin.workstation
+            config.flake.dendritic.modules.darwin.applications
+            config.flake.dendritic.modules.darwin.base
+            config.flake.dendritic.modules.darwin.app-stores
+            config.flake.dendritic.modules.darwin.browser
             config.flake.dendritic.modules.darwin.linux-builder
             config.flake.dendritic.modules.darwin.tailscale
             (_: {networking.hostName = "nixbook-pro-composed";})
           ];
-          users.krad246.modules = [
-            {home.sessionVariables.DENDRITIC_SYSTEM_USER = "true";}
-          ];
+          users.krad246.modules = nixbookProUserModules;
         };
       }
     ];
@@ -522,6 +544,7 @@ in {
       declaration = declarations.standalone;
       publishedVariants = lib.any (variant: variant.publish) (builtins.attrValues declaration.variants);
       standalone = homeManagerConfigurations.configuration pkgs declaration;
+      nixbookPro = homeManagerConfigurations.configuration pkgs declarations.nixbook-pro;
       dev = homeManagerConfigurations.variant pkgs declaration declaration.variants.dev;
       cfg = standalone.config;
       devCfg = dev.config;
@@ -592,18 +615,50 @@ in {
                 standalone.activationPackage;
 
               dendritic-nixbook-pro-hm = let
-                configuration = inputs.dendritic.darwinConfigurations.nixbook-pro;
-                cfg = configuration.config;
-                home = cfg.home-manager.users.${cfg.owner.username};
+                legacyConfiguration = inputs.dendritic.darwinConfigurations.nixbook-pro;
+                legacyCfg = legacyConfiguration.config;
+                legacy = legacyCfg.home-manager.users.${legacyCfg.owner.username};
+                composedConfiguration = config.flake.darwinConfigurations.nixbook-pro-composed;
+                composedCfg = composedConfiguration.config;
+                composed = composedCfg.home-manager.users.${composedCfg.owner.username};
+                standaloneCfg = nixbookPro.config;
               in
-                assert home.home.username == cfg.owner.username;
-                assert home.home.homeDirectory == "/Users/${cfg.owner.username}";
-                assert home.home.stateVersion == inputs.nixpkgs.lib.trivial.release;
-                assert home.programs.home-manager.enable;
-                assert home.xdg.enable;
-                assert home.manual.json.enable;
-                assert !home.manual.html.enable;
-                  home.home.activationPackage;
+                assert composed.home.username == legacy.home.username;
+                assert standaloneCfg.home.username == legacy.home.username;
+                assert composed.home.homeDirectory == legacy.home.homeDirectory;
+                assert standaloneCfg.home.homeDirectory == legacy.home.homeDirectory;
+                assert composed.home.stateVersion == legacy.home.stateVersion;
+                assert standaloneCfg.home.stateVersion == legacy.home.stateVersion;
+                assert composed.programs.home-manager.enable == legacy.programs.home-manager.enable;
+                assert standaloneCfg.programs.home-manager.enable == legacy.programs.home-manager.enable;
+                assert composed.xdg.enable == legacy.xdg.enable;
+                assert standaloneCfg.xdg.enable == legacy.xdg.enable;
+                assert composed.manual.json.enable == legacy.manual.json.enable;
+                assert standaloneCfg.manual.json.enable == legacy.manual.json.enable;
+                assert composed.manual.html.enable == legacy.manual.html.enable;
+                assert standaloneCfg.manual.html.enable == legacy.manual.html.enable;
+                assert composed.shell.profiles.interactive.enable == legacy.shell.profiles.interactive.enable;
+                assert standaloneCfg.shell.profiles.interactive.enable == legacy.shell.profiles.interactive.enable;
+                assert composed.shell.profiles.dev.enable == legacy.shell.profiles.dev.enable;
+                assert standaloneCfg.shell.profiles.dev.enable == legacy.shell.profiles.dev.enable;
+                assert composed.editor.backends.helix.enable == legacy.editor.backends.helix.enable;
+                assert standaloneCfg.editor.backends.helix.enable == legacy.editor.backends.helix.enable;
+                assert composed.browser.backends.zen.enable == legacy.browser.backends.zen.enable;
+                assert standaloneCfg.browser.backends.zen.enable == legacy.browser.backends.zen.enable;
+                assert map toString composed.home.packages == map toString legacy.home.packages;
+                # Standalone Home Manager owns its CLI package directly;
+                # integrated Home Manager supplies it through the host.
+                assert map (package: package.name) (lib.filter (package: package.name != "home-manager") standaloneCfg.home.packages)
+                == map (package: package.name) legacy.home.packages;
+                assert builtins.attrNames composed.home.file == builtins.attrNames legacy.home.file;
+                assert builtins.attrNames standaloneCfg.home.file == builtins.attrNames legacy.home.file;
+                assert builtins.attrNames composed.xdg.configFile == builtins.attrNames legacy.xdg.configFile;
+                assert builtins.attrNames standaloneCfg.xdg.configFile == builtins.attrNames legacy.xdg.configFile;
+                assert composed.home.sessionVariables == legacy.home.sessionVariables;
+                assert removeAttrs standaloneCfg.home.sessionVariables ["TERMINFO_DIRS"]
+                == removeAttrs legacy.home.sessionVariables ["TERMINFO_DIRS"];
+                assert builtins.attrNames standaloneCfg.home.sessionVariables == builtins.attrNames legacy.home.sessionVariables;
+                  composed.home.activationPackage;
             }
             // lib.optionalAttrs publishedVariants {
               home-manager-standalone-dev = dev.activationPackage;
