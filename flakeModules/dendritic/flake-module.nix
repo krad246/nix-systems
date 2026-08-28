@@ -60,24 +60,24 @@
       modules = lib.mkOption {
         type = lib.types.listOf lib.types.deferredModule;
         default = [];
-        description = "Module delta for this variant projection.";
+        description = "Module delta for this variant.";
       };
       publish = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Independent output policy; null inherits from its projection.";
+        description = "Independent output policy; null inherits from its containing declaration.";
       };
       includeSpecialisation = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Resident specialisation policy; null inherits from its projection.";
+        description = "Resident specialisation policy; null inherits from its containing declaration.";
       };
     };
   };
 
-  standaloneType = lib.types.submodule {
+  usersType = lib.types.submodule {
     options = {
-      enable = lib.mkEnableOption "this standalone Home Manager configuration";
+      enable = lib.mkEnableOption "these Home Manager user configurations";
       modules = lib.mkOption {
         type = lib.types.listOf lib.types.deferredModule;
         default = [];
@@ -91,12 +91,12 @@
       publish = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Publication default for this projection's variants.";
+        description = "Publication default for these user variants.";
       };
       includeSpecialisation = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Embedding default for this projection's variants.";
+        description = "Embedding default for these user variants.";
       };
     };
   };
@@ -154,12 +154,12 @@
       publish = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Publication default for this projection's variants.";
+        description = "Publication default for these host variants.";
       };
       includeSpecialisation = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Embedding default for this projection's variants.";
+        description = "Embedding default for these host variants.";
       };
     };
   };
@@ -173,10 +173,10 @@ in {
     configurations = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
-          standalone = lib.mkOption {
-            type = standaloneType;
+          users = lib.mkOption {
+            type = usersType;
             default = {};
-            description = "Standalone Home Manager configuration for this declaration.";
+            description = "Home Manager user configuration for this declaration.";
           };
           hosts = lib.mkOption {
             type = hostsType;
@@ -206,7 +206,7 @@ in {
     };
 
     defaults = {
-      standalone = {
+      users = {
         publish = lib.mkEnableOption "independently buildable Home Manager variant outputs by default";
         includeSpecialisation = lib.mkEnableOption "Home Manager variants in their parent activation generations by default";
       };
@@ -348,11 +348,11 @@ in {
           root = backend.configuration null selectedDeclaration;
         in
           lib.mapAttrsToList (imageName: image: let
-            projection =
+            imageConfiguration =
               if image.modules == []
               then root
               else root.extendModules {inherit (image) modules;};
-            value = lib.getAttrFromPath ["system" "build" "images" imageName] projection.config;
+            value = lib.getAttrFromPath ["system" "build" "images" imageName] imageConfiguration.config;
           in {${config.dendritic.outputs.imageNameFunction rootName target imageName} = value;})
           declaration.images)
         targetSystems)
@@ -361,8 +361,8 @@ in {
       lib.mkMerge candidates;
 
     homeManagerDeclarations =
-      lib.mapAttrs (_: declaration: removeAttrs declaration.standalone ["enable"])
-      (lib.filterAttrs (_: declaration: declaration.standalone.enable) config.dendritic.configurations);
+      lib.mapAttrs (_: declaration: removeAttrs declaration.users ["enable"])
+      (lib.filterAttrs (_: declaration: declaration.users.enable) config.dendritic.configurations);
 
     hostDeclarations =
       lib.mapAttrs (_: declaration: removeAttrs declaration.hosts ["enable"])
@@ -401,22 +401,22 @@ in {
         };
     };
 
-    declarations = homeManagerConfigurations.resolve config.dendritic.defaults.standalone homeManagerDeclarations;
+    declarations = homeManagerConfigurations.resolve config.dendritic.defaults.users homeManagerDeclarations;
   in {
     dendritic.defaults = {
-      standalone.publish = lib.mkDefault true;
+      users.publish = lib.mkDefault true;
       hosts.publish = lib.mkDefault true;
     };
 
     dendritic.configurations = lib.mkMerge [
       {
-        standalone.standalone = {
+        standalone.users = {
           enable = true;
           modules = [config.flake.dendritic.modules.homeManager.standalone];
         };
       }
       {
-        standalone.standalone.variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
+        standalone.users.variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
       }
       {
         generic-headless-interactive.hosts = {
