@@ -1,5 +1,5 @@
 {lib, ...}: {
-  _module.args.composeProjection = {
+  composeProjection = {
     construct,
     includeSpecialisation ? null,
   }: let
