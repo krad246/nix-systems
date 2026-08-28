@@ -398,19 +398,18 @@ symmetry—`homeManager.headless` currently adds nothing beyond `base`, while it
 distinct `terminfo` behavior is system-owned. Rich workstation/desktop profiles
 remain later tiers.
 
-Variant declaration and materialization policy are separate. One flake-level
-`attrsOf` declaration stores each Home Manager root's ordinary constructor
-arguments and the `attrsOf` module-list deltas for its variants. Two independent
-Dendritic booleans provide global projection defaults:
-`dendritic.homeManager.variants.publish` exposes independently buildable
-flake-level configurations, while `dendritic.homeManager.variants.embed`
-projects variants into each root's native `specialisation` namespace for
-runtime switching. Each root may override both defaults, and each variant may
-independently override publication and specialisation inclusion. Effective
-policy resolves leaf override, then root override, then global default. The four
-root-level combinations—neither, publish only, embed only, and both—and mixed
-leaf selections must work without duplicating declarations. The production
-default is publish on and embed off.
+Variant declaration and materialization policy are separate. The flake-level
+`dendritic.configurations` `attrsOf` registry stores each root once; its typed
+`standalone` and `hosts` contexts carry the relevant constructor arguments and
+`attrsOf` module-list deltas. Their defaults live beneath
+`dendritic.defaults.standalone` and `dendritic.defaults.hosts`, while each
+selected context and each variant may override publication and specialisation inclusion.
+Publishing exposes an independently buildable output; inclusion projects the
+same delta into the root's native `specialisation` namespace for runtime
+switching. Effective policy resolves leaf override, then projection override,
+then global projection default. The four combinations—neither, publish only,
+include only, and both—and mixed leaf selections must work without duplicating
+declarations. The production default is publish on and inclusion off.
 
 The reusable projection core speaks only in `publish` and `embed`; native
 `specialisation` vocabulary belongs to the Home Manager or NixOS backend
@@ -429,7 +428,7 @@ only the selected production projection so the unused runtime vTable remains
 lazy.
 
 Published variant names are generated from their root and local variant names
-through `dendritic.homeManager.variants.nameFunction`, following ezConfigs'
+through `dendritic.outputs.nameFunction`, following ezConfigs'
 established naming-interface vocabulary. Its default is
 `configuration: variant: "${configuration}-${variant}"`, yielding names such
 as `standalone-dev`; native specialization tables continue using the local
@@ -445,14 +444,21 @@ Do not replace the published result with a thin adapter over Home Manager's
 embedded `config`; that loses the normal Home Manager result interface and
 couples publication cost to the resident specialisation table.
 
-Treat the later unified configuration interpreter as a sparse projection
-matrix rooted in one mergeable declaration. Its typed coordinates are root
-intent, build/evaluation platform, target platform, variant delta, projection
-backend, and publication/embedding policy. NixOS, nix-darwin, standalone Home
-Manager, integrated Home Manager, generator images, specialisations, and
-deployment records are projections of that declaration rather than bespoke
-host constructors. Backends remain open registries; enabled coordinates alone
-materialize, so adding an axis must not force the full Cartesian product.
+The unified configuration interpreter is a sparse projection matrix rooted in
+one cleanly assignable, mergeable RAII-like declaration attrset. That single
+public ownership boundary must address every layer rather than exposing
+parallel Home Manager and system declaration registries. Its typed coordinates
+include root intent, standalone and integrated users, build/evaluation
+platform, target platform, variant and specialisation deltas, projection
+backend, images and other outputs, and publication/embedding policy. NixOS,
+nix-darwin, standalone Home Manager, integrated Home Manager, generator images,
+specialisations, and deployment records are projections of the completed
+declaration rather than bespoke host constructors. Backends remain open
+registries; enabled coordinates alone materialize, so a wide declaration space
+does not force the full Cartesian product. Include/embed rules are explicit
+performance controls: they determine whether a lightweight independent output,
+a heavier resident specialisation, both, or neither is materialized at each
+coordinate.
 
 Cross compilation is a relationship between build and target platforms, not a
 free-floating boolean substitute for them. A hierarchical `cross.enable`
@@ -470,10 +476,12 @@ declaration inherits or overrides `cross = true`. The constructor injects the
 build platform only for that permitted relation, preserving target platform as
 the system output coordinate.
 
-The first unified system registry slice is now materialized by
-`dendritic.systems.configurations`: declarations contain only target
-`systems` coordinates, modules, and the same variant `publish`/`embed` deltas
-as HM. A single declaration may list multiple target systems. An internal
+The earlier `dendritic.systems.configurations` slice proved system projection
+mechanics but is no longer the public boundary: it and the parallel Home
+Manager registry are folded into the single `dendritic.configurations`
+declaration attrset described above. A declaration may list multiple target
+systems and assign modules, users, variants, specialisations, images, and
+projection policy at the appropriate nested coordinates. An internal
 platform-inspection interpreter selects NixOS or Darwin construction; that
 backend distinction is deliberately absent from public declaration data. The
 `generic-headless-interactive` NixOS declaration demonstrates both an additive
@@ -488,6 +496,16 @@ System declarations also accept named `users.<name>.modules` deltas. The
 selected evaluator injects these into its integrated Home Manager namespace;
 the composed Darwin proof host contributes a user delta without re-importing
 the workstation's already-owned shared HM profile module.
+
+As a temporary 2026-08-28 CI boundary, legacy Fortress generator packages and
+VM apps, legacy ezConfigs Windex/Fortress roots, and the new non-deployable
+generic NixOS roots are omitted from ordinary flake output discovery. They
+forced known legacy IFD/assertion failures or boot assertions unrelated to the
+unified interpreter. The directly materialized generic `vm-nogui` image package
+and isolated system-projection test remain active. Restore NixOS configuration
+publication only after `hosts` declarations distinguish deployable roots from
+image-only composition substrates; restore Windex and Fortress through that
+interface rather than re-enabling their legacy projections.
 
 Current supported flake-parts enumeration deliberately filters out
 `x86_64-darwin`: Nixpkgs unstable no longer supports it after 26.05. Keep the

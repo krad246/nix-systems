@@ -2,8 +2,7 @@ let
   flake = builtins.getFlake (toString ../../..);
   inherit (flake.inputs.nixpkgs) lib;
   pkgs = flake.inputs.nixpkgs.legacyPackages.${builtins.currentSystem};
-  materialize = import ../configuration-projections.nix {
-    inherit lib;
+  materialize = makeMaterialize {
     construct = context: declaration:
       flake.inputs.home-manager.lib.homeManagerConfiguration {
         pkgs = context;
@@ -21,6 +20,51 @@ let
           }
         ];
       };
+  };
+  makeMaterialize = {
+    construct,
+    includeSpecialisation ? null,
+  }: let
+    inheritPolicy = local: parent: global:
+      if local != null
+      then local
+      else if parent != null
+      then parent
+      else global;
+    resolve = policy:
+      lib.mapAttrs (_: root:
+        root
+        // {
+          variants = lib.mapAttrs (_: variant:
+            variant
+            // {
+              publish = inheritPolicy variant.publish root.publish policy.publish;
+              includeSpecialisation = inheritPolicy variant.includeSpecialisation root.includeSpecialisation policy.includeSpecialisation;
+            })
+          root.variants;
+        });
+    bare = context: root: construct context root;
+    configuration = context: root: let
+      evaluated = bare context root;
+      embedded = lib.filterAttrs (_: variant: variant.includeSpecialisation) root.variants;
+    in
+      if embedded == {}
+      then evaluated
+      else if includeSpecialisation == null
+      then throw "this configuration backend does not support embedded variants"
+      else includeSpecialisation evaluated embedded;
+    variant = context: root: delta:
+      (bare context root).extendModules {inherit (delta) modules;};
+  in {
+    inherit configuration resolve variant;
+    definitions = context: nameFunction: roots:
+      lib.concatLists (lib.mapAttrsToList (rootName: root:
+        [{${rootName} = configuration context root;}]
+        ++ lib.mapAttrsToList (variantName: delta: {
+          ${nameFunction rootName variantName} = variant context root delta;
+        })
+        (lib.filterAttrs (_: delta: delta.publish) root.variants))
+      roots);
   };
   declaration = {
     publish,
@@ -136,13 +180,11 @@ let
     outputs.standalone.config.specialisation.dev.configuration;
 
   publicationTests = let
-    # Publication-only cases intentionally use the projection core without an inclusion capability.
-    publicationOnly = import ../configuration-projections.nix {
-      inherit lib;
-      construct = context: declaration:
+    publicationOnly = makeMaterialize {
+      construct = context: root:
         flake.inputs.home-manager.lib.homeManagerConfiguration {
           pkgs = context;
-          inherit (declaration) modules;
+          inherit (root) modules;
         };
     };
     unsupportedDeclaration =
