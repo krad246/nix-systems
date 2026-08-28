@@ -22,15 +22,6 @@ let
         ];
       };
   };
-  publicationOnly = import ../configuration-projections.nix {
-    inherit lib;
-    construct = context: declaration:
-      flake.inputs.home-manager.lib.homeManagerConfiguration {
-        pkgs = context;
-        inherit (declaration) modules;
-      };
-  };
-
   declaration = {
     publishVariants,
     embedVariants,
@@ -144,31 +135,40 @@ let
   embeddedDev = outputs:
     outputs.standalone.config.specialisation.dev.configuration;
 
-  unsupportedDeclaration =
-    (publicationOnly.resolve {
-        publish = false;
-        embed = false;
-      } {
-        standalone = declaration {
-          publishVariants = false;
-          embedVariants = true;
+  publicationTests = let
+    # Publication-only cases intentionally use the projection core without an embed capability.
+    publicationOnly = import ../configuration-projections.nix {
+      inherit lib;
+      construct = context: declaration:
+        flake.inputs.home-manager.lib.homeManagerConfiguration {
+          pkgs = context;
+          inherit (declaration) modules;
         };
-      }).standalone;
-
-  unsupportedEmbedding = builtins.tryEval (publicationOnly.configuration pkgs unsupportedDeclaration).activationPackage.drvPath;
-
-  supportedDeclaration =
-    (publicationOnly.resolve {
-        publish = true;
-        embed = false;
-      } {
-        standalone = declaration {
-          publishVariants = null;
-          embedVariants = null;
-        };
-      }).standalone;
-
-  supportedPublication = publicationOnly.variant pkgs supportedDeclaration supportedDeclaration.variants.dev;
+    };
+    unsupportedDeclaration =
+      (publicationOnly.resolve {
+          publish = false;
+          embed = false;
+        } {
+          standalone = declaration {
+            publishVariants = false;
+            embedVariants = true;
+          };
+        }).standalone;
+    supportedDeclaration =
+      (publicationOnly.resolve {
+          publish = true;
+          embed = false;
+        } {
+          standalone = declaration {
+            publishVariants = null;
+            embedVariants = null;
+          };
+        }).standalone;
+  in {
+    unsupportedEmbedding = builtins.tryEval (publicationOnly.configuration pkgs unsupportedDeclaration).activationPackage.drvPath;
+    supportedPublication = publicationOnly.variant pkgs supportedDeclaration supportedDeclaration.variants.dev;
+  };
 in
   assert builtins.attrNames neither == ["standalone"];
   assert neither.standalone.config.specialisation == {};
@@ -190,6 +190,6 @@ in
   assert (embeddedDev leafEnabled).home.sessionVariables.DENDRITIC_VARIANT == "dev";
   assert inherited.standalone.variants.dev.publish;
   assert !inherited.standalone.variants.dev.embed;
-  assert !unsupportedEmbedding.success;
-  assert supportedPublication.config.home.sessionVariables.DENDRITIC_VARIANT == "dev";
+  assert !publicationTests.unsupportedEmbedding.success;
+  assert publicationTests.supportedPublication.config.home.sessionVariables.DENDRITIC_VARIANT == "dev";
   assert !collision.success; true
