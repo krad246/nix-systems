@@ -20,14 +20,10 @@
       inherit inputs self;
     };
 
-    nixos = {
-      configurationsDirectory = configRoot + "/nixos";
-      modulesDirectory = modulesRoot + "/nixos";
-      hosts = {
-        windex.userHomeModules = ["keerad" "krad246"];
-        fortress.userHomeModules = ["krad246"];
-      };
-    };
+    # FIXME(dendritic-hosts): Legacy Windex and Fortress roots are temporarily
+    # omitted because their incomplete boot and legacy IFD paths fail CI.
+    # Restore Windex through dendritic.configurations.hosts; Fortress follows
+    # when its image and boot specialisation declarations migrate.
 
     darwin = {
       configurationsDirectory = configRoot + "/darwin";
