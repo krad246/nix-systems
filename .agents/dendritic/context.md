@@ -463,6 +463,13 @@ platforms coincide; cross means they differ. Keep target `pkgs` distinct from
 host-side generator/runner `pkgs`, while deriving ordinary package universes
 from the same declared Nixpkgs source graph.
 
+The unified system declarations now expose `buildSystem = null | system` and a
+hierarchical `cross` gate. Null build coordinates mean native construction for
+each listed target; a differing build/target pair is rejected unless the
+declaration inherits or overrides `cross = true`. The constructor injects the
+build platform only for that permitted relation, preserving target platform as
+the system output coordinate.
+
 The first unified system registry slice is now materialized by
 `dendritic.systems.configurations`: declarations contain only target
 `systems` coordinates, modules, and the same variant `publish`/`embed` deltas
