@@ -3,8 +3,8 @@
     config,
     pkgs,
     ...
-  }: let
-    verifyDendriticContext = pkgs.writeShellApplication {
+  }: {
+    packages.verify-dendritic-context = pkgs.writeShellApplication {
       name = "verify-dendritic-context";
       runtimeInputs = [
         pkgs.coreutils
@@ -21,8 +21,6 @@
           verify
       '';
     };
-  in {
-    packages.verify-dendritic-context = verifyDendriticContext;
 
     treefmt = {
       inherit (config.flake-root) projectRootFile;
@@ -51,7 +49,7 @@
           verify-dendritic-context = {
             enable = true;
             description = "Verify the agent context bundle and generated proxy";
-            entry = lib.meta.getExe verifyDendriticContext;
+            entry = lib.meta.getExe config.packages.verify-dendritic-context;
             files = "^(AGENTS\\.md|\\.agents/dendritic/)";
             pass_filenames = false;
             stages = ["pre-commit"];
