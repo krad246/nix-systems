@@ -403,7 +403,113 @@ in {
 
     declarations = homeManagerConfigurations.resolve config.dendritic.defaults.users homeManagerDeclarations;
 
-    nixbookProUserModules = with config.flake.dendritic.modules.homeManager; [
+    localHomeManagerModules = let
+      substrate = config.flake.dendritic.modules.homeManager;
+      owner = {
+        email = "krad246@gmail.com";
+        name = "Keerthi Radhakrishnan";
+        username = "krad246";
+      };
+    in {
+      identity.options.identity.person = {
+        email = lib.mkOption {
+          type = lib.types.str;
+          default = owner.email;
+          description = "Primary email address for this identity.";
+        };
+        name = lib.mkOption {
+          type = lib.types.str;
+          default = owner.name;
+          description = "Full name for this identity.";
+        };
+        username = lib.mkOption {
+          type = lib.types.str;
+          default = owner.username;
+          description = "Username for this identity.";
+        };
+      };
+
+      base = {pkgs, ...}: {
+        imports = [
+          localHomeManagerModules.identity
+          substrate.input-registry
+          substrate.shell
+        ];
+
+        config = lib.mkMerge [
+          {
+            home = {
+              preferXdgDirectories = true;
+              stateVersion = inputs.dendritic.lib.trivial.release;
+            };
+            manual = {
+              html.enable = false;
+              json.enable = true;
+            };
+            news.display = "silent";
+            xdg.enable = true;
+          }
+          (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+            targets.genericLinux = {
+              enable = true;
+              gpu.enable = lib.mkDefault false;
+            };
+            systemd.user.startServices = "sd-switch";
+          })
+        ];
+      };
+
+      homeManagerSupport = {
+        home.stateVersion = inputs.dendritic.lib.trivial.release;
+        programs.home-manager.enable = true;
+      };
+
+      standalone = {
+        config,
+        pkgs,
+        ...
+      }: {
+        imports = [
+          localHomeManagerModules.base
+          localHomeManagerModules.homeManagerSupport
+        ];
+
+        home = {
+          username = lib.mkDefault config.identity.person.username;
+          homeDirectory = lib.mkDefault (
+            if pkgs.stdenv.hostPlatform.isDarwin
+            then "/Users/${config.identity.person.username}"
+            else "/home/${config.identity.person.username}"
+          );
+        };
+
+        nix.package = lib.mkDefault pkgs.nix;
+      };
+
+      desktop = {
+        imports = [
+          substrate.browser
+          substrate.terminal
+        ];
+      };
+
+      dev = {
+        imports = [substrate.editor];
+
+        shell.profiles.dev.enable = true;
+        picker.backends.fzf.integrations.helix.enable = lib.mkDefault true;
+      };
+
+      interactive.shell.profiles.interactive.enable = true;
+
+      secrets = {
+        imports = [substrate.rbw];
+
+        identity.secrets.backends.rbw.enable = lib.mkDefault true;
+      };
+    };
+
+    nixbookProUserModules = with localHomeManagerModules; [
       desktop
       dev
       interactive
@@ -425,17 +531,17 @@ in {
       {
         standalone.users = {
           enable = true;
-          modules = [config.flake.dendritic.modules.homeManager.standalone];
+          modules = [localHomeManagerModules.standalone];
         };
       }
       {
-        standalone.users.variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
+        standalone.users.variants.dev.modules = [localHomeManagerModules.dev];
       }
       {
         nixbook-pro.users = {
           enable = true;
           modules =
-            [config.flake.dendritic.modules.homeManager.standalone]
+            [localHomeManagerModules.standalone]
             ++ nixbookProUserModules;
         };
       }
