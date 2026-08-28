@@ -497,6 +497,25 @@ selected evaluator injects these into its integrated Home Manager namespace;
 the composed Darwin proof host contributes a user delta without re-importing
 the workstation's already-owned shared HM profile module.
 
+The nixbook-pro closure proof now makes user ownership explicit rather than
+letting `darwin.workstation` inject the complete Home Manager stack. One shared
+user-intent module list owns the desktop, development, interactive, secrets,
+and default-browser selections. A `nixbook-pro.users` standalone root composes
+that list with the standalone constructor, while
+`nixbook-pro-composed.hosts.users.krad246` injects the same list into the host.
+The host imports only its Darwin-side application-store, browser, base,
+builder, and networking responsibilities. Parity checks compare both new
+consumers with the pinned legacy nixbook-pro user for identity, state,
+program/profile selections, integrated package paths, standalone package names,
+managed-file keys, XDG-file keys, and session variables. The standalone inventory additionally owns the
+`home-manager` CLI package that the integrated host supplies; exclude only that
+known construction-boundary difference when comparing package paths. Do not
+require the standalone and integrated `TERMINFO_DIRS` values to be identical:
+they correctly point at the user profile and system-owned per-user profile,
+respectively. Do not require identical activation derivation paths:
+Home Manager integration metadata such as the backup revision legitimately
+depends on the evaluating flake even when those semantic inventories match.
+
 As a temporary 2026-08-28 CI boundary, legacy Fortress generator packages and
 VM apps, legacy ezConfigs Windex/Fortress roots, and the new non-deployable
 generic NixOS roots are omitted from ordinary flake output discovery. They
