@@ -69,6 +69,11 @@ in {
         };
       })
       // {
+        agent = pkgs.mkShell {
+          inputsFrom = [self'.devShells.nix-shell];
+          packages = [self'.packages.verify-dendritic-context];
+        };
+
         interactive = pkgs.mkShell {
           inputsFrom = [
             self'.devShells.nix-shell

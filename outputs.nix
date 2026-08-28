@@ -184,5 +184,6 @@ in {
     };
   };
 
-  systems = import inputs.systems;
+  # FIXME(platforms): Nixpkgs unstable dropped x86_64-darwin after 26.05.
+  systems = builtins.filter (system: system != "x86_64-darwin") (import inputs.systems);
 })

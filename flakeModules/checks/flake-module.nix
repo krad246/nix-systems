@@ -3,7 +3,27 @@
     config,
     pkgs,
     ...
-  }: {
+  }: let
+    verifyDendriticContext = pkgs.writeShellApplication {
+      name = "verify-dendritic-context";
+      runtimeInputs = [
+        pkgs.coreutils
+        pkgs.gawk
+        pkgs.gnused
+        pkgs.perl
+      ];
+      text = ''
+        root="$(${lib.meta.getExe config.flake-root.package})"
+        exec ${lib.meta.getExe pkgs.bash} \
+          "$root/.agents/dendritic/context.sh" \
+          --root "$root" \
+          --bundle "$root/.agents/dendritic" \
+          verify
+      '';
+    };
+  in {
+    packages.verify-dendritic-context = verifyDendriticContext;
+
     treefmt = {
       inherit (config.flake-root) projectRootFile;
       flakeCheck = false;
@@ -28,6 +48,15 @@
       settings = {
         excludes = ["\\.(age)$"];
         hooks = {
+          verify-dendritic-context = {
+            enable = true;
+            description = "Verify the agent context bundle and generated proxy";
+            entry = lib.meta.getExe verifyDendriticContext;
+            files = "^(AGENTS\\.md|\\.agents/dendritic/)";
+            pass_filenames = false;
+            stages = ["pre-commit"];
+          };
+
           sync-flake = {
             enable = true;
             description = "Keep the generated flake.nix synchronized with its module source";
@@ -57,25 +86,6 @@
                 "bash"
               ];
             });
-
-            always_run = true;
-            pass_filenames = false;
-
-            stages = ["pre-push"];
-          };
-          realize-dendritic-hm-standalone = {
-            enable = true;
-            description = "Realize the Dendritic standalone Home Manager configuration before pushing";
-
-            # FIXME(dendritic-migration): Delete this hook once the Home Manager
-            # closure has been ported. Discarding the string context keeps hook
-            # installation from realizing the check; pre-push still receives the
-            # exact derivation selected by the already-evaluated checks schema.
-            entry = "${config.packages.nix}/bin/nix-store --realise ${
-              lib.strings.escapeShellArg (
-                builtins.unsafeDiscardStringContext config.checks.dendritic-hm-standalone.drvPath
-              )
-            }";
 
             always_run = true;
             pass_filenames = false;

@@ -12,6 +12,14 @@ Run:
 .agents/dendritic/context.sh list
 ```
 
+The agent shell exposes the same read-only invariant as both a command and a
+scoped pre-commit hook:
+
+```sh
+nix develop .#agent -c verify-dendritic-context
+nix develop .#agent -c pre-commit run verify-dendritic-context --all-files
+```
+
 Then lazily load the relevant routes, for example:
 
 ```sh
