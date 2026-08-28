@@ -268,7 +268,8 @@ in {
         cross = config.dendritic.systems.cross;
       }
       config.dendritic.systems.configurations;
-    targetSystems = lib.unique (lib.concatMap (declaration: declaration.systems) (builtins.attrValues declarations));
+    # Union target systems as attribute keys so duplicate declarations merge naturally.
+    targetSystems = builtins.attrNames (lib.foldl' (systems: declaration: systems // lib.genAttrs declaration.systems (_: true)) {} (builtins.attrValues declarations));
     linuxSystems = lib.filter (system: is lib.systems.inspect.predicates.isLinux system) targetSystems;
     darwinSystems = lib.filter (system: is lib.systems.inspect.predicates.isDarwin system) targetSystems;
   in {
