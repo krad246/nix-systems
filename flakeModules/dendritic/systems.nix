@@ -108,7 +108,7 @@
       then nixos
       else throw "dendritic.systems: unsupported target system ${system}";
   in
-    backend.definitions null config.dendritic.systems.nameFunction selectedDeclarations;
+    backend.definitions null config.dendritic.systems.outputs.nameFunction selectedDeclarations;
 
   imageOutputs = buildSystem: declarations: let
     candidates = lib.concatMap (rootName: let
@@ -138,7 +138,7 @@
             then root
             else root.extendModules {inherit (image) modules;};
           value = lib.getAttrFromPath ["system" "build" "images" imageName] projection.config;
-        in {${config.dendritic.systems.imageNameFunction rootName target imageName} = value;})
+        in {${config.dendritic.systems.outputs.imageNameFunction rootName target imageName} = value;})
         declaration.images)
       targetSystems) (builtins.attrNames declarations);
   in
@@ -147,17 +147,19 @@ in {
   imports = [inputs.darwin.flakeModules.default];
 
   options.dendritic.systems = {
-    nameFunction = lib.mkOption {
-      type = lib.types.functionTo (lib.types.functionTo lib.types.str);
-      default = configuration: variant: "${configuration}-${variant}";
-      description = "Function generating output names from a system declaration and variant.";
-    };
+    outputs = {
+      nameFunction = lib.mkOption {
+        type = lib.types.functionTo (lib.types.functionTo lib.types.str);
+        default = configuration: variant: "${configuration}-${variant}";
+        description = "Function generating output names from a system declaration and variant.";
+      };
 
-    imageNameFunction = lib.mkOption {
-      type = lib.types.functionTo (lib.types.functionTo (lib.types.functionTo lib.types.str));
-      default = root: system: image: "${root}-${image}-${system}";
-      defaultText = lib.literalExpression ''root: system: image: "''${root}-''${image}-''${system}"'';
-      description = "Function generating package names from a root, target system, and image.";
+      imageNameFunction = lib.mkOption {
+        type = lib.types.functionTo (lib.types.functionTo (lib.types.functionTo lib.types.str));
+        default = root: system: image: "${root}-${image}-${system}";
+        defaultText = lib.literalExpression ''root: system: image: "''${root}-''${image}-''${system}"'';
+        description = "Function generating package names from a root, target system, and image.";
+      };
     };
 
     variants = {
@@ -258,7 +260,11 @@ in {
       }
       config.dendritic.systems.configurations;
     # Union target systems as attribute keys so duplicate declarations merge naturally.
-    targetSystems = builtins.attrNames (lib.foldl' (systems: declaration: systems // lib.genAttrs declaration.systems (_: true)) {} (builtins.attrValues declarations));
+    targetSystems = lib.pipe declarations [
+      builtins.attrValues
+      (lib.foldl' (systems: declaration: systems // lib.genAttrs declaration.systems (_: true)) {})
+      builtins.attrNames
+    ];
     linuxSystems = lib.filter (system: is lib.systems.inspect.predicates.isLinux system) targetSystems;
     darwinSystems = lib.filter (system: is lib.systems.inspect.predicates.isDarwin system) targetSystems;
   in {
