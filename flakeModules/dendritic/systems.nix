@@ -110,7 +110,7 @@
   in
     backend.definitions null config.dendritic.systems.nameFunction selectedDeclarations;
 
-  artifactOutputs = buildSystem: declarations: let
+  imageOutputs = buildSystem: declarations: let
     candidates = lib.concatMap (rootName: let
       declaration = declarations.${rootName};
       targetSystems = lib.filter (target: let
@@ -129,23 +129,24 @@
           then darwin
           else if is lib.systems.inspect.predicates.isLinux target
           then nixos
-          else throw "dendritic.systems: unsupported artifact target system ${target}";
+          else throw "dendritic.systems: unsupported image target system ${target}";
         root = backend.configuration null selectedDeclaration;
       in
-        lib.mapAttrsToList (artifactName: artifact: let
+        lib.mapAttrsToList (imageName: image: let
           variantModules =
-            if artifact.variant == null
+            if image.variant == null
             then []
-            else if lib.hasAttr artifact.variant declaration.variants
-            then declaration.variants.${artifact.variant}.modules
-            else throw "dendritic.systems: artifact ${rootName}.${artifactName} references unknown variant ${artifact.variant}";
+            else if lib.hasAttr image.variant declaration.variants
+            then declaration.variants.${image.variant}.modules
+            else throw "dendritic.systems: image ${rootName}.${imageName} references unknown variant ${image.variant}";
+          imageModules = variantModules ++ image.modules;
           projection =
-            if variantModules == []
+            if imageModules == []
             then root
-            else root.extendModules {modules = variantModules;};
-          value = lib.getAttrFromPath artifact.attribute projection.config;
-        in {${config.dendritic.systems.artifactNameFunction rootName target artifactName} = value;})
-        declaration.artifacts)
+            else root.extendModules {modules = imageModules;};
+          value = lib.getAttrFromPath ["system" "build" "images" imageName] projection.config;
+        in {${config.dendritic.systems.imageNameFunction rootName target imageName} = value;})
+        declaration.images)
       targetSystems) (builtins.attrNames declarations);
   in
     lib.mkMerge candidates;
@@ -159,11 +160,11 @@ in {
       description = "Function generating output names from a system declaration and variant.";
     };
 
-    artifactNameFunction = lib.mkOption {
+    imageNameFunction = lib.mkOption {
       type = lib.types.functionTo (lib.types.functionTo (lib.types.functionTo lib.types.str));
-      default = root: system: artifact: "${root}-${artifact}-${system}";
-      defaultText = lib.literalExpression ''root: system: artifact: "''${root}-''${artifact}-''${system}"'';
-      description = "Function generating package names from a root, target system, and artifact.";
+      default = root: system: image: "${root}-${image}-${system}";
+      defaultText = lib.literalExpression ''root: system: image: "''${root}-''${image}-''${system}"'';
+      description = "Function generating package names from a root, target system, and image.";
     };
 
     variants = {
@@ -235,23 +236,23 @@ in {
             });
             default = {};
           };
-          artifacts = lib.mkOption {
+          images = lib.mkOption {
             type = lib.types.attrsOf (lib.types.submodule {
               options = {
                 variant = lib.mkOption {
                   type = lib.types.nullOr lib.types.str;
                   default = null;
-                  description = "Variant whose evaluated result provides this artifact.";
+                  description = "Variant whose evaluated result provides this image.";
                 };
-                attribute = lib.mkOption {
-                  type = lib.types.listOf lib.types.str;
-                  default = ["system" "build" "toplevel"];
-                  description = "Attribute path read from the projected system result.";
+                modules = lib.mkOption {
+                  type = lib.types.listOf lib.types.deferredModule;
+                  default = [];
+                  description = "Modules applied while materializing this image.";
                 };
               };
             });
             default = {};
-            description = "Named artifact projections of this declaration's systems.";
+            description = "Named image projections of this declaration's systems.";
           };
         };
       });
@@ -299,9 +300,8 @@ in {
             embed = true;
           };
         };
-        artifacts.vm-nogui = {
+        images.vm-nogui = {
           variant = "vm-nogui";
-          attribute = ["system" "build" "images" "vm-nogui"];
         };
       };
 
@@ -323,7 +323,7 @@ in {
     flake.darwinConfigurations = lib.mkMerge (lib.concatMap (system: outputs system declarations) darwinSystems);
 
     perSystem = {system, ...}: {
-      packages = artifactOutputs system declarations;
+      packages = imageOutputs system declarations;
     };
   };
 }
