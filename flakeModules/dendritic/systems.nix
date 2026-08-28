@@ -127,14 +127,22 @@
         backend =
           if is lib.systems.inspect.predicates.isDarwin target
           then darwin
-          else nixos;
+          else if is lib.systems.inspect.predicates.isLinux target
+          then nixos
+          else throw "dendritic.systems: unsupported artifact target system ${target}";
         root = backend.configuration null selectedDeclaration;
       in
         lib.mapAttrsToList (artifactName: artifact: let
-          projection =
+          variantModules =
             if artifact.variant == null
+            then []
+            else if lib.hasAttr artifact.variant declaration.variants
+            then declaration.variants.${artifact.variant}.modules
+            else throw "dendritic.systems: artifact ${rootName}.${artifactName} references unknown variant ${artifact.variant}";
+          projection =
+            if variantModules == []
             then root
-            else root.extendModules {modules = declaration.variants.${artifact.variant}.modules;};
+            else root.extendModules {modules = variantModules;};
           value = lib.getAttrFromPath artifact.attribute projection.config;
         in {${config.dendritic.systems.artifactNameFunction rootName target artifactName} = value;})
         declaration.artifacts)
@@ -169,7 +177,7 @@ in {
       type = lib.types.attrsOf (lib.types.submodule {
         options = {
           systems = lib.mkOption {
-            type = lib.types.listOf lib.types.str;
+            type = lib.types.nonEmptyListOf lib.types.str;
             description = "Target platform systems; each selects an internal evaluator projection.";
           };
           buildSystem = lib.mkOption {
