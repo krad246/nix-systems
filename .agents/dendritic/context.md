@@ -480,6 +480,10 @@ backend distinction is deliberately absent from public declaration data. The
 `dev` variant and an embedded `vm-nogui` artifact-module variant. The published
 VM variant remains a full NixOS result; its image is a later artifact projection
 of that result, while the root's native specialisation is the runtime view.
+An artifact declaration names that variant and an attribute path; `perSystem`
+materializes it for the matching build coordinate. Thus
+`generic-headless-interactive-vm-nogui-x86_64-linux` is a package projection of
+`config.system.build.images.vm-nogui`, not a second system declaration.
 
 Current supported flake-parts enumeration deliberately filters out
 `x86_64-darwin`: Nixpkgs unstable no longer supports it after 26.05. Keep the

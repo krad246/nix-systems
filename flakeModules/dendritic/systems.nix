@@ -101,6 +101,38 @@
       else throw "dendritic.systems: unsupported target system ${system}";
   in
     backend.definitions null config.dendritic.systems.nameFunction selectedDeclarations;
+
+  artifactOutputs = buildSystem: declarations: let
+    candidates = lib.concatMap (rootName: let
+      declaration = declarations.${rootName};
+      targetSystems = lib.filter (target: let
+        configuredBuild =
+          if declaration.buildSystem == null
+          then target
+          else declaration.buildSystem;
+      in
+        configuredBuild == buildSystem)
+      declaration.systems;
+    in
+      lib.concatMap (target: let
+        selectedDeclaration = (selected target declarations).${rootName};
+        backend =
+          if is lib.systems.inspect.predicates.isDarwin target
+          then darwin
+          else nixos;
+        root = backend.configuration null selectedDeclaration;
+      in
+        lib.mapAttrsToList (artifactName: artifact: let
+          projection =
+            if artifact.variant == null
+            then root
+            else root.extendModules {modules = declaration.variants.${artifact.variant}.modules;};
+          value = lib.getAttrFromPath artifact.attribute projection.config;
+        in {${config.dendritic.systems.artifactNameFunction rootName target artifactName} = value;})
+        declaration.artifacts)
+      targetSystems) (builtins.attrNames declarations);
+  in
+    lib.mkMerge candidates;
 in {
   imports = [inputs.darwin.flakeModules.default];
 
@@ -109,6 +141,13 @@ in {
       type = lib.types.functionTo (lib.types.functionTo lib.types.str);
       default = configuration: variant: "${configuration}-${variant}";
       description = "Function generating output names from a system declaration and variant.";
+    };
+
+    artifactNameFunction = lib.mkOption {
+      type = lib.types.functionTo (lib.types.functionTo (lib.types.functionTo lib.types.str));
+      default = root: system: artifact: "${root}-${artifact}-${system}";
+      defaultText = lib.literalExpression ''root: system: artifact: "''${root}-''${artifact}-''${system}"'';
+      description = "Function generating package names from a root, target system, and artifact.";
     };
 
     variants = {
@@ -169,6 +208,24 @@ in {
             });
             default = {};
           };
+          artifacts = lib.mkOption {
+            type = lib.types.attrsOf (lib.types.submodule {
+              options = {
+                variant = lib.mkOption {
+                  type = lib.types.nullOr lib.types.str;
+                  default = null;
+                  description = "Variant whose evaluated result provides this artifact.";
+                };
+                attribute = lib.mkOption {
+                  type = lib.types.listOf lib.types.str;
+                  default = ["system" "build" "toplevel"];
+                  description = "Attribute path read from the projected system result.";
+                };
+              };
+            });
+            default = {};
+            description = "Named artifact projections of this declaration's systems.";
+          };
         };
       });
       default = {};
@@ -214,6 +271,10 @@ in {
             embed = true;
           };
         };
+        artifacts.vm-nogui = {
+          variant = "vm-nogui";
+          attribute = ["system" "build" "images" "vm-nogui"];
+        };
       };
 
       configurations.nixbook-pro-composed = {
@@ -229,5 +290,9 @@ in {
 
     flake.nixosConfigurations = lib.mkMerge (lib.concatMap (system: outputs system declarations) linuxSystems);
     flake.darwinConfigurations = lib.mkMerge (lib.concatMap (system: outputs system declarations) darwinSystems);
+
+    perSystem = {system, ...}: {
+      packages = artifactOutputs system declarations;
+    };
   };
 }
