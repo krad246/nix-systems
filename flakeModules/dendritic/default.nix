@@ -1,3 +1,6 @@
 {
-  imports = [./flake-module.nix];
+  imports = [
+    ./flake-module.nix
+    ./systems.nix
+  ];
 }

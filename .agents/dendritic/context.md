@@ -463,6 +463,17 @@ platforms coincide; cross means they differ. Keep target `pkgs` distinct from
 host-side generator/runner `pkgs`, while deriving ordinary package universes
 from the same declared Nixpkgs source graph.
 
+The first unified system registry slice is now materialized by
+`dendritic.systems.configurations`: declarations contain only target
+`systems` coordinates, modules, and the same variant `publish`/`embed` deltas
+as HM. A single declaration may list multiple target systems. An internal
+platform-inspection interpreter selects NixOS or Darwin construction; that
+backend distinction is deliberately absent from public declaration data. The
+`generic-headless-interactive` NixOS declaration demonstrates both an additive
+`dev` variant and an embedded `vm-nogui` artifact-module variant. The published
+VM variant remains a full NixOS result; its image is a later artifact projection
+of that result, while the root's native specialisation is the runtime view.
+
 Current supported flake-parts enumeration deliberately filters out
 `x86_64-darwin`: Nixpkgs unstable no longer supports it after 26.05. Keep the
 FIXME until a pinned legacy package universe or an explicit compatibility

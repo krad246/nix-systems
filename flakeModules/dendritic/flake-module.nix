@@ -143,22 +143,6 @@
         config.dendritic.homeManager.nameFunction
         declarations
       ));
-
-      nixosConfigurations.generic-headless-interactive = inputs.nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          config.flake.dendritic.modules.nixos.headless
-          config.flake.dendritic.modules.nixos.interactive
-          ({config, ...}: {
-            image.modules.vm = import ./image-modules/vm.nix;
-            image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
-              vm = config.image.modules.vm;
-            };
-
-            networking.hostName = "generic-headless-interactive";
-          })
-        ];
-      };
     };
 
     perSystem = {
@@ -290,7 +274,7 @@
                 standalone.activationPackage;
 
               generic-headless-interactive = let
-                configuration = config.flake.nixosConfigurations.generic-headless-interactive;
+                configuration = config.flake.nixosConfigurations.generic-headless-interactive-vm-nogui;
                 image = configuration.config.system.build.images.vm-nogui;
                 cfg = image.passthru.config;
               in
