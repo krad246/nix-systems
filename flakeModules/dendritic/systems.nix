@@ -133,17 +133,10 @@
         root = backend.configuration null selectedDeclaration;
       in
         lib.mapAttrsToList (imageName: image: let
-          variantModules =
-            if image.variant == null
-            then []
-            else if lib.hasAttr image.variant declaration.variants
-            then declaration.variants.${image.variant}.modules
-            else throw "dendritic.systems: image ${rootName}.${imageName} references unknown variant ${image.variant}";
-          imageModules = variantModules ++ image.modules;
           projection =
-            if imageModules == []
+            if image.modules == []
             then root
-            else root.extendModules {modules = imageModules;};
+            else root.extendModules {inherit (image) modules;};
           value = lib.getAttrFromPath ["system" "build" "images" imageName] projection.config;
         in {${config.dendritic.systems.imageNameFunction rootName target imageName} = value;})
         declaration.images)
@@ -239,11 +232,6 @@ in {
           images = lib.mkOption {
             type = lib.types.attrsOf (lib.types.submodule {
               options = {
-                variant = lib.mkOption {
-                  type = lib.types.nullOr lib.types.str;
-                  default = null;
-                  description = "Variant whose evaluated result provides this image.";
-                };
                 modules = lib.mkOption {
                   type = lib.types.listOf lib.types.deferredModule;
                   default = [];
@@ -301,7 +289,14 @@ in {
           };
         };
         images.vm-nogui = {
-          variant = "vm-nogui";
+          modules = [
+            ({config, ...}: {
+              image.modules.vm = import ./image-modules/vm.nix;
+              image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
+                vm = config.image.modules.vm;
+              };
+            })
+          ];
         };
       };
 
