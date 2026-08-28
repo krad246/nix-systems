@@ -3,9 +3,10 @@
   inputs,
   lib,
   withSystem,
+  composeProjection,
   ...
 }: {
-  imports = [inputs.home-manager.flakeModules.default];
+  imports = [inputs.home-manager.flakeModules.default ./compositions.nix];
 
   options.dendritic.homeManager = {
     nameFunction = lib.mkOption {
@@ -74,8 +75,7 @@
   };
 
   config = let
-    homeManagerConfigurations = import ./configuration-projections.nix {
-      inherit lib;
+    homeManagerConfigurations = composeProjection {
       construct = pkgs: declaration:
         inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
