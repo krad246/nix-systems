@@ -1,3 +1,5 @@
+# Pure projection interpreter: evaluator closures are supplied by each module
+# backend, so this intentionally remains a library rather than a module.
 {
   construct,
   includeSpecialisation ? null,
