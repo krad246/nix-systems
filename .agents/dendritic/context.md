@@ -423,9 +423,12 @@ publication and fail only when a selected coordinate requests embedding.
 Do not place the exhaustive four-mode proof in ordinary flake `checks`:
 `nix flake show` enumerates checks and would thereby force the resident
 specialisation lane even when production selects publish-only. Exercise that
-truth table through an explicit isolated evaluator test. Ordinary checks cover
-only the selected production projection so the unused runtime vTable remains
-lazy.
+truth table through the Dendritic test flake modules. They contribute proper
+per-system `dendritic.assertions`, `dendritic.warnings`, and
+`dendritic.traces`; one assertion runner emits their check only when the
+flake-parts `debug` option is enabled. Ordinary output enumeration therefore
+keeps the unused runtime vTable lazy, while debug evaluation exercises the
+four-mode matrix, host/image contracts, and nixbook-pro closure parity.
 
 Published variant names are generated from their root and local variant names
 through `dendritic.outputs.nameFunction`, following ezConfigs'
