@@ -516,6 +516,16 @@ respectively. Do not require identical activation derivation paths:
 Home Manager integration metadata such as the backup revision legitimately
 depends on the evaluating flake even when those semantic inventories match.
 
+The current-tree flake module now owns the Home Manager identity defaults,
+portable base policy, standalone constructor support, and the desktop, dev,
+interactive, and secrets profile compositions used by these declarations.
+Only their lower-level feature primitives—input registry, shell, browser,
+terminal, editor, and rbw—remain behind the pinned Dendritic migration seam.
+Preserve the pinned substrate release for `home.stateVersion`; the current
+unstable Nixpkgs library may advertise a newer release than the selected Home
+Manager supports, and state versions are compatibility contracts rather than
+upgrade indicators.
+
 As a temporary 2026-08-28 CI boundary, legacy Fortress generator packages and
 VM apps, legacy ezConfigs Windex/Fortress roots, and the new non-deployable
 generic NixOS roots are omitted from ordinary flake output discovery. They
