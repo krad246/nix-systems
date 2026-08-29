@@ -169,7 +169,7 @@ in {
   config = let
     platformSystem = platform: platform.system or platform;
 
-    system = rec {
+    system = {
       baseConfiguration = declaration: let
         constructor = withSystem declaration.hostPlatform.system ({pkgs, ...}:
           if pkgs.stdenv.hostPlatform.isDarwin
@@ -200,7 +200,7 @@ in {
         };
 
       configuration = declaration: let
-        root = baseConfiguration declaration;
+        root = system.baseConfiguration declaration;
         includedSpecialisations = lib.filterAttrs (_: variant:
           if variant.includeSpecialisations != null
           then variant.includeSpecialisations
@@ -227,7 +227,7 @@ in {
       outputs = declarations:
         lib.pipe declarations [
           (lib.mapAttrsToList (name: declaration:
-            [{${name} = configuration declaration;}]
+            [{${name} = system.configuration declaration;}]
             ++ lib.pipe declaration.variants [
               (lib.filterAttrs (_: variant: config.dendritic.configurations.variants.enable && variant.enable))
               (lib.mapAttrsToList (variantName: variant: {
@@ -237,7 +237,7 @@ in {
                     variant = variantName;
                   }
                 } =
-                  (baseConfiguration declaration).extendModules {inherit (variant) modules;};
+                  (system.baseConfiguration declaration).extendModules {inherit (variant) modules;};
               }))
             ]))
           lib.concatLists
@@ -349,7 +349,7 @@ in {
       )
       targetSystems;
 
-    homeManager = rec {
+    homeManager = {
       baseConfiguration = pkgs: declaration:
         inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
@@ -369,7 +369,7 @@ in {
         };
 
       configuration = pkgs: declaration: let
-        root = baseConfiguration pkgs declaration;
+        root = homeManager.baseConfiguration pkgs declaration;
         includedSpecialisations = lib.filterAttrs (_: variant:
           if variant.includeSpecialisations != null
           then variant.includeSpecialisations
@@ -394,7 +394,7 @@ in {
       outputs = pkgs: declarations:
         lib.pipe declarations [
           (lib.mapAttrsToList (name: declaration:
-            [{${name} = configuration pkgs declaration;}]
+            [{${name} = homeManager.configuration pkgs declaration;}]
             ++ lib.pipe declaration.variants [
               (lib.filterAttrs (_: variant: config.dendritic.configurations.variants.enable && variant.enable))
               (lib.mapAttrsToList (variantName: variant: {
@@ -404,7 +404,7 @@ in {
                     variant = variantName;
                   }
                 } =
-                  (baseConfiguration pkgs declaration).extendModules {inherit (variant) modules;};
+                  (homeManager.baseConfiguration pkgs declaration).extendModules {inherit (variant) modules;};
               }))
             ]))
           lib.concatLists
