@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   withSystem,
   ...
@@ -6,7 +7,18 @@
   dendritic.configurations = {
     variants.enable = lib.mkDefault true;
 
-    perTag = {};
+    perClass = {
+      nixos.modules = [config.flake.dendritic.modules.nixos.base];
+      darwin.modules = [config.flake.dendritic.modules.darwin.base];
+      home.homeModules = [config.flake.dendritic.modules.homeManager.base];
+    };
+
+    perTag = {
+      dev.metadata.aspect = "dev";
+      headless.metadata.aspect = "headless";
+      standalone.metadata.aspect = "standalone";
+      workstation.metadata.aspect = "workstation";
+    };
 
     users = {
       standalone = {

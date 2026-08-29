@@ -16,10 +16,27 @@
     )
     inputs.dendritic.modules.${namespace}.${name};
 
+  baseModules = {
+    nixos = inputs.dendritic.modules.nixos.base;
+    darwin = inputs.dendritic.modules.darwin.base;
+    homeManager = inputs.dendritic.modules.homeManager.base;
+  };
+
+  withoutBase = namespace: module:
+    if lib.isAttrs module && module ? imports
+    then module // {imports = lib.filter (candidate: candidate != baseModules.${namespace}) module.imports;}
+    else module;
+
   profileLayers = lib.genAttrs profileNames (name: {
     nixos = modulesFor "nixos" name;
     darwin = modulesFor "darwin" name;
     homeManager = modulesFor "homeManager" name;
+  });
+
+  canonicalPerTag = lib.genAttrs profileNames (name: {
+    nixosModules = map (withoutBase "nixos") (modulesFor "nixos" name);
+    darwinModules = map (withoutBase "darwin") (modulesFor "darwin" name);
+    homeModules = map (withoutBase "homeManager") (modulesFor "homeManager" name);
   });
 in {
   options.dendritic.internal.profileNames = lib.mkOption {
@@ -34,8 +51,13 @@ in {
     internal = true;
   };
 
-  config.dendritic.internal.profileNames = profileNames;
-  config.dendritic.internal.profileLayers = assert lib.assertMsg
-  (lib.all (name: lib.elem name profileNames) (lib.attrNames config.dendritic.configurations.perTag))
-  "dendritic.configurations.perTag may only contain canonical profile names from inputs.dendritic/modules/profiles"; profileLayers;
+  config = {
+    dendritic = {
+      internal.profileNames = profileNames;
+      configurations.perTag = lib.mkDefault canonicalPerTag;
+      internal.profileLayers = assert lib.assertMsg
+      (lib.all (name: lib.elem name profileNames) (lib.attrNames config.dendritic.configurations.perTag))
+      "dendritic.configurations.perTag may only contain canonical profile names from inputs.dendritic/modules/profiles"; profileLayers;
+    };
+  };
 }
