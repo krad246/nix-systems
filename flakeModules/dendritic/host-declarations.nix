@@ -20,6 +20,8 @@
         ++ rootTagLayers
         ++ map (className: config.dendritic.configurations.perClass.${className} or {}) classNames;
       tagLayers = map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags;
+      homeModules = username: layer:
+        (layer.homeModules or []) ++ (layer.users.${username}.modules or []);
       baseModules = lib.concatMap (layer: layer.modules or []) baseLayers;
       tagModules = lib.concatMap (layer: layer.modules or []) tagLayers;
       hostModules = host.modules;
@@ -38,11 +40,11 @@
           hostUserTagLayers = map (tag: config.dendritic.configurations.perTag.${tag} or {}) hostLayer.tags;
           baseModules =
             user.modules
-            ++ lib.concatMap (layer: (layer.users.${username}.modules or [])) baseLayers
-            ++ lib.concatMap (layer: (layer.users.${username}.modules or [])) userTagLayers;
+            ++ lib.concatMap (homeModules username) baseLayers
+            ++ lib.concatMap (homeModules username) userTagLayers;
           tagModules =
-            lib.concatMap (layer: (layer.users.${username}.modules or [])) tagLayers
-            ++ lib.concatMap (layer: (layer.users.${username}.modules or [])) hostUserTagLayers;
+            lib.concatMap (homeModules username) tagLayers
+            ++ lib.concatMap (homeModules username) hostUserTagLayers;
           hostModules = hostLayer.modules;
         in {
           inherit (hostLayer) outputName;

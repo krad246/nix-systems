@@ -4,26 +4,32 @@
   lib,
   ...
 }: let
-  variantModules = variant:
+  variantModules = username: variant:
     variant.modules
-    ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.homeModules or []) variant.tags;
+    ++ variant.homeModules
+    ++ (variant.users.${username}.modules or [])
+    ++ tagHomeModules username variant.tags;
 
   variantOutputName = parentName: variantName: variant:
     if variant.outputName == null
     then "${parentName}-${variantName}"
     else variant.outputName;
 
-  tagHomeModules = tags:
-    lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.homeModules or []) tags;
+  tagHomeModules = username: tags:
+    lib.concatMap (tag: let
+      layer = config.dendritic.configurations.perTag.${tag} or {};
+    in
+      (layer.homeModules or []) ++ (layer.users.${username}.modules or []))
+    tags;
 
   standaloneDeclarations = lib.mapAttrs (username: user: {
     inherit username;
     inherit (user) variants passInOsConfig;
     inherit (user.standalone) pkgs outputName;
     modules =
-      tagHomeModules config.dendritic.configurations.tags
+      tagHomeModules username config.dendritic.configurations.tags
       ++ user.modules
-      ++ tagHomeModules user.tags
+      ++ tagHomeModules username user.tags
       ++ user.standalone.modules;
   }) (lib.filterAttrs (_: user: user.enable && user.standalone.enable) config.dendritic.configurations.users);
 
@@ -61,7 +67,7 @@
           {
             specialisation =
               lib.mapAttrs (_: variant: {
-                configuration.imports = variantModules variant;
+                configuration.imports = variantModules declaration.username variant;
               })
               includedSpecialisations;
           }
@@ -72,7 +78,7 @@
     [{${name} = configuration pkgs declaration;}]
     ++ lib.mapAttrsToList (variantName: variant: {
       ${variantOutputName name variantName variant} =
-        (baseConfiguration pkgs declaration).extendModules {modules = variantModules variant;};
+        (baseConfiguration pkgs declaration).extendModules {modules = variantModules declaration.username variant;};
     }) (lib.filterAttrs (_: variant:
       config.dendritic.configurations.variants.build
       && config.dendritic.configurations.variants.enable

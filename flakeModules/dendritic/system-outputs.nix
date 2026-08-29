@@ -29,8 +29,13 @@
     ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.modules or []) variant.tags
     ++ lib.mapAttrsToList (username: _: {
       home-manager.users.${username}.imports =
-        (variant.users.${username}.modules or [])
-        ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.users.${username}.modules or []) variant.tags;
+        variant.homeModules
+        ++ (variant.users.${username}.modules or [])
+        ++ lib.concatMap (tag: let
+          layer = config.dendritic.configurations.perTag.${tag} or {};
+        in
+          (layer.homeModules or []) ++ (layer.users.${username}.modules or []))
+        variant.tags;
     })
     coordinate.users;
 

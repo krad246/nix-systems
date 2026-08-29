@@ -15,7 +15,7 @@
       homeModules = lib.mkOption {
         type = lib.types.listOf lib.types.deferredModule;
         default = [];
-        description = "Standalone Home Manager modules contributed by this layer.";
+        description = "Home Manager modules contributed to each selected user node.";
       };
       metadata = lib.mkOption {
         type = lib.types.attrsOf lib.types.raw;
@@ -310,6 +310,21 @@ in {
 
       modules = {
         inherit (inputs.dendritic.modules) nixos darwin;
+        profiles = {
+          darwin.desktop.imports = [
+            inputs.dendritic.modules.darwin.applications
+            inputs.dendritic.modules.darwin.app-stores
+            inputs.dendritic.modules.darwin.browser
+            inputs.dendritic.modules.darwin.linux-builder
+            inputs.dendritic.modules.darwin.tailscale
+          ];
+          home = {
+            desktop = flakeConfig.flake.dendritic.modules.homeManager.desktop;
+            dev = flakeConfig.flake.dendritic.modules.homeManager.dev;
+            interactive = flakeConfig.flake.dendritic.modules.homeManager.interactive;
+            secrets = flakeConfig.flake.dendritic.modules.homeManager.secrets;
+          };
+        };
         homeManager = {
           identity.options.identity.person = {
             email = lib.mkOption {
