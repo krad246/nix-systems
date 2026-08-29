@@ -19,11 +19,9 @@
       configuration = policy: root: let
         evaluated = baseConfiguration root;
         includedSpecialisations = lib.filterAttrs (_: variant:
-          if variant.includeSpecialisation != null
-          then variant.includeSpecialisation
-          else if root.includeSpecialisation != null
-          then root.includeSpecialisation
-          else policy.includeSpecialisation)
+          if variant.includeSpecialisations != null
+          then variant.includeSpecialisations
+          else policy.includeSpecialisations)
         root.variants;
       in
         if includedSpecialisations == {}
@@ -41,22 +39,17 @@
             ];
           };
 
-      standaloneVariant = root: variant:
-        (baseConfiguration root).extendModules {inherit (variant) modules;};
-
       outputs = policy: roots:
         lib.pipe roots [
           (lib.mapAttrsToList (rootName: root:
             [{${rootName} = configuration policy root;}]
             ++ lib.pipe root.variants [
               (lib.filterAttrs (_: variant:
-                if variant.standalone != null
-                then variant.standalone
-                else if root.standalone != null
-                then root.standalone
-                else policy.standalone))
+                if variant.build != null
+                then variant.build
+                else policy.build))
               (lib.mapAttrsToList (variantName: variant: {
-                "${rootName}-${variantName}" = standaloneVariant root variant;
+                "${rootName}-${variantName}" = (baseConfiguration root).extendModules {inherit (variant) modules;};
               }))
             ]))
           lib.concatLists
@@ -64,11 +57,7 @@
         ];
     };
 
-    declaration = {
-      standalone,
-      includeSpecialisation,
-    }: {
-      inherit standalone includeSpecialisation;
+    declaration = _: {
       modules = [
         {
           home = {
@@ -80,8 +69,8 @@
       ];
       variants.dev = {
         modules = [{home.sessionVariables.DENDRITIC_VARIANT = "dev";}];
-        standalone = null;
-        includeSpecialisation = null;
+        build = null;
+        includeSpecialisations = null;
       };
     };
 
@@ -91,26 +80,30 @@
       };
 
     neither = outputsFor {
-      standalone = false;
-      includeSpecialisation = false;
+      build = false;
+      includeSpecialisations = false;
     };
     standaloneOnly = outputsFor {
-      standalone = true;
-      includeSpecialisation = false;
+      build = true;
+      includeSpecialisations = false;
     };
     includedOnly = outputsFor {
-      standalone = false;
-      includeSpecialisation = true;
+      build = false;
+      includeSpecialisations = true;
     };
     both = outputsFor {
-      standalone = true;
-      includeSpecialisation = true;
+      build = true;
+      includeSpecialisations = true;
     };
     includedDev = outputs:
       outputs.standalone.config.specialisation.dev.configuration;
 
-    productionStandalone = homeManager.baseConfiguration (removeAttrs config.dendritic.configurations.standalone.users ["enable"]);
-    productionNixbook = homeManager.baseConfiguration (removeAttrs config.dendritic.configurations.nixbook-pro.users ["enable"]);
+    productionStandalone = homeManager.baseConfiguration {
+      modules = config.dendritic.configurations.users.standalone.modules ++ config.dendritic.configurations.users.standalone.standalone.modules;
+    };
+    productionNixbook = homeManager.baseConfiguration {
+      modules = config.dendritic.configurations.users.krad246.modules ++ config.dendritic.configurations.users.krad246.standalone.modules;
+    };
     legacyConfiguration = inputs.dendritic.darwinConfigurations.nixbook-pro;
     legacyConfig = legacyConfiguration.config;
     legacy = legacyConfig.home-manager.users.${legacyConfig.owner.username};
