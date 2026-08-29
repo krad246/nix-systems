@@ -443,7 +443,7 @@ in {
       inherit (inputs.dendritic) darwinModules nixosModules;
 
       modules = lib.recursiveUpdate inputs.dendritic.modules {
-        homeManager = rec {
+        homeManager = {
           identity.options.identity.person = {
             email = lib.mkOption {
               type = lib.types.str;
@@ -464,7 +464,7 @@ in {
 
           base = {pkgs, ...}: {
             imports = [
-              identity
+              config.flake.dendritic.modules.homeManager.identity
               inputs.dendritic.modules.homeManager.input-registry
               inputs.dendritic.modules.homeManager.shell
             ];
@@ -502,7 +502,10 @@ in {
             pkgs,
             ...
           }: {
-            imports = [base homeManagerSupport];
+            imports = [
+              config.flake.dendritic.modules.homeManager.base
+              config.flake.dendritic.modules.homeManager.homeManagerSupport
+            ];
 
             home = {
               username = lib.mkDefault config.identity.person.username;
@@ -527,7 +530,9 @@ in {
             picker.backends.fzf.integrations.helix.enable = lib.mkDefault true;
           };
 
-          interactive.shell.profiles.interactive.enable = true;
+          interactive = {
+            shell.profiles.interactive.enable = true;
+          };
 
           secrets = {
             imports = [inputs.dendritic.modules.homeManager.rbw];
@@ -535,10 +540,10 @@ in {
           };
 
           nixbook-pro.imports = [
-            desktop
-            dev
-            interactive
-            secrets
+            config.flake.dendritic.modules.homeManager.desktop
+            config.flake.dendritic.modules.homeManager.dev
+            config.flake.dendritic.modules.homeManager.interactive
+            config.flake.dendritic.modules.homeManager.secrets
             {
               browser.backends.zen = {
                 enable = lib.mkDefault true;
