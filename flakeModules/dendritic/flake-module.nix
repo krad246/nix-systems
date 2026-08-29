@@ -263,7 +263,8 @@ in {
         else if buildSystem.system != system && !declaration.crossCompile
         then throw "dendritic.configurations: host platform ${system} requires crossCompile = true for build platform ${buildSystem.system}"
         else
-          lib.recursiveUpdate declaration {
+          declaration
+          // {
             hostPlatform = {inherit system;};
             buildPlatform = buildSystem;
             modules = declaration.modules ++ (config.dendritic.configurations.perSystem.${system}.modules or []);
@@ -313,7 +314,8 @@ in {
     systemDeclarations = lib.pipe config.dendritic.configurations.hosts [
       (lib.filterAttrs (_: host: host.enable))
       (lib.mapAttrs (_hostName: host:
-        lib.recursiveUpdate host {
+        host
+        // {
           modules = lib.concatMap (layer: layer.modules or []) (
             [
               config.dendritic.configurations.shared
@@ -434,7 +436,8 @@ in {
     flake.dendritic = {
       inherit (inputs.dendritic) darwinModules nixosModules;
 
-      modules = lib.recursiveUpdate inputs.dendritic.modules {
+      modules = {
+        inherit (inputs.dendritic.modules) nixos darwin;
         homeManager = {
           identity.options.identity.person = {
             email = lib.mkOption {
