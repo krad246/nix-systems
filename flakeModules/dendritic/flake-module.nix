@@ -183,12 +183,7 @@ in {
             [
               {
                 nixpkgs.hostPlatform = declaration.hostPlatform.system;
-                nixpkgs.buildPlatform =
-                  lib.mkIf (
-                    declaration.crossCompile
-                    && declaration.buildPlatform.system != declaration.hostPlatform.system
-                  )
-                  declaration.buildPlatform.system;
+                nixpkgs.buildPlatform = lib.mkIf declaration.crossCompile declaration.buildPlatform.system;
               }
             ]
             ++ lib.mapAttrsToList (username: user: {
