@@ -5,13 +5,14 @@
   ...
 }: {
   dendritic.configurations = {
-    variants.build = lib.mkDefault true;
+    variants.enable = lib.mkDefault true;
 
     users = {
       standalone = {
         enable = true;
         standalone = {
-          pkgs = withSystem "aarch64-darwin" ({pkgs, ...}: pkgs);
+          enable = !lib.inPureEvalMode;
+          pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
           modules = [config.flake.dendritic.modules.homeManager.standalone];
         };
         variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
@@ -19,10 +20,10 @@
 
       krad246 = {
         enable = true;
-        hosts = ["nixbook-pro-composed"];
-        modules = config.flake.dendritic.modules.homeManager.nixbook-pro;
+        modules = [config.flake.dendritic.modules.homeManager.nixbook-pro];
         standalone = {
-          pkgs = withSystem "aarch64-darwin" ({pkgs, ...}: pkgs);
+          enable = !lib.inPureEvalMode;
+          pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
           modules = [config.flake.dendritic.modules.homeManager.standalone];
         };
       };
@@ -51,7 +52,6 @@
                 };
               })
             ];
-            includeSpecialisations = true;
             package = configuration: configuration.config.system.build.images.vm-nogui;
           };
         };
@@ -70,6 +70,7 @@
           config.flake.dendritic.modules.darwin.tailscale
           (_: {networking.hostName = "nixbook-pro-composed";})
         ];
+        users.krad246 = {};
       };
     };
   };
