@@ -311,34 +311,10 @@ in {
       }))
     ];
 
-    systemDeclarations = lib.pipe config.dendritic.configurations.hosts [
-      (lib.filterAttrs (_: host: host.enable))
-      (lib.mapAttrs (_hostName: host: {
-        inherit (host) enable class tags hostPlatforms buildPlatform crossCompile variants;
-        modules =
-          lib.pipe (
-            [
-              config.dendritic.configurations.shared
-              (config.dendritic.configurations.perClass.${host.class} or {})
-            ]
-            ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
-            ++ [host]
-          ) [
-            (map (layer: layer.modules or []))
-            lib.concatLists
-          ];
-        users =
-          lib.mapAttrs (username: layer: {
-            modules = config.dendritic.configurations.users.${username}.modules ++ layer.modules;
-          })
-          host.users;
-      }))
-    ];
-
     targetSystems = lib.unique (
       lib.concatMap
       (declaration: map platformSystem declaration.hostPlatforms)
-      (builtins.attrValues systemDeclarations)
+      (builtins.attrValues config.dendritic.internal.systemDeclarations)
     );
     darwinSystems =
       lib.filter (
@@ -550,7 +526,7 @@ in {
           homeManager.outputs declaration.pkgs {${name} = declaration;})
         homeManagerDeclarations)
         ++ lib.concatMap (hostName: let
-          hostDeclaration = systemDeclarations.${hostName};
+          hostDeclaration = config.dendritic.internal.systemDeclarations.${hostName};
         in
           lib.concatMap (username: let
             userLayer = hostDeclaration.users.${username};
@@ -569,13 +545,13 @@ in {
           in
             homeManager.outputs host.pkgs {${name} = declaration;})
           (builtins.attrNames hostDeclaration.users))
-        (builtins.attrNames systemDeclarations)
+        (builtins.attrNames config.dendritic.internal.systemDeclarations)
       );
       # FIXME(dendritic-hosts): Publish NixOS configurations after declarations
       # distinguish deployable roots from image-only composition substrates.
       # Direct image outputs remain available through perSystem packages.
       darwinConfigurations = lib.mkMerge (
-        lib.concatMap (target: system.outputs (selectSystemDeclarations target systemDeclarations)) darwinSystems
+        lib.concatMap (target: system.outputs (selectSystemDeclarations target config.dendritic.internal.systemDeclarations)) darwinSystems
       );
     };
 
@@ -586,7 +562,7 @@ in {
     }:
       lib.mkMerge [
         {
-          packages = variantPackages system systemDeclarations;
+          packages = variantPackages system config.dendritic.internal.systemDeclarations;
         }
 
         (lib.mkIf (homeManagerDeclarations ? standalone) (let
