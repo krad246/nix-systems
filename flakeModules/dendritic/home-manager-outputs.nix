@@ -4,32 +4,41 @@
   lib,
   ...
 }: let
+  profileLayers = config.dendritic.internal.profileLayers;
+
+  profileHomeModules = username: tags:
+    lib.concatMap (tag: let
+      profile = profileLayers.${tag} or (throw "dendritic.configurations: tag ${tag} is not a profile overlay in inputs.dendritic/modules/profiles");
+      overlay = config.dendritic.configurations.perTag.${tag} or {};
+    in
+      profile.homeManager ++ overlay.homeModules ++ (overlay.users.${username}.modules or []))
+    tags;
+
+  homeClassModules = username: let
+    layer = config.dendritic.configurations.perClass.home or {};
+  in
+    (layer.homeModules or []) ++ (layer.users.${username}.modules or []);
+
   variantModules = username: variant:
-    variant.modules
+    profileHomeModules username variant.tags
+    ++ variant.modules
     ++ variant.homeModules
-    ++ (variant.users.${username}.modules or [])
-    ++ tagHomeModules username variant.tags;
+    ++ (variant.users.${username}.modules or []);
 
   variantOutputName = parentName: variantName: variant:
     if variant.outputName == null
     then "${parentName}-${variantName}"
     else variant.outputName;
 
-  tagHomeModules = username: tags:
-    lib.concatMap (tag: let
-      layer = config.dendritic.configurations.perTag.${tag} or {};
-    in
-      (layer.homeModules or []) ++ (layer.users.${username}.modules or []))
-    tags;
-
   standaloneDeclarations = lib.mapAttrs (username: user: {
     inherit username;
     inherit (user) variants passInOsConfig;
     inherit (user.standalone) pkgs outputName;
     modules =
-      tagHomeModules username config.dendritic.configurations.tags
+      homeClassModules username
+      ++ profileHomeModules username config.dendritic.configurations.tags
       ++ user.modules
-      ++ tagHomeModules username user.tags
+      ++ profileHomeModules username user.tags
       ++ user.standalone.modules;
   }) (lib.filterAttrs (_: user: user.enable && user.standalone.enable) config.dendritic.configurations.users);
 

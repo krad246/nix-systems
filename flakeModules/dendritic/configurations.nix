@@ -1,5 +1,4 @@
 {
-  config,
   lib,
   withSystem,
   ...
@@ -7,13 +6,7 @@
   dendritic.configurations = {
     variants.enable = lib.mkDefault true;
 
-    perClass.darwin.modules = [config.flake.dendritic.modules.darwin.base];
-
-    perTag = {
-      headless.modules = [config.flake.dendritic.modules.nixos.headless];
-      interactive.modules = [config.flake.dendritic.modules.nixos.interactive];
-      dev.homeModules = [config.flake.dendritic.modules.homeManager.dev];
-    };
+    perTag = {};
 
     users = {
       standalone = {
@@ -21,17 +14,19 @@
         standalone = {
           enable = !lib.inPureEvalMode;
           pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-          modules = [config.flake.dendritic.modules.homeManager.standalone];
+          modules = [];
         };
+        tags = ["standalone"];
         variants.dev.tags = ["dev"];
       };
 
       krad246 = {
         enable = true;
+        tags = ["standalone"];
         standalone = {
           enable = !lib.inPureEvalMode;
           pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-          modules = [config.flake.dendritic.modules.homeManager.standalone];
+          modules = [];
         };
       };
     };
@@ -53,7 +48,7 @@
         enable = true;
         class = "nixos";
         hostPlatforms = [{system = "x86_64-linux";}];
-        tags = ["headless" "interactive"];
+        tags = ["headless"];
         modules = [
           ({lib, ...}: {
             networking.hostName = "generic-headless-interactive";
@@ -89,11 +84,11 @@
         enable = true;
         class = "darwin";
         hostPlatforms = [{system = "aarch64-darwin";}];
-        tags = []; # TODO: what tags at this level?
+        tags = ["workstation"];
         modules = [
           (_: {networking.hostName = "nixbook-pro-composed";})
         ];
-        users.krad246.modules = [config.flake.dendritic.modules.homeManager.nixbook-pro];
+        users.krad246 = {};
         variants.dev.tags = ["dev"];
       };
     };
