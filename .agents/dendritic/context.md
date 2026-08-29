@@ -92,6 +92,15 @@ subset of tests pass, or because the branch is mergeable. Completion means the
 architecture and subsequent machine ports described here are actually landed
 and verified.
 
+### Owner sequencing decision (2026-08-29)
+
+Keep `nixbook-pro` active; it is not complete. The current proof cohort is
+`nixbook-pro`, standalone Home Manager, Windex, and Miniboi. Fair-share
+schedule work across these four lanes in independently reviewable dependency
+slices rather than treating nixbook-pro as the exclusive prerequisite. This
+broadens the proof cohort only: it does not authorize a wholesale merge of the
+frozen Dendritic branch or revival of legacy host-shaped evaluators.
+
 ## Authoritative architectural intent
 
 Systems are to be reconstructed from imports of capability interfaces, not
@@ -1654,7 +1663,8 @@ Before committing:
 1. Finish total behavioral porting of `. #base`, using the program-by-program HM
    ledger and explicit owner decisions rather than copying legacy bundles. The
    bridge now consumes the predecessor's exported `base` and `standalone`
-   profiles directly; do not reconstruct their imports locally.
+   profiles directly; do not reconstruct their imports locally. Prove this
+   through the active nixbook-pro, standalone, Windex, and Miniboi cohort.
 2. Keep the evaluated cross-platform base checks meaningful without requiring
    `base` to remain a public configuration name. A concrete standalone root may
    privately import the reusable base module and publish its activation as a
@@ -1670,13 +1680,13 @@ Before committing:
    SSH/terminal or builder user-space composition only when justified by real
    consumers; do not mirror semantically empty profile names for symmetry.
 4. Add the federated N-output host/deployment registry and its single late
-   interpreter, then restore Windex as a consumer through it. Use the already
-   proven Home Manager modules for standalone, nix-darwin-integrated,
-   NixOS-integrated, and generic FHS Linux instantiations; host declarations
-   should contain only facts, profile selections, and explicit
-   overrides/overlays. Legacy `generic-linux` remains deleted; its deferred
-   desktop behavior stays in the interface agenda rather than returning as a
-   host bundle.
+   interpreter, then restore Windex and port Miniboi through it while retaining
+   nixbook-pro and standalone as active consumers. Use the already-proven Home
+   Manager modules for standalone, nix-darwin-integrated, NixOS-integrated,
+   and generic FHS Linux instantiations; host declarations should contain only
+   facts, profile selections, and explicit overrides/overlays. Legacy
+   `generic-linux` remains deleted; its deferred desktop behavior stays in the
+   interface agenda rather than returning as a host bundle.
 5. Port the Dendritic flake-policy interface, retaining a rich output surface
    while redesigning declaration/ownership/composition semantics.
    Inventory and eliminate every import-from-derivation consumer, especially

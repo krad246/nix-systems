@@ -51,7 +51,14 @@
         hostPlatforms = [{system = "x86_64-linux";}];
         tags = ["generic-headless-interactive"];
         modules = [
-          (_: {networking.hostName = "generic-headless-interactive";})
+          ({lib, ...}: {
+            networking.hostName = "generic-headless-interactive";
+            fileSystems."/" = lib.mkDefault {
+              device = "none";
+              fsType = "tmpfs";
+            };
+            boot.loader.grub.devices = lib.mkDefault ["nodev"];
+          })
         ];
         variants = {
           dev.modules = [
