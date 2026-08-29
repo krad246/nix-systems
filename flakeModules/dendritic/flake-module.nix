@@ -223,15 +223,17 @@ in {
         lib.pipe declarations [
           (lib.mapAttrsToList (name: declaration:
             [{${name} = configuration declaration;}]
-            ++ lib.mapAttrsToList (variantName: variant: {
-              ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant declaration variant;
-            }) (lib.filterAttrs (_: variant:
-              if variant.standalone != null
-              then variant.standalone
-              else if declaration.standalone != null
-              then declaration.standalone
-              else config.dendritic.defaults.hosts.standalone)
-            declaration.variants)))
+            ++ lib.pipe declaration.variants [
+              (lib.filterAttrs (_: variant:
+                if variant.standalone != null
+                then variant.standalone
+                else if declaration.standalone != null
+                then declaration.standalone
+                else config.dendritic.defaults.hosts.standalone))
+              (lib.mapAttrsToList (variantName: variant: {
+                ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant declaration variant;
+              }))
+            ]))
           lib.concatLists
         ];
     };
@@ -270,15 +272,17 @@ in {
         lib.pipe declarations [
           (lib.mapAttrsToList (name: declaration:
             [{${name} = configuration declaration;}]
-            ++ lib.mapAttrsToList (variantName: variant: {
-              ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant declaration variant;
-            }) (lib.filterAttrs (_: variant:
-              if variant.standalone != null
-              then variant.standalone
-              else if declaration.standalone != null
-              then declaration.standalone
-              else config.dendritic.defaults.hosts.standalone)
-            declaration.variants)))
+            ++ lib.pipe declaration.variants [
+              (lib.filterAttrs (_: variant:
+                if variant.standalone != null
+                then variant.standalone
+                else if declaration.standalone != null
+                then declaration.standalone
+                else config.dendritic.defaults.hosts.standalone))
+              (lib.mapAttrsToList (variantName: variant: {
+                ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant declaration variant;
+              }))
+            ]))
           lib.concatLists
         ];
     };
@@ -410,15 +414,17 @@ in {
         lib.pipe declarations [
           (lib.mapAttrsToList (name: declaration:
             [{${name} = configuration pkgs declaration;}]
-            ++ lib.mapAttrsToList (variantName: variant: {
-              ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant pkgs declaration variant;
-            }) (lib.filterAttrs (_: variant:
-              if variant.standalone != null
-              then variant.standalone
-              else if declaration.standalone != null
-              then declaration.standalone
-              else config.dendritic.defaults.users.standalone)
-            declaration.variants)))
+            ++ lib.pipe declaration.variants [
+              (lib.filterAttrs (_: variant:
+                if variant.standalone != null
+                then variant.standalone
+                else if declaration.standalone != null
+                then declaration.standalone
+                else config.dendritic.defaults.users.standalone))
+              (lib.mapAttrsToList (variantName: variant: {
+                ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant pkgs declaration variant;
+              }))
+            ]))
           lib.concatLists
         ];
     };

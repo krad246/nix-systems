@@ -48,15 +48,17 @@
         lib.pipe roots [
           (lib.mapAttrsToList (rootName: root:
             [{${rootName} = configuration policy root;}]
-            ++ lib.mapAttrsToList (variantName: variant: {
-              "${rootName}-${variantName}" = standaloneVariant root variant;
-            }) (lib.filterAttrs (_: variant:
-              if variant.standalone != null
-              then variant.standalone
-              else if root.standalone != null
-              then root.standalone
-              else policy.standalone)
-            root.variants)))
+            ++ lib.pipe root.variants [
+              (lib.filterAttrs (_: variant:
+                if variant.standalone != null
+                then variant.standalone
+                else if root.standalone != null
+                then root.standalone
+                else policy.standalone))
+              (lib.mapAttrsToList (variantName: variant: {
+                "${rootName}-${variantName}" = standaloneVariant root variant;
+              }))
+            ]))
           lib.concatLists
           (lib.foldl' (outputs: output: outputs // output) {})
         ];
