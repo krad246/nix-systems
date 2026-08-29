@@ -14,10 +14,11 @@ attributes, never host names, application names, or low-level capabilities.
 
 Selecting a tag materializes the corresponding profile modules for the target
 platform and Home Manager node. `perTag.<name>` is the customization seam
-around that canonical profile: its `modules`, `homeModules`, and
-`users.<name>.modules` are additive overlays, while `metadata` is carried on
-normalized declaration rows. The same rule applies at root, host, user,
-host-user, and variant nodes.
+around that canonical profile: `nixosModules` and `darwinModules` select the
+native system projection, `homeModules` selects Home Manager, and
+`modules`/`users.<name>.modules` add generic or user-specific contributions.
+`metadata` is carried on normalized declaration rows. The same rule applies at
+root, host, user, host-user, and variant nodes.
 
 ## Variants
 
@@ -34,7 +35,7 @@ constructs the parent once and applies that exact delta for each projection:
 These are independent controls. Nix module priorities inside the variant are
 the override mechanism; a variant is not a second host.
 
-## Layer order
+## Composition order
 
 For each host platform, Dendritic composes:
 

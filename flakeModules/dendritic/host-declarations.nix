@@ -8,11 +8,11 @@
 
   profile = nativeClass: tag: let
     overlay = configurations.perTag.${tag} or {};
-    layer = profileLayers.${tag} or (throw "dendritic.configurations: tag ${tag} is not a profile overlay in inputs.dendritic/modules/profiles");
-  in {
-    system = layer.${nativeClass} ++ (overlay.modules or []);
-    home = layer.homeManager ++ (overlay.homeModules or []);
-  };
+  in
+    assert lib.assertMsg (profileLayers ? ${tag}) "dendritic.configurations: tag ${tag} is not a canonical profile aspect"; {
+      system = (overlay."${nativeClass}Modules" or []) ++ (overlay.modules or []);
+      home = overlay.homeModules or [];
+    };
 
   homeContributions = username: contribution:
     (contribution.homeModules or []) ++ (contribution.users.${username}.modules or []);
