@@ -412,14 +412,14 @@ attrset. The four combinations—neither, standalone only,
 include only, and both—and mixed leaf selections must work without duplicating
 declarations. The production default is standalone on and inclusion off.
 
-The reusable configuration backend uses the module-style `standalone` and
-`includeSpecialisation` options. Its materialization law is: construct one base
-configuration, optionally include the selected deltas in that root's native
-`specialisation` namespace, and independently extend the same base configuration
-for every standalone delta. A backend's specialisation capability is represented
-by supplying its inclusion operation, not
-by declaration metadata. Backends without that operation still support
-standalone variants and fail only when a selected coordinate requests inclusion.
+The concrete Home Manager, NixOS, and nix-darwin evaluators use the module-style
+`standalone` and `includeSpecialisation` options. Keep those evaluators as explicit
+recursive attrsets rather than hiding their native contracts behind a backend
+factory. Their materialization law is: construct one base configuration,
+optionally include selected deltas in the root's native `specialisation`
+namespace, and independently extend the same base configuration for every
+standalone delta. An evaluator without native specialisations still supports
+standalone variants and fails only when a selected coordinate requests inclusion.
 
 Do not place the exhaustive four-mode proof in ordinary flake `checks`:
 `nix flake show` enumerates checks and would thereby force the resident
