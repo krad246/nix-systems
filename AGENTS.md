@@ -3,7 +3,7 @@
 This repository is in a long-running Dendritic architecture migration. Do not
 begin architectural work from this compact proxy alone.
 
-Canonical context proxy SHA-256: `2e6ecdfed583249fc6c19dea6045608ab12de40922556df269768c66781cd0d9`
+Canonical context proxy SHA-256: `ff8815b930d28776f081e1b56a65da3ef82e8734cf607dd9e15f6f11d7d600f6`
 
 Run:
 
