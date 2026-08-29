@@ -244,32 +244,30 @@ in {
         ];
     };
 
-    selectSystemDeclarations = system: declarations:
-      lib.mapAttrs (_: declaration: let
-        buildSystem =
-          if declaration.buildPlatform == null
-          then {inherit system;}
-          else declaration.buildPlatform;
-        platform = lib.systems.parse.mkSystemFromString system;
-        expectedClass =
-          if lib.systems.inspect.predicates.isDarwin platform
-          then "darwin"
-          else if lib.systems.inspect.predicates.isLinux platform
-          then "nixos"
-          else throw "dendritic.configurations: unsupported host platform ${system}";
-      in
-        if declaration.class != expectedClass
-        then throw "dendritic.configurations: class ${declaration.class} conflicts with host platform ${system}"
-        else if buildSystem.system != system && !declaration.crossCompile
-        then throw "dendritic.configurations: host platform ${system} requires crossCompile = true for build platform ${buildSystem.system}"
-        else
-          declaration
-          // {
-            hostPlatform = {inherit system;};
+    selectSystemDeclarations = targetSystem: declarations:
+      lib.pipe declarations [
+        (lib.filterAttrs (_: declaration: builtins.elem targetSystem (map platformSystem declaration.hostPlatforms)))
+        (lib.mapAttrs (_: declaration: let
+          buildSystem =
+            if declaration.buildPlatform == null
+            then {system = targetSystem;}
+            else declaration.buildPlatform;
+          platform = lib.systems.parse.mkSystemFromString targetSystem;
+          expectedClass =
+            if lib.systems.inspect.predicates.isDarwin platform
+            then "darwin"
+            else if lib.systems.inspect.predicates.isLinux platform
+            then "nixos"
+            else throw "dendritic.configurations: unsupported host platform ${targetSystem}";
+        in
+          assert lib.assertMsg (declaration.class == expectedClass) "dendritic.configurations: class ${declaration.class} conflicts with host platform ${targetSystem}";
+          assert lib.assertMsg (buildSystem.system == targetSystem || declaration.crossCompile) "dendritic.configurations: host platform ${targetSystem} requires crossCompile = true for build platform ${buildSystem.system}"; {
+            inherit (declaration) enable class tags hostPlatforms crossCompile users variants;
+            hostPlatform = {system = targetSystem;};
             buildPlatform = buildSystem;
-            modules = declaration.modules ++ (config.dendritic.configurations.perSystem.${system}.modules or []);
-          })
-      (lib.filterAttrs (_: declaration: builtins.elem system (map platformSystem declaration.hostPlatforms)) declarations);
+            modules = declaration.modules ++ (config.dendritic.configurations.perSystem.${targetSystem}.modules or []);
+          }))
+      ];
 
     variantPackages = buildSystem: declarations:
       lib.pipe (builtins.attrNames declarations) [
@@ -313,27 +311,26 @@ in {
 
     systemDeclarations = lib.pipe config.dendritic.configurations.hosts [
       (lib.filterAttrs (_: host: host.enable))
-      (lib.mapAttrs (_hostName: host:
-        host
-        // {
-          modules =
-            lib.pipe (
-              [
-                config.dendritic.configurations.shared
-                (config.dendritic.configurations.perClass.${host.class} or {})
-              ]
-              ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
-              ++ [host]
-            ) [
-              (map (layer: layer.modules or []))
-              lib.concatLists
-            ];
-          users =
-            lib.mapAttrs (username: layer: {
-              modules = config.dendritic.configurations.users.${username}.modules ++ layer.modules;
-            })
-            host.users;
-        }))
+      (lib.mapAttrs (_hostName: host: {
+        inherit (host) enable class tags hostPlatforms buildPlatform crossCompile variants;
+        modules =
+          lib.pipe (
+            [
+              config.dendritic.configurations.shared
+              (config.dendritic.configurations.perClass.${host.class} or {})
+            ]
+            ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
+            ++ [host]
+          ) [
+            (map (layer: layer.modules or []))
+            lib.concatLists
+          ];
+        users =
+          lib.mapAttrs (username: layer: {
+            modules = config.dendritic.configurations.users.${username}.modules ++ layer.modules;
+          })
+          host.users;
+      }))
     ];
 
     targetSystems = lib.unique (

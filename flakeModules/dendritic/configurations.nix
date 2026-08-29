@@ -7,6 +7,22 @@
   dendritic.configurations = {
     variants.enable = lib.mkDefault true;
 
+    perClass.darwin.modules = [config.flake.dendritic.modules.darwin.base];
+
+    perTag = {
+      generic-headless-interactive.modules = [
+        config.flake.dendritic.modules.nixos.headless
+        config.flake.dendritic.modules.nixos.interactive
+      ];
+      nixbook-pro.modules = [
+        config.flake.dendritic.modules.darwin.applications
+        config.flake.dendritic.modules.darwin.app-stores
+        config.flake.dendritic.modules.darwin.browser
+        config.flake.dendritic.modules.darwin.linux-builder
+        config.flake.dendritic.modules.darwin.tailscale
+      ];
+    };
+
     users = {
       standalone = {
         enable = true;
@@ -33,9 +49,8 @@
         enable = true;
         class = "nixos";
         hostPlatforms = [{system = "x86_64-linux";}];
+        tags = ["generic-headless-interactive"];
         modules = [
-          config.flake.dendritic.modules.nixos.headless
-          config.flake.dendritic.modules.nixos.interactive
           (_: {networking.hostName = "generic-headless-interactive";})
         ];
         variants = {
@@ -60,13 +75,8 @@
         enable = true;
         class = "darwin";
         hostPlatforms = [{system = "aarch64-darwin";}];
+        tags = ["nixbook-pro"];
         modules = [
-          config.flake.dendritic.modules.darwin.applications
-          config.flake.dendritic.modules.darwin.base
-          config.flake.dendritic.modules.darwin.app-stores
-          config.flake.dendritic.modules.darwin.browser
-          config.flake.dendritic.modules.darwin.linux-builder
-          config.flake.dendritic.modules.darwin.tailscale
           (_: {networking.hostName = "nixbook-pro-composed";})
         ];
         users.krad246.modules = [config.flake.dendritic.modules.homeManager.nixbook-pro];
