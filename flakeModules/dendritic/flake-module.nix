@@ -5,52 +5,50 @@
   withSystem,
   ...
 }: let
-  composeProjection = {
+  configurationBackend = {
     construct,
     includeSpecialisation ? null,
-  }: let
-    inheritPolicy = local: parent: global:
-      if local != null
-      then local
-      else if parent != null
-      then parent
-      else global;
-    resolve = policy:
-      lib.mapAttrs (_: declaration:
-        declaration
-        // {
-          variants = lib.mapAttrs (_: variant:
-            variant
-            // {
-              publish = inheritPolicy variant.publish declaration.publish policy.publish;
-              includeSpecialisation = inheritPolicy variant.includeSpecialisation declaration.includeSpecialisation policy.includeSpecialisation;
-            })
-          declaration.variants;
-        });
-    bare = context: declaration: construct context declaration;
+    policy,
+  }: rec {
+    baseConfiguration = context: declaration: construct context declaration;
+
     configuration = context: declaration: let
-      root = bare context declaration;
-      embedded = lib.filterAttrs (_: variant: variant.includeSpecialisation) declaration.variants;
+      root = baseConfiguration context declaration;
+      includedSpecialisations = lib.filterAttrs (_: variant:
+        if variant.includeSpecialisation != null
+        then variant.includeSpecialisation
+        else if declaration.includeSpecialisation != null
+        then declaration.includeSpecialisation
+        else policy.includeSpecialisation)
+      declaration.variants;
     in
-      if embedded == {}
+      if includedSpecialisations == {}
       then root
       else if includeSpecialisation == null
-      then throw "this configuration backend does not support embedded variants"
-      else includeSpecialisation root embedded;
-    variant = context: declaration: delta:
-      (bare context declaration).extendModules {inherit (delta) modules;};
-  in {
-    inherit configuration resolve variant;
-    definitions = context: nameFunction: declarations:
+      then throw "this configuration backend does not support included specialisations"
+      else includeSpecialisation root includedSpecialisations;
+
+    standaloneVariant = context: declaration: variant:
+      (baseConfiguration context declaration).extendModules {inherit (variant) modules;};
+
+    outputs = context: nameFunction: declarations:
       lib.pipe declarations [
         (lib.mapAttrsToList (rootName: declaration: let
-          published = lib.filterAttrs (_: variant: variant.publish) declaration.variants;
+          standaloneVariants = lib.filterAttrs (_: variant:
+            if variant.standalone != null
+            then variant.standalone
+            else if declaration.standalone != null
+            then declaration.standalone
+            else policy.standalone)
+          declaration.variants;
         in
+          # The root contains any variants selected for inclusion as specialisations.
           [{${rootName} = configuration context declaration;}]
-          ++ lib.mapAttrsToList (variantName: delta: {
-            ${nameFunction rootName variantName} = variant context declaration delta;
+          # Standalone variants are lightweight, independently buildable handles.
+          ++ lib.mapAttrsToList (variantName: variant: {
+            ${nameFunction rootName variantName} = standaloneVariant context declaration variant;
           })
-          published))
+          standaloneVariants))
         lib.concatLists
       ];
   };
@@ -62,10 +60,10 @@
         default = [];
         description = "Module delta for this variant.";
       };
-      publish = lib.mkOption {
+      standalone = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Independent output policy; null inherits from its containing declaration.";
+        description = "Standalone output policy; null inherits from its containing declaration.";
       };
       includeSpecialisation = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
@@ -88,10 +86,10 @@
         default = {};
         description = "Sparse Home Manager variant coordinates.";
       };
-      publish = lib.mkOption {
+      standalone = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Publication default for these user variants.";
+        description = "Standalone output default for these user variants.";
       };
       includeSpecialisation = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
@@ -151,10 +149,10 @@
         default = {};
         description = "Sparse image output coordinates.";
       };
-      publish = lib.mkOption {
+      standalone = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
         default = null;
-        description = "Publication default for these host variants.";
+        description = "Standalone output default for these host variants.";
       };
       includeSpecialisation = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
@@ -194,7 +192,7 @@ in {
         type = lib.types.functionTo (lib.types.functionTo lib.types.str);
         default = configuration: variant: "${configuration}-${variant}";
         defaultText = lib.literalExpression ''configuration: variant: "''${configuration}-''${variant}"'';
-        description = "Function naming independently published variants from any configuration layer.";
+        description = "Function naming standalone variants from any configuration layer.";
       };
 
       imageNameFunction = lib.mkOption {
@@ -207,11 +205,11 @@ in {
 
     defaults = {
       users = {
-        publish = lib.mkEnableOption "independently buildable Home Manager variant outputs by default";
+        standalone = lib.mkEnableOption "standalone Home Manager variant outputs by default";
         includeSpecialisation = lib.mkEnableOption "Home Manager variants in their parent activation generations by default";
       };
       hosts = {
-        publish = lib.mkEnableOption "independently buildable system variant outputs by default";
+        standalone = lib.mkEnableOption "standalone system variant outputs by default";
         includeSpecialisation = lib.mkEnableOption "system variants in their parent specialisation tables by default";
         cross = lib.mkEnableOption "cross-system configurations by default";
       };
@@ -227,7 +225,8 @@ in {
       })
       declaration.users;
 
-    nixosConfigurations = composeProjection {
+    nixosConfigurations = configurationBackend {
+      policy = config.dendritic.defaults.hosts;
       construct = _: declaration:
         inputs.nixpkgs.lib.nixosSystem {
           modules =
@@ -254,7 +253,8 @@ in {
         };
     };
 
-    darwinConfigurations = composeProjection {
+    darwinConfigurations = configurationBackend {
+      policy = config.dendritic.defaults.hosts;
       construct = _: declaration:
         inputs.darwin.lib.darwinSystem {
           modules =
@@ -268,31 +268,6 @@ in {
             ++ declaration.modules;
         };
     };
-
-    resolveSystemDeclarations = policy: declarations:
-      lib.mapAttrs (_: declaration:
-        declaration
-        // {
-          cross = declaration.cross || policy.cross;
-          variants = lib.mapAttrs (_: variant:
-            variant
-            // {
-              publish =
-                if variant.publish != null
-                then variant.publish
-                else if declaration.publish != null
-                then declaration.publish
-                else policy.publish;
-              includeSpecialisation =
-                if variant.includeSpecialisation != null
-                then variant.includeSpecialisation
-                else if declaration.includeSpecialisation != null
-                then declaration.includeSpecialisation
-                else policy.includeSpecialisation;
-            })
-          declaration.variants;
-        })
-      declarations;
 
     selectSystemDeclarations = system: declarations:
       lib.mapAttrs (_: declaration: let
@@ -323,7 +298,7 @@ in {
         then nixosConfigurations
         else throw "dendritic.configurations: unsupported target system ${system}";
     in
-      backend.definitions null config.dendritic.outputs.nameFunction selectedDeclarations;
+      backend.outputs null config.dendritic.outputs.nameFunction selectedDeclarations;
 
     imageOutputs = buildSystem: declarations: let
       candidates = lib.concatMap (rootName: let
@@ -368,11 +343,12 @@ in {
       lib.mapAttrs (_: declaration: removeAttrs declaration.hosts ["enable"])
       (lib.filterAttrs (_: declaration: declaration.hosts.enable) config.dendritic.configurations);
 
-    systemDeclarations =
-      resolveSystemDeclarations {
-        inherit (config.dendritic.defaults.hosts) publish includeSpecialisation cross;
-      }
-      hostDeclarations;
+    systemDeclarations = lib.mapAttrs (_: declaration:
+      declaration
+      // {
+        cross = declaration.cross || config.dendritic.defaults.hosts.cross;
+      })
+    hostDeclarations;
 
     targetSystems = lib.pipe systemDeclarations [
       builtins.attrValues
@@ -381,7 +357,8 @@ in {
     ];
     darwinSystems = lib.filter (system: isSystem lib.systems.inspect.predicates.isDarwin system) targetSystems;
 
-    homeManagerConfigurations = composeProjection {
+    homeManagerConfigurations = configurationBackend {
+      policy = config.dendritic.defaults.users;
       construct = pkgs: declaration:
         inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
@@ -401,148 +378,29 @@ in {
         };
     };
 
-    declarations = homeManagerConfigurations.resolve config.dendritic.defaults.users homeManagerDeclarations;
-
-    localHomeManagerModules = let
-      substrate = config.flake.dendritic.modules.homeManager;
-      owner = {
-        email = "krad246@gmail.com";
-        name = "Keerthi Radhakrishnan";
-        username = "krad246";
-      };
-    in {
-      identity.options.identity.person = {
-        email = lib.mkOption {
-          type = lib.types.str;
-          default = owner.email;
-          description = "Primary email address for this identity.";
-        };
-        name = lib.mkOption {
-          type = lib.types.str;
-          default = owner.name;
-          description = "Full name for this identity.";
-        };
-        username = lib.mkOption {
-          type = lib.types.str;
-          default = owner.username;
-          description = "Username for this identity.";
-        };
-      };
-
-      base = {pkgs, ...}: {
-        imports = [
-          localHomeManagerModules.identity
-          substrate.input-registry
-          substrate.shell
-        ];
-
-        config = lib.mkMerge [
-          {
-            home = {
-              preferXdgDirectories = true;
-              stateVersion = inputs.dendritic.lib.trivial.release;
-            };
-            manual = {
-              html.enable = false;
-              json.enable = true;
-            };
-            news.display = "silent";
-            xdg.enable = true;
-          }
-          (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-            targets.genericLinux = {
-              enable = true;
-              gpu.enable = lib.mkDefault false;
-            };
-            systemd.user.startServices = "sd-switch";
-          })
-        ];
-      };
-
-      homeManagerSupport = {
-        home.stateVersion = inputs.dendritic.lib.trivial.release;
-        programs.home-manager.enable = true;
-      };
-
-      standalone = {
-        config,
-        pkgs,
-        ...
-      }: {
-        imports = [
-          localHomeManagerModules.base
-          localHomeManagerModules.homeManagerSupport
-        ];
-
-        home = {
-          username = lib.mkDefault config.identity.person.username;
-          homeDirectory = lib.mkDefault (
-            if pkgs.stdenv.hostPlatform.isDarwin
-            then "/Users/${config.identity.person.username}"
-            else "/home/${config.identity.person.username}"
-          );
-        };
-
-        nix.package = lib.mkDefault pkgs.nix;
-      };
-
-      desktop = {
-        imports = [
-          substrate.browser
-          substrate.terminal
-        ];
-      };
-
-      dev = {
-        imports = [substrate.editor];
-
-        shell.profiles.dev.enable = true;
-        picker.backends.fzf.integrations.helix.enable = lib.mkDefault true;
-      };
-
-      interactive.shell.profiles.interactive.enable = true;
-
-      secrets = {
-        imports = [substrate.rbw];
-
-        identity.secrets.backends.rbw.enable = lib.mkDefault true;
-      };
-    };
-
-    nixbookProUserModules = with localHomeManagerModules; [
-      desktop
-      dev
-      interactive
-      secrets
-      {
-        browser.backends.zen = {
-          enable = lib.mkDefault true;
-          default = lib.mkDefault true;
-        };
-      }
-    ];
+    declarations = homeManagerDeclarations;
   in {
     dendritic.defaults = {
-      users.publish = lib.mkDefault true;
-      hosts.publish = lib.mkDefault true;
+      users.standalone = lib.mkDefault true;
+      hosts.standalone = lib.mkDefault true;
     };
 
     dendritic.configurations = lib.mkMerge [
       {
         standalone.users = {
           enable = true;
-          modules = [localHomeManagerModules.standalone];
+          modules = [config.flake.dendritic.modules.homeManager.standalone];
         };
       }
       {
-        standalone.users.variants.dev.modules = [localHomeManagerModules.dev];
+        standalone.users.variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
       }
       {
         nixbook-pro.users = {
           enable = true;
           modules =
-            [localHomeManagerModules.standalone]
-            ++ nixbookProUserModules;
+            [config.flake.dendritic.modules.homeManager.standalone]
+            ++ config.flake.dendritic.modules.homeManager.nixbook-pro;
         };
       }
       {
@@ -592,7 +450,7 @@ in {
             config.flake.dendritic.modules.darwin.tailscale
             (_: {networking.hostName = "nixbook-pro-composed";})
           ];
-          users.krad246.modules = nixbookProUserModules;
+          users.krad246.modules = config.flake.dendritic.modules.homeManager.nixbook-pro;
         };
       }
     ];
@@ -626,12 +484,123 @@ in {
     # Stable migration seam. Consumers use this namespace while its values are
     # progressively replaced with modules materialized in the current tree.
     flake.dendritic = {
-      inherit (inputs.dendritic) darwinModules modules nixosModules;
+      inherit (inputs.dendritic) darwinModules nixosModules;
+
+      modules =
+        inputs.dendritic.modules
+        // {
+          homeManager =
+            inputs.dendritic.modules.homeManager
+            // rec {
+              identity.options.identity.person = {
+                email = lib.mkOption {
+                  type = lib.types.str;
+                  default = "krad246@gmail.com";
+                  description = "Primary email address for this identity.";
+                };
+                name = lib.mkOption {
+                  type = lib.types.str;
+                  default = "Keerthi Radhakrishnan";
+                  description = "Full name for this identity.";
+                };
+                username = lib.mkOption {
+                  type = lib.types.str;
+                  default = "krad246";
+                  description = "Username for this identity.";
+                };
+              };
+
+              base = {pkgs, ...}: {
+                imports = [
+                  identity
+                  inputs.dendritic.modules.homeManager.input-registry
+                  inputs.dendritic.modules.homeManager.shell
+                ];
+
+                config = lib.mkMerge [
+                  {
+                    home = {
+                      preferXdgDirectories = true;
+                      stateVersion = inputs.dendritic.lib.trivial.release;
+                    };
+                    manual = {
+                      html.enable = false;
+                      json.enable = true;
+                    };
+                    news.display = "silent";
+                    xdg.enable = true;
+                  }
+                  (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+                    targets.genericLinux = {
+                      enable = true;
+                      gpu.enable = lib.mkDefault false;
+                    };
+                    systemd.user.startServices = "sd-switch";
+                  })
+                ];
+              };
+
+              homeManagerSupport = {
+                home.stateVersion = inputs.dendritic.lib.trivial.release;
+                programs.home-manager.enable = true;
+              };
+
+              standalone = {
+                config,
+                pkgs,
+                ...
+              }: {
+                imports = [base homeManagerSupport];
+
+                home = {
+                  username = lib.mkDefault config.identity.person.username;
+                  homeDirectory = lib.mkDefault (
+                    if pkgs.stdenv.hostPlatform.isDarwin
+                    then "/Users/${config.identity.person.username}"
+                    else "/home/${config.identity.person.username}"
+                  );
+                };
+
+                nix.package = lib.mkDefault pkgs.nix;
+              };
+
+              desktop.imports = [
+                inputs.dendritic.modules.homeManager.browser
+                inputs.dendritic.modules.homeManager.terminal
+              ];
+
+              dev = {
+                imports = [inputs.dendritic.modules.homeManager.editor];
+                shell.profiles.dev.enable = true;
+                picker.backends.fzf.integrations.helix.enable = lib.mkDefault true;
+              };
+
+              interactive.shell.profiles.interactive.enable = true;
+
+              secrets = {
+                imports = [inputs.dendritic.modules.homeManager.rbw];
+                identity.secrets.backends.rbw.enable = lib.mkDefault true;
+              };
+
+              "nixbook-pro" = [
+                desktop
+                dev
+                interactive
+                secrets
+                {
+                  browser.backends.zen = {
+                    enable = lib.mkDefault true;
+                    default = lib.mkDefault true;
+                  };
+                }
+              ];
+            };
+        };
     };
 
     flake = {
       homeConfigurations = lib.mkIf (!lib.inPureEvalMode) (lib.mkMerge (
-        homeManagerConfigurations.definitions
+        homeManagerConfigurations.outputs
         (withSystem builtins.currentSystem ({pkgs, ...}: pkgs))
         config.dendritic.outputs.nameFunction
         declarations

@@ -9,70 +9,64 @@
     system,
     ...
   }: let
-    inheritPolicy = local: parent: global:
-      if local != null
-      then local
-      else if parent != null
-      then parent
-      else global;
-
-    resolve = policy:
-      lib.mapAttrs (_: root:
-        root
-        // {
-          variants = lib.mapAttrs (_: variant:
-            variant
-            // {
-              publish = inheritPolicy variant.publish root.publish policy.publish;
-              includeSpecialisation = inheritPolicy variant.includeSpecialisation root.includeSpecialisation policy.includeSpecialisation;
-            })
-          root.variants;
-        });
-
-    bare = root:
-      inputs.home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        inherit (root) modules;
-      };
-
-    configuration = root: let
-      evaluated = bare root;
-      embedded = lib.filterAttrs (_: variant: variant.includeSpecialisation) root.variants;
-    in
-      if embedded == {}
-      then evaluated
-      else
-        evaluated.extendModules {
-          modules = [
-            {
-              specialisation =
-                lib.mapAttrs (_: delta: {
-                  configuration.imports = delta.modules;
-                })
-                embedded;
-            }
-          ];
+    homeManager = rec {
+      baseConfiguration = root:
+        inputs.home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          inherit (root) modules;
         };
 
-    variant = root: delta:
-      (bare root).extendModules {inherit (delta) modules;};
+      configuration = policy: root: let
+        evaluated = baseConfiguration root;
+        includedSpecialisations = lib.filterAttrs (_: variant:
+          if variant.includeSpecialisation != null
+          then variant.includeSpecialisation
+          else if root.includeSpecialisation != null
+          then root.includeSpecialisation
+          else policy.includeSpecialisation)
+        root.variants;
+      in
+        if includedSpecialisations == {}
+        then evaluated
+        else
+          evaluated.extendModules {
+            modules = [
+              {
+                specialisation =
+                  lib.mapAttrs (_: variant: {
+                    configuration.imports = variant.modules;
+                  })
+                  includedSpecialisations;
+              }
+            ];
+          };
 
-    definitions = roots:
-      lib.pipe roots [
-        (lib.mapAttrsToList (rootName: root:
-          [{${rootName} = configuration root;}]
-          ++ lib.mapAttrsToList (variantName: delta: {
-            "${rootName}-${variantName}" = variant root delta;
-          }) (lib.filterAttrs (_: delta: delta.publish) root.variants)))
-        lib.concatLists
-        (lib.foldl' (outputs: output: outputs // output) {})
-      ];
+      standaloneVariant = root: variant:
+        (baseConfiguration root).extendModules {inherit (variant) modules;};
+
+      outputs = policy: roots:
+        lib.pipe roots [
+          (lib.mapAttrsToList (rootName: root:
+            [{${rootName} = configuration policy root;}]
+            ++ lib.mapAttrsToList (variantName: variant: {
+              "${rootName}-${variantName}" = standaloneVariant root variant;
+            }) (lib.filterAttrs (_: variant:
+              if variant.standalone != null
+              then variant.standalone
+              else if root.standalone != null
+              then root.standalone
+              else policy.standalone)
+            root.variants)))
+          lib.concatLists
+          (lib.foldl' (outputs: output: outputs // output) {})
+        ];
+    };
 
     declaration = {
-      publish,
+      standalone,
       includeSpecialisation,
     }: {
-      inherit publish includeSpecialisation;
+      inherit standalone includeSpecialisation;
       modules = [
         {
           home = {
@@ -84,37 +78,37 @@
       ];
       variants.dev = {
         modules = [{home.sessionVariables.DENDRITIC_VARIANT = "dev";}];
-        publish = null;
+        standalone = null;
         includeSpecialisation = null;
       };
     };
 
     outputsFor = policy:
-      definitions (resolve policy {
+      homeManager.outputs policy {
         standalone = declaration policy;
-      });
+      };
 
     neither = outputsFor {
-      publish = false;
+      standalone = false;
       includeSpecialisation = false;
     };
-    publishOnly = outputsFor {
-      publish = true;
+    standaloneOnly = outputsFor {
+      standalone = true;
       includeSpecialisation = false;
     };
-    embedOnly = outputsFor {
-      publish = false;
+    includedOnly = outputsFor {
+      standalone = false;
       includeSpecialisation = true;
     };
     both = outputsFor {
-      publish = true;
+      standalone = true;
       includeSpecialisation = true;
     };
-    embeddedDev = outputs:
+    includedDev = outputs:
       outputs.standalone.config.specialisation.dev.configuration;
 
-    productionStandalone = bare (removeAttrs config.dendritic.configurations.standalone.users ["enable"]);
-    productionNixbook = bare (removeAttrs config.dendritic.configurations.nixbook-pro.users ["enable"]);
+    productionStandalone = homeManager.baseConfiguration (removeAttrs config.dendritic.configurations.standalone.users ["enable"]);
+    productionNixbook = homeManager.baseConfiguration (removeAttrs config.dendritic.configurations.nixbook-pro.users ["enable"]);
     legacyConfiguration = inputs.dendritic.darwinConfigurations.nixbook-pro;
     legacyConfig = legacyConfiguration.config;
     legacy = legacyConfig.home-manager.users.${legacyConfig.owner.username};
@@ -125,43 +119,43 @@
     dendritic.assertions = [
       {
         assertion = builtins.attrNames neither == ["standalone"];
-        message = "disabled publication emits only the standalone root";
+        message = "disabled standalone variants emit only the root configuration";
       }
       {
         assertion = neither.standalone.config.specialisation == {};
         message = "disabled inclusion leaves the standalone root unspecialised";
       }
       {
-        assertion = builtins.attrNames publishOnly == ["standalone" "standalone-dev"];
-        message = "publication exposes a lightweight standalone variant handle";
+        assertion = builtins.attrNames standaloneOnly == ["standalone" "standalone-dev"];
+        message = "standalone variants expose lightweight configuration handles";
       }
       {
-        assertion = publishOnly.standalone.config.specialisation == {};
-        message = "publication does not implicitly embed the variant";
+        assertion = standaloneOnly.standalone.config.specialisation == {};
+        message = "a standalone variant is not implicitly included as a specialisation";
       }
       {
-        assertion = publishOnly.standalone-dev ? extendModules;
-        message = "published variants retain the normal Home Manager result interface";
+        assertion = standaloneOnly.standalone-dev ? extendModules;
+        message = "standalone variants retain the normal Home Manager result interface";
       }
       {
-        assertion = publishOnly.standalone-dev.config.home.sessionVariables.DENDRITIC_VARIANT == "dev";
-        message = "the published variant contains its module delta";
+        assertion = standaloneOnly.standalone-dev.config.home.sessionVariables.DENDRITIC_VARIANT == "dev";
+        message = "the standalone variant contains its module delta";
       }
       {
-        assertion = builtins.attrNames embedOnly == ["standalone"];
-        message = "inclusion alone does not publish a variant handle";
+        assertion = builtins.attrNames includedOnly == ["standalone"];
+        message = "specialisation inclusion alone does not emit a standalone variant";
       }
       {
-        assertion = (embeddedDev embedOnly).home.sessionVariables.DENDRITIC_VARIANT == "dev";
+        assertion = (includedDev includedOnly).home.sessionVariables.DENDRITIC_VARIANT == "dev";
         message = "inclusion embeds the variant delta in Home Manager specialisations";
       }
       {
         assertion = builtins.attrNames both == ["standalone" "standalone-dev"];
-        message = "publication and inclusion may be selected together";
+        message = "standalone output and specialisation inclusion may be selected together";
       }
       {
-        assertion = both.standalone-dev.activationPackage.drvPath == (embeddedDev both).home.activationPackage.drvPath;
-        message = "published and embedded views resolve the same activation derivation";
+        assertion = both.standalone-dev.activationPackage.drvPath == (includedDev both).home.activationPackage.drvPath;
+        message = "standalone and included views resolve the same activation derivation";
       }
       {
         assertion = system != "aarch64-darwin" || composed.home.username == legacy.home.username;
