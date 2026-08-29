@@ -424,6 +424,35 @@ The four combinations—neither, build only,
 include only, and both—and mixed leaf selections must work without duplicating
 declarations. The production default is build on and inclusion off.
 
+### Dendritic declaration interface decision (2026-08-29)
+
+The declaration interface is a typed tree of roots, hosts, users, and variants;
+it is not a positional tuple or a list of stringly typed coordinate kinds.
+Names belong to their corresponding typed node, with structural defaults, and
+the former generic naming callback is compatibility-only.
+
+`tags` has one law at every taggable node: its ordered list selects the
+corresponding ordered `perTag.<name>` layers. Root tags apply to every host
+root, host tags refine that root, user and host-user tags refine their Home
+Manager node, and variant tags form the final additive delta of that variant.
+The selected layer projects its system modules, standalone Home Manager
+modules, or selected-user modules into the evaluator that owns the node; this
+projection distinction does not change tag membership semantics.
+
+A variant is always an additive overlay on one normalized parent coordinate.
+Its same module/tag delta is used for its independently materialized output,
+native specialisation inclusion, and optional package/image artifact selector.
+`build` controls independent materialization and
+`includeSpecialisations` controls native embedding independently. A variant
+does not create a second host, and override behaviour remains ordinary Nix
+module priority within its overlay.
+
+The host declaration model admits semantic class aliases through a typed class
+registry (`nativeClass` selects NixOS or nix-darwin while the alias keeps its
+own `perClass` layer), architecture layers, and structured layer/host metadata.
+It deliberately excludes filesystem discovery and a global untyped
+`specialArgs` universe.
+
 The concrete Home Manager, NixOS, and nix-darwin evaluators use the module-style
 `build` and `includeSpecialisations` options. Keep those evaluators as explicit
 recursive attrsets rather than hiding their native contracts behind a backend

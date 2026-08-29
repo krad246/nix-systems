@@ -5,28 +5,34 @@
   withSystem,
   ...
 }: let
-  systemCoordinates = lib.concatLists (lib.mapAttrsToList (hostName: declaration:
-    map (hostPlatform: let
-      buildPlatform =
-        if declaration.buildPlatform == null
-        then hostPlatform
-        else declaration.buildPlatform;
-      platform = lib.systems.parse.mkSystemFromString hostPlatform.system;
-      expectedClass =
-        if lib.systems.inspect.predicates.isDarwin platform
-        then "darwin"
-        else if lib.systems.inspect.predicates.isLinux platform
-        then "nixos"
-        else throw "dendritic.configurations: unsupported host platform ${hostPlatform.system}";
-    in
-      assert lib.assertMsg (declaration.class == expectedClass) "dendritic.configurations: class ${declaration.class} conflicts with host platform ${hostPlatform.system}";
-      assert lib.assertMsg (buildPlatform.system == hostPlatform.system || declaration.crossCompile) "dendritic.configurations: host platform ${hostPlatform.system} requires crossCompile = true for build platform ${buildPlatform.system}"; {
-        inherit hostName hostPlatform buildPlatform;
-        inherit (declaration) class crossCompile users variants;
-        modules = declaration.modules ++ (config.dendritic.configurations.perSystem.${hostPlatform.system}.modules or []);
-      })
-    declaration.hostPlatforms)
-  config.dendritic.internal.systemDeclarations);
+  systemCoordinates = config.dendritic.internal.systemCoordinates;
+
+  hostOutputName = coordinate:
+    if lib.count (candidate: candidate.hostName == coordinate.hostName) systemCoordinates == 1
+    then
+      if coordinate.outputName == null
+      then coordinate.hostName
+      else coordinate.outputName
+    else "${
+      if coordinate.outputName == null
+      then coordinate.hostName
+      else coordinate.outputName
+    }-${coordinate.hostPlatform.system}";
+
+  variantOutputName = coordinate: variantName: variant:
+    if variant.outputName == null
+    then "${hostOutputName coordinate}-${variantName}"
+    else variant.outputName;
+
+  variantModules = coordinate: variant:
+    variant.modules
+    ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.modules or []) variant.tags
+    ++ lib.mapAttrsToList (username: _: {
+      home-manager.users.${username}.imports =
+        (variant.users.${username}.modules or [])
+        ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.users.${username}.modules or []) variant.tags;
+    })
+    coordinate.users;
 
   baseConfiguration = coordinate: let
     constructor = withSystem coordinate.hostPlatform.system ({pkgs, ...}:
@@ -69,7 +75,7 @@
   in
     if includedSpecialisations == {}
     then root
-    else if coordinate.class == "darwin"
+    else if coordinate.nativeClass == "darwin"
     then throw "nix-darwin configurations do not support included specialisations"
     else
       root.extendModules {
@@ -77,7 +83,7 @@
           {
             specialisation =
               lib.mapAttrs (_: variant: {
-                configuration.imports = variant.modules;
+                configuration.imports = variantModules coordinate variant;
               })
               includedSpecialisations;
           }
@@ -85,19 +91,19 @@
       };
 
   outputRows = coordinate:
-    [{${coordinate.hostName} = configuration coordinate;}]
+    [{${hostOutputName coordinate} = configuration coordinate;}]
     ++ lib.mapAttrsToList (variantName: variant: {
-      ${
-        config.dendritic.configurations.variants.nameFunction {
-          host = coordinate.hostName;
-          variant = variantName;
-        }
-      } =
-        (baseConfiguration coordinate).extendModules {inherit (variant) modules;};
-    }) (lib.filterAttrs (_: variant: config.dendritic.configurations.variants.enable && variant.enable) coordinate.variants);
+      ${variantOutputName coordinate variantName variant} =
+        (baseConfiguration coordinate).extendModules {modules = variantModules coordinate variant;};
+    }) (lib.filterAttrs (_: variant:
+      config.dendritic.configurations.variants.build
+      && config.dendritic.configurations.variants.enable
+      && variant.build
+      && variant.enable)
+    coordinate.variants);
 in {
   flake = {
-    nixosConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: coordinate.class == "nixos") systemCoordinates));
-    darwinConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: coordinate.class == "darwin") systemCoordinates));
+    nixosConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: coordinate.nativeClass == "nixos") systemCoordinates));
+    darwinConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: coordinate.nativeClass == "darwin") systemCoordinates));
   };
 }

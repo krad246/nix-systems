@@ -4,11 +4,27 @@
   lib,
   ...
 }: let
+  variantModules = variant:
+    variant.modules
+    ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.homeModules or []) variant.tags;
+
+  variantOutputName = parentName: variantName: variant:
+    if variant.outputName == null
+    then "${parentName}-${variantName}"
+    else variant.outputName;
+
+  tagHomeModules = tags:
+    lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.homeModules or []) tags;
+
   standaloneDeclarations = lib.mapAttrs (username: user: {
     inherit username;
     inherit (user) variants passInOsConfig;
-    inherit (user.standalone) pkgs;
-    modules = user.modules ++ user.standalone.modules;
+    inherit (user.standalone) pkgs outputName;
+    modules =
+      tagHomeModules config.dendritic.configurations.tags
+      ++ user.modules
+      ++ tagHomeModules user.tags
+      ++ user.standalone.modules;
   }) (lib.filterAttrs (_: user: user.enable && user.standalone.enable) config.dendritic.configurations.users);
 
   baseConfiguration = pkgs: declaration:
@@ -45,7 +61,7 @@
           {
             specialisation =
               lib.mapAttrs (_: variant: {
-                configuration.imports = variant.modules;
+                configuration.imports = variantModules variant;
               })
               includedSpecialisations;
           }
@@ -55,14 +71,14 @@
   outputRows = pkgs: name: declaration:
     [{${name} = configuration pkgs declaration;}]
     ++ lib.mapAttrsToList (variantName: variant: {
-      ${
-        config.dendritic.configurations.variants.nameFunction {
-          user = name;
-          variant = variantName;
-        }
-      } =
-        (baseConfiguration pkgs declaration).extendModules {inherit (variant) modules;};
-    }) (lib.filterAttrs (_: variant: config.dendritic.configurations.variants.enable && variant.enable) declaration.variants);
+      ${variantOutputName name variantName variant} =
+        (baseConfiguration pkgs declaration).extendModules {modules = variantModules variant;};
+    }) (lib.filterAttrs (_: variant:
+      config.dendritic.configurations.variants.build
+      && config.dendritic.configurations.variants.enable
+      && variant.build
+      && variant.enable)
+    declaration.variants);
 
   hostUserRows = lib.concatLists (lib.concatMap (hostName: let
     hostDeclaration = config.dendritic.internal.systemDeclarations.${hostName};
@@ -70,11 +86,10 @@
   in
     lib.mapAttrsToList (username: userLayer: let
       user = config.dendritic.configurations.users.${username};
-      name = config.dendritic.configurations.variants.nameFunction {
-        user = username;
-        inherit hostName;
-        host = hostName;
-      };
+      name =
+        if userLayer.outputName == null
+        then "${username}-${hostName}"
+        else userLayer.outputName;
       declaration = {
         inherit username;
         modules = user.standalone.modules ++ userLayer.modules;
@@ -88,7 +103,14 @@
 in {
   flake = {
     homeConfigurations = lib.mkMerge (
-      lib.concatLists (lib.mapAttrsToList (name: declaration: outputRows declaration.pkgs name declaration) standaloneDeclarations)
+      lib.concatLists (lib.mapAttrsToList (_: declaration:
+        outputRows declaration.pkgs (
+          if declaration.outputName == null
+          then declaration.username
+          else declaration.outputName
+        )
+        declaration)
+      standaloneDeclarations)
       ++ hostUserRows
     );
   };

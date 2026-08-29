@@ -10,20 +10,56 @@
       modules = lib.mkOption {
         type = lib.types.listOf lib.types.deferredModule;
         default = [];
-        description = "Modules contributed by this layer.";
+        description = "Modules contributed in the parent evaluator context.";
+      };
+      homeModules = lib.mkOption {
+        type = lib.types.listOf lib.types.deferredModule;
+        default = [];
+        description = "Standalone Home Manager modules contributed by this layer.";
+      };
+      metadata = lib.mkOption {
+        type = lib.types.attrsOf lib.types.raw;
+        default = {};
+        description = "Declarative data carried by this composition layer for downstream projections.";
       };
     };
   };
 
   moduleLayerType = lib.types.submodule moduleLayer;
 
-  variantType = lib.types.submodule {
+  compositionLayer = {
     imports = [moduleLayer];
+    options.users = lib.mkOption {
+      type = lib.types.attrsOf moduleLayerType;
+      default = {};
+      description = "Home Manager module contributions for users selected by a host.";
+    };
+  };
+
+  compositionLayerType = lib.types.submodule compositionLayer;
+
+  variantType = lib.types.submodule {
+    imports = [compositionLayer];
     options = {
+      tags = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Ordered tags selecting additional perTag layers for this variant node.";
+      };
+      build = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to materialize this variant as an independent configuration and artifact coordinate.";
+      };
+      outputName = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Optional name for this independently materialized variant node.";
+      };
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Whether to emit this variant independently when variant outputs are enabled.";
+        description = "Compatibility gate for this variant; prefer build for new declarations.";
       };
       includeSpecialisations = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
@@ -42,6 +78,11 @@
     imports = [moduleLayer];
     options = {
       enable = lib.mkEnableOption "this Home Manager user";
+      tags = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Ordered tags selecting perTag layers for this user node.";
+      };
       standalone = lib.mkOption {
         type = lib.types.submodule {
           imports = [moduleLayer];
@@ -51,6 +92,11 @@
               type = lib.types.nullOr lib.types.pkgs;
               default = null;
               description = "Optional package-set override; impure standalone evaluation defaults to the current system.";
+            };
+            outputName = lib.mkOption {
+              type = lib.types.nullOr lib.types.str;
+              default = null;
+              description = "Optional name for this standalone Home Manager root.";
             };
           };
         };
@@ -70,19 +116,45 @@
     };
   };
 
+  hostUserType = lib.types.submodule {
+    imports = [moduleLayer];
+    options = {
+      tags = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Ordered tags selecting perTag layers for this user within one host.";
+      };
+      outputName = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Optional name for this user's Home Manager projection on its host.";
+      };
+    };
+  };
+
   hostType = lib.types.submodule {
     imports = [moduleLayer];
     options = {
       enable = lib.mkEnableOption "this NixOS or nix-darwin host";
       class = lib.mkOption {
-        type = lib.types.enum ["nixos" "darwin"];
+        type = lib.types.str;
         default = "nixos";
-        description = "Native system module class.";
+        description = "Semantic host class, resolved through configurations.classes.";
+      };
+      outputName = lib.mkOption {
+        type = lib.types.nullOr lib.types.str;
+        default = null;
+        description = "Optional name for this host's root system output.";
       };
       tags = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = "Layer tags applied to this host.";
+        description = "Ordered tags selecting the corresponding perTag.<name> declarations.";
+      };
+      metadata = lib.mkOption {
+        type = lib.types.attrsOf lib.types.raw;
+        default = {};
+        description = "Machine facts and annotations carried with this host declaration.";
       };
       hostPlatforms = lib.mkOption {
         type = lib.types.listOf (lib.types.submodule {options.system = lib.mkOption {type = lib.types.str;};});
@@ -100,7 +172,7 @@
         description = "Whether differing build and host platforms are permitted.";
       };
       users = lib.mkOption {
-        type = lib.types.attrsOf moduleLayerType;
+        type = lib.types.attrsOf hostUserType;
         default = {};
         description = "Host-specific module layers for integrated Home Manager users.";
       };
@@ -118,6 +190,31 @@ in {
   ];
 
   options.dendritic.configurations = {
+    tags = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "Ordered root tags selecting perTag layers for every host declaration.";
+    };
+    classes = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          nativeClass = lib.mkOption {
+            type = lib.types.enum ["nixos" "darwin"];
+            description = "Native evaluator used to construct hosts in this semantic class.";
+          };
+          metadata = lib.mkOption {
+            type = lib.types.attrsOf lib.types.raw;
+            default = {};
+            description = "Class-level metadata exposed on normalized declaration rows.";
+          };
+        };
+      });
+      default = {
+        nixos.nativeClass = "nixos";
+        darwin.nativeClass = "darwin";
+      };
+      description = "Semantic host classes; aliases retain their own perClass layer while selecting a native evaluator.";
+    };
     users = lib.mkOption {
       type = lib.types.attrsOf userType;
       default = {};
@@ -129,39 +226,52 @@ in {
       description = "System hosts forming one axis of the configuration matrix.";
     };
     shared = lib.mkOption {
-      type = moduleLayerType;
+      type = compositionLayerType;
       default = {};
       description = "Modules shared by every host.";
     };
     perClass = lib.mkOption {
-      type = lib.types.attrsOf moduleLayerType;
+      type = lib.types.attrsOf compositionLayerType;
       default = {};
       description = "Modules selected by host class.";
     };
     perSystem = lib.mkOption {
-      type = lib.types.attrsOf moduleLayerType;
+      type = lib.types.attrsOf compositionLayerType;
       default = {};
       description = "Modules selected by host platform system.";
     };
+    perArch = lib.mkOption {
+      type = lib.types.attrsOf compositionLayerType;
+      default = {};
+      description = "Modules selected by the architecture component of a host platform.";
+    };
     perTag = lib.mkOption {
-      type = lib.types.attrsOf moduleLayerType;
+      type = lib.types.attrsOf compositionLayerType;
       default = {};
       description = "Modules selected for each host tag.";
     };
     variants = {
+      build = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether variants materialize as independent outputs by default.";
+      };
       enable = lib.mkEnableOption "independent variant outputs";
       includeSpecialisations = lib.mkEnableOption "variants in native specialisation sets by default";
       nameFunction = lib.mkOption {
         type = lib.types.functionTo lib.types.str;
         default = coordinates:
-          lib.pipe ["user" "host" "variant" "package"] [
-            (map (name: coordinates.${name} or null))
-            (lib.filter (value: value != null))
-            (values: values ++ lib.optional (coordinates ? package) coordinates.hostPlatform)
-            (lib.concatStringsSep "-")
-          ];
-        defaultText = lib.literalExpression ''coordinates: lib.pipe [ "user" "host" "variant" "package" ] [ (map (name: coordinates.''${name} or null)) (lib.filter (value: value != null)) (values: values ++ lib.optional (coordinates ? package) coordinates.hostPlatform) (lib.concatStringsSep "-") ]'';
-        description = "Function naming any generated user, host variant, or package coordinate.";
+          if coordinates ? package
+          then "${coordinates.host}-${coordinates.package}-${coordinates.hostPlatform}"
+          else if coordinates ? user && coordinates ? host
+          then "${coordinates.user}-${coordinates.host}"
+          else if coordinates ? host && coordinates ? variant
+          then "${coordinates.host}-${coordinates.variant}"
+          else if coordinates ? user && coordinates ? variant
+          then "${coordinates.user}-${coordinates.variant}"
+          else coordinates.name or "dendritic";
+        defaultText = lib.literalExpression "coordinates: if coordinates ? package then \"\${coordinates.host}-\${coordinates.package}-\${coordinates.hostPlatform}\" else if coordinates ? user && coordinates ? host then \"\${coordinates.user}-\${coordinates.host}\" else if coordinates ? host && coordinates ? variant then \"\${coordinates.host}-\${coordinates.variant}\" else if coordinates ? user && coordinates ? variant then \"\${coordinates.user}-\${coordinates.variant}\" else coordinates.name or \"dendritic\"";
+        description = "Compatibility-only legacy naming hook; output names now belong to the typed host, user, and variant nodes.";
       };
     };
   };

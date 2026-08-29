@@ -5,32 +5,47 @@
   withSystem,
   ...
 }: let
-  packageCoordinates = lib.concatLists (lib.mapAttrsToList (hostName: declaration:
-    lib.concatMap (hostPlatform: let
-      buildPlatform =
-        if declaration.buildPlatform == null
-        then hostPlatform
-        else declaration.buildPlatform;
-      platform = lib.systems.parse.mkSystemFromString hostPlatform.system;
-      expectedClass =
-        if lib.systems.inspect.predicates.isDarwin platform
-        then "darwin"
-        else if lib.systems.inspect.predicates.isLinux platform
-        then "nixos"
-        else throw "dendritic.configurations: unsupported host platform ${hostPlatform.system}";
-      normalized = assert lib.assertMsg (declaration.class == expectedClass) "dendritic.configurations: class ${declaration.class} conflicts with host platform ${hostPlatform.system}";
-      assert lib.assertMsg (buildPlatform.system == hostPlatform.system || declaration.crossCompile) "dendritic.configurations: host platform ${hostPlatform.system} requires crossCompile = true for build platform ${buildPlatform.system}"; {
-        inherit hostName hostPlatform buildPlatform;
-        inherit (declaration) class crossCompile users;
-        modules = declaration.modules ++ (config.dendritic.configurations.perSystem.${hostPlatform.system}.modules or []);
-      };
-    in
-      map (variantName: {
-        inherit normalized variantName;
-        variant = declaration.variants.${variantName};
-      }) (builtins.attrNames (lib.filterAttrs (_: variant: variant.package != null) declaration.variants)))
-    declaration.hostPlatforms)
-  config.dendritic.internal.systemDeclarations);
+  systemCoordinates = config.dendritic.internal.systemCoordinates;
+
+  hostOutputName = coordinate:
+    if lib.count (candidate: candidate.hostName == coordinate.hostName) systemCoordinates == 1
+    then
+      if coordinate.outputName == null
+      then coordinate.hostName
+      else coordinate.outputName
+    else "${
+      if coordinate.outputName == null
+      then coordinate.hostName
+      else coordinate.outputName
+    }-${coordinate.hostPlatform.system}";
+
+  variantOutputName = coordinate: variantName: variant:
+    if variant.outputName == null
+    then "${hostOutputName coordinate}-${variantName}"
+    else variant.outputName;
+
+  packageCoordinates = lib.concatMap (normalized:
+    map (variantName: {
+      inherit normalized variantName;
+      variant = normalized.declaration.variants.${variantName};
+    }) (builtins.attrNames (lib.filterAttrs (_: variant:
+      config.dendritic.configurations.variants.build
+      && config.dendritic.configurations.variants.enable
+      && variant.build
+      && variant.enable
+      && variant.package != null)
+    normalized.declaration.variants)))
+  config.dendritic.internal.systemCoordinates;
+
+  variantModules = normalized: variant:
+    variant.modules
+    ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.modules or []) variant.tags
+    ++ lib.mapAttrsToList (username: _: {
+      home-manager.users.${username}.imports =
+        (variant.users.${username}.modules or [])
+        ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.users.${username}.modules or []) variant.tags;
+    })
+    normalized.users;
 
   baseConfiguration = coordinate: let
     constructor = withSystem coordinate.normalized.hostPlatform.system ({pkgs, ...}:
@@ -65,18 +80,12 @@
     lib.concatMap (coordinate: let
       root = baseConfiguration coordinate;
       variantConfiguration =
-        if coordinate.variant.modules == []
+        if variantModules coordinate.normalized coordinate.variant == []
         then root
-        else root.extendModules {inherit (coordinate.variant) modules;};
+        else root.extendModules {modules = variantModules coordinate.normalized coordinate.variant;};
     in
       lib.optional (coordinate.normalized.buildPlatform.system == buildSystem) {
-        ${
-          config.dendritic.configurations.variants.nameFunction {
-            host = coordinate.normalized.hostName;
-            package = coordinate.variantName;
-            hostPlatform = coordinate.normalized.hostPlatform.system;
-          }
-        } =
+        "${variantOutputName coordinate.normalized coordinate.variantName coordinate.variant}-${coordinate.normalized.hostPlatform.system}" =
           coordinate.variant.package variantConfiguration;
       })
     packageCoordinates;

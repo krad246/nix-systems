@@ -8,6 +8,7 @@ in {
   config = lib.mkMerge [
     (lib.mkIf flakeConfig.debug {
       dendritic.configurations = {
+        tags = ["root"];
         shared.modules = [
           ({lib, ...}: {
             options.dendritic.evaluatorTest.layerOrder = lib.mkOption {
@@ -20,16 +21,30 @@ in {
         perClass.nixos.modules = [
           (_: {dendritic.evaluatorTest.layerOrder = ["perClass"];})
         ];
-        perTag.first.modules = [
-          (_: {
-            dendritic.evaluatorTest.layerOrder = ["perTag:first"];
-          })
+        perArch.x86_64.modules = [
+          (_: {dendritic.evaluatorTest.layerOrder = ["perArch"];})
         ];
-        perTag.second.modules = [
-          (_: {
-            dendritic.evaluatorTest.layerOrder = ["perTag:second"];
-          })
+        perSystem.x86_64-linux.modules = [
+          (_: {dendritic.evaluatorTest.layerOrder = ["perSystem"];})
         ];
+        perTag = {
+          first.modules = [
+            (_: {
+              dendritic.evaluatorTest.layerOrder = ["perTag:first"];
+            })
+          ];
+          second.modules = [
+            (_: {
+              dendritic.evaluatorTest.layerOrder = ["perTag:second"];
+            })
+          ];
+          root.modules = [
+            (_: {dendritic.evaluatorTest.layerOrder = ["perTag:root"];})
+          ];
+          variant.modules = [
+            (_: {environment.etc."dendritic-variant-tag".text = "variant";})
+          ];
+        };
         hosts.dendritic-layer-order = {
           enable = true;
           class = "nixos";
@@ -46,6 +61,10 @@ in {
               dendritic.evaluatorTest.layerOrder = ["host"];
             })
           ];
+          variants = {
+            tagged.tags = ["variant"];
+            not-built.build = false;
+          };
         };
       };
     })
@@ -108,8 +127,16 @@ in {
             message = "the normalized NixOS declaration is published directly";
           }
           {
-            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos.dendritic-layer-order.config.dendritic.evaluatorTest.layerOrder == ["shared" "perClass" "perTag:first" "perTag:second" "host"];
-            message = "shared, class, ordered tags, and host modules accumulate in declaration order";
+            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos.dendritic-layer-order.config.dendritic.evaluatorTest.layerOrder == ["shared" "perTag:root" "perClass" "perArch" "perSystem" "perTag:first" "perTag:second" "host"];
+            message = "root, class, architecture, platform, ordered host tags, and host modules accumulate in declaration order";
+          }
+          {
+            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos."dendritic-layer-order-tagged".config.environment.etc."dendritic-variant-tag".text == "variant";
+            message = "a variant tag selects its perTag delta without affecting the host root";
+          }
+          {
+            assertion = !flakeConfig.debug || system != "x86_64-linux" || !(nixos ? dendritic-layer-order-not-built);
+            message = "a non-building variant remains available to native specialisation policy without an independent output";
           }
           {
             assertion = system != "x86_64-linux" || builtins.attrNames (lib.filterAttrs (name: _: lib.hasPrefix "generic-headless-interactive-vm-nogui" name) config.packages) == ["generic-headless-interactive-vm-nogui-x86_64-linux"];
