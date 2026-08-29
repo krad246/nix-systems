@@ -8,8 +8,8 @@
     home = config.flake.homeConfigurations;
     standalone = home.standalone or null;
     standaloneDev = home.standalone-dev or null;
-    nixbook = home.krad246 or null;
     hostDerived = home.krad246-nixbook-pro-composed;
+    nixbook = hostDerived;
     legacyConfiguration = inputs.dendritic.darwinConfigurations.nixbook-pro;
     legacyConfig = legacyConfiguration.config;
     legacy = legacyConfig.home-manager.users.${legacyConfig.owner.username};

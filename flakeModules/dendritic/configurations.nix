@@ -20,7 +20,6 @@
 
       krad246 = {
         enable = true;
-        modules = [config.flake.dendritic.modules.homeManager.nixbook-pro];
         standalone = {
           enable = !lib.inPureEvalMode;
           pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
@@ -70,7 +69,7 @@
           config.flake.dendritic.modules.darwin.tailscale
           (_: {networking.hostName = "nixbook-pro-composed";})
         ];
-        users.krad246 = {};
+        users.krad246.modules = [config.flake.dendritic.modules.homeManager.nixbook-pro];
       };
     };
   };

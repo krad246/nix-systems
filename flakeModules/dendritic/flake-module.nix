@@ -169,7 +169,15 @@ in {
 
     userModules = declaration:
       lib.mapAttrsToList (username: user: {
-        home-manager.users.${username}.imports = user.modules;
+        home-manager.users.${username} = {pkgs, ...}: {
+          imports = user.modules;
+          home.username = lib.mkDefault username;
+          home.homeDirectory = lib.mkDefault (
+            if pkgs.stdenv.hostPlatform.isDarwin
+            then "/Users/${username}"
+            else "/home/${username}"
+          );
+        };
       })
       declaration.users;
 
@@ -308,7 +316,8 @@ in {
 
     homeManagerDeclarations = lib.pipe config.dendritic.configurations.users [
       (lib.filterAttrs (_: user: user.enable && user.standalone.enable))
-      (lib.mapAttrs (_: user: {
+      (lib.mapAttrs (username: user: {
+        inherit username;
         inherit (user) variants passInOsConfig;
         inherit (user.standalone) pkgs;
         modules = user.modules ++ user.standalone.modules;
@@ -347,7 +356,18 @@ in {
       baseConfiguration = pkgs: declaration:
         inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          inherit (declaration) modules;
+          modules =
+            [
+              ({pkgs, ...}: {
+                home.username = lib.mkDefault declaration.username;
+                home.homeDirectory = lib.mkDefault (
+                  if pkgs.stdenv.hostPlatform.isDarwin
+                  then "/Users/${declaration.username}"
+                  else "/home/${declaration.username}"
+                );
+              })
+            ]
+            ++ declaration.modules;
           extraSpecialArgs = declaration.extraSpecialArgs or {};
         };
 
@@ -550,6 +570,7 @@ in {
             };
             user = config.dendritic.configurations.users.${username};
             declaration = {
+              inherit username;
               modules = user.standalone.modules ++ userLayer.modules;
               inherit (user) variants;
               extraSpecialArgs = lib.optionalAttrs user.passInOsConfig {osConfig = host.config;};
