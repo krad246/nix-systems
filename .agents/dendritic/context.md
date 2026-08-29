@@ -403,26 +403,27 @@ Variant declaration and materialization policy are separate. The flake-level
 `users` and `hosts` contexts carry the relevant constructor arguments and
 `attrsOf` module-list deltas. Their defaults live beneath
 `dendritic.defaults.users` and `dendritic.defaults.hosts`, while each
-selected context and each variant may override publication and specialisation inclusion.
-Publishing exposes an independently buildable output; inclusion projects the
+selected context and each variant may override standalone output and specialisation inclusion.
+A standalone variant exposes an independently buildable output; inclusion projects the
 same delta into the root's native `specialisation` namespace for runtime
-switching. Effective policy resolves leaf override, then projection override,
-then global projection default. The four combinations—neither, publish only,
+switching. Effective policy is read directly as leaf override, then context override,
+then global context default; implementations must not normalize a shadow declaration
+attrset. The four combinations—neither, standalone only,
 include only, and both—and mixed leaf selections must work without duplicating
-declarations. The production default is publish on and inclusion off.
+declarations. The production default is standalone on and inclusion off.
 
-The reusable projection core speaks only in `publish` and `embed`; native
-`specialisation` vocabulary belongs to the Home Manager or NixOS backend
-adapter. Its materialization law is: normalize each leaf policy, construct one
-bare root, optionally embed the selected deltas into that root, and
-independently extend the same bare root for every published delta. A backend's
-embedding capability is represented by supplying its embedding operation, not
+The reusable configuration backend uses the module-style `standalone` and
+`includeSpecialisation` options. Its materialization law is: construct one base
+configuration, optionally include the selected deltas in that root's native
+`specialisation` namespace, and independently extend the same base configuration
+for every standalone delta. A backend's specialisation capability is represented
+by supplying its inclusion operation, not
 by declaration metadata. Backends without that operation still support
-publication and fail only when a selected coordinate requests embedding.
+standalone variants and fail only when a selected coordinate requests inclusion.
 
 Do not place the exhaustive four-mode proof in ordinary flake `checks`:
 `nix flake show` enumerates checks and would thereby force the resident
-specialisation lane even when production selects publish-only. Exercise that
+specialisation lane even when production selects standalone-only. Exercise that
 truth table through the Dendritic test flake modules. They contribute proper
 per-system `dendritic.assertions`, `dendritic.warnings`, and
 `dendritic.traces`; one assertion runner emits their check only when the
@@ -430,21 +431,21 @@ flake-parts `debug` option is enabled. Ordinary output enumeration therefore
 keeps the unused runtime vTable lazy, while debug evaluation exercises the
 four-mode matrix, host/image contracts, and nixbook-pro closure parity.
 
-Published variant names are generated from their root and local variant names
+Standalone variant names are generated from their root and local variant names
 through `dendritic.outputs.nameFunction`, following ezConfigs'
 established naming-interface vocabulary. Its default is
 `configuration: variant: "${configuration}-${variant}"`, yielding names such
 as `standalone-dev`; native specialization tables continue using the local
 `dev` key. Generated names must be unique and must not collide with root names.
 
-Published variants always extend the unspecialised evaluated root and retain
+Standalone variants always extend the unspecialised evaluated root and retain
 the complete `homeManagerConfiguration` result, including its ordinary
 `extendModules` operation. This is the lightweight, independently buildable
-view. Embedded specialisations are a separate heavier projection of the same
+view. Included specialisations are a separate heavier projection of the same
 module delta. When both are selected they may perform distinct evaluations,
 but equivalent declarations must resolve to the same activation derivation.
-Do not replace the published result with a thin adapter over Home Manager's
-embedded `config`; that loses the normal Home Manager result interface and
+Do not replace the standalone result with a thin adapter over Home Manager's
+included `config`; that loses the normal Home Manager result interface and
 couples publication cost to the resident specialisation table.
 
 The unified configuration interpreter is a sparse projection matrix rooted in
