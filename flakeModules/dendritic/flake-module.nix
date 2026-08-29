@@ -167,20 +167,6 @@ in {
   config = let
     platformSystem = platform: platform.system or platform;
 
-    userModules = declaration:
-      lib.mapAttrsToList (username: user: {
-        home-manager.users.${username} = {pkgs, ...}: {
-          imports = user.modules;
-          home.username = lib.mkDefault username;
-          home.homeDirectory = lib.mkDefault (
-            if pkgs.stdenv.hostPlatform.isDarwin
-            then "/Users/${username}"
-            else "/home/${username}"
-          );
-        };
-      })
-      declaration.users;
-
     system = rec {
       baseConfiguration = declaration: let
         constructor = withSystem declaration.hostPlatform.system ({pkgs, ...}:
@@ -196,7 +182,18 @@ in {
             ++ lib.optional (declaration.crossCompile && declaration.buildPlatform.system != declaration.hostPlatform.system) {
               nixpkgs.buildPlatform = declaration.buildPlatform.system;
             }
-            ++ userModules declaration
+            ++ lib.mapAttrsToList (username: user: {
+              home-manager.users.${username} = {pkgs, ...}: {
+                imports = user.modules;
+                home.username = lib.mkDefault username;
+                home.homeDirectory = lib.mkDefault (
+                  if pkgs.stdenv.hostPlatform.isDarwin
+                  then "/Users/${username}"
+                  else "/home/${username}"
+                );
+              };
+            })
+            declaration.users
             ++ declaration.modules;
         };
 
@@ -271,12 +268,6 @@ in {
           })
       (lib.filterAttrs (_: declaration: builtins.elem system (map platformSystem declaration.hostPlatforms)) declarations);
 
-    isSystem = predicate: system:
-      predicate (lib.systems.parse.mkSystemFromString system);
-
-    systemOutputs = target: declarations:
-      system.outputs (selectSystemDeclarations target declarations);
-
     variantPackages = buildSystem: declarations: let
       candidates = lib.concatMap (rootName: let
         declaration = declarations.${rootName};
@@ -350,7 +341,11 @@ in {
       (lib.foldl' (systems: declaration: systems // lib.genAttrs (map platformSystem declaration.hostPlatforms) (_: true)) {})
       builtins.attrNames
     ];
-    darwinSystems = lib.filter (system: isSystem lib.systems.inspect.predicates.isDarwin system) targetSystems;
+    darwinSystems =
+      lib.filter (
+        system: lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString system)
+      )
+      targetSystems;
 
     homeManager = rec {
       baseConfiguration = pkgs: declaration:
@@ -583,7 +578,9 @@ in {
       # FIXME(dendritic-hosts): Publish NixOS configurations after declarations
       # distinguish deployable roots from image-only composition substrates.
       # Direct image outputs remain available through perSystem packages.
-      darwinConfigurations = lib.mkMerge (lib.concatMap (system: systemOutputs system systemDeclarations) darwinSystems);
+      darwinConfigurations = lib.mkMerge (
+        lib.concatMap (target: system.outputs (selectSystemDeclarations target systemDeclarations)) darwinSystems
+      );
     };
 
     perSystem = {
