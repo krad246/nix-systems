@@ -424,21 +424,21 @@ namespace, and independently extend the same base configuration for every
 build-selected delta. An evaluator without native specialisations still supports
 independent variant builds and fails only when a selected coordinate requests inclusion.
 
-Do not place the exhaustive four-mode proof in ordinary flake `checks`:
-`nix flake show` enumerates checks and would thereby force the resident
-specialisation lane even when production selects standalone-only. Exercise that
-truth table through the Dendritic test flake modules. They contribute proper
+Tests must exercise the public flake contract directly, following ez-configs
+and easy-hosts fixture style; do not maintain a miniature copy of the evaluator
+inside a test. The Dendritic test flake modules contribute proper
 per-system `dendritic.assertions`, `dendritic.warnings`, and
 `dendritic.traces`; one assertion runner emits their check only when the
 flake-parts `debug` option is enabled. Ordinary output enumeration therefore
-keeps the unused runtime vTable lazy, while debug evaluation exercises the
-four-mode matrix, host/image contracts, and nixbook-pro closure parity.
+keeps diagnostics optional, while debug evaluation inspects the actual public
+Home Manager, Darwin, package, and nixbook-pro closure contracts.
 
 All generated names use
-`dendritic.configurations.variants.nameFunction`. It accepts a coordinate record
-with nullable `user`, `host`, `variant`, `image`, and `hostPlatform` fields, so
+`dendritic.configurations.variants.nameFunction`. It accepts a sparse coordinate
+record with optional `user`, `host`, `variant`, `package`, and `hostPlatform`
+fields, so
 one naming algebra covers user-by-host products, independent variants, and
-cross-built images. The default yields `standalone-dev`,
+cross-built packages. The default yields `standalone-dev`,
 `krad246-nixbook-pro-composed`, and
 `generic-headless-interactive-vm-nogui-x86_64-linux`; native specialisation
 tables continue using their local variant key.
@@ -458,7 +458,7 @@ one cleanly assignable, mergeable RAII-like declaration attrset. That single
 public ownership boundary must address every layer rather than exposing
 parallel ownership boundaries. Its typed coordinates include users, hosts,
 class/system/tag module layers, standalone package sets, build/evaluation
-platform, target platform, variant and specialisation deltas, images, and build
+platform, target platform, variant and specialisation deltas, packages, and build
 policy. NixOS,
 nix-darwin, standalone Home Manager, integrated Home Manager, generator images,
 specialisations, and deployment records are projections of the completed
@@ -478,27 +478,27 @@ platforms coincide; cross means they differ. Keep target `pkgs` distinct from
 host-side generator/runner `pkgs`, while deriving ordinary package universes
 from the same declared Nixpkgs source graph.
 
-The unified system declarations now expose `buildSystem = null | system` and a
-hierarchical `cross` gate. Null build coordinates mean native construction for
+The unified host declarations expose `buildPlatform = null | platform` and a
+`cross` gate. Null build coordinates mean native construction for
 each listed target; a differing build/target pair is rejected unless the
-declaration inherits or overrides `cross = true`. The constructor injects the
+host sets `cross = true`. The constructor injects the
 build platform only for that permitted relation, preserving target platform as
 the system output coordinate.
 
 The earlier `dendritic.systems.configurations` slice proved system projection
 mechanics but is no longer the public boundary: it and the parallel Home
 Manager registry are folded into the single `dendritic.configurations`
-declaration attrset described above. A declaration may list multiple target
-systems and assign modules, users, variants, specialisations, images, and
-projection policy at the appropriate nested coordinates. An internal
+declaration attrset described above. A host may list multiple target systems
+and assign modules, users, and variants at the appropriate nested coordinates.
+An internal
 platform-inspection interpreter selects NixOS or Darwin construction; that
 backend distinction is deliberately absent from public declaration data. The
 `generic-headless-interactive` NixOS declaration demonstrates both an additive
-`dev` variant and an embedded `vm-nogui` artifact-module variant. The published
-VM variant remains a full NixOS result; its image is a later artifact projection
-of that result, while the root's native specialisation is the runtime view.
-An artifact declaration names that variant and an attribute path; `perSystem`
-materializes it for the matching build coordinate. Thus
+`dev` variant and a `vm-nogui` variant. A variant owns its module delta,
+independent-build and specialisation-inclusion policy, and optional `package`
+selector; there is no parallel image or outputs registry. The selector is
+`nullOr (functionTo package)` because its derivation exists only after evaluating
+that variant for a target platform. Thus
 `generic-headless-interactive-vm-nogui-x86_64-linux` is a package projection of
 `config.system.build.images.vm-nogui`, not a second system declaration.
 System declarations also accept named `users.<name>.modules` deltas. The
