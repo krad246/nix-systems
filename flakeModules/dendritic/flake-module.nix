@@ -180,10 +180,17 @@ in {
       in
         constructor {
           modules =
-            [{nixpkgs.hostPlatform = declaration.hostPlatform.system;}]
-            ++ lib.optional (declaration.crossCompile && declaration.buildPlatform.system != declaration.hostPlatform.system) {
-              nixpkgs.buildPlatform = declaration.buildPlatform.system;
-            }
+            [
+              {
+                nixpkgs.hostPlatform = declaration.hostPlatform.system;
+                nixpkgs.buildPlatform =
+                  lib.mkIf (
+                    declaration.crossCompile
+                    && declaration.buildPlatform.system != declaration.hostPlatform.system
+                  )
+                  declaration.buildPlatform.system;
+              }
+            ]
             ++ lib.mapAttrsToList (username: user: {
               home-manager.users.${username} = {pkgs, ...}: {
                 imports = user.modules;
