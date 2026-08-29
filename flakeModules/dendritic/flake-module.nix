@@ -32,6 +32,11 @@
         default = null;
         description = "Whether to include this variant in its parent's specialisation set; null inherits the global default.";
       };
+      package = lib.mkOption {
+        type = lib.types.nullOr (lib.types.functionTo lib.types.package);
+        default = null;
+        description = "Optional target-specific selector returning a package from this independently evaluated variant configuration.";
+      };
     };
   };
 
@@ -116,17 +121,6 @@
         default = {};
         description = "Sparse system variant and specialisation coordinates.";
       };
-      images = lib.mkOption {
-        type = lib.types.attrsOf (lib.types.submodule {
-          options.modules = lib.mkOption {
-            type = lib.types.listOf lib.types.deferredModule;
-            default = [];
-            description = "Modules applied while materializing this image coordinate.";
-          };
-        });
-        default = {};
-        description = "Sparse image output coordinates.";
-      };
     };
   };
 in {
@@ -173,11 +167,11 @@ in {
         type = lib.types.functionTo lib.types.str;
         default = coordinates:
           lib.concatStringsSep "-" (
-            lib.filter (value: value != null) [coordinates.user coordinates.host coordinates.variant coordinates.image]
-            ++ lib.optional (coordinates.image != null) coordinates.hostPlatform
+            lib.filter (value: value != null) (map (name: coordinates.${name} or null) ["user" "host" "variant" "package"])
+            ++ lib.optional (coordinates ? package) coordinates.hostPlatform
           );
-        defaultText = lib.literalExpression ''coordinates: lib.concatStringsSep "-" (lib.filter (value: value != null) [ coordinates.user coordinates.host coordinates.variant coordinates.image ] ++ lib.optional (coordinates.image != null) coordinates.hostPlatform)'';
-        description = "Function naming any generated user, host variant, or image coordinate.";
+        defaultText = lib.literalExpression ''coordinates: lib.concatStringsSep "-" (lib.filter (value: value != null) (map (name: coordinates.''${name} or null) [ "user" "host" "variant" "package" ]) ++ lib.optional (coordinates ? package) coordinates.hostPlatform)'';
+        description = "Function naming any generated user, host variant, or package coordinate.";
       };
     };
   };
@@ -240,11 +234,8 @@ in {
               (lib.mapAttrsToList (variantName: variant: {
                 ${
                   config.dendritic.configurations.variants.nameFunction {
-                    user = null;
                     host = name;
                     variant = variantName;
-                    image = null;
-                    hostPlatform = declaration.hostPlatform.system;
                   }
                 } =
                   (baseConfiguration declaration).extendModules {inherit (variant) modules;};
@@ -291,11 +282,8 @@ in {
               (lib.mapAttrsToList (variantName: variant: {
                 ${
                   config.dendritic.configurations.variants.nameFunction {
-                    user = null;
                     host = name;
                     variant = variantName;
-                    image = null;
-                    hostPlatform = declaration.hostPlatform.system;
                   }
                 } =
                   (baseConfiguration declaration).extendModules {inherit (variant) modules;};
@@ -347,7 +335,7 @@ in {
       in
         evaluator.outputs selectedDeclarations);
 
-    imageOutputs = buildSystem: declarations: let
+    variantPackages = buildSystem: declarations: let
       candidates = lib.concatMap (rootName: let
         declaration = declarations.${rootName};
         targetSystems = lib.filter (target: let
@@ -367,27 +355,24 @@ in {
             else if pkgs.stdenv.hostPlatform.isLinux
             then nixos
             else throw "dendritic.configurations: unsupported image target system ${target}");
-          root = evaluator.configuration selectedDeclaration;
+          root = evaluator.baseConfiguration selectedDeclaration;
         in
-          lib.mapAttrsToList (imageName: image: let
-            imageConfiguration =
-              if image.modules == []
+          lib.mapAttrsToList (variantName: variant: let
+            variantConfiguration =
+              if variant.modules == []
               then root
-              else root.extendModules {inherit (image) modules;};
-            value = lib.getAttrFromPath ["system" "build" "images" imageName] imageConfiguration.config;
+              else root.extendModules {inherit (variant) modules;};
           in {
             ${
               config.dendritic.configurations.variants.nameFunction {
-                user = null;
                 host = rootName;
-                variant = null;
-                image = imageName;
+                package = variantName;
                 hostPlatform = target;
               }
             } =
-              value;
+              variant.package variantConfiguration;
           })
-          declaration.images)
+          (lib.filterAttrs (_: variant: variant.package != null) declaration.variants))
         targetSystems)
       (builtins.attrNames declarations);
     in
@@ -476,10 +461,7 @@ in {
                 ${
                   config.dendritic.configurations.variants.nameFunction {
                     user = name;
-                    host = null;
                     variant = variantName;
-                    image = null;
-                    hostPlatform = pkgs.stdenv.hostPlatform.system;
                   }
                 } =
                   (baseConfiguration pkgs declaration).extendModules {inherit (variant) modules;};
@@ -491,84 +473,6 @@ in {
 
     declarations = homeManagerDeclarations;
   in {
-    dendritic.configurations = {
-      variants.build = lib.mkDefault true;
-
-      users = {
-        standalone = {
-          enable = true;
-          standalone = {
-            pkgs = withSystem "aarch64-darwin" ({pkgs, ...}: pkgs);
-            modules = [config.flake.dendritic.modules.homeManager.standalone];
-          };
-          variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
-        };
-
-        krad246 = {
-          enable = true;
-          hosts = ["nixbook-pro-composed"];
-          modules = config.flake.dendritic.modules.homeManager.nixbook-pro;
-          standalone = {
-            pkgs = withSystem "aarch64-darwin" ({pkgs, ...}: pkgs);
-            modules = [config.flake.dendritic.modules.homeManager.standalone];
-          };
-        };
-      };
-
-      hosts = {
-        generic-headless-interactive = {
-          enable = true;
-          class = "nixos";
-          hostPlatforms = [{system = "x86_64-linux";}];
-          modules = [
-            config.flake.dendritic.modules.nixos.headless
-            config.flake.dendritic.modules.nixos.interactive
-            (_: {networking.hostName = "generic-headless-interactive";})
-          ];
-          variants = {
-            dev.modules = [
-              (_: {environment.etc."dendritic-variant".text = "dev";})
-            ];
-            vm-nogui = {
-              modules = [
-                ({config, ...}: {
-                  image.modules.vm = import ./image-modules/vm.nix;
-                  image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
-                    vm = config.image.modules.vm;
-                  };
-                })
-              ];
-              includeSpecialisations = true;
-            };
-          };
-          images.vm-nogui.modules = [
-            ({config, ...}: {
-              image.modules.vm = import ./image-modules/vm.nix;
-              image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
-                vm = config.image.modules.vm;
-              };
-            })
-          ];
-        };
-
-        nixbook-pro-composed = {
-          enable = true;
-          class = "darwin";
-          hostPlatforms = [{system = "aarch64-darwin";}];
-          modules = [
-            config.flake.dendritic.modules.darwin.applications
-            config.flake.dendritic.modules.darwin.base
-            config.flake.dendritic.modules.darwin.app-stores
-            config.flake.dendritic.modules.darwin.browser
-            config.flake.dendritic.modules.darwin.linux-builder
-            config.flake.dendritic.modules.darwin.tailscale
-            (_: {networking.hostName = "nixbook-pro-composed";})
-          ];
-          users.krad246.modules = [];
-        };
-      };
-    };
-
     flake-file.inputs.dendritic = {
       url = "github:krad246/nix-systems/dendritic";
 
@@ -713,7 +617,7 @@ in {
     };
 
     flake = {
-      homeConfigurations = lib.mkIf (!lib.inPureEvalMode) (lib.mkMerge (
+      homeConfigurations = lib.mkMerge (
         lib.concatLists (lib.mapAttrsToList (name: declaration:
           homeManager.outputs declaration.pkgs {${name} = declaration;})
         declarations)
@@ -723,9 +627,6 @@ in {
             name = config.dendritic.configurations.variants.nameFunction {
               user = username;
               host = hostName;
-              variant = null;
-              image = null;
-              hostPlatform = host.pkgs.stdenv.hostPlatform.system;
             };
             declaration = {
               modules = user.modules ++ user.standalone.modules;
@@ -736,7 +637,7 @@ in {
             homeManager.outputs host.pkgs {${name} = declaration;})
           user.hosts)
         (lib.filterAttrs (_: user: user.enable) config.dendritic.configurations.users))
-      ));
+      );
       # FIXME(dendritic-hosts): Publish NixOS configurations after declarations
       # distinguish deployable roots from image-only composition substrates.
       # Direct image outputs remain available through perSystem packages.
@@ -753,7 +654,7 @@ in {
     in
       lib.mkMerge [
         {
-          packages = imageOutputs system systemDeclarations;
+          packages = variantPackages system systemDeclarations;
 
           checks = {
             dendritic-hm-standalone = standalone.activationPackage;
