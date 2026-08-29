@@ -312,17 +312,16 @@ in {
 
     systemDeclarations = lib.pipe config.dendritic.configurations.hosts [
       (lib.filterAttrs (_: host: host.enable))
-      (lib.mapAttrs (_hostName: host: let
-        layers =
-          [
-            config.dendritic.configurations.shared
-            (config.dendritic.configurations.perClass.${host.class} or {})
-          ]
-          ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
-          ++ [host];
-      in
+      (lib.mapAttrs (_hostName: host:
         lib.recursiveUpdate host {
-          modules = lib.concatMap (layer: layer.modules or []) layers;
+          modules = lib.concatMap (layer: layer.modules or []) (
+            [
+              config.dendritic.configurations.shared
+              (config.dendritic.configurations.perClass.${host.class} or {})
+            ]
+            ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
+            ++ [host]
+          );
           users =
             lib.mapAttrs (username: layer: {
               modules = config.dendritic.configurations.users.${username}.modules ++ layer.modules;
