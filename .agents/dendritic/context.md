@@ -399,27 +399,30 @@ distinct `terminfo` behavior is system-owned. Rich workstation/desktop profiles
 remain later tiers.
 
 Variant declaration and materialization policy are separate. The flake-level
-`dendritic.configurations` `attrsOf` registry stores each root once; its typed
-`users` and `hosts` contexts carry the relevant constructor arguments and
-`attrsOf` module-list deltas. Their defaults live beneath
-`dendritic.defaults.users` and `dendritic.defaults.hosts`, while each
-selected context and each variant may override standalone output and specialisation inclusion.
-A standalone variant exposes an independently buildable output; inclusion projects the
+`dendritic.configurations` fixed point exposes auditable `users`, `hosts`,
+`shared`, `perClass`, `perSystem`, `perTag`, and `variants` layers. Host modules
+compose in that order, followed by host-local declarations; no kitchen-sink
+per-name context switches or normalized shadow registries are permitted. Users
+own shared modules, host membership, and `standalone.{pkgs,modules}`. This
+supports both ez-configs-style standalone and user-by-host Home Manager outputs,
+including the host package set and optional `osConfig`.
+
+Each variant has independent `build` and `includeSpecialisations` controls. A
+built variant exposes an independently buildable output; inclusion projects the
 same delta into the root's native `specialisation` namespace for runtime
-switching. Effective policy is read directly as leaf override, then context override,
-then global context default; implementations must not normalize a shadow declaration
-attrset. The four combinations—neither, standalone only,
+switching. Null leaf values inherit the corresponding global variant default.
+The four combinations—neither, build only,
 include only, and both—and mixed leaf selections must work without duplicating
-declarations. The production default is standalone on and inclusion off.
+declarations. The production default is build on and inclusion off.
 
 The concrete Home Manager, NixOS, and nix-darwin evaluators use the module-style
-`standalone` and `includeSpecialisation` options. Keep those evaluators as explicit
+`build` and `includeSpecialisations` options. Keep those evaluators as explicit
 recursive attrsets rather than hiding their native contracts behind a backend
 factory. Their materialization law is: construct one base configuration,
 optionally include selected deltas in the root's native `specialisation`
 namespace, and independently extend the same base configuration for every
-standalone delta. An evaluator without native specialisations still supports
-standalone variants and fails only when a selected coordinate requests inclusion.
+build-selected delta. An evaluator without native specialisations still supports
+independent variant builds and fails only when a selected coordinate requests inclusion.
 
 Do not place the exhaustive four-mode proof in ordinary flake `checks`:
 `nix flake show` enumerates checks and would thereby force the resident
@@ -431,12 +434,14 @@ flake-parts `debug` option is enabled. Ordinary output enumeration therefore
 keeps the unused runtime vTable lazy, while debug evaluation exercises the
 four-mode matrix, host/image contracts, and nixbook-pro closure parity.
 
-Standalone variant names are generated from their root and local variant names
-through `dendritic.outputs.nameFunction`, following ezConfigs'
-established naming-interface vocabulary. Its default is
-`configuration: variant: "${configuration}-${variant}"`, yielding names such
-as `standalone-dev`; native specialization tables continue using the local
-`dev` key. Generated names must be unique and must not collide with root names.
+All generated names use
+`dendritic.configurations.variants.nameFunction`. It accepts a coordinate record
+with nullable `user`, `host`, `variant`, `image`, and `hostPlatform` fields, so
+one naming algebra covers user-by-host products, independent variants, and
+cross-built images. The default yields `standalone-dev`,
+`krad246-nixbook-pro-composed`, and
+`generic-headless-interactive-vm-nogui-x86_64-linux`; native specialisation
+tables continue using their local variant key.
 
 Standalone variants always extend the unspecialised evaluated root and retain
 the complete `homeManagerConfiguration` result, including its ordinary
@@ -451,15 +456,15 @@ couples publication cost to the resident specialisation table.
 The unified configuration interpreter is a sparse projection matrix rooted in
 one cleanly assignable, mergeable RAII-like declaration attrset. That single
 public ownership boundary must address every layer rather than exposing
-parallel Home Manager and system declaration registries. Its typed coordinates
-include root intent, standalone and integrated users, build/evaluation
-platform, target platform, variant and specialisation deltas, projection
-backend, images and other outputs, and publication/embedding policy. NixOS,
+parallel ownership boundaries. Its typed coordinates include users, hosts,
+class/system/tag module layers, standalone package sets, build/evaluation
+platform, target platform, variant and specialisation deltas, images, and build
+policy. NixOS,
 nix-darwin, standalone Home Manager, integrated Home Manager, generator images,
 specialisations, and deployment records are projections of the completed
 declaration rather than bespoke host constructors. Backends remain open
 registries; enabled coordinates alone materialize, so a wide declaration space
-does not force the full Cartesian product. Include/embed rules are explicit
+does not force the full Cartesian product. Build/include rules are explicit
 performance controls: they determine whether a lightweight independent output,
 a heavier resident specialisation, both, or neither is materialized at each
 coordinate.
