@@ -5,54 +5,6 @@
   withSystem,
   ...
 }: let
-  configurationBackend = {
-    construct,
-    includeSpecialisation ? null,
-    policy,
-  }: rec {
-    baseConfiguration = context: declaration: construct context declaration;
-
-    configuration = context: declaration: let
-      root = baseConfiguration context declaration;
-      includedSpecialisations = lib.filterAttrs (_: variant:
-        if variant.includeSpecialisation != null
-        then variant.includeSpecialisation
-        else if declaration.includeSpecialisation != null
-        then declaration.includeSpecialisation
-        else policy.includeSpecialisation)
-      declaration.variants;
-    in
-      if includedSpecialisations == {}
-      then root
-      else if includeSpecialisation == null
-      then throw "this configuration backend does not support included specialisations"
-      else includeSpecialisation root includedSpecialisations;
-
-    standaloneVariant = context: declaration: variant:
-      (baseConfiguration context declaration).extendModules {inherit (variant) modules;};
-
-    outputs = context: nameFunction: declarations:
-      lib.pipe declarations [
-        (lib.mapAttrsToList (rootName: declaration: let
-          standaloneVariants = lib.filterAttrs (_: variant:
-            if variant.standalone != null
-            then variant.standalone
-            else if declaration.standalone != null
-            then declaration.standalone
-            else policy.standalone)
-          declaration.variants;
-        in
-          # The root contains any variants selected for inclusion as specialisations.
-          [{${rootName} = configuration context declaration;}]
-          # Standalone variants are lightweight, independently buildable handles.
-          ++ lib.mapAttrsToList (variantName: variant: {
-            ${nameFunction rootName variantName} = standaloneVariant context declaration variant;
-          })
-          standaloneVariants))
-        lib.concatLists
-      ];
-  };
-
   variantType = lib.types.submodule {
     options = {
       modules = lib.mkOption {
@@ -225,9 +177,8 @@ in {
       })
       declaration.users;
 
-    nixosConfigurations = configurationBackend {
-      policy = config.dendritic.defaults.hosts;
-      construct = _: declaration:
+    nixos = rec {
+      baseConfiguration = declaration:
         inputs.nixpkgs.lib.nixosSystem {
           modules =
             [
@@ -239,23 +190,54 @@ in {
             ++ userModules declaration
             ++ declaration.modules;
         };
-      includeSpecialisation = root: variants:
-        root.extendModules {
-          modules = [
-            {
-              specialisation =
-                lib.mapAttrs (_: variant: {
-                  configuration.imports = variant.modules;
-                })
-                variants;
-            }
-          ];
-        };
+
+      configuration = declaration: let
+        root = baseConfiguration declaration;
+        includedSpecialisations = lib.filterAttrs (_: variant:
+          if variant.includeSpecialisation != null
+          then variant.includeSpecialisation
+          else if declaration.includeSpecialisation != null
+          then declaration.includeSpecialisation
+          else config.dendritic.defaults.hosts.includeSpecialisation)
+        declaration.variants;
+      in
+        if includedSpecialisations == {}
+        then root
+        else
+          root.extendModules {
+            modules = [
+              {
+                specialisation =
+                  lib.mapAttrs (_: variant: {
+                    configuration.imports = variant.modules;
+                  })
+                  includedSpecialisations;
+              }
+            ];
+          };
+
+      standaloneVariant = declaration: variant:
+        (baseConfiguration declaration).extendModules {inherit (variant) modules;};
+
+      outputs = declarations:
+        lib.pipe declarations [
+          (lib.mapAttrsToList (name: declaration:
+            [{${name} = configuration declaration;}]
+            ++ lib.mapAttrsToList (variantName: variant: {
+              ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant declaration variant;
+            }) (lib.filterAttrs (_: variant:
+              if variant.standalone != null
+              then variant.standalone
+              else if declaration.standalone != null
+              then declaration.standalone
+              else config.dendritic.defaults.hosts.standalone)
+            declaration.variants)))
+          lib.concatLists
+        ];
     };
 
-    darwinConfigurations = configurationBackend {
-      policy = config.dendritic.defaults.hosts;
-      construct = _: declaration:
+    darwin = rec {
+      baseConfiguration = declaration:
         inputs.darwin.lib.darwinSystem {
           modules =
             [
@@ -267,6 +249,38 @@ in {
             ++ userModules declaration
             ++ declaration.modules;
         };
+
+      configuration = declaration: let
+        includedSpecialisations = lib.filterAttrs (_: variant:
+          if variant.includeSpecialisation != null
+          then variant.includeSpecialisation
+          else if declaration.includeSpecialisation != null
+          then declaration.includeSpecialisation
+          else config.dendritic.defaults.hosts.includeSpecialisation)
+        declaration.variants;
+      in
+        if includedSpecialisations == {}
+        then baseConfiguration declaration
+        else throw "nix-darwin configurations do not support included specialisations";
+
+      standaloneVariant = declaration: variant:
+        (baseConfiguration declaration).extendModules {inherit (variant) modules;};
+
+      outputs = declarations:
+        lib.pipe declarations [
+          (lib.mapAttrsToList (name: declaration:
+            [{${name} = configuration declaration;}]
+            ++ lib.mapAttrsToList (variantName: variant: {
+              ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant declaration variant;
+            }) (lib.filterAttrs (_: variant:
+              if variant.standalone != null
+              then variant.standalone
+              else if declaration.standalone != null
+              then declaration.standalone
+              else config.dendritic.defaults.hosts.standalone)
+            declaration.variants)))
+          lib.concatLists
+        ];
     };
 
     selectSystemDeclarations = system: declarations:
@@ -291,14 +305,14 @@ in {
 
     systemOutputs = system: declarations: let
       selectedDeclarations = selectSystemDeclarations system declarations;
-      backend =
+      evaluator =
         if isSystem lib.systems.inspect.predicates.isDarwin system
-        then darwinConfigurations
+        then darwin
         else if isSystem lib.systems.inspect.predicates.isLinux system
-        then nixosConfigurations
+        then nixos
         else throw "dendritic.configurations: unsupported target system ${system}";
     in
-      backend.outputs null config.dendritic.outputs.nameFunction selectedDeclarations;
+      evaluator.outputs selectedDeclarations;
 
     imageOutputs = buildSystem: declarations: let
       candidates = lib.concatMap (rootName: let
@@ -314,13 +328,13 @@ in {
       in
         lib.concatMap (target: let
           selectedDeclaration = (selectSystemDeclarations target declarations).${rootName};
-          backend =
+          evaluator =
             if isSystem lib.systems.inspect.predicates.isDarwin target
-            then darwinConfigurations
+            then darwin
             else if isSystem lib.systems.inspect.predicates.isLinux target
-            then nixosConfigurations
+            then nixos
             else throw "dendritic.configurations: unsupported image target system ${target}";
-          root = backend.configuration null selectedDeclaration;
+          root = evaluator.configuration selectedDeclaration;
         in
           lib.mapAttrsToList (imageName: image: let
             imageConfiguration =
@@ -357,25 +371,56 @@ in {
     ];
     darwinSystems = lib.filter (system: isSystem lib.systems.inspect.predicates.isDarwin system) targetSystems;
 
-    homeManagerConfigurations = configurationBackend {
-      policy = config.dendritic.defaults.users;
-      construct = pkgs: declaration:
+    homeManager = rec {
+      baseConfiguration = pkgs: declaration:
         inputs.home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           inherit (declaration) modules;
         };
-      includeSpecialisation = root: specialisations:
-        root.extendModules {
-          modules = [
-            {
-              specialisation =
-                lib.mapAttrs (_: delta: {
-                  configuration.imports = delta.modules;
-                })
-                specialisations;
-            }
-          ];
-        };
+
+      configuration = pkgs: declaration: let
+        root = baseConfiguration pkgs declaration;
+        includedSpecialisations = lib.filterAttrs (_: variant:
+          if variant.includeSpecialisation != null
+          then variant.includeSpecialisation
+          else if declaration.includeSpecialisation != null
+          then declaration.includeSpecialisation
+          else config.dendritic.defaults.users.includeSpecialisation)
+        declaration.variants;
+      in
+        if includedSpecialisations == {}
+        then root
+        else
+          root.extendModules {
+            modules = [
+              {
+                specialisation =
+                  lib.mapAttrs (_: variant: {
+                    configuration.imports = variant.modules;
+                  })
+                  includedSpecialisations;
+              }
+            ];
+          };
+
+      standaloneVariant = pkgs: declaration: variant:
+        (baseConfiguration pkgs declaration).extendModules {inherit (variant) modules;};
+
+      outputs = pkgs: declarations:
+        lib.pipe declarations [
+          (lib.mapAttrsToList (name: declaration:
+            [{${name} = configuration pkgs declaration;}]
+            ++ lib.mapAttrsToList (variantName: variant: {
+              ${config.dendritic.outputs.nameFunction name variantName} = standaloneVariant pkgs declaration variant;
+            }) (lib.filterAttrs (_: variant:
+              if variant.standalone != null
+              then variant.standalone
+              else if declaration.standalone != null
+              then declaration.standalone
+              else config.dendritic.defaults.users.standalone)
+            declaration.variants)))
+          lib.concatLists
+        ];
     };
 
     declarations = homeManagerDeclarations;
@@ -600,9 +645,8 @@ in {
 
     flake = {
       homeConfigurations = lib.mkIf (!lib.inPureEvalMode) (lib.mkMerge (
-        homeManagerConfigurations.outputs
+        homeManager.outputs
         (withSystem builtins.currentSystem ({pkgs, ...}: pkgs))
-        config.dendritic.outputs.nameFunction
         declarations
       ));
       # FIXME(dendritic-hosts): Publish NixOS configurations after declarations
@@ -617,7 +661,7 @@ in {
       ...
     }: let
       declaration = declarations.standalone;
-      standalone = homeManagerConfigurations.configuration pkgs declaration;
+      standalone = homeManager.configuration pkgs declaration;
     in
       lib.mkMerge [
         {
