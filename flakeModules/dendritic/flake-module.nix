@@ -154,11 +154,13 @@ in {
       nameFunction = lib.mkOption {
         type = lib.types.functionTo lib.types.str;
         default = coordinates:
-          lib.concatStringsSep "-" (
-            lib.filter (value: value != null) (map (name: coordinates.${name} or null) ["user" "host" "variant" "package"])
-            ++ lib.optional (coordinates ? package) coordinates.hostPlatform
-          );
-        defaultText = lib.literalExpression ''coordinates: lib.concatStringsSep "-" (lib.filter (value: value != null) (map (name: coordinates.''${name} or null) [ "user" "host" "variant" "package" ]) ++ lib.optional (coordinates ? package) coordinates.hostPlatform)'';
+          lib.pipe ["user" "host" "variant" "package"] [
+            (map (name: coordinates.${name} or null))
+            (lib.filter (value: value != null))
+            (values: values ++ lib.optional (coordinates ? package) coordinates.hostPlatform)
+            (lib.concatStringsSep "-")
+          ];
+        defaultText = lib.literalExpression ''coordinates: lib.pipe [ "user" "host" "variant" "package" ] [ (map (name: coordinates.''${name} or null)) (lib.filter (value: value != null)) (values: values ++ lib.optional (coordinates ? package) coordinates.hostPlatform) (lib.concatStringsSep "-") ]'';
         description = "Function naming any generated user, host variant, or package coordinate.";
       };
     };
