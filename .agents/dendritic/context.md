@@ -409,7 +409,7 @@ remain later tiers.
 
 Variant declaration and materialization policy are separate. The flake-level
 `dendritic.configurations` fixed point exposes auditable `users`, `hosts`,
-`shared`, `perClass`, `perSystem`, `perTag`, and `variants` layers. Host modules
+`shared`, `perClass`, `perSystem`, `perTag`, and `variants` contribution sets. Host modules
 compose in that order, followed by host-local declarations; no kitchen-sink
 per-name context switches or normalized shadow registries are permitted. Users
 own shared modules, host membership, and `standalone.{pkgs,modules}`. This
@@ -431,13 +431,17 @@ it is not a positional tuple or a list of stringly typed coordinate kinds.
 Names belong to their corresponding typed node, with structural defaults, and
 the former generic naming callback is compatibility-only.
 
-`tags` has one law at every taggable node: its ordered list selects the
-corresponding ordered `perTag.<name>` layers. Root tags apply to every host
+`tags` has one law at every taggable node: its ordered list selects canonical
+profile aspects from the regular top-level files in
+`inputs.dendritic/modules/profiles` (currently `base`, `desktop`, `dev`,
+`headless`, `standalone`, and `workstation`). Tags are never host names,
+application names, or low-level capabilities. Root tags apply to every host
 root, host tags refine that root, user and host-user tags refine their Home
 Manager node, and variant tags form the final additive delta of that variant.
-The selected layer projects its system modules, standalone Home Manager
-modules, or selected-user modules into the evaluator that owns the node; this
-projection distinction does not change tag membership semantics.
+The matching profile modules are materialized for the target evaluator;
+`perTag.<name>` remains the ordered customization overlay around that profile.
+This same profile/overlay projection is used for system, standalone Home
+Manager, integrated Home Manager, and variant outputs.
 
 A variant is always an additive overlay on one normalized parent coordinate.
 Its same module/tag delta is used for its independently materialized output,
@@ -449,7 +453,8 @@ module priority within its overlay.
 
 The host declaration model admits semantic class aliases through a typed class
 registry (`nativeClass` selects NixOS or nix-darwin while the alias keeps its
-own `perClass` layer), architecture layers, and structured layer/host metadata.
+own `perClass` contribution set), architecture contributions, and structured
+host metadata.
 It deliberately excludes filesystem discovery and a global untyped
 `specialArgs` universe.
 

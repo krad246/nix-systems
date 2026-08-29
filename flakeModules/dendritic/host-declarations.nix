@@ -2,55 +2,82 @@
   config,
   lib,
   ...
-}: {
+}: let
+  configurations = config.dendritic.configurations;
+  profileLayers = config.dendritic.internal.profileLayers;
+
+  profile = nativeClass: tag: let
+    overlay = configurations.perTag.${tag} or {};
+    layer = profileLayers.${tag} or (throw "dendritic.configurations: tag ${tag} is not a profile overlay in inputs.dendritic/modules/profiles");
+  in {
+    system = layer.${nativeClass} ++ (overlay.modules or []);
+    home = layer.homeManager ++ (overlay.homeModules or []);
+  };
+
+  homeContributions = username: contribution:
+    (contribution.homeModules or []) ++ (contribution.users.${username}.modules or []);
+
+  profileHomeModules = nativeClass: username: tag: let
+    selected = profile nativeClass tag;
+    overlay = configurations.perTag.${tag} or {};
+  in
+    selected.home ++ (overlay.users.${username}.modules or []);
+in {
   options.dendritic.internal.systemDeclarations = lib.mkOption {
     type = lib.types.attrsOf lib.types.raw;
     readOnly = true;
     internal = true;
   };
 
-  config.dendritic.internal.systemDeclarations = lib.pipe config.dendritic.configurations.hosts [
+  config.dendritic.internal.systemDeclarations = lib.pipe configurations.hosts [
     (lib.filterAttrs (_: host: host.enable))
     (lib.mapAttrs (hostName: host: let
-      class = config.dendritic.configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
+      class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
       classNames = lib.unique [class.nativeClass host.class];
-      rootTagLayers = map (tag: config.dendritic.configurations.perTag.${tag} or {}) config.dendritic.configurations.tags;
-      baseLayers =
-        [config.dendritic.configurations.shared]
-        ++ rootTagLayers
-        ++ map (className: config.dendritic.configurations.perClass.${className} or {}) classNames;
-      tagLayers = map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags;
-      homeModules = username: layer:
-        (layer.homeModules or []) ++ (layer.users.${username}.modules or []);
-      baseModules = lib.concatMap (layer: layer.modules or []) baseLayers;
-      tagModules = lib.concatMap (layer: layer.modules or []) tagLayers;
-      hostModules = host.modules;
-      selectedUsers = lib.filterAttrs (username: _: config.dendritic.configurations.users ? ${username} && config.dendritic.configurations.users.${username}.enable) host.users;
+      rootProfiles = map (tag: profile class.nativeClass tag) configurations.tags;
+      hostProfiles = map (tag: profile class.nativeClass tag) host.tags;
+      baseContributions =
+        [configurations.shared]
+        ++ map (className: configurations.perClass.${className} or {}) classNames;
+      homeClassLayer = configurations.perClass.home or {};
+      baseModules =
+        configurations.shared.modules
+        ++ lib.concatMap (selected: selected.system) rootProfiles
+        ++ lib.concatMap (contribution: contribution.modules or []) (lib.tail baseContributions);
+      tagModules = lib.concatMap (selected: selected.system) hostProfiles;
+      selectedUsers =
+        lib.filterAttrs (
+          username: _: configurations.users ? ${username} && configurations.users.${username}.enable
+        )
+        host.users;
     in {
       inherit (host) enable outputName hostPlatforms buildPlatform crossCompile variants;
-      tags = config.dendritic.configurations.tags ++ host.tags;
+      tags = configurations.tags ++ host.tags;
       inherit (host) class;
       inherit (class) nativeClass;
-      inherit baseModules tagModules hostModules;
-      modules = baseModules ++ tagModules ++ hostModules;
+      inherit baseModules tagModules;
+      hostModules = host.modules;
+      modules = baseModules ++ tagModules ++ host.modules;
       users =
         lib.mapAttrs (username: hostLayer: let
-          user = config.dendritic.configurations.users.${username};
-          userTagLayers = map (tag: config.dendritic.configurations.perTag.${tag} or {}) user.tags;
-          hostUserTagLayers = map (tag: config.dendritic.configurations.perTag.${tag} or {}) hostLayer.tags;
-          baseModules =
+          user = configurations.users.${username};
+          baseUserModules =
             user.modules
-            ++ lib.concatMap (homeModules username) baseLayers
-            ++ lib.concatMap (homeModules username) userTagLayers;
-          tagModules =
-            lib.concatMap (homeModules username) tagLayers
-            ++ lib.concatMap (homeModules username) hostUserTagLayers;
-          hostModules = hostLayer.modules;
+            ++ (homeClassLayer.homeModules or [])
+            ++ (homeClassLayer.users.${username}.modules or [])
+            ++ lib.concatMap (profileHomeModules class.nativeClass username) configurations.tags
+            ++ lib.concatMap (homeContributions username) (lib.tail baseContributions)
+            ++ lib.concatMap (profileHomeModules class.nativeClass username) user.tags;
+          taggedUserModules =
+            lib.concatMap (profileHomeModules class.nativeClass username) host.tags
+            ++ lib.concatMap (profileHomeModules class.nativeClass username) hostLayer.tags;
         in {
           inherit (hostLayer) outputName;
           tags = user.tags ++ hostLayer.tags;
-          inherit baseModules tagModules hostModules;
-          modules = baseModules ++ tagModules ++ hostModules;
+          baseModules = baseUserModules;
+          tagModules = taggedUserModules;
+          hostModules = hostLayer.modules;
+          modules = baseUserModules ++ taggedUserModules ++ hostLayer.modules;
         })
         selectedUsers;
       metadata = {
@@ -61,8 +88,8 @@
         };
         tags = map (tag: {
           name = tag;
-          metadata = config.dendritic.configurations.perTag.${tag}.metadata or {};
-        }) (config.dendritic.configurations.tags ++ host.tags);
+          metadata = configurations.perTag.${tag}.metadata or {};
+        }) (configurations.tags ++ host.tags);
         host = host.metadata;
       };
     }))

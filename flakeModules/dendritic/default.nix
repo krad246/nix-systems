@@ -1,6 +1,7 @@
 {
   imports = [
     ./flake-module.nix
+    ./profile-layers.nix
     ./host-declarations.nix
     ./system-coordinates.nix
     ./system-outputs.nix

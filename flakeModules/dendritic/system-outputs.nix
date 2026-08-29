@@ -6,6 +6,23 @@
   ...
 }: let
   systemCoordinates = config.dendritic.internal.systemCoordinates;
+  profileLayers = config.dendritic.internal.profileLayers;
+
+  profileSystemModules = nativeClass: tags:
+    lib.concatMap (tag: let
+      profile = profileLayers.${tag} or (throw "dendritic.configurations: tag ${tag} is not a profile overlay in inputs.dendritic/modules/profiles");
+      overlay = config.dendritic.configurations.perTag.${tag} or {};
+    in
+      profile.${nativeClass} ++ (overlay.modules or []))
+    tags;
+
+  profileHomeModules = username: tags:
+    lib.concatMap (tag: let
+      profile = profileLayers.${tag} or (throw "dendritic.configurations: tag ${tag} is not a profile overlay in inputs.dendritic/modules/profiles");
+      overlay = config.dendritic.configurations.perTag.${tag} or {};
+    in
+      profile.homeManager ++ (overlay.homeModules or []) ++ (overlay.users.${username}.modules or []))
+    tags;
 
   hostOutputName = coordinate:
     if lib.count (candidate: candidate.hostName == coordinate.hostName) systemCoordinates == 1
@@ -25,17 +42,13 @@
     else variant.outputName;
 
   variantModules = coordinate: variant:
-    variant.modules
-    ++ lib.concatMap (tag: config.dendritic.configurations.perTag.${tag}.modules or []) variant.tags
+    profileSystemModules coordinate.nativeClass variant.tags
+    ++ variant.modules
     ++ lib.mapAttrsToList (username: _: {
       home-manager.users.${username}.imports =
-        variant.homeModules
-        ++ (variant.users.${username}.modules or [])
-        ++ lib.concatMap (tag: let
-          layer = config.dendritic.configurations.perTag.${tag} or {};
-        in
-          (layer.homeModules or []) ++ (layer.users.${username}.modules or []))
-        variant.tags;
+        profileHomeModules username variant.tags
+        ++ variant.homeModules
+        ++ (variant.users.${username}.modules or []);
     })
     coordinate.users;
 

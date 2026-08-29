@@ -5,7 +5,7 @@
   ...
 }: let
   flakeConfig = config;
-  moduleLayer = {
+  moduleContributions = {
     options = {
       modules = lib.mkOption {
         type = lib.types.listOf lib.types.deferredModule;
@@ -20,31 +20,31 @@
       metadata = lib.mkOption {
         type = lib.types.attrsOf lib.types.raw;
         default = {};
-        description = "Declarative data carried by this composition layer for downstream projections.";
+        description = "Declarative data carried by this composition for downstream projections.";
       };
     };
   };
 
-  moduleLayerType = lib.types.submodule moduleLayer;
+  moduleContributionsType = lib.types.submodule moduleContributions;
 
-  compositionLayer = {
-    imports = [moduleLayer];
+  composition = {
+    imports = [moduleContributions];
     options.users = lib.mkOption {
-      type = lib.types.attrsOf moduleLayerType;
+      type = lib.types.attrsOf moduleContributionsType;
       default = {};
       description = "Home Manager module contributions for users selected by a host.";
     };
   };
 
-  compositionLayerType = lib.types.submodule compositionLayer;
+  compositionType = lib.types.submodule composition;
 
   variantType = lib.types.submodule {
-    imports = [compositionLayer];
+    imports = [composition];
     options = {
       tags = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = "Ordered tags selecting additional perTag layers for this variant node.";
+        description = "Ordered profile aspects selecting additional contributions for this variant node.";
       };
       build = lib.mkOption {
         type = lib.types.bool;
@@ -75,17 +75,17 @@
   };
 
   userType = lib.types.submodule {
-    imports = [moduleLayer];
+    imports = [moduleContributions];
     options = {
       enable = lib.mkEnableOption "this Home Manager user";
       tags = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = "Ordered tags selecting perTag layers for this user node.";
+        description = "Ordered profile aspects selecting contributions for this user node.";
       };
       standalone = lib.mkOption {
         type = lib.types.submodule {
-          imports = [moduleLayer];
+          imports = [moduleContributions];
           options = {
             enable = lib.mkEnableOption "this standalone Home Manager configuration";
             pkgs = lib.mkOption {
@@ -117,12 +117,12 @@
   };
 
   hostUserType = lib.types.submodule {
-    imports = [moduleLayer];
+    imports = [moduleContributions];
     options = {
       tags = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = "Ordered tags selecting perTag layers for this user within one host.";
+        description = "Ordered profile aspects selecting contributions for this user within one host.";
       };
       outputName = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
@@ -133,7 +133,7 @@
   };
 
   hostType = lib.types.submodule {
-    imports = [moduleLayer];
+    imports = [moduleContributions];
     options = {
       enable = lib.mkEnableOption "this NixOS or nix-darwin host";
       class = lib.mkOption {
@@ -149,7 +149,7 @@
       tags = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = "Ordered tags selecting the corresponding perTag.<name> declarations.";
+        description = "Ordered profile aspects selecting the corresponding perTag.<name> overlays.";
       };
       metadata = lib.mkOption {
         type = lib.types.attrsOf lib.types.raw;
@@ -174,7 +174,7 @@
       users = lib.mkOption {
         type = lib.types.attrsOf hostUserType;
         default = {};
-        description = "Host-specific module layers for integrated Home Manager users.";
+        description = "Host-specific module contributions for integrated Home Manager users.";
       };
       variants = lib.mkOption {
         type = lib.types.attrsOf variantType;
@@ -193,7 +193,7 @@ in {
     tags = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [];
-      description = "Ordered root tags selecting perTag layers for every host declaration.";
+      description = "Ordered root profile aspects selecting perTag overlays for every host declaration.";
     };
     classes = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule {
@@ -213,7 +213,7 @@ in {
         nixos.nativeClass = "nixos";
         darwin.nativeClass = "darwin";
       };
-      description = "Semantic host classes; aliases retain their own perClass layer while selecting a native evaluator.";
+      description = "Semantic host classes; aliases retain their own perClass contributions while selecting a native evaluator.";
     };
     users = lib.mkOption {
       type = lib.types.attrsOf userType;
@@ -226,29 +226,29 @@ in {
       description = "System hosts forming one axis of the configuration matrix.";
     };
     shared = lib.mkOption {
-      type = compositionLayerType;
+      type = compositionType;
       default = {};
       description = "Modules shared by every host.";
     };
     perClass = lib.mkOption {
-      type = lib.types.attrsOf compositionLayerType;
+      type = lib.types.attrsOf compositionType;
       default = {};
-      description = "Modules selected by host class.";
+      description = "Modules selected by host class; perClass.home is the shared Home Manager baseline.";
     };
     perSystem = lib.mkOption {
-      type = lib.types.attrsOf compositionLayerType;
+      type = lib.types.attrsOf compositionType;
       default = {};
       description = "Modules selected by host platform system.";
     };
     perArch = lib.mkOption {
-      type = lib.types.attrsOf compositionLayerType;
+      type = lib.types.attrsOf compositionType;
       default = {};
       description = "Modules selected by the architecture component of a host platform.";
     };
     perTag = lib.mkOption {
-      type = lib.types.attrsOf compositionLayerType;
+      type = lib.types.attrsOf compositionType;
       default = {};
-      description = "Modules selected for each host tag.";
+      description = "Ordered overlays around canonical profile aspects.";
     };
     variants = {
       build = lib.mkOption {
@@ -310,21 +310,6 @@ in {
 
       modules = {
         inherit (inputs.dendritic.modules) nixos darwin;
-        profiles = {
-          darwin.desktop.imports = [
-            inputs.dendritic.modules.darwin.applications
-            inputs.dendritic.modules.darwin.app-stores
-            inputs.dendritic.modules.darwin.browser
-            inputs.dendritic.modules.darwin.linux-builder
-            inputs.dendritic.modules.darwin.tailscale
-          ];
-          home = {
-            desktop = flakeConfig.flake.dendritic.modules.homeManager.desktop;
-            dev = flakeConfig.flake.dendritic.modules.homeManager.dev;
-            interactive = flakeConfig.flake.dendritic.modules.homeManager.interactive;
-            secrets = flakeConfig.flake.dendritic.modules.homeManager.secrets;
-          };
-        };
         homeManager = {
           identity.options.identity.person = {
             email = lib.mkOption {
