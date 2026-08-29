@@ -5,7 +5,7 @@
   withSystem,
   ...
 }: let
-  moduleLayerType = lib.types.submodule {
+  moduleLayer = {
     options = {
       modules = lib.mkOption {
         type = lib.types.listOf lib.types.deferredModule;
@@ -15,17 +15,15 @@
     };
   };
 
+  moduleLayerType = lib.types.submodule moduleLayer;
+
   variantType = lib.types.submodule {
+    imports = [moduleLayer];
     options = {
-      modules = lib.mkOption {
-        type = lib.types.listOf lib.types.deferredModule;
-        default = [];
-        description = "Module delta for this variant.";
-      };
-      build = lib.mkOption {
-        type = lib.types.nullOr lib.types.bool;
-        default = null;
-        description = "Whether to emit this variant as an independent build; null inherits the global default.";
+      enable = lib.mkOption {
+        type = lib.types.bool;
+        default = true;
+        description = "Whether to emit this variant independently when variant outputs are enabled.";
       };
       includeSpecialisations = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
@@ -41,29 +39,23 @@
   };
 
   userType = lib.types.submodule {
+    imports = [moduleLayer];
     options = {
       enable = lib.mkEnableOption "this Home Manager user";
-      modules = lib.mkOption {
-        type = lib.types.listOf lib.types.deferredModule;
-        default = [];
-        description = "Modules shared by this user's standalone and host-derived configurations.";
-      };
-      hosts = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [];
-        description = "Hosts for which to emit configurations using the host package set.";
-      };
-      standalone = {
-        pkgs = lib.mkOption {
-          type = lib.types.nullOr lib.types.pkgs;
-          default = null;
-          description = "Package set for a standalone user configuration; null disables the standalone root.";
+      standalone = lib.mkOption {
+        type = lib.types.submodule {
+          imports = [moduleLayer];
+          options = {
+            enable = lib.mkEnableOption "this standalone Home Manager configuration";
+            pkgs = lib.mkOption {
+              type = lib.types.nullOr lib.types.pkgs;
+              default = null;
+              description = "Optional package-set override; impure standalone evaluation defaults to the current system.";
+            };
+          };
         };
-        modules = lib.mkOption {
-          type = lib.types.listOf lib.types.deferredModule;
-          default = [];
-          description = "Modules needed only by the standalone Home Manager evaluation.";
-        };
+        default = {};
+        description = "Standalone Home Manager output for this user.";
       };
       passInOsConfig = lib.mkOption {
         type = lib.types.bool;
@@ -79,6 +71,7 @@
   };
 
   hostType = lib.types.submodule {
+    imports = [moduleLayer];
     options = {
       enable = lib.mkEnableOption "this NixOS or nix-darwin host";
       class = lib.mkOption {
@@ -101,15 +94,10 @@
         default = null;
         description = "Optional build platform; omission selects native construction.";
       };
-      cross = lib.mkOption {
+      crossCompile = lib.mkOption {
         type = lib.types.bool;
         default = false;
         description = "Whether differing build and host platforms are permitted.";
-      };
-      modules = lib.mkOption {
-        type = lib.types.listOf lib.types.deferredModule;
-        default = [];
-        description = "Modules passed to the selected system evaluator.";
       };
       users = lib.mkOption {
         type = lib.types.attrsOf moduleLayerType;
@@ -161,7 +149,7 @@ in {
       description = "Modules selected for each host tag.";
     };
     variants = {
-      build = lib.mkEnableOption "independent variant build outputs by default";
+      enable = lib.mkEnableOption "independent variant outputs";
       includeSpecialisations = lib.mkEnableOption "variants in native specialisation sets by default";
       nameFunction = lib.mkOption {
         type = lib.types.functionTo lib.types.str;
@@ -185,14 +173,19 @@ in {
       })
       declaration.users;
 
-    nixos = rec {
-      baseConfiguration = declaration:
-        inputs.nixpkgs.lib.nixosSystem {
+    system = rec {
+      baseConfiguration = declaration: let
+        constructor = withSystem declaration.hostPlatform.system ({pkgs, ...}:
+          if pkgs.stdenv.hostPlatform.isDarwin
+          then inputs.darwin.lib.darwinSystem
+          else if pkgs.stdenv.hostPlatform.isLinux
+          then inputs.nixpkgs.lib.nixosSystem
+          else throw "dendritic.configurations: unsupported target system ${declaration.hostPlatform.system}");
+      in
+        constructor {
           modules =
-            [
-              {nixpkgs.hostPlatform = declaration.hostPlatform.system;}
-            ]
-            ++ lib.optional (declaration.cross && declaration.buildPlatform.system != declaration.hostPlatform.system) {
+            [{nixpkgs.hostPlatform = declaration.hostPlatform.system;}]
+            ++ lib.optional (declaration.crossCompile && declaration.buildPlatform.system != declaration.hostPlatform.system) {
               nixpkgs.buildPlatform = declaration.buildPlatform.system;
             }
             ++ userModules declaration
@@ -209,6 +202,8 @@ in {
       in
         if includedSpecialisations == {}
         then root
+        else if declaration.class == "darwin"
+        then throw "nix-darwin configurations do not support included specialisations"
         else
           root.extendModules {
             modules = [
@@ -227,58 +222,7 @@ in {
           (lib.mapAttrsToList (name: declaration:
             [{${name} = configuration declaration;}]
             ++ lib.pipe declaration.variants [
-              (lib.filterAttrs (_: variant:
-                if variant.build != null
-                then variant.build
-                else config.dendritic.configurations.variants.build))
-              (lib.mapAttrsToList (variantName: variant: {
-                ${
-                  config.dendritic.configurations.variants.nameFunction {
-                    host = name;
-                    variant = variantName;
-                  }
-                } =
-                  (baseConfiguration declaration).extendModules {inherit (variant) modules;};
-              }))
-            ]))
-          lib.concatLists
-        ];
-    };
-
-    darwin = rec {
-      baseConfiguration = declaration:
-        inputs.darwin.lib.darwinSystem {
-          modules =
-            [
-              {nixpkgs.hostPlatform = declaration.hostPlatform.system;}
-            ]
-            ++ lib.optional (declaration.cross && declaration.buildPlatform.system != declaration.hostPlatform.system) {
-              nixpkgs.buildPlatform = declaration.buildPlatform.system;
-            }
-            ++ userModules declaration
-            ++ declaration.modules;
-        };
-
-      configuration = declaration: let
-        includedSpecialisations = lib.filterAttrs (_: variant:
-          if variant.includeSpecialisations != null
-          then variant.includeSpecialisations
-          else config.dendritic.configurations.variants.includeSpecialisations)
-        declaration.variants;
-      in
-        if includedSpecialisations == {}
-        then baseConfiguration declaration
-        else throw "nix-darwin configurations do not support included specialisations";
-
-      outputs = declarations:
-        lib.pipe declarations [
-          (lib.mapAttrsToList (name: declaration:
-            [{${name} = configuration declaration;}]
-            ++ lib.pipe declaration.variants [
-              (lib.filterAttrs (_: variant:
-                if variant.build != null
-                then variant.build
-                else config.dendritic.configurations.variants.build))
+              (lib.filterAttrs (_: variant: config.dendritic.configurations.variants.enable && variant.enable))
               (lib.mapAttrsToList (variantName: variant: {
                 ${
                   config.dendritic.configurations.variants.nameFunction {
@@ -309,11 +253,10 @@ in {
       in
         if declaration.class != expectedClass
         then throw "dendritic.configurations: class ${declaration.class} conflicts with host platform ${system}"
-        else if buildSystem.system != system && !declaration.cross
-        then throw "dendritic.configurations: host platform ${system} requires cross = true for build platform ${buildSystem.system}"
+        else if buildSystem.system != system && !declaration.crossCompile
+        then throw "dendritic.configurations: host platform ${system} requires crossCompile = true for build platform ${buildSystem.system}"
         else
-          declaration
-          // {
+          lib.recursiveUpdate declaration {
             hostPlatform = {inherit system;};
             buildPlatform = buildSystem;
             modules = declaration.modules ++ (config.dendritic.configurations.perSystem.${system}.modules or []);
@@ -323,17 +266,8 @@ in {
     isSystem = predicate: system:
       predicate (lib.systems.parse.mkSystemFromString system);
 
-    systemOutputs = system: declarations:
-      withSystem system ({pkgs, ...}: let
-        selectedDeclarations = selectSystemDeclarations system declarations;
-        evaluator =
-          if pkgs.stdenv.hostPlatform.isDarwin
-          then darwin
-          else if pkgs.stdenv.hostPlatform.isLinux
-          then nixos
-          else throw "dendritic.configurations: unsupported target system ${system}";
-      in
-        evaluator.outputs selectedDeclarations);
+    systemOutputs = target: declarations:
+      system.outputs (selectSystemDeclarations target declarations);
 
     variantPackages = buildSystem: declarations: let
       candidates = lib.concatMap (rootName: let
@@ -349,13 +283,7 @@ in {
       in
         lib.concatMap (target: let
           selectedDeclaration = (selectSystemDeclarations target declarations).${rootName};
-          evaluator = withSystem target ({pkgs, ...}:
-            if pkgs.stdenv.hostPlatform.isDarwin
-            then darwin
-            else if pkgs.stdenv.hostPlatform.isLinux
-            then nixos
-            else throw "dendritic.configurations: unsupported image target system ${target}");
-          root = evaluator.baseConfiguration selectedDeclaration;
+          root = system.baseConfiguration selectedDeclaration;
         in
           lib.mapAttrsToList (variantName: variant: let
             variantConfiguration =
@@ -379,7 +307,7 @@ in {
       lib.mkMerge candidates;
 
     homeManagerDeclarations = lib.pipe config.dendritic.configurations.users [
-      (lib.filterAttrs (_: user: user.enable && user.standalone.pkgs != null))
+      (lib.filterAttrs (_: user: user.enable && user.standalone.enable))
       (lib.mapAttrs (_: user: {
         inherit (user) variants passInOsConfig;
         inherit (user.standalone) pkgs;
@@ -389,7 +317,7 @@ in {
 
     systemDeclarations = lib.pipe config.dendritic.configurations.hosts [
       (lib.filterAttrs (_: host: host.enable))
-      (lib.mapAttrs (hostName: host: let
+      (lib.mapAttrs (_hostName: host: let
         layers =
           [
             config.dendritic.configurations.shared
@@ -398,15 +326,13 @@ in {
           ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
           ++ [host];
       in
-        host
-        // {
+        lib.recursiveUpdate host {
           modules = lib.concatMap (layer: layer.modules or []) layers;
-          users = lib.pipe config.dendritic.configurations.users [
-            (lib.filterAttrs (_: user: user.enable && builtins.elem hostName user.hosts))
-            (lib.mapAttrs (username: user: {
-              modules = user.modules ++ (host.users.${username}.modules or []);
-            }))
-          ];
+          users =
+            lib.mapAttrs (username: layer: {
+              modules = config.dendritic.configurations.users.${username}.modules ++ layer.modules;
+            })
+            host.users;
         }))
     ];
 
@@ -453,10 +379,7 @@ in {
           (lib.mapAttrsToList (name: declaration:
             [{${name} = configuration pkgs declaration;}]
             ++ lib.pipe declaration.variants [
-              (lib.filterAttrs (_: variant:
-                if variant.build != null
-                then variant.build
-                else config.dendritic.configurations.variants.build))
+              (lib.filterAttrs (_: variant: config.dendritic.configurations.variants.enable && variant.enable))
               (lib.mapAttrsToList (variantName: variant: {
                 ${
                   config.dendritic.configurations.variants.nameFunction {
@@ -470,8 +393,6 @@ in {
           lib.concatLists
         ];
     };
-
-    declarations = homeManagerDeclarations;
   in {
     flake-file.inputs.dendritic = {
       url = "github:krad246/nix-systems/dendritic";
@@ -504,139 +425,139 @@ in {
     flake.dendritic = {
       inherit (inputs.dendritic) darwinModules nixosModules;
 
-      modules =
-        inputs.dendritic.modules
-        // {
-          homeManager =
-            inputs.dendritic.modules.homeManager
-            // rec {
-              identity.options.identity.person = {
-                email = lib.mkOption {
-                  type = lib.types.str;
-                  default = "krad246@gmail.com";
-                  description = "Primary email address for this identity.";
-                };
-                name = lib.mkOption {
-                  type = lib.types.str;
-                  default = "Keerthi Radhakrishnan";
-                  description = "Full name for this identity.";
-                };
-                username = lib.mkOption {
-                  type = lib.types.str;
-                  default = "krad246";
-                  description = "Username for this identity.";
-                };
-              };
-
-              base = {pkgs, ...}: {
-                imports = [
-                  identity
-                  inputs.dendritic.modules.homeManager.input-registry
-                  inputs.dendritic.modules.homeManager.shell
-                ];
-
-                config = lib.mkMerge [
-                  {
-                    home = {
-                      preferXdgDirectories = true;
-                      stateVersion = inputs.dendritic.lib.trivial.release;
-                    };
-                    manual = {
-                      html.enable = false;
-                      json.enable = true;
-                    };
-                    news.display = "silent";
-                    xdg.enable = true;
-                  }
-                  (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-                    targets.genericLinux = {
-                      enable = true;
-                      gpu.enable = lib.mkDefault false;
-                    };
-                    systemd.user.startServices = "sd-switch";
-                  })
-                ];
-              };
-
-              homeManagerSupport = {
-                home.stateVersion = inputs.dendritic.lib.trivial.release;
-                programs.home-manager.enable = true;
-              };
-
-              standalone = {
-                config,
-                pkgs,
-                ...
-              }: {
-                imports = [base homeManagerSupport];
-
-                home = {
-                  username = lib.mkDefault config.identity.person.username;
-                  homeDirectory = lib.mkDefault (
-                    if pkgs.stdenv.hostPlatform.isDarwin
-                    then "/Users/${config.identity.person.username}"
-                    else "/home/${config.identity.person.username}"
-                  );
-                };
-
-                nix.package = lib.mkDefault pkgs.nix;
-              };
-
-              desktop.imports = [
-                inputs.dendritic.modules.homeManager.browser
-                inputs.dendritic.modules.homeManager.terminal
-              ];
-
-              dev = {
-                imports = [inputs.dendritic.modules.homeManager.editor];
-                shell.profiles.dev.enable = true;
-                picker.backends.fzf.integrations.helix.enable = lib.mkDefault true;
-              };
-
-              interactive.shell.profiles.interactive.enable = true;
-
-              secrets = {
-                imports = [inputs.dendritic.modules.homeManager.rbw];
-                identity.secrets.backends.rbw.enable = lib.mkDefault true;
-              };
-
-              "nixbook-pro" = [
-                desktop
-                dev
-                interactive
-                secrets
-                {
-                  browser.backends.zen = {
-                    enable = lib.mkDefault true;
-                    default = lib.mkDefault true;
-                  };
-                }
-              ];
+      modules = lib.recursiveUpdate inputs.dendritic.modules {
+        homeManager = rec {
+          identity.options.identity.person = {
+            email = lib.mkOption {
+              type = lib.types.str;
+              default = "krad246@gmail.com";
+              description = "Primary email address for this identity.";
             };
+            name = lib.mkOption {
+              type = lib.types.str;
+              default = "Keerthi Radhakrishnan";
+              description = "Full name for this identity.";
+            };
+            username = lib.mkOption {
+              type = lib.types.str;
+              default = "krad246";
+              description = "Username for this identity.";
+            };
+          };
+
+          base = {pkgs, ...}: {
+            imports = [
+              identity
+              inputs.dendritic.modules.homeManager.input-registry
+              inputs.dendritic.modules.homeManager.shell
+            ];
+
+            config = lib.mkMerge [
+              {
+                home = {
+                  preferXdgDirectories = true;
+                  stateVersion = inputs.dendritic.lib.trivial.release;
+                };
+                manual = {
+                  html.enable = false;
+                  json.enable = true;
+                };
+                news.display = "silent";
+                xdg.enable = true;
+              }
+              (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+                targets.genericLinux = {
+                  enable = true;
+                  gpu.enable = lib.mkDefault false;
+                };
+                systemd.user.startServices = "sd-switch";
+              })
+            ];
+          };
+
+          homeManagerSupport = {
+            home.stateVersion = inputs.dendritic.lib.trivial.release;
+            programs.home-manager.enable = true;
+          };
+
+          standalone = {
+            config,
+            pkgs,
+            ...
+          }: {
+            imports = [base homeManagerSupport];
+
+            home = {
+              username = lib.mkDefault config.identity.person.username;
+              homeDirectory = lib.mkDefault (
+                if pkgs.stdenv.hostPlatform.isDarwin
+                then "/Users/${config.identity.person.username}"
+                else "/home/${config.identity.person.username}"
+              );
+            };
+
+            nix.package = lib.mkDefault pkgs.nix;
+          };
+
+          desktop.imports = [
+            inputs.dendritic.modules.homeManager.browser
+            inputs.dendritic.modules.homeManager.terminal
+          ];
+
+          dev = {
+            imports = [inputs.dendritic.modules.homeManager.editor];
+            shell.profiles.dev.enable = true;
+            picker.backends.fzf.integrations.helix.enable = lib.mkDefault true;
+          };
+
+          interactive.shell.profiles.interactive.enable = true;
+
+          secrets = {
+            imports = [inputs.dendritic.modules.homeManager.rbw];
+            identity.secrets.backends.rbw.enable = lib.mkDefault true;
+          };
+
+          nixbook-pro.imports = [
+            desktop
+            dev
+            interactive
+            secrets
+            {
+              browser.backends.zen = {
+                enable = lib.mkDefault true;
+                default = lib.mkDefault true;
+              };
+            }
+          ];
         };
+      };
     };
 
     flake = {
       homeConfigurations = lib.mkMerge (
         lib.concatLists (lib.mapAttrsToList (name: declaration:
           homeManager.outputs declaration.pkgs {${name} = declaration;})
-        declarations)
-        ++ lib.concatLists (lib.mapAttrsToList (username: user:
-          lib.concatMap (hostName: let
+        homeManagerDeclarations)
+        ++ lib.concatMap (hostName: let
+          hostDeclaration = systemDeclarations.${hostName};
+        in
+          lib.concatMap (username: let
+            userLayer = hostDeclaration.users.${username};
             host = config.flake.nixosConfigurations.${hostName} or config.flake.darwinConfigurations.${hostName};
             name = config.dendritic.configurations.variants.nameFunction {
               user = username;
               host = hostName;
             };
+            user = config.dendritic.configurations.users.${username};
             declaration = {
-              modules = user.modules ++ user.standalone.modules;
+              modules = user.standalone.modules ++ userLayer.modules;
               inherit (user) variants;
               extraSpecialArgs = lib.optionalAttrs user.passInOsConfig {osConfig = host.config;};
             };
           in
             homeManager.outputs host.pkgs {${name} = declaration;})
-          user.hosts)
-        (lib.filterAttrs (_: user: user.enable) config.dendritic.configurations.users))
+          (builtins.attrNames hostDeclaration.users))
+        (builtins.attrNames systemDeclarations)
       );
       # FIXME(dendritic-hosts): Publish NixOS configurations after declarations
       # distinguish deployable roots from image-only composition substrates.
@@ -648,14 +569,16 @@ in {
       pkgs,
       system,
       ...
-    }: let
-      declaration = declarations.standalone;
-      standalone = homeManager.configuration pkgs declaration;
-    in
+    }:
       lib.mkMerge [
         {
           packages = variantPackages system systemDeclarations;
+        }
 
+        (lib.mkIf (homeManagerDeclarations ? standalone) (let
+          declaration = homeManagerDeclarations.standalone;
+          standalone = homeManager.configuration pkgs declaration;
+        in {
           checks = {
             dendritic-hm-standalone = standalone.activationPackage;
             home-manager-standalone = standalone.activationPackage;
@@ -679,7 +602,7 @@ in {
             pass_filenames = false;
             stages = ["pre-push"];
           };
-        }
+        }))
       ];
   };
 }
