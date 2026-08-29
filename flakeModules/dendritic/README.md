@@ -6,15 +6,18 @@ and can be overridden at the node that owns them.
 
 ## Tags
 
-Every `tags` option has the same meaning: its values select `perTag.<name>` in
-the order written. Root tags apply to every host root and standalone Home
-Manager root. Host tags refine that root. User and host-user tags refine their
-Home Manager node. Variant tags are the final additive layers of a variant.
+Every `tags` option has the same meaning: its values select an ordered profile
+aspect. Tag names are restricted to the regular top-level files in the
+canonical `inputs.dendritic/modules/profiles` directory (for example `base`,
+`desktop`, `dev`, `headless`, `standalone`, and `workstation`). They are profile
+attributes, never host names, application names, or low-level capabilities.
 
-`perTag` is a mergeable declaration layer. Its `modules` are for the enclosing
-system evaluator, `homeModules` are for standalone Home Manager roots, and
-`users.<name>.modules` are for a selected integrated Home Manager user. Its
-`metadata` is carried on normalized declaration rows for downstream projections.
+Selecting a tag materializes the corresponding profile modules for the target
+platform and Home Manager node. `perTag.<name>` is the customization seam
+around that canonical profile: its `modules`, `homeModules`, and
+`users.<name>.modules` are additive overlays, while `metadata` is carried on
+normalized declaration rows. The same rule applies at root, host, user,
+host-user, and variant nodes.
 
 ## Variants
 
@@ -25,7 +28,8 @@ constructs the parent once and applies that exact delta for each projection:
   optional `package` then selects an image or other artifact from it.
 - `includeSpecialisations = true` embeds the same delta in a NixOS native
   specialisation set.
-- `tags` adds ordered `perTag` variant layers after the parent composition.
+- `tags` adds ordered profile aspects and their `perTag` overlays after the
+  parent composition.
 
 These are independent controls. Nix module priorities inside the variant are
 the override mechanism; a variant is not a second host.
@@ -39,4 +43,4 @@ For each host platform, Dendritic composes:
 The same sequence is preserved when a system variant or its package projection
 is materialized. Class aliases are declared under `classes.<name>.nativeClass`;
 they use the native NixOS or nix-darwin evaluator while retaining their own
-`perClass.<name>` layer.
+`perClass.<name>` contribution set.

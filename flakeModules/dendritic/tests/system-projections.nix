@@ -8,61 +8,61 @@ in {
   config = lib.mkMerge [
     (lib.mkIf flakeConfig.debug {
       dendritic.configurations = {
-        tags = ["root"];
+        tags = ["desktop"];
         shared.modules = [
           ({lib, ...}: {
-            options.dendritic.evaluatorTest.layerOrder = lib.mkOption {
+            options.dendritic.evaluatorTest.compositionTrace = lib.mkOption {
               type = lib.types.listOf lib.types.str;
               default = [];
             };
-            dendritic.evaluatorTest.layerOrder = ["shared"];
+            dendritic.evaluatorTest.compositionTrace = ["shared"];
           })
         ];
         perClass.nixos.modules = [
-          (_: {dendritic.evaluatorTest.layerOrder = ["perClass"];})
+          (_: {dendritic.evaluatorTest.compositionTrace = ["perClass"];})
         ];
         perArch.x86_64.modules = [
-          (_: {dendritic.evaluatorTest.layerOrder = ["perArch"];})
+          (_: {dendritic.evaluatorTest.compositionTrace = ["perArch"];})
         ];
         perSystem.x86_64-linux.modules = [
-          (_: {dendritic.evaluatorTest.layerOrder = ["perSystem"];})
+          (_: {dendritic.evaluatorTest.compositionTrace = ["perSystem"];})
         ];
         perTag = {
-          first.modules = [
+          desktop.modules = [
             (_: {
-              dendritic.evaluatorTest.layerOrder = ["perTag:first"];
+              dendritic.evaluatorTest.compositionTrace = ["perTag:root"];
             })
           ];
-          second.modules = [
+          headless.modules = [
             (_: {
-              dendritic.evaluatorTest.layerOrder = ["perTag:second"];
+              dendritic.evaluatorTest.compositionTrace = ["perTag:headless"];
             })
           ];
-          root.modules = [
-            (_: {dendritic.evaluatorTest.layerOrder = ["perTag:root"];})
+          dev.modules = [
+            (_: {dendritic.evaluatorTest.compositionTrace = ["perTag:dev"];})
           ];
-          variant.modules = [
+          workstation.modules = [
             (_: {environment.etc."dendritic-variant-tag".text = "variant";})
           ];
         };
-        hosts.dendritic-layer-order = {
+        hosts.dendritic-composition-order = {
           enable = true;
           class = "nixos";
           hostPlatforms = [{system = "x86_64-linux";}];
-          tags = ["first" "second"];
+          tags = ["headless" "dev"];
           modules = [
             ({lib, ...}: {
-              networking.hostName = "dendritic-layer-order";
+              networking.hostName = "dendritic-composition-order";
               fileSystems."/" = lib.mkDefault {
                 device = "none";
                 fsType = "tmpfs";
               };
               boot.loader.grub.devices = lib.mkDefault ["nodev"];
-              dendritic.evaluatorTest.layerOrder = ["host"];
+              dendritic.evaluatorTest.compositionTrace = ["host"];
             })
           ];
           variants = {
-            tagged.tags = ["variant"];
+            tagged.tags = ["workstation"];
             not-built.build = false;
           };
         };
@@ -127,15 +127,15 @@ in {
             message = "the normalized NixOS declaration is published directly";
           }
           {
-            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos.dendritic-layer-order.config.dendritic.evaluatorTest.layerOrder == ["shared" "perTag:root" "perClass" "perArch" "perSystem" "perTag:first" "perTag:second" "host"];
+            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos.dendritic-composition-order.config.dendritic.evaluatorTest.compositionTrace == ["shared" "perClass" "perArch" "perSystem" "perTag:headless" "perTag:dev" "host"];
             message = "root, class, architecture, platform, ordered host tags, and host modules accumulate in declaration order";
           }
           {
-            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos."dendritic-layer-order-tagged".config.environment.etc."dendritic-variant-tag".text == "variant";
+            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos."dendritic-composition-order-tagged".config.environment.etc."dendritic-variant-tag".text == "variant";
             message = "a variant tag selects its perTag delta without affecting the host root";
           }
           {
-            assertion = !flakeConfig.debug || system != "x86_64-linux" || !(nixos ? dendritic-layer-order-not-built);
+            assertion = !flakeConfig.debug || system != "x86_64-linux" || !(nixos ? dendritic-composition-order-not-built);
             message = "a non-building variant remains available to native specialisation policy without an independent output";
           }
           {
