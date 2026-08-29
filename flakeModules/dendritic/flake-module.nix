@@ -316,14 +316,18 @@ in {
       (lib.mapAttrs (_hostName: host:
         host
         // {
-          modules = lib.concatMap (layer: layer.modules or []) (
-            [
-              config.dendritic.configurations.shared
-              (config.dendritic.configurations.perClass.${host.class} or {})
-            ]
-            ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
-            ++ [host]
-          );
+          modules =
+            lib.pipe (
+              [
+                config.dendritic.configurations.shared
+                (config.dendritic.configurations.perClass.${host.class} or {})
+              ]
+              ++ map (tag: config.dendritic.configurations.perTag.${tag} or {}) host.tags
+              ++ [host]
+            ) [
+              (map (layer: layer.modules or []))
+              lib.concatLists
+            ];
           users =
             lib.mapAttrs (username: layer: {
               modules = config.dendritic.configurations.users.${username}.modules ++ layer.modules;
@@ -332,11 +336,11 @@ in {
         }))
     ];
 
-    targetSystems = lib.pipe systemDeclarations [
-      builtins.attrValues
-      (lib.foldl' (systems: declaration: systems // lib.genAttrs (map platformSystem declaration.hostPlatforms) (_: true)) {})
-      builtins.attrNames
-    ];
+    targetSystems = lib.unique (
+      lib.concatMap
+      (declaration: map platformSystem declaration.hostPlatforms)
+      (builtins.attrValues systemDeclarations)
+    );
     darwinSystems =
       lib.filter (
         system: lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString system)
@@ -501,15 +505,6 @@ in {
               config.flake.dendritic.modules.homeManager.base
               config.flake.dendritic.modules.homeManager.homeManagerSupport
             ];
-
-            home = {
-              username = lib.mkDefault config.identity.person.username;
-              homeDirectory = lib.mkDefault (
-                if pkgs.stdenv.hostPlatform.isDarwin
-                then "/Users/${config.identity.person.username}"
-                else "/home/${config.identity.person.username}"
-              );
-            };
 
             nix.package = lib.mkDefault pkgs.nix;
           };
