@@ -270,42 +270,35 @@ in {
           })
       (lib.filterAttrs (_: declaration: builtins.elem system (map platformSystem declaration.hostPlatforms)) declarations);
 
-    variantPackages = buildSystem: declarations: let
-      candidates = lib.concatMap (rootName: let
-        declaration = declarations.${rootName};
-        targetSystems = lib.filter (target: let
-          configuredBuild =
-            if declaration.buildPlatform == null
-            then target
-            else declaration.buildPlatform.system;
-        in
-          configuredBuild == buildSystem)
-        (map platformSystem declaration.hostPlatforms);
-      in
-        lib.concatMap (target: let
-          selectedDeclaration = (selectSystemDeclarations target declarations).${rootName};
-          root = system.baseConfiguration selectedDeclaration;
-        in
-          lib.mapAttrsToList (variantName: variant: let
-            variantConfiguration =
-              if variant.modules == []
-              then root
-              else root.extendModules {inherit (variant) modules;};
-          in {
-            ${
-              config.dendritic.configurations.variants.nameFunction {
-                host = rootName;
-                package = variantName;
-                hostPlatform = target;
-              }
-            } =
-              variant.package variantConfiguration;
-          })
-          (lib.filterAttrs (_: variant: variant.package != null) declaration.variants))
-        targetSystems)
-      (builtins.attrNames declarations);
-    in
-      lib.mkMerge candidates;
+    variantPackages = buildSystem: declarations:
+      lib.pipe (builtins.attrNames declarations) [
+        (lib.concatMap (rootName:
+          lib.pipe (map platformSystem declarations.${rootName}.hostPlatforms) [
+            (lib.filter (target:
+                (declarations.${rootName}.buildPlatform.system or target) == buildSystem))
+            (lib.concatMap (target: let
+              declaration = (selectSystemDeclarations target declarations).${rootName};
+              root = system.baseConfiguration declaration;
+            in
+              lib.mapAttrsToList (variantName: variant: let
+                variantConfiguration =
+                  if variant.modules == []
+                  then root
+                  else root.extendModules {inherit (variant) modules;};
+              in {
+                ${
+                  config.dendritic.configurations.variants.nameFunction {
+                    host = rootName;
+                    package = variantName;
+                    hostPlatform = target;
+                  }
+                } =
+                  variant.package variantConfiguration;
+              })
+              (lib.filterAttrs (_: variant: variant.package != null) declaration.variants)))
+          ]))
+        lib.mkMerge
+      ];
 
     homeManagerDeclarations = lib.pipe config.dendritic.configurations.users [
       (lib.filterAttrs (_: user: user.enable && user.standalone.enable))
