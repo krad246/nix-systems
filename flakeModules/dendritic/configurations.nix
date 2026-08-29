@@ -10,17 +10,9 @@
     perClass.darwin.modules = [config.flake.dendritic.modules.darwin.base];
 
     perTag = {
-      generic-headless-interactive.modules = [
-        config.flake.dendritic.modules.nixos.headless
-        config.flake.dendritic.modules.nixos.interactive
-      ];
-      nixbook-pro.modules = [
-        config.flake.dendritic.modules.darwin.applications
-        config.flake.dendritic.modules.darwin.app-stores
-        config.flake.dendritic.modules.darwin.browser
-        config.flake.dendritic.modules.darwin.linux-builder
-        config.flake.dendritic.modules.darwin.tailscale
-      ];
+      headless.modules = [config.flake.dendritic.modules.nixos.headless];
+      interactive.modules = [config.flake.dendritic.modules.nixos.interactive];
+      dev.homeModules = [config.flake.dendritic.modules.homeManager.dev];
     };
 
     users = {
@@ -31,7 +23,7 @@
           pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
           modules = [config.flake.dendritic.modules.homeManager.standalone];
         };
-        variants.dev.modules = [config.flake.dendritic.modules.homeManager.dev];
+        variants.dev.tags = ["dev"];
       };
 
       krad246 = {
@@ -45,18 +37,40 @@
     };
 
     hosts = {
+      # TODO: missing miniboi
+
+      # a concrete example we could work with is:
+      # 1. miniboi has a large number of variants
+      # with heterogeneous capability sets (vm-nogui)
+      # 2. define an actually useful testbed for the
+      # broader secure boot, disko cleanup, etc. on
+      # the "standard" miniboi, an actually usable config
+      # 3. use variants and the tag management to customize
+      # something like a graphical miniboi vm down to a
+      # vm-nogui
+
       generic-headless-interactive = {
         enable = true;
         class = "nixos";
         hostPlatforms = [{system = "x86_64-linux";}];
-        tags = ["generic-headless-interactive"];
+        tags = ["headless" "interactive"];
         modules = [
-          (_: {networking.hostName = "generic-headless-interactive";})
+          ({lib, ...}: {
+            networking.hostName = "generic-headless-interactive";
+            fileSystems."/" = lib.mkDefault {
+              device = "none";
+              fsType = "tmpfs";
+            };
+            boot.loader.grub.devices = lib.mkDefault ["nodev"];
+          })
         ];
         variants = {
-          dev.modules = [
-            (_: {environment.etc."dendritic-variant".text = "dev";})
-          ];
+          dev = {
+            tags = ["dev"]; # TODO: figure out if this is an additive merge over the tags up there.
+            modules = [
+              (_: {environment.etc."dendritic-variant".text = "dev";})
+            ];
+          };
           vm-nogui = {
             modules = [
               ({config, ...}: {
@@ -75,11 +89,12 @@
         enable = true;
         class = "darwin";
         hostPlatforms = [{system = "aarch64-darwin";}];
-        tags = ["nixbook-pro"];
+        tags = []; # TODO: what tags at this level?
         modules = [
           (_: {networking.hostName = "nixbook-pro-composed";})
         ];
         users.krad246.modules = [config.flake.dendritic.modules.homeManager.nixbook-pro];
+        variants.dev.tags = ["dev"];
       };
     };
   };
