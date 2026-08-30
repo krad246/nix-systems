@@ -274,7 +274,7 @@ in {
       description = "Canonical profile aspects, each with class-specific contributions shaped like perClass.";
     };
     variants = {
-      enableFlakeOutput = lib.mkOption {
+      enableFlakeOutputs = lib.mkOption {
         type = lib.types.bool;
         default = true;
         description = "Whether variants materialize as independent flake outputs by default.";
