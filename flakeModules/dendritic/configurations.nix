@@ -91,6 +91,12 @@
           inputs.dendritic.modules.homeManager.dev
           inputs.dendritic.modules.homeManager.interactive
           inputs.dendritic.modules.homeManager.secrets
+          ({lib, ...}: {
+            browser.backends.zen = {
+              enable = lib.mkDefault true;
+              default = lib.mkDefault true;
+            };
+          })
         ];
       };
     };
