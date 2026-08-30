@@ -64,6 +64,7 @@
       else throw "dendritic.configurations: unsupported target system ${coordinate.hostPlatform.system}");
   in
     constructor {
+      specialArgs = withSystem coordinate.hostPlatform.system ({pkgs, ...}: {inherit pkgs;});
       modules =
         [
           {nixpkgs.hostPlatform = coordinate.hostPlatform.system;}
