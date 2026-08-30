@@ -6,6 +6,9 @@
   configurations = config.dendritic.configurations;
   profileNames = config.dendritic.internal.profileNames;
 
+  mergeArgs = field: contributions:
+    lib.mergeAttrsList (map (contribution: contribution.${field} or {}) contributions);
+
   profile = nativeClass: tag: let
     overlay = configurations.perTag.${tag} or {};
   in
@@ -16,6 +19,7 @@
           || (let moduleClass = module._class or null; in moduleClass == null || moduleClass == nativeClass)
       ) (overlay.modules or []);
       home = overlay.homeModules or [];
+      inherit (overlay) specialArgs extraSpecialArgs lateModuleArgs;
     };
 
   homeContributions = username: contribution:
@@ -44,6 +48,9 @@ in {
         [configurations.shared]
         ++ map (className: configurations.perClass.${className} or {}) classNames;
       homeClassLayer = configurations.perClass.home or {};
+      rootTagContributions = map (tag: configurations.perTag.${tag}) configurations.tags;
+      hostTagContributions = map (tag: configurations.perTag.${tag}) host.tags;
+      systemContributions = baseContributions ++ rootTagContributions ++ hostTagContributions ++ [host];
       baseModules =
         configurations.shared.modules
         ++ lib.concatMap (selected: selected.system) rootProfiles
@@ -62,9 +69,26 @@ in {
       inherit baseModules tagModules;
       hostModules = host.modules;
       modules = baseModules ++ tagModules ++ host.modules;
+      specialArgs = lib.mergeAttrsList [
+        configurations.globalArgs
+        configurations.earlyModuleArgs
+        (mergeArgs "specialArgs" systemContributions)
+      ];
+      lateModuleArgs = lib.mergeAttrsList [
+        configurations.lateModuleArgs
+        (mergeArgs "lateModuleArgs" systemContributions)
+      ];
       users =
         lib.mapAttrs (username: hostLayer: let
           user = configurations.users.${username};
+          userContributions =
+            [configurations.shared homeClassLayer]
+            ++ map (className: configurations.perClass.${className} or {}) classNames
+            ++ rootTagContributions
+            ++ map (tag: configurations.perTag.${tag}) user.tags
+            ++ hostTagContributions
+            ++ map (tag: configurations.perTag.${tag}) hostLayer.tags
+            ++ [user hostLayer];
           baseUserModules =
             user.modules
             ++ (homeClassLayer.homeModules or [])
@@ -82,6 +106,20 @@ in {
           tagModules = taggedUserModules;
           hostModules = hostLayer.modules;
           modules = baseUserModules ++ taggedUserModules ++ hostLayer.modules;
+          extraSpecialArgs = lib.mergeAttrsList [
+            configurations.globalArgs
+            (mergeArgs "specialArgs" userContributions)
+            (mergeArgs "extraSpecialArgs" userContributions)
+          ];
+          specialArgs = lib.mergeAttrsList [
+            configurations.globalArgs
+            configurations.earlyModuleArgs
+            (mergeArgs "specialArgs" userContributions)
+          ];
+          lateModuleArgs = lib.mergeAttrsList [
+            configurations.lateModuleArgs
+            (mergeArgs "lateModuleArgs" userContributions)
+          ];
         })
         selectedUsers;
       metadata = {
