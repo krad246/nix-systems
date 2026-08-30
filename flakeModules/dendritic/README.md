@@ -15,8 +15,10 @@ attributes, never host names, application names, or low-level capabilities.
 Selecting a tag materializes the corresponding profile modules for the target
 platform and Home Manager node. `perTag.<name>.perClass` reuses the same
 class-composition grammar as the top-level `perClass`: use
-`perClass.<class>.modules`, with `homeManager` as the Home Manager class. This keeps
-the tag key as the aspect interface while making platform selection explicit.
+`perClass.<class>.modules`, with `home` as the Home Manager evaluator class. The
+module origin may still be named `homeManager`; the projection contract is
+deliberately independent. This keeps the tag key as the aspect interface while
+making platform selection explicit.
 `users.<name>.modules` adds a user-specific Home Manager contribution, while
 `metadata` is carried on normalized declaration rows. The same rule applies at
 root, host, user, host-user, and variant nodes.
