@@ -133,6 +133,13 @@ cross-build gating happen when the system coordinate is constructed. Host-local
 `metadata` describes machine facts. It is separate from profile `meta` and
 `passthru`.
 
+`buildPlatform` selects the evaluator/build context. When it differs from a
+`hostPlatforms` target, `crossCompile = true` is required. The evaluator passes
+both platforms to the native NixOS or nix-darwin module and leaves
+`nixpkgs.pkgs` unset, so nixpkgs performs its normal splice. This keeps the
+same declaration usable with a remote builder today and a true cross build
+when its build and host coordinates are changed.
+
 ## Variants
 
 A variant is an additive module delta over its parent coordinate. The evaluator
