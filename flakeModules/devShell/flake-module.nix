@@ -3,7 +3,7 @@
   self,
   ...
 }: let
-  justfile = ./just-flake;
+  justfile = inputs.dendritic + "/modules/flake/justfile.nix";
 in {
   imports =
     (with inputs; [
