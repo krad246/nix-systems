@@ -9,28 +9,43 @@
     variants.enable = lib.mkDefault true;
 
     perClass = {
-      nixos.modules = [config.flake.dendritic.modules.nixos.base];
-      darwin.modules = [config.flake.dendritic.modules.darwin.base];
+      nixos = {
+        modules = [config.flake.dendritic.modules.nixos.base];
+        specialArgs.profileModules = {
+          nixos = inputs.dendritic.modules.nixos;
+          darwin = inputs.dendritic.modules.darwin;
+        };
+      };
+      darwin = {
+        modules = [config.flake.dendritic.modules.darwin.base];
+        specialArgs.profileModules = {
+          nixos = inputs.dendritic.modules.nixos;
+          darwin = inputs.dendritic.modules.darwin;
+        };
+      };
       home.homeModules = [config.flake.dendritic.modules.homeManager.base];
     };
 
     perTag = {
-      # These are ordinary deferred modules.  The output projections provide
-      # the target configuration's `pkgs` through `specialArgs` when imports
-      # are collected; no package set is part of this declaration layer.
+      # `profileModules` is supplied by the selected class through
+      # `specialArgs`; `pkgs` is supplied only by the concrete system builder.
       base = {
         modules = [];
         homeModules = [];
       };
       desktop = {
         modules = [
-          ({pkgs, ...}: {
+          ({
+            pkgs,
+            profileModules,
+            ...
+          }: {
             imports =
               lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-                inputs.dendritic.modules.darwin.desktop
+                profileModules.darwin.desktop
               ]
               ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-                inputs.dendritic.modules.nixos.desktop
+                profileModules.nixos.desktop
               ];
           })
         ];
@@ -38,13 +53,17 @@
       };
       dev = {
         modules = [
-          ({pkgs, ...}: {
+          ({
+            pkgs,
+            profileModules,
+            ...
+          }: {
             imports =
               lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-                inputs.dendritic.modules.darwin.dev
+                profileModules.darwin.dev
               ]
               ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-                inputs.dendritic.modules.nixos.dev
+                profileModules.nixos.dev
               ];
           })
         ];
@@ -52,9 +71,13 @@
       };
       headless = {
         modules = [
-          ({pkgs, ...}: {
+          ({
+            pkgs,
+            profileModules,
+            ...
+          }: {
             imports = lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-              inputs.dendritic.modules.nixos.terminfo
+              profileModules.nixos.terminfo
             ];
           })
         ];
@@ -66,20 +89,24 @@
       };
       workstation = {
         modules = [
-          ({pkgs, ...}: {
+          ({
+            pkgs,
+            profileModules,
+            ...
+          }: {
             imports =
               lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-                inputs.dendritic.modules.darwin.applications
-                inputs.dendritic.modules.darwin.desktop
-                inputs.dendritic.modules.darwin.dev
-                inputs.dendritic.modules.darwin.interactive
-                inputs.dendritic.modules.darwin.secrets
+                profileModules.darwin.applications
+                profileModules.darwin.desktop
+                profileModules.darwin.dev
+                profileModules.darwin.interactive
+                profileModules.darwin.secrets
               ]
               ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-                inputs.dendritic.modules.nixos.desktop
-                inputs.dendritic.modules.nixos.dev
-                inputs.dendritic.modules.nixos.interactive
-                inputs.dendritic.modules.nixos.secrets
+                profileModules.nixos.desktop
+                profileModules.nixos.dev
+                profileModules.nixos.interactive
+                profileModules.nixos.secrets
               ];
           })
           ({pkgs, ...}: {
