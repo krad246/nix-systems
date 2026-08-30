@@ -139,8 +139,8 @@ in {
             message = "a non-building variant remains available to native specialisation policy without an independent output";
           }
           {
-            assertion = system != "x86_64-linux" || builtins.attrNames (lib.filterAttrs (name: _: lib.hasPrefix "generic-headless-interactive-vm-nogui" name) config.packages) == ["generic-headless-interactive-vm-nogui-x86_64-linux"];
-            message = "only package-bearing variant coordinates receive sparse package outputs";
+            assertion = system != "x86_64-linux" || builtins.attrNames (lib.filterAttrs (name: _: lib.hasPrefix "generic-headless-interactive" name) config.packages) == ["generic-headless-interactive-dev-x86_64-linux" "generic-headless-interactive-vm-nogui-x86_64-linux"];
+            message = "package-bearing variants receive sparse package outputs";
           }
         ];
       };
