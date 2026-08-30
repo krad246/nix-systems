@@ -33,6 +33,16 @@ in {
       coordinate = {
         inherit hostName hostPlatform buildPlatform declaration;
         inherit (declaration) class nativeClass outputName crossCompile variants;
+        specialArgs = lib.mergeAttrsList [
+          declaration.specialArgs
+          (archLayer.specialArgs or {})
+          (systemLayer.specialArgs or {})
+        ];
+        lateModuleArgs = lib.mergeAttrsList [
+          declaration.lateModuleArgs
+          (archLayer.lateModuleArgs or {})
+          (systemLayer.lateModuleArgs or {})
+        ];
         modules =
           declaration.baseModules
           ++ (archLayer.modules or [])
@@ -42,6 +52,20 @@ in {
         users =
           lib.mapAttrs (username: user: {
             inherit (user) tags;
+            extraSpecialArgs = lib.mergeAttrsList [
+              user.extraSpecialArgs
+              (archLayer.extraSpecialArgs or {})
+              (archLayer.users.${username}.extraSpecialArgs or {})
+              (systemLayer.extraSpecialArgs or {})
+              (systemLayer.users.${username}.extraSpecialArgs or {})
+            ];
+            lateModuleArgs = lib.mergeAttrsList [
+              user.lateModuleArgs
+              (archLayer.lateModuleArgs or {})
+              (archLayer.users.${username}.lateModuleArgs or {})
+              (systemLayer.lateModuleArgs or {})
+              (systemLayer.users.${username}.lateModuleArgs or {})
+            ];
             modules =
               user.baseModules
               ++ (archLayer.homeModules or [])

@@ -45,8 +45,22 @@
     else variant.outputName;
 
   variantModules = coordinate: variant:
-    profileSystemModules coordinate.nativeClass variant.tags
+    [
+      {_module.args = variant.lateModuleArgs;}
+    ]
+    ++ profileSystemModules coordinate.nativeClass variant.tags
     ++ variant.modules
+    ++ lib.optional (coordinate.users != {}) {
+      home-manager.extraSpecialArgs = lib.mergeAttrsList (
+        [variant.extraSpecialArgs]
+        ++ lib.mapAttrsToList (username: user:
+          lib.mergeAttrsList [
+            user.extraSpecialArgs
+            (variant.users.${username}.extraSpecialArgs or {})
+          ])
+        coordinate.users
+      );
+    }
     ++ lib.mapAttrsToList (username: _: {
       home-manager.users.${username}.imports =
         profileHomeModules username variant.tags
@@ -55,37 +69,44 @@
     })
     coordinate.users;
 
-  baseConfiguration = coordinate: let
-    constructor = withSystem coordinate.hostPlatform.system ({pkgs, ...}:
-      if pkgs.stdenv.hostPlatform.isDarwin
-      then inputs.darwin.lib.darwinSystem
-      else if pkgs.stdenv.hostPlatform.isLinux
-      then inputs.nixpkgs.lib.nixosSystem
-      else throw "dendritic.configurations: unsupported target system ${coordinate.hostPlatform.system}");
-  in
-    constructor {
-      specialArgs = withSystem coordinate.hostPlatform.system ({pkgs, ...}: {inherit pkgs;});
-      modules =
-        [
-          {nixpkgs.hostPlatform = coordinate.hostPlatform.system;}
-          (lib.mkIf (coordinate.buildPlatform.system != coordinate.hostPlatform.system) {
-            nixpkgs.buildPlatform = lib.mkIf coordinate.crossCompile coordinate.buildPlatform.system;
+  baseConfiguration = coordinate:
+    withSystem coordinate.hostPlatform.system ({pkgs, ...}: let
+      constructor =
+        if pkgs.stdenv.hostPlatform.isDarwin
+        then inputs.darwin.lib.darwinSystem
+        else if pkgs.stdenv.hostPlatform.isLinux
+        then inputs.nixpkgs.lib.nixosSystem
+        else throw "dendritic.configurations: unsupported target system ${coordinate.hostPlatform.system}";
+    in
+      constructor {
+        # `pkgs` is target-scoped and deliberately injected only at this concrete
+        # builder boundary; declaration layers remain target-independent.
+        specialArgs = lib.mergeAttrsList [coordinate.specialArgs {inherit pkgs;}];
+        modules =
+          [
+            {_module.args = coordinate.lateModuleArgs;}
+            {nixpkgs.hostPlatform = coordinate.hostPlatform.system;}
+            (lib.mkIf (coordinate.buildPlatform.system != coordinate.hostPlatform.system) {
+              nixpkgs.buildPlatform = lib.mkIf coordinate.crossCompile coordinate.buildPlatform.system;
+            })
+          ]
+          ++ lib.mapAttrsToList (username: user: {
+            home-manager.users.${username} = {pkgs, ...}: {
+              imports = user.modules;
+              home.username = lib.mkDefault username;
+              home.homeDirectory = lib.mkDefault (
+                if pkgs.stdenv.hostPlatform.isDarwin
+                then "/Users/${username}"
+                else "/home/${username}"
+              );
+            };
           })
-        ]
-        ++ lib.mapAttrsToList (username: user: {
-          home-manager.users.${username} = {pkgs, ...}: {
-            imports = user.modules;
-            home.username = lib.mkDefault username;
-            home.homeDirectory = lib.mkDefault (
-              if pkgs.stdenv.hostPlatform.isDarwin
-              then "/Users/${username}"
-              else "/home/${username}"
-            );
-          };
-        })
-        coordinate.users
-        ++ coordinate.modules;
-    };
+          coordinate.users
+          ++ lib.optional (coordinate.users != {}) {
+            home-manager.extraSpecialArgs = lib.mergeAttrsList (lib.mapAttrsToList (_: user: user.extraSpecialArgs) coordinate.users);
+          }
+          ++ coordinate.modules;
+      });
 
   configuration = coordinate: let
     root = baseConfiguration coordinate;
@@ -115,8 +136,10 @@
   outputRows = coordinate:
     [{${hostOutputName coordinate} = configuration coordinate;}]
     ++ lib.mapAttrsToList (variantName: variant: {
-      ${variantOutputName coordinate variantName variant} =
-        (baseConfiguration coordinate).extendModules {modules = variantModules coordinate variant;};
+      ${variantOutputName coordinate variantName variant} = (baseConfiguration coordinate).extendModules {
+        inherit (variant) specialArgs;
+        modules = variantModules coordinate variant;
+      };
     }) (lib.filterAttrs (_: variant:
       config.dendritic.configurations.variants.build
       && config.dendritic.configurations.variants.enable
