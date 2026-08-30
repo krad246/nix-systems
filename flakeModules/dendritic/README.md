@@ -7,20 +7,21 @@ projects those declarations into `nixosConfigurations`, `darwinConfigurations`,
 
 The declaration vocabulary has four separate concerns:
 
-- `perClass` selects modules for an evaluator class.
+- `perTag.<tag>.perClass` selects modules for an evaluator class within a
+  semantic profile.
 - `perTag` names semantic profile aspects.
 - `users` and `hosts` provide the configuration coordinates.
 - `variants` add sparse deltas to an existing coordinate.
 
 ## Evaluator classes
 
-`perClass` is the class-indexed contribution table for the module-system
-evaluator. A contribution under `perClass.<class>` is considered only while
-constructing that class; it is not a machine category or a host selector. The
-class keys are:
+Each profile tag owns a class-indexed contribution table for the module-system
+evaluator. A contribution under `perTag.<tag>.perClass.<class>` is considered
+only while constructing that class; it is not a machine category or a host
+selector. The class keys are:
 
 ```nix
-perClass = {
+perTag.base.perClass = {
   nixos.modules = [ ... ];
   darwin.modules = [ ... ];
   homeManager.modules = [ ... ];
@@ -31,12 +32,13 @@ perClass = {
 example can still accept a separate module origin, but the projection keys
 remain the actual class names exposed by the upstream module interface.
 
-The root `perClass` establishes the baseline for every coordinate. Each class
-uses the same composition grammar: in addition to `modules`, it can contribute
-`specialArgs`, `extraSpecialArgs`, `lateModuleArgs`, `metadata`, and per-user
-`users.<name>.modules`. These values are accumulated when that evaluator is
-constructed. `perTag.<tag>.perClass` uses this exact same table shape for
-profile-specific contributions.
+The root `tags` list establishes unconditional profile selection. The example
+selects the canonical `base` profile there, so baseline modules are ordinary
+profile contributions rather than a second, special composition axis. Each
+class uses the same composition grammar: in addition to `modules`, it can
+contribute `specialArgs`, `extraSpecialArgs`, `lateModuleArgs`, `metadata`, and
+per-user `users.<name>.modules`. These values are accumulated when that
+evaluator is constructed.
 
 `classes.<name>.nativeClass` is a host-to-module-class mapping, not another
 module composition axis. For example:
@@ -46,7 +48,7 @@ classes.laptop.nativeClass = "darwin";
 hosts.nixbook.class = "laptop";
 ```
 
-Semantic profile composition belongs in tags, not in `perClass.laptop`.
+Semantic machine categories belong in tags, not in evaluator class names.
 
 ## Profile tags
 
@@ -104,6 +106,12 @@ supplies the required package set and enables an independent
 Users may also declare sparse Home Manager `variants`. User variants use the
 same additive module and tag contract as system variants.
 
+Host-derived Home Manager outputs follow the host coordinate exactly: every
+`hostPlatforms` target gets a corresponding user projection, and the host's
+`buildPlatform`/`crossCompile` validation applies before either system or user
+output is constructed. Standalone users do not declare a second platform
+matrix; their explicit `standalone.pkgs` is already the target package set.
+
 ## Hosts
 
 A host declaration supplies its evaluator class, target platform, profile tags,
@@ -145,7 +153,7 @@ semantics inside the variant; a variant is not a second host.
 For each host platform, the evaluator composes:
 
 ```text
-shared → root tags → evaluator class → architecture → system → host tags → host
+shared → root tags (projected by evaluator class) → architecture → system → host tags → host
 ```
 
 Integrated Home Manager users receive the corresponding `home` contributions

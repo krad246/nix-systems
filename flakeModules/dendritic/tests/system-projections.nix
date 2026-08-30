@@ -18,9 +18,6 @@ in {
             dendritic.evaluatorTest.compositionTrace = ["shared"];
           })
         ];
-        perClass.nixos.modules = [
-          (_: {dendritic.evaluatorTest.compositionTrace = ["perClass"];})
-        ];
         perArch.x86_64.modules = [
           (_: {dendritic.evaluatorTest.compositionTrace = ["perArch"];})
         ];
@@ -28,6 +25,9 @@ in {
           (_: {dendritic.evaluatorTest.compositionTrace = ["perSystem"];})
         ];
         perTag = {
+          base.perClass.nixos.modules = [
+            (_: {dendritic.evaluatorTest.compositionTrace = ["perTag:base"];})
+          ];
           desktop.perClass.nixos.modules = [
             (_: {
               dendritic.evaluatorTest.compositionTrace = ["perTag:root"];
@@ -127,7 +127,7 @@ in {
             message = "the normalized NixOS declaration is published directly";
           }
           {
-            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos.dendritic-composition-order.config.dendritic.evaluatorTest.compositionTrace == ["shared" "perClass" "perArch" "perSystem" "perTag:headless" "perTag:dev" "host"];
+            assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos.dendritic-composition-order.config.dendritic.evaluatorTest.compositionTrace == ["shared" "perTag:base" "perArch" "perSystem" "perTag:headless" "perTag:dev" "host"];
             message = "root, class, architecture, platform, ordered host tags, and host modules accumulate in declaration order";
           }
           {
