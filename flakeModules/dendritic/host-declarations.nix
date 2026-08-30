@@ -129,7 +129,8 @@ in {
         };
         tags = map (tag: {
           name = tag;
-          metadata = configurations.perTag.${tag}.metadata or {};
+          meta = configurations.perTag.${tag}.meta or {};
+          passthru = configurations.perTag.${tag}.passthru or {};
         }) (configurations.tags ++ host.tags);
         host = host.metadata;
       };
