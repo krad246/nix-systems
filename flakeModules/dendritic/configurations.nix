@@ -1,9 +1,17 @@
 {
   config,
+  inputs,
   lib,
   withSystem,
   ...
-}: {
+}: let
+  withoutBase = index: module:
+    lib.mapAttrs (name: value:
+      if name == "imports"
+      then lib.take index value ++ lib.drop (index + 1) value
+      else value)
+    module;
+in {
   dendritic.configurations = {
     variants.enable = lib.mkDefault true;
 
@@ -14,10 +22,54 @@
     };
 
     perTag = {
-      dev.metadata.aspect = "dev";
-      headless.metadata.aspect = "headless";
-      standalone.metadata.aspect = "standalone";
-      workstation.metadata.aspect = "workstation";
+      base = {
+        modules = [];
+        homeModules = [];
+      };
+      desktop = {
+        modules =
+          lib.optionals (inputs.dendritic.modules.nixos ? desktop) [
+            (withoutBase 0 (inputs.dendritic.modules.nixos.desktop {}))
+          ]
+          ++ lib.optionals (inputs.dendritic.modules.darwin ? desktop) [
+            (withoutBase 1 (inputs.dendritic.modules.darwin.desktop {}))
+          ];
+        homeModules = [
+          (inputs.dendritic.modules.homeManager.desktop {})
+        ];
+      };
+      dev = {
+        modules = [];
+        homeModules = [
+          (inputs.dendritic.modules.homeManager.dev {})
+        ];
+      };
+      headless = {
+        modules = lib.optionals (inputs.dendritic.modules.nixos ? headless) [
+          (withoutBase 0 (inputs.dendritic.modules.nixos.headless {}))
+        ];
+        homeModules = [
+          (withoutBase 0 (inputs.dendritic.modules.homeManager.headless {}))
+        ];
+      };
+      standalone = {
+        modules = [];
+        homeModules = [
+          (withoutBase 0 (inputs.dendritic.modules.homeManager.standalone {}))
+        ];
+      };
+      workstation = {
+        modules =
+          lib.optionals (inputs.dendritic.modules.nixos ? workstation) [
+            (withoutBase 0 (inputs.dendritic.modules.nixos.workstation {}))
+          ]
+          ++ lib.optionals (inputs.dendritic.modules.darwin ? workstation) [
+            (withoutBase 1 (inputs.dendritic.modules.darwin.workstation {}))
+          ];
+        homeModules = [
+          (withoutBase 0 (inputs.dendritic.modules.homeManager.workstation {}))
+        ];
+      };
     };
 
     users = {
