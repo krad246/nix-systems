@@ -112,7 +112,13 @@
           nil.enable = true;
           ripsecrets.enable = true;
           shellcheck.enable = true;
-          shfmt.enable = true;
+          # Keep commits non-mutating: shfmt reports diffs, while treefmt/nix
+          # fmt remains the explicit formatting operation.
+          shfmt = {
+            enable = true;
+            package = pkgs.shfmt;
+            args = ["-i" "2" "-d"];
+          };
           statix.enable = true;
           treefmt = {
             enable = false;
