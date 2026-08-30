@@ -136,7 +136,7 @@
         modules = variantModules coordinate variant;
       };
     }) (lib.filterAttrs (_: variant:
-      config.dendritic.configurations.variants.enableFlakeOutput
+      config.dendritic.configurations.variants.enableFlakeOutputs
       && config.dendritic.configurations.variants.enable
       && variant.enableFlakeOutput
       && variant.enable)

@@ -7,20 +7,29 @@
 }: {
   dendritic.configurations = lib.mkMerge [
     {
-      variants.enable = lib.mkDefault true;
+      # variants: a unifying interface between image modules and specialisations
+      variants = {
+        enable = lib.mkDefault true;
+
+        enableFlakeOutputs = lib.mkDefault true;       # publish variants as flake outputs
+        includeSpecialisations = lib.mkDefault false;  # embed variants as specialisations
+      };
     }
     {
       perTag = with inputs.dendritic.modules; let
         modules = names:
-          lib.mkMerge (map (name: {
+          lib.pipe names [
+            lib.toList
+            (map (name: {
               nixos.modules = [nixos.${name}];
               darwin.modules = [darwin.${name}];
               homeManager.modules = [homeManager.${name}];
-            })
-            names);
+            }))
+            lib.mkMerge
+          ];
       in {
-        desktop.perClass = modules ["desktop"];
-        dev.perClass = modules ["dev"];
+        desktop.perClass = modules "desktop";
+        dev.perClass = modules "dev";
 
         workstation = {
           perClass = lib.mkMerge [
