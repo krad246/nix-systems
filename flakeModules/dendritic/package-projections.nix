@@ -58,7 +58,8 @@
   config.dendritic.internal.systemCoordinates;
 
   variantModules = normalized: variant:
-    profileSystemModules normalized.nativeClass variant.tags
+    [{_module.args = variant.lateModuleArgs;}]
+    ++ profileSystemModules normalized.nativeClass variant.tags
     ++ variant.modules
     ++ lib.mapAttrsToList (username: _: {
       home-manager.users.${username}.imports =
@@ -108,7 +109,11 @@
       variantConfiguration =
         if variantModules coordinate.normalized coordinate.variant == []
         then root
-        else root.extendModules {modules = variantModules coordinate.normalized coordinate.variant;};
+        else
+          root.extendModules {
+            specialArgs = lib.mergeAttrsList [coordinate.variant.specialArgs coordinate.variant.extraSpecialArgs];
+            modules = variantModules coordinate.normalized coordinate.variant;
+          };
     in
       lib.optional (coordinate.normalized.buildPlatform.system == buildSystem) {
         "${variantOutputName coordinate.normalized coordinate.variantName coordinate.variant}-${coordinate.normalized.hostPlatform.system}" =
