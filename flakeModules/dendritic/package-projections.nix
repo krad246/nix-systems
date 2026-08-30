@@ -69,19 +69,25 @@
       constructor =
         if pkgs.stdenv.hostPlatform.isDarwin
         then inputs.darwin.lib.darwinSystem
-        else inputs.nixpkgs.lib.nixosSystem;
+        else if pkgs.stdenv.hostPlatform.isLinux
+        then inputs.nixpkgs.lib.nixosSystem
+        else throw "dendritic.configurations: unsupported target system ${coordinate.normalized.hostPlatform.system}";
+      pkgsModules =
+        lib.optionals pkgs.stdenv.hostPlatform.isLinux [inputs.nixpkgs.nixosModules.readOnlyPkgs]
+        ++ [{nixpkgs.pkgs = pkgs;}];
+      platformModules = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+        {nixpkgs.hostPlatform = coordinate.normalized.hostPlatform.system;}
+      ];
     in
       constructor {
-        # `pkgs` is target-scoped and deliberately injected only at this concrete
-        # builder boundary; declaration layers remain target-independent.
-        specialArgs = lib.mergeAttrsList [coordinate.normalized.specialArgs {inherit pkgs;}];
+        # The package set is selected at the concrete build/host boundary;
+        # declaration layers remain target-independent.
+        specialArgs = coordinate.normalized.specialArgs;
         modules =
-          [
+          pkgsModules
+          ++ platformModules
+          ++ [
             {_module.args = coordinate.normalized.lateModuleArgs;}
-            {nixpkgs.hostPlatform = coordinate.normalized.hostPlatform.system;}
-            (lib.mkIf (coordinate.normalized.buildPlatform.system != coordinate.normalized.hostPlatform.system) {
-              nixpkgs.buildPlatform = lib.mkIf coordinate.normalized.crossCompile coordinate.normalized.buildPlatform.system;
-            })
           ]
           ++ lib.mapAttrsToList (username: user: {
             home-manager.users.${username} = {pkgs, ...}: {

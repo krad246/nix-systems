@@ -72,18 +72,22 @@
         else if pkgs.stdenv.hostPlatform.isLinux
         then inputs.nixpkgs.lib.nixosSystem
         else throw "dendritic.configurations: unsupported target system ${coordinate.hostPlatform.system}";
+      pkgsModules =
+        lib.optionals pkgs.stdenv.hostPlatform.isLinux [inputs.nixpkgs.nixosModules.readOnlyPkgs]
+        ++ [{nixpkgs.pkgs = pkgs;}];
+      platformModules = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+        {nixpkgs.hostPlatform = coordinate.hostPlatform.system;}
+      ];
     in
       constructor {
-        # `pkgs` is target-scoped and deliberately injected only at this concrete
-        # builder boundary; declaration layers remain target-independent.
-        specialArgs = lib.mergeAttrsList [coordinate.specialArgs {inherit pkgs;}];
+        # The package set is selected at the concrete build/host boundary;
+        # declaration layers remain target-independent.
+        inherit (coordinate) specialArgs;
         modules =
-          [
+          pkgsModules
+          ++ platformModules
+          ++ [
             {_module.args = coordinate.lateModuleArgs;}
-            {nixpkgs.hostPlatform = coordinate.hostPlatform.system;}
-            (lib.mkIf (coordinate.buildPlatform.system != coordinate.hostPlatform.system) {
-              nixpkgs.buildPlatform = lib.mkIf coordinate.crossCompile coordinate.buildPlatform.system;
-            })
           ]
           ++ lib.mapAttrsToList (username: user: {
             home-manager.users.${username} = {pkgs, ...}: {
