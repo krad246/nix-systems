@@ -8,45 +8,34 @@
   classes = [
     "nixos"
     "darwin"
-    "home"
+    "homeManager"
   ];
-  classModules = {
-    nixos = config.flake.dendritic.modules.nixos;
-    darwin = config.flake.dendritic.modules.darwin;
-    home = config.flake.dendritic.modules.homeManager;
-  };
-  profileModules = {
-    nixos = inputs.dendritic.modules.nixos;
-    darwin = inputs.dendritic.modules.darwin;
-    home = inputs.dendritic.modules.homeManager;
-  };
-  profile = name: {
-    perClass =
-      lib.mapAttrs (_: modules: {
-        modules = [modules.${name}];
-      })
-      profileModules;
-  };
+  profile = modules: name:
+    lib.genAttrs classes (class: {
+      modules = [modules.${class}.${name}];
+    });
 in {
   dendritic.configurations = lib.mkMerge [
     {
       variants.enable = lib.mkDefault true;
     }
+    {
+      perClass = profile config.flake.dendritic.modules "base";
+    }
     (with inputs.dendritic.modules; {
       perTag = {
-        desktop = profile "desktop";
-        dev = profile "dev";
-        headless.perClass.nixos.modules = [nixos.terminfo];
-        standalone.perClass.home.modules = [homeManager.standalone];
-        workstation = lib.mkMerge [
-          (profile "desktop")
-          (profile "dev")
-          (profile "interactive")
-          (profile "secrets")
-          {
-            perClass = {
+        desktop.perClass = profile inputs.dendritic.modules "desktop";
+        dev.perClass = profile inputs.dendritic.modules "dev";
+
+        workstation = {
+          perClass = lib.mkMerge [
+            (profile inputs.dendritic.modules "desktop")
+            (profile inputs.dendritic.modules "dev")
+            (profile inputs.dendritic.modules "interactive")
+            (profile inputs.dendritic.modules "secrets")
+            {
               darwin.modules = [darwin.applications];
-              home.modules = [
+              homeManager.modules = [
                 ({lib, ...}: {
                   browser.backends.zen = {
                     enable = lib.mkDefault true;
@@ -60,16 +49,14 @@ in {
                   programs.nix-ld.enable = true;
                 })
               ];
-            };
-          }
-        ];
+            }
+          ];
+        };
+
+        headless.perClass.nixos.modules = [nixos.terminfo];
+        standalone.perClass.homeManager.modules = [homeManager.standalone];
       };
     })
-    {
-      perClass = lib.genAttrs classes (class: {
-        modules = [classModules.${class}.base];
-      });
-    }
     {
       users = {
         standalone = {
