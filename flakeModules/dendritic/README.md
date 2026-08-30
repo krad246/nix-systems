@@ -20,13 +20,13 @@ The declaration vocabulary has four separate concerns:
 perClass = {
   nixos.modules = [ ... ];
   darwin.modules = [ ... ];
-  home.modules = [ ... ];
+  homeManager.modules = [ ... ];
 };
 ```
 
-`home` is the public Home Manager evaluator key. It is deliberately independent
-of the source namespace, which may still call the same module
-`inputs.dendritic.modules.homeManager.<name>`.
+`homeManager` is the Home Manager module-system class. The helper used by the
+example can still accept a separate module origin, but the projection keys
+remain the actual class names exposed by the upstream module interface.
 
 Each class uses the same composition grammar. In addition to `modules`, a class
 can contribute `specialArgs`, `extraSpecialArgs`, `lateModuleArgs`, `metadata`,
@@ -57,7 +57,7 @@ perTag.workstation = {
   perClass = {
     nixos.modules = [ ... ];
     darwin.modules = [ ... ];
-    home.modules = [ ... ];
+    homeManager.modules = [ ... ];
   };
 
   # Descriptive facts and arbitrary data are passive passthrough channels.

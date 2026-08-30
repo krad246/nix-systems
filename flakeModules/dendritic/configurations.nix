@@ -13,7 +13,7 @@
       (map (name: {
         nixos.modules = [origin.nixos.${name}];
         darwin.modules = [origin.darwin.${name}];
-        home.modules = [origin.homeManager.${name}];
+        homeManager.modules = [origin.homeManager.${name}];
       }))
       lib.mkMerge
     ];
@@ -50,7 +50,7 @@ in {
           (modules inputs.dendritic.modules ["desktop" "dev" "interactive" "secrets"])
           {
             darwin.modules = [inputs.dendritic.modules.darwin.applications];
-            home.modules = [
+            homeManager.modules = [
               ({lib, ...}: {
                 browser.backends.zen = {
                   enable = lib.mkDefault true;
@@ -69,10 +69,10 @@ in {
 
         headless.perClass.nixos.modules = [inputs.dendritic.modules.nixos.terminfo];
         # The upstream standalone profile currently imports base itself. Since
-        # perClass.home owns the base import, use only its administrative
+        # perClass.homeManager owns the base import, use only its administrative
         # home-manager module here to avoid importing base twice. Revisit when
         # the upstream profile/base split is decoupled.
-        standalone.perClass.home.modules = [
+        standalone.perClass.homeManager.modules = [
           inputs.dendritic.modules.homeManager.home-manager
           ({pkgs, ...}: {nix.package = lib.mkDefault pkgs.nix;})
         ];
