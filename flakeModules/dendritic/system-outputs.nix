@@ -6,14 +6,18 @@
   ...
 }: let
   systemCoordinates = config.dendritic.internal.systemCoordinates;
-  profileLayers = config.dendritic.internal.profileLayers;
+  profileNames = config.dendritic.internal.profileNames;
 
   profileSystemModules = nativeClass: tags:
     lib.concatMap (tag: let
       overlay = config.dendritic.configurations.perTag.${tag} or {};
     in
-      assert lib.assertMsg (profileLayers ? ${tag}) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
-        (overlay."${nativeClass}Modules" or []) ++ (overlay.modules or []))
+      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
+        lib.filter (
+          module:
+            !lib.isAttrs module
+            || (let moduleClass = module._class or null; in moduleClass == null || moduleClass == nativeClass)
+        ) (overlay.modules or []))
     tags;
 
   profileHomeModules = username: tags:

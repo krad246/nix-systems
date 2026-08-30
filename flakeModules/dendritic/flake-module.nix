@@ -12,16 +12,6 @@
         default = [];
         description = "Modules contributed in the parent evaluator context.";
       };
-      nixosModules = lib.mkOption {
-        type = lib.types.listOf lib.types.deferredModule;
-        default = [];
-        description = "NixOS-only modules contributed by this composition.";
-      };
-      darwinModules = lib.mkOption {
-        type = lib.types.listOf lib.types.deferredModule;
-        default = [];
-        description = "nix-darwin-only modules contributed by this composition.";
-      };
       homeModules = lib.mkOption {
         type = lib.types.listOf lib.types.deferredModule;
         default = [];
@@ -258,7 +248,7 @@ in {
     perTag = lib.mkOption {
       type = lib.types.attrsOf compositionType;
       default = {};
-      description = "Ordered canonical profile contributions plus per-profile overlays.";
+      description = "Explicit canonical profile module sets and per-profile overlays.";
     };
     variants = {
       build = lib.mkOption {

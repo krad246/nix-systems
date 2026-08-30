@@ -438,15 +438,13 @@ profile aspects from the regular top-level files in
 application names, or low-level capabilities. Root tags apply to every host
 root, host tags refine that root, user and host-user tags refine their Home
 Manager node, and variant tags form the final additive delta of that variant.
-The matching profile modules are materialized for the target evaluator;
-`perTag.<name>` remains the ordered customization overlay around that profile.
-The public per-tag record exposes typed `nixosModules`, `darwinModules`, and
-`homeModules` fields alongside generic/user contributions. This same
-profile/overlay projection is used for system, standalone Home Manager,
+The matching profile modules are materialized for the target evaluator through
+the explicit `perTag.<name>.modules` and `perTag.<name>.homeModules` sets.
+`users.<name>.modules` remains the user-specific Home Manager seam, and the
+same profile/overlay projection is used for system, standalone Home Manager,
 integrated Home Manager, and variant outputs. Native `base` modules belong in
 the corresponding `perClass.nixos`, `perClass.darwin`, and `perClass.home`
-contributions; composite profile imports are normalized so base is included
-once.
+contributions; profile declarations remain ordinary explicit module sets.
 
 A variant is always an additive overlay on one normalized parent coordinate.
 Its same module/tag delta is used for its independently materialized output,

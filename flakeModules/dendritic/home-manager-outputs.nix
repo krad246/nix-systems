@@ -4,14 +4,14 @@
   lib,
   ...
 }: let
-  profileLayers = config.dendritic.internal.profileLayers;
+  profileNames = config.dendritic.internal.profileNames;
 
   profileHomeModules = username: tags:
     lib.concatMap (tag: let
-      profile = profileLayers.${tag} or (throw "dendritic.configurations: tag ${tag} is not a profile overlay in inputs.dendritic/modules/profiles");
       overlay = config.dendritic.configurations.perTag.${tag} or {};
     in
-      profile.homeManager ++ overlay.homeModules ++ (overlay.users.${username}.modules or []))
+      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
+        (overlay.homeModules or []) ++ (overlay.users.${username}.modules or []))
     tags;
 
   homeClassModules = username: let

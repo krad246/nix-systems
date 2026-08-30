@@ -4,21 +4,25 @@
   ...
 }: let
   configurations = config.dendritic.configurations;
-  profileLayers = config.dendritic.internal.profileLayers;
+  profileNames = config.dendritic.internal.profileNames;
 
   profile = nativeClass: tag: let
     overlay = configurations.perTag.${tag} or {};
   in
-    assert lib.assertMsg (profileLayers ? ${tag}) "dendritic.configurations: tag ${tag} is not a canonical profile aspect"; {
-      system = (overlay."${nativeClass}Modules" or []) ++ (overlay.modules or []);
+    assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect"; {
+      system = lib.filter (
+        module:
+          !lib.isAttrs module
+          || (let moduleClass = module._class or null; in moduleClass == null || moduleClass == nativeClass)
+      ) (overlay.modules or []);
       home = overlay.homeModules or [];
     };
 
   homeContributions = username: contribution:
     (contribution.homeModules or []) ++ (contribution.users.${username}.modules or []);
 
-  profileHomeModules = nativeClass: username: tag: let
-    selected = profile nativeClass tag;
+  profileHomeModules = username: tag: let
+    selected = profile "home" tag;
     overlay = configurations.perTag.${tag} or {};
   in
     selected.home ++ (overlay.users.${username}.modules or []);
@@ -34,8 +38,8 @@ in {
     (lib.mapAttrs (hostName: host: let
       class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
       classNames = lib.unique [class.nativeClass host.class];
-      rootProfiles = map (tag: profile class.nativeClass tag) configurations.tags;
-      hostProfiles = map (tag: profile class.nativeClass tag) host.tags;
+      rootProfiles = map (profile class.nativeClass) configurations.tags;
+      hostProfiles = map (profile class.nativeClass) host.tags;
       baseContributions =
         [configurations.shared]
         ++ map (className: configurations.perClass.${className} or {}) classNames;
@@ -65,12 +69,12 @@ in {
             user.modules
             ++ (homeClassLayer.homeModules or [])
             ++ (homeClassLayer.users.${username}.modules or [])
-            ++ lib.concatMap (profileHomeModules class.nativeClass username) configurations.tags
+            ++ lib.concatMap (profileHomeModules username) configurations.tags
             ++ lib.concatMap (homeContributions username) (lib.tail baseContributions)
-            ++ lib.concatMap (profileHomeModules class.nativeClass username) user.tags;
+            ++ lib.concatMap (profileHomeModules username) user.tags;
           taggedUserModules =
-            lib.concatMap (profileHomeModules class.nativeClass username) host.tags
-            ++ lib.concatMap (profileHomeModules class.nativeClass username) hostLayer.tags;
+            lib.concatMap (profileHomeModules username) host.tags
+            ++ lib.concatMap (profileHomeModules username) hostLayer.tags;
         in {
           inherit (hostLayer) outputName;
           tags = user.tags ++ hostLayer.tags;
