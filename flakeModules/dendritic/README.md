@@ -13,12 +13,13 @@ canonical `inputs.dendritic/modules/profiles` directory (for example `base`,
 attributes, never host names, application names, or low-level capabilities.
 
 Selecting a tag materializes the corresponding profile modules for the target
-platform and Home Manager node. `perTag.<name>` is the explicit profile
-interface: `modules` contributes to the native system projection and
-`homeModules` contributes to Home Manager. `users.<name>.modules` adds a
-user-specific Home Manager contribution, while `metadata` is carried on
-normalized declaration rows. The same rule applies at root, host, user,
-host-user, and variant nodes.
+platform and Home Manager node. `perTag.<name>.perClass` reuses the same
+class-composition grammar as the top-level `perClass`: use
+`perClass.<class>.modules`, with `home` as the Home Manager class. This keeps
+the tag key as the aspect interface while making platform selection explicit.
+`users.<name>.modules` adds a user-specific Home Manager contribution, while
+`metadata` is carried on normalized declaration rows. The same rule applies at
+root, host, user, host-user, and variant nodes.
 
 ## Variants
 

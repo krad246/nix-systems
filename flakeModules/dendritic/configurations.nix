@@ -11,123 +11,69 @@
     perClass = {
       nixos = {
         modules = [config.flake.dendritic.modules.nixos.base];
-        specialArgs.profileModules = {
-          nixos = inputs.dendritic.modules.nixos;
-          darwin = inputs.dendritic.modules.darwin;
-        };
       };
       darwin = {
         modules = [config.flake.dendritic.modules.darwin.base];
-        specialArgs.profileModules = {
-          nixos = inputs.dendritic.modules.nixos;
-          darwin = inputs.dendritic.modules.darwin;
-        };
       };
-      home.homeModules = [config.flake.dendritic.modules.homeManager.base];
+      home.modules = [config.flake.dendritic.modules.homeManager.base];
     };
 
     perTag = {
-      # `profileModules` is supplied by the selected class through
-      # `specialArgs`; `pkgs` is supplied only by the concrete system builder.
       base = {
-        modules = [];
-        homeModules = [];
+        perClass = {};
       };
       desktop = {
-        modules = [
-          ({
-            pkgs,
-            profileModules,
-            ...
-          }: {
-            imports =
-              lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-                profileModules.darwin.desktop
-              ]
-              ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-                profileModules.nixos.desktop
-              ];
-          })
-        ];
-        homeModules = [inputs.dendritic.modules.homeManager.desktop];
+        perClass = {
+          nixos.modules = [inputs.dendritic.modules.nixos.desktop];
+          darwin.modules = [inputs.dendritic.modules.darwin.desktop];
+          home.modules = [inputs.dendritic.modules.homeManager.desktop];
+        };
       };
       dev = {
-        modules = [
-          ({
-            pkgs,
-            profileModules,
-            ...
-          }: {
-            imports =
-              lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-                profileModules.darwin.dev
-              ]
-              ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-                profileModules.nixos.dev
-              ];
-          })
-        ];
-        homeModules = [inputs.dendritic.modules.homeManager.dev];
+        perClass = {
+          nixos.modules = [inputs.dendritic.modules.nixos.dev];
+          darwin.modules = [inputs.dendritic.modules.darwin.dev];
+          home.modules = [inputs.dendritic.modules.homeManager.dev];
+        };
       };
       headless = {
-        modules = [
-          ({
-            pkgs,
-            profileModules,
-            ...
-          }: {
-            imports = lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-              profileModules.nixos.terminfo
-            ];
-          })
-        ];
-        homeModules = [];
+        perClass.nixos.modules = [inputs.dendritic.modules.nixos.terminfo];
       };
       standalone = {
-        modules = [];
-        homeModules = [inputs.dendritic.modules.homeManager.standalone];
+        perClass.home.modules = [inputs.dendritic.modules.homeManager.standalone];
       };
       workstation = {
-        modules = [
-          ({
-            pkgs,
-            profileModules,
-            ...
-          }: {
-            imports =
-              lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
-                profileModules.darwin.applications
-                profileModules.darwin.desktop
-                profileModules.darwin.dev
-                profileModules.darwin.interactive
-                profileModules.darwin.secrets
-              ]
-              ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
-                profileModules.nixos.desktop
-                profileModules.nixos.dev
-                profileModules.nixos.interactive
-                profileModules.nixos.secrets
-              ];
-          })
-          ({pkgs, ...}: {
-            config = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
+        perClass = {
+          darwin.modules = [
+            inputs.dendritic.modules.darwin.applications
+            inputs.dendritic.modules.darwin.desktop
+            inputs.dendritic.modules.darwin.dev
+            inputs.dendritic.modules.darwin.interactive
+            inputs.dendritic.modules.darwin.secrets
+          ];
+          home.modules = [
+            inputs.dendritic.modules.homeManager.desktop
+            inputs.dendritic.modules.homeManager.dev
+            inputs.dendritic.modules.homeManager.interactive
+            inputs.dendritic.modules.homeManager.secrets
+            ({lib, ...}: {
+              browser.backends.zen = {
+                enable = lib.mkDefault true;
+                default = lib.mkDefault true;
+              };
+            })
+          ];
+          nixos.modules = [
+            inputs.dendritic.modules.nixos.desktop
+            inputs.dendritic.modules.nixos.dev
+            inputs.dendritic.modules.nixos.interactive
+            inputs.dendritic.modules.nixos.secrets
+            (_: {
               boot.tmp.cleanOnBoot = true;
               programs.nix-ld.enable = true;
-            };
-          })
-        ];
-        homeModules = [
-          inputs.dendritic.modules.homeManager.desktop
-          inputs.dendritic.modules.homeManager.dev
-          inputs.dendritic.modules.homeManager.interactive
-          inputs.dendritic.modules.homeManager.secrets
-          ({lib, ...}: {
-            browser.backends.zen = {
-              enable = lib.mkDefault true;
-              default = lib.mkDefault true;
-            };
-          })
-        ];
+            })
+          ];
+        };
       };
     };
 

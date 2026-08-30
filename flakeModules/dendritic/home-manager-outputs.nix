@@ -11,22 +11,21 @@
 
   profileHomeModules = username: tags:
     lib.concatMap (tag: let
-      overlay = config.dendritic.configurations.perTag.${tag} or {};
+      contribution = config.dendritic.configurations.perTag.${tag}.perClass.home or {};
     in
       assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
-        (overlay.homeModules or []) ++ (overlay.users.${username}.modules or []))
+        (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
     tags;
 
   homeClassModules = username: let
     layer = config.dendritic.configurations.perClass.home or {};
   in
-    (layer.homeModules or []) ++ (layer.users.${username}.modules or []);
+    (layer.modules or []) ++ (layer.users.${username}.modules or []);
 
   variantModules = username: variant:
     [{_module.args = variant.lateModuleArgs;}]
     ++ profileHomeModules username variant.tags
     ++ variant.modules
-    ++ variant.homeModules
     ++ (variant.users.${username}.modules or []);
 
   variantOutputName = parentName: variantName: variant:
@@ -35,7 +34,7 @@
     else variant.outputName;
 
   standaloneDeclarations = lib.mapAttrs (username: user: let
-    tagContributions = map (tag: config.dendritic.configurations.perTag.${tag}) (
+    tagContributions = map (tag: config.dendritic.configurations.perTag.${tag}.perClass.home or {}) (
       config.dendritic.configurations.tags ++ user.tags
     );
     standaloneContributions = tagContributions ++ [user user.standalone];

@@ -10,21 +10,17 @@
 
   profileSystemModules = nativeClass: tags:
     lib.concatMap (tag: let
-      overlay = config.dendritic.configurations.perTag.${tag} or {};
+      contribution = config.dendritic.configurations.perTag.${tag}.perClass.${nativeClass} or {};
     in
       assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
-        lib.filter (
-          module:
-            !lib.isAttrs module
-            || (let moduleClass = module._class or null; in moduleClass == null || moduleClass == nativeClass)
-        ) (overlay.modules or []))
+        contribution.modules or [])
     tags;
 
   profileHomeModules = username: tags:
     lib.concatMap (tag: let
-      overlay = config.dendritic.configurations.perTag.${tag} or {};
+      contribution = config.dendritic.configurations.perTag.${tag}.perClass.home or {};
     in
-      (overlay.homeModules or []) ++ (overlay.users.${username}.modules or []))
+      (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
     tags;
 
   hostOutputName = coordinate:
@@ -64,7 +60,6 @@
     ++ lib.mapAttrsToList (username: _: {
       home-manager.users.${username}.imports =
         profileHomeModules username variant.tags
-        ++ variant.homeModules
         ++ (variant.users.${username}.modules or []);
     })
     normalized.users;
