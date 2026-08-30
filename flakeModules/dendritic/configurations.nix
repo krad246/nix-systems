@@ -15,6 +15,9 @@
     };
 
     perTag = {
+      # These are ordinary deferred modules.  The output projections provide
+      # the target configuration's `pkgs` through `specialArgs` when imports
+      # are collected; no package set is part of this declaration layer.
       base = {
         modules = [];
         homeModules = [];
