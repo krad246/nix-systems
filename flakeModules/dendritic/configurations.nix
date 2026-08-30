@@ -126,9 +126,12 @@ in {
             })
           ];
           variants = {
-            dev.modules = [
-              (_: {environment.etc."dendritic-variant".text = "dev";})
-            ];
+            dev = {
+              package = configuration: configuration.config.system.build.toplevel;
+              modules = [
+                (_: {environment.etc."dendritic-variant".text = "dev";})
+              ];
+            };
             vm-nogui = {
               package = configuration: configuration.config.system.build.images.vm-nogui;
               modules = [

@@ -141,12 +141,27 @@ projection:
 
 - `enableFlakeOutput` publishes an independent configuration output.
 - `includeSpecialisations` embeds the same delta in a NixOS specialisation set.
-- `package` selects an artifact from the independently evaluated configuration.
+- `package` optionally selects an artifact from the independently evaluated
+  configuration for `perSystem.packages`.
 - `outputName` overrides the generated sparse output name.
 - `tags` adds ordered profile aspects to the variant.
 
 These controls are independent. Nix module priorities provide override
-semantics inside the variant; a variant is not a second host.
+semantics inside the variant; a variant is not a second host. Omitting
+`package` (or setting it to `null`) still publishes the configuration when
+`enableFlakeOutput` is enabled, but publishes no package coordinate. Supplying
+a selector evaluates the variant first and publishes the selected derivation
+under `<variant-output-name>-<host-platform>`.
+
+For example, a development variant can expose its complete system closure,
+while an image variant exposes only its image artifact:
+
+```nix
+variants = {
+  dev.package = configuration: configuration.config.system.build.toplevel;
+  vm-nogui.package = configuration: configuration.config.system.build.images.vm-nogui;
+};
+```
 
 ## Composition and outputs
 
