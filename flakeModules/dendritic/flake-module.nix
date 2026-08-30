@@ -5,6 +5,12 @@
   ...
 }: let
   flakeConfig = config;
+  argumentOption = description:
+    lib.mkOption {
+      type = lib.types.lazyAttrsOf lib.types.raw;
+      default = {};
+      inherit description;
+    };
   moduleContributions = {
     options = {
       modules = lib.mkOption {
@@ -17,6 +23,9 @@
         default = [];
         description = "Home Manager modules contributed to each selected user node.";
       };
+      specialArgs = argumentOption "Early module arguments passed to the native system evaluator.";
+      extraSpecialArgs = argumentOption "Additional arguments passed to Home Manager modules.";
+      lateModuleArgs = argumentOption "Late module arguments contributed through _module.args.";
       metadata = lib.mkOption {
         type = lib.types.attrsOf lib.types.raw;
         default = {};
@@ -190,6 +199,9 @@ in {
   ];
 
   options.dendritic.configurations = {
+    globalArgs = argumentOption "Target-independent early arguments shared by every native and Home Manager evaluator.";
+    earlyModuleArgs = argumentOption "Target-independent early arguments shared by every composed module evaluation.";
+    lateModuleArgs = argumentOption "Late arguments shared through _module.args by every composed evaluator.";
     tags = lib.mkOption {
       type = lib.types.listOf lib.types.str;
       default = [];

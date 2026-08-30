@@ -68,35 +68,39 @@
     })
     normalized.users;
 
-  baseConfiguration = coordinate: let
-    constructor = withSystem coordinate.normalized.hostPlatform.system ({pkgs, ...}:
-      if pkgs.stdenv.hostPlatform.isDarwin
-      then inputs.darwin.lib.darwinSystem
-      else inputs.nixpkgs.lib.nixosSystem);
-  in
-    constructor {
-      specialArgs = withSystem coordinate.normalized.hostPlatform.system ({pkgs, ...}: {inherit pkgs;});
-      modules =
-        [
-          {nixpkgs.hostPlatform = coordinate.normalized.hostPlatform.system;}
-          (lib.mkIf (coordinate.normalized.buildPlatform.system != coordinate.normalized.hostPlatform.system) {
-            nixpkgs.buildPlatform = lib.mkIf coordinate.normalized.crossCompile coordinate.normalized.buildPlatform.system;
+  baseConfiguration = coordinate:
+    withSystem coordinate.normalized.hostPlatform.system ({pkgs, ...}: let
+      constructor =
+        if pkgs.stdenv.hostPlatform.isDarwin
+        then inputs.darwin.lib.darwinSystem
+        else inputs.nixpkgs.lib.nixosSystem;
+    in
+      constructor {
+        # `pkgs` is target-scoped and deliberately injected only at this concrete
+        # builder boundary; declaration layers remain target-independent.
+        specialArgs = lib.mergeAttrsList [coordinate.normalized.specialArgs {inherit pkgs;}];
+        modules =
+          [
+            {_module.args = coordinate.normalized.lateModuleArgs;}
+            {nixpkgs.hostPlatform = coordinate.normalized.hostPlatform.system;}
+            (lib.mkIf (coordinate.normalized.buildPlatform.system != coordinate.normalized.hostPlatform.system) {
+              nixpkgs.buildPlatform = lib.mkIf coordinate.normalized.crossCompile coordinate.normalized.buildPlatform.system;
+            })
+          ]
+          ++ lib.mapAttrsToList (username: user: {
+            home-manager.users.${username} = {pkgs, ...}: {
+              imports = user.modules;
+              home.username = lib.mkDefault username;
+              home.homeDirectory = lib.mkDefault (
+                if pkgs.stdenv.hostPlatform.isDarwin
+                then "/Users/${username}"
+                else "/home/${username}"
+              );
+            };
           })
-        ]
-        ++ lib.mapAttrsToList (username: user: {
-          home-manager.users.${username} = {pkgs, ...}: {
-            imports = user.modules;
-            home.username = lib.mkDefault username;
-            home.homeDirectory = lib.mkDefault (
-              if pkgs.stdenv.hostPlatform.isDarwin
-              then "/Users/${username}"
-              else "/home/${username}"
-            );
-          };
-        })
-        coordinate.normalized.users
-        ++ coordinate.normalized.modules;
-    };
+          coordinate.normalized.users
+          ++ coordinate.normalized.modules;
+      });
 
   selectedPackages = buildSystem:
     lib.concatMap (coordinate: let

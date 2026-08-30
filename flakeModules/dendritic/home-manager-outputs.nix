@@ -6,6 +6,9 @@
 }: let
   profileNames = config.dendritic.internal.profileNames;
 
+  mergeArgs = field: contributions:
+    lib.mergeAttrsList (map (contribution: contribution.${field} or {}) contributions);
+
   profileHomeModules = username: tags:
     lib.concatMap (tag: let
       overlay = config.dendritic.configurations.perTag.${tag} or {};
@@ -20,7 +23,8 @@
     (layer.homeModules or []) ++ (layer.users.${username}.modules or []);
 
   variantModules = username: variant:
-    profileHomeModules username variant.tags
+    [{_module.args = variant.lateModuleArgs;}]
+    ++ profileHomeModules username variant.tags
     ++ variant.modules
     ++ variant.homeModules
     ++ (variant.users.${username}.modules or []);
@@ -30,10 +34,25 @@
     then "${parentName}-${variantName}"
     else variant.outputName;
 
-  standaloneDeclarations = lib.mapAttrs (username: user: {
+  standaloneDeclarations = lib.mapAttrs (username: user: let
+    tagContributions = map (tag: config.dendritic.configurations.perTag.${tag}) (
+      config.dendritic.configurations.tags ++ user.tags
+    );
+    standaloneContributions = tagContributions ++ [user user.standalone];
+  in {
     inherit username;
     inherit (user) variants passInOsConfig;
     inherit (user.standalone) pkgs outputName;
+    extraSpecialArgs = lib.mergeAttrsList [
+      config.dendritic.configurations.globalArgs
+      config.dendritic.configurations.earlyModuleArgs
+      (mergeArgs "specialArgs" standaloneContributions)
+      (mergeArgs "extraSpecialArgs" standaloneContributions)
+    ];
+    lateModuleArgs = lib.mergeAttrsList [
+      config.dendritic.configurations.lateModuleArgs
+      (mergeArgs "lateModuleArgs" standaloneContributions)
+    ];
     modules =
       homeClassModules username
       ++ profileHomeModules username config.dendritic.configurations.tags
@@ -47,6 +66,7 @@
       inherit pkgs;
       modules =
         [
+          {_module.args = declaration.lateModuleArgs;}
           ({pkgs, ...}: {
             home.username = lib.mkDefault declaration.username;
             home.homeDirectory = lib.mkDefault (
@@ -86,8 +106,10 @@
   outputRows = pkgs: name: declaration:
     [{${name} = configuration pkgs declaration;}]
     ++ lib.mapAttrsToList (variantName: variant: {
-      ${variantOutputName name variantName variant} =
-        (baseConfiguration pkgs declaration).extendModules {modules = variantModules declaration.username variant;};
+      ${variantOutputName name variantName variant} = (baseConfiguration pkgs declaration).extendModules {
+        specialArgs = lib.mergeAttrsList [variant.specialArgs variant.extraSpecialArgs];
+        modules = variantModules declaration.username variant;
+      };
     }) (lib.filterAttrs (_: variant:
       config.dendritic.configurations.variants.build
       && config.dendritic.configurations.variants.enable
@@ -109,7 +131,18 @@
         inherit username;
         modules = user.standalone.modules ++ userLayer.modules;
         inherit (user) variants;
-        extraSpecialArgs = lib.optionalAttrs user.passInOsConfig {osConfig = host.config;};
+        extraSpecialArgs = lib.mergeAttrsList [
+          config.dendritic.configurations.globalArgs
+          config.dendritic.configurations.earlyModuleArgs
+          user.extraSpecialArgs
+          userLayer.extraSpecialArgs
+          (lib.optionalAttrs user.passInOsConfig {osConfig = host.config;})
+        ];
+        lateModuleArgs = lib.mergeAttrsList [
+          config.dendritic.configurations.lateModuleArgs
+          user.lateModuleArgs
+          userLayer.lateModuleArgs
+        ];
       };
     in
       outputRows host.pkgs name declaration)
