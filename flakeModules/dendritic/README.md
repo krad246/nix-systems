@@ -13,12 +13,12 @@ canonical `inputs.dendritic/modules/profiles` directory (for example `base`,
 attributes, never host names, application names, or low-level capabilities.
 
 Selecting a tag materializes the corresponding profile modules for the target
-platform and Home Manager node. `perTag.<name>` is the customization seam
-around that canonical profile: `nixosModules` and `darwinModules` select the
-native system projection, `homeModules` selects Home Manager, and
-`modules`/`users.<name>.modules` add generic or user-specific contributions.
-`metadata` is carried on normalized declaration rows. The same rule applies at
-root, host, user, host-user, and variant nodes.
+platform and Home Manager node. `perTag.<name>` is the explicit profile
+interface: `modules` contributes to the native system projection and
+`homeModules` contributes to Home Manager. `users.<name>.modules` adds a
+user-specific Home Manager contribution, while `metadata` is carried on
+normalized declaration rows. The same rule applies at root, host, user,
+host-user, and variant nodes.
 
 ## Variants
 
