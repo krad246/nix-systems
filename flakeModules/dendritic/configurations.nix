@@ -4,14 +4,7 @@
   lib,
   withSystem,
   ...
-}: let
-  withoutBase = index: module:
-    lib.mapAttrs (name: value:
-      if name == "imports"
-      then lib.take index value ++ lib.drop (index + 1) value
-      else value)
-    module;
-in {
+}: {
   dendritic.configurations = {
     variants.enable = lib.mkDefault true;
 
@@ -27,47 +20,77 @@ in {
         homeModules = [];
       };
       desktop = {
-        modules =
-          lib.optionals (inputs.dendritic.modules.nixos ? desktop) [
-            (withoutBase 0 (inputs.dendritic.modules.nixos.desktop {}))
-          ]
-          ++ lib.optionals (inputs.dendritic.modules.darwin ? desktop) [
-            (withoutBase 1 (inputs.dendritic.modules.darwin.desktop {}))
-          ];
-        homeModules = [
-          (inputs.dendritic.modules.homeManager.desktop {})
+        modules = [
+          ({pkgs, ...}: {
+            imports =
+              lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+                inputs.dendritic.modules.darwin.desktop
+              ]
+              ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
+                inputs.dendritic.modules.nixos.desktop
+              ];
+          })
         ];
+        homeModules = [inputs.dendritic.modules.homeManager.desktop];
       };
       dev = {
-        modules = [];
-        homeModules = [
-          (inputs.dendritic.modules.homeManager.dev {})
+        modules = [
+          ({pkgs, ...}: {
+            imports =
+              lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+                inputs.dendritic.modules.darwin.dev
+              ]
+              ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
+                inputs.dendritic.modules.nixos.dev
+              ];
+          })
         ];
+        homeModules = [inputs.dendritic.modules.homeManager.dev];
       };
       headless = {
-        modules = lib.optionals (inputs.dendritic.modules.nixos ? headless) [
-          (withoutBase 0 (inputs.dendritic.modules.nixos.headless {}))
+        modules = [
+          ({pkgs, ...}: {
+            imports = lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
+              inputs.dendritic.modules.nixos.terminfo
+            ];
+          })
         ];
-        homeModules = [
-          (withoutBase 0 (inputs.dendritic.modules.homeManager.headless {}))
-        ];
+        homeModules = [];
       };
       standalone = {
         modules = [];
-        homeModules = [
-          (withoutBase 0 (inputs.dendritic.modules.homeManager.standalone {}))
-        ];
+        homeModules = [inputs.dendritic.modules.homeManager.standalone];
       };
       workstation = {
-        modules =
-          lib.optionals (inputs.dendritic.modules.nixos ? workstation) [
-            (withoutBase 0 (inputs.dendritic.modules.nixos.workstation {}))
-          ]
-          ++ lib.optionals (inputs.dendritic.modules.darwin ? workstation) [
-            (withoutBase 1 (inputs.dendritic.modules.darwin.workstation {}))
-          ];
+        modules = [
+          ({pkgs, ...}: {
+            imports =
+              lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+                inputs.dendritic.modules.darwin.applications
+                inputs.dendritic.modules.darwin.desktop
+                inputs.dendritic.modules.darwin.dev
+                inputs.dendritic.modules.darwin.interactive
+                inputs.dendritic.modules.darwin.secrets
+              ]
+              ++ lib.optionals (!pkgs.stdenv.hostPlatform.isDarwin) [
+                inputs.dendritic.modules.nixos.desktop
+                inputs.dendritic.modules.nixos.dev
+                inputs.dendritic.modules.nixos.interactive
+                inputs.dendritic.modules.nixos.secrets
+              ];
+          })
+          ({pkgs, ...}: {
+            config = lib.mkIf (!pkgs.stdenv.hostPlatform.isDarwin) {
+              boot.tmp.cleanOnBoot = true;
+              programs.nix-ld.enable = true;
+            };
+          })
+        ];
         homeModules = [
-          (withoutBase 0 (inputs.dendritic.modules.homeManager.workstation {}))
+          inputs.dendritic.modules.homeManager.desktop
+          inputs.dendritic.modules.homeManager.dev
+          inputs.dendritic.modules.homeManager.interactive
+          inputs.dendritic.modules.homeManager.secrets
         ];
       };
     };

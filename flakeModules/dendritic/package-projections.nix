@@ -75,6 +75,7 @@
       else inputs.nixpkgs.lib.nixosSystem);
   in
     constructor {
+      specialArgs = withSystem coordinate.normalized.hostPlatform.system ({pkgs, ...}: {inherit pkgs;});
       modules =
         [
           {nixpkgs.hostPlatform = coordinate.normalized.hostPlatform.system;}
