@@ -68,9 +68,7 @@ in {
             ];
             modules =
               user.baseModules
-              ++ (archLayer.homeModules or [])
               ++ (archLayer.users.${username}.modules or [])
-              ++ (systemLayer.homeModules or [])
               ++ (systemLayer.users.${username}.modules or [])
               ++ user.tagModules
               ++ user.hostModules;

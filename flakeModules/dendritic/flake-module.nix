@@ -18,11 +18,6 @@
         default = [];
         description = "Modules contributed in the parent evaluator context.";
       };
-      homeModules = lib.mkOption {
-        type = lib.types.listOf lib.types.deferredModule;
-        default = [];
-        description = "Home Manager modules contributed to each selected user node.";
-      };
       specialArgs = argumentOption "Early module arguments passed to the native system evaluator.";
       extraSpecialArgs = argumentOption "Additional arguments passed to Home Manager modules.";
       lateModuleArgs = argumentOption "Late module arguments contributed through _module.args.";
@@ -46,6 +41,22 @@
   };
 
   compositionType = lib.types.submodule composition;
+  perClassType = lib.types.attrsOf compositionType;
+
+  tagType = lib.types.submodule {
+    options = {
+      perClass = lib.mkOption {
+        type = perClassType;
+        default = {};
+        description = "Class-specific module contributions selected when this profile aspect is active.";
+      };
+      metadata = lib.mkOption {
+        type = lib.types.attrsOf lib.types.raw;
+        default = {};
+        description = "Declarative metadata carried by this profile aspect.";
+      };
+    };
+  };
 
   variantType = lib.types.submodule {
     imports = [composition];
@@ -243,7 +254,7 @@ in {
       description = "Modules shared by every host.";
     };
     perClass = lib.mkOption {
-      type = lib.types.attrsOf compositionType;
+      type = perClassType;
       default = {};
       description = "Modules selected by host class; perClass.home is the shared Home Manager baseline.";
     };
@@ -258,9 +269,9 @@ in {
       description = "Modules selected by the architecture component of a host platform.";
     };
     perTag = lib.mkOption {
-      type = lib.types.attrsOf compositionType;
+      type = lib.types.attrsOf tagType;
       default = {};
-      description = "Explicit canonical profile module sets and per-profile overlays.";
+      description = "Canonical profile aspects, each with class-specific contributions shaped like perClass.";
     };
     variants = {
       build = lib.mkOption {
