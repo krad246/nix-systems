@@ -47,6 +47,19 @@
     builtins.sort builtins.lessThan (map packageName (lib.filter (packageCoordinate:
       packageCoordinate.coordinate.buildPlatform.system == system)
     packageCoordinates));
+
+  crossPlatformAssertions =
+    map (coordinate: let
+      output = lib.getAttr (hostOutputName coordinate) flakeConfig.flake.nixosConfigurations;
+    in {
+      assertion =
+        output.pkgs.stdenv.buildPlatform.system
+        == coordinate.buildPlatform.system
+        && output.pkgs.stdenv.hostPlatform.system == coordinate.hostPlatform.system;
+      message = "Miniboi ${coordinate.hostPlatform.system} uses its declared build and host platforms in nixpkgs";
+    }) (lib.filter (coordinate:
+      coordinate.buildPlatform.system != coordinate.hostPlatform.system)
+    miniboiCoordinates);
 in {
   perSystem = {
     config,
@@ -74,6 +87,10 @@ in {
     matrixToplevels = map (configuration: configuration.config.system.build.toplevel) (lib.attrValues miniboiConfigurations);
   in {
     dendritic.assertions = [
+      {
+        assertion = lib.all (assertion: assertion.assertion) crossPlatformAssertions;
+        message = lib.concatStringsSep "; " (map (assertion: assertion.message) crossPlatformAssertions);
+      }
       {
         assertion = lib.all (name: lib.hasAttr name flakeConfig.flake.nixosConfigurations) configurationNames;
         message = "Miniboi publishes its root system and every declared VM variant for every host platform";

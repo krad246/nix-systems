@@ -65,27 +65,24 @@
     normalized.users;
 
   baseConfiguration = coordinate:
-    withSystem coordinate.normalized.hostPlatform.system ({pkgs, ...}: let
+    withSystem coordinate.normalized.buildPlatform.system (_: let
       constructor =
-        if pkgs.stdenv.hostPlatform.isDarwin
+        if coordinate.normalized.nativeClass == "darwin"
         then inputs.darwin.lib.darwinSystem
-        else if pkgs.stdenv.hostPlatform.isLinux
+        else if coordinate.normalized.nativeClass == "nixos"
         then inputs.nixpkgs.lib.nixosSystem
         else throw "dendritic.configurations: unsupported target system ${coordinate.normalized.hostPlatform.system}";
-      pkgsModules =
-        lib.optionals pkgs.stdenv.hostPlatform.isLinux [inputs.nixpkgs.nixosModules.readOnlyPkgs]
-        ++ [{nixpkgs.pkgs = pkgs;}];
-      platformModules = lib.optionals pkgs.stdenv.hostPlatform.isDarwin [
+      nixpkgsPlatformModules = [
+        {nixpkgs.buildPlatform = coordinate.normalized.buildPlatform.system;}
         {nixpkgs.hostPlatform = coordinate.normalized.hostPlatform.system;}
       ];
     in
       constructor {
-        # The package set is selected at the concrete build/host boundary;
-        # declaration layers remain target-independent.
+        # Keep nixpkgs.pkgs unset: the native evaluator performs the normal
+        # nixpkgs splice from these build/host platform options.
         specialArgs = coordinate.normalized.specialArgs;
         modules =
-          pkgsModules
-          ++ platformModules
+          nixpkgsPlatformModules
           ++ [
             {_module.args = coordinate.normalized.lateModuleArgs;}
           ]
