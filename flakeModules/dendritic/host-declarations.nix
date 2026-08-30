@@ -19,9 +19,6 @@
       home = homeContribution.modules or [];
     };
 
-  homeContributions = username: contribution:
-    contribution.users.${username}.modules or [];
-
   profileHomeModules = username: tag: let
     selected = profile "home" tag;
     overlay = configurations.perTag.${tag} or {};
@@ -38,13 +35,9 @@ in {
     (lib.filterAttrs (_: host: host.enable))
     (lib.mapAttrs (hostName: host: let
       class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
-      classNames = [class.nativeClass];
       rootProfiles = map (profile class.nativeClass) configurations.tags;
       hostProfiles = map (profile class.nativeClass) host.tags;
-      baseContributions =
-        [configurations.shared]
-        ++ map (className: configurations.perClass.${className} or {}) classNames;
-      homeClassLayer = configurations.perClass.homeManager or {};
+      baseContributions = [configurations.shared];
       rootTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) configurations.tags;
       hostTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) host.tags;
       rootHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.homeManager or {}) configurations.tags;
@@ -52,8 +45,7 @@ in {
       systemContributions = baseContributions ++ rootTagContributions ++ hostTagContributions ++ [host];
       baseModules =
         configurations.shared.modules
-        ++ lib.concatMap (selected: selected.system) rootProfiles
-        ++ lib.concatMap (contribution: contribution.modules or []) (lib.tail baseContributions);
+        ++ lib.concatMap (selected: selected.system) rootProfiles;
       tagModules = lib.concatMap (selected: selected.system) hostProfiles;
       selectedUsers =
         lib.filterAttrs (
@@ -81,8 +73,7 @@ in {
         lib.mapAttrs (username: hostLayer: let
           user = configurations.users.${username};
           userContributions =
-            [configurations.shared homeClassLayer]
-            ++ map (className: configurations.perClass.${className} or {}) classNames
+            [configurations.shared]
             ++ rootHomeTagContributions
             ++ map (tag: configurations.perTag.${tag}.perClass.homeManager or {}) user.tags
             ++ hostHomeTagContributions
@@ -90,10 +81,7 @@ in {
             ++ [user hostLayer];
           baseUserModules =
             user.modules
-            ++ (homeClassLayer.modules or [])
-            ++ (homeClassLayer.users.${username}.modules or [])
             ++ lib.concatMap (profileHomeModules username) configurations.tags
-            ++ lib.concatMap (homeContributions username) (lib.tail baseContributions)
             ++ lib.concatMap (profileHomeModules username) user.tags;
           taggedUserModules =
             lib.concatMap (profileHomeModules username) host.tags

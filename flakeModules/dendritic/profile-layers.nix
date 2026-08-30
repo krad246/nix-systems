@@ -5,6 +5,7 @@
   ...
 }: let
   profileDirectory = "${inputs.dendritic}/modules/profiles";
+  moduleClassNames = ["nixos" "darwin" "homeManager"];
   profileNames = map (name: lib.removeSuffix ".nix" name) (
     lib.attrNames (lib.filterAttrs (_: kind: kind == "regular") (builtins.readDir profileDirectory))
   );
@@ -20,8 +21,8 @@ in {
   "dendritic.configurations.perTag may only contain canonical profile names from inputs.dendritic/modules/profiles";
   assert lib.assertMsg
   (lib.all (tag:
-    lib.all (className: config.dendritic.configurations.perClass ? ${className})
+    lib.all (className: lib.elem className moduleClassNames)
     (lib.attrNames (config.dendritic.configurations.perTag.${tag}.perClass or {})))
   (lib.attrNames config.dendritic.configurations.perTag))
-  "dendritic.configurations.perTag.<tag>.perClass may only name classes declared by dendritic.configurations.perClass"; profileNames;
+  "dendritic.configurations.perTag.<tag>.perClass may only name evaluator classes: nixos, darwin, homeManager"; profileNames;
 }

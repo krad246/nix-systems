@@ -17,11 +17,6 @@
         (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
     tags;
 
-  homeClassModules = username: let
-    layer = config.dendritic.configurations.perClass.homeManager or {};
-  in
-    (layer.modules or []) ++ (layer.users.${username}.modules or []);
-
   standaloneModules = user:
     if user.standalone == null
     then []
@@ -58,8 +53,7 @@
       (mergeArgs "lateModuleArgs" standaloneContributions)
     ];
     modules =
-      homeClassModules username
-      ++ profileHomeModules username config.dendritic.configurations.tags
+      profileHomeModules username config.dendritic.configurations.tags
       ++ user.modules
       ++ profileHomeModules username user.tags
       ++ user.standalone.modules;

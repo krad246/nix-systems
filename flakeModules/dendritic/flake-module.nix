@@ -238,7 +238,7 @@ in {
         nixos.nativeClass = "nixos";
         darwin.nativeClass = "darwin";
       };
-      description = "Semantic host classes; aliases retain their own perClass contributions while selecting a native evaluator.";
+      description = "Semantic host classes; each name selects a native evaluator class, while profile composition belongs in tags.";
     };
     users = lib.mkOption {
       type = lib.types.attrsOf userType;
@@ -254,11 +254,6 @@ in {
       type = compositionType;
       default = {};
       description = "Modules shared by every host.";
-    };
-    perClass = lib.mkOption {
-      type = perClassType;
-      default = {};
-      description = "Modules selected by module-system class; perClass.homeManager is the shared Home Manager baseline.";
     };
     perSystem = lib.mkOption {
       type = lib.types.attrsOf compositionType;
