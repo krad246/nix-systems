@@ -101,7 +101,7 @@ in {
 
         nix-shell = pkgs.mkShell {
           packages = with pkgs;
-            [git delta]
+            [git delta nix-output-monitor]
             ++ [direnv nix-direnv lorri]
             ++ [just gnumake]
             ++ [shellcheck nil]

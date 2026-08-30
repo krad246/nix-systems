@@ -196,3 +196,19 @@ The evaluator writes the native flake namespaces directly:
 - `darwinConfigurations` for nix-darwin coordinates;
 - `homeConfigurations` for standalone and host/user Home Manager coordinates;
 - `perSystem.packages` for selected variant artifacts.
+
+## Infrastructure migration notes
+
+The upstream Dendritic infrastructure modules are the long-term source of
+truth, but they currently leave a few integration seams for this repository:
+
+- Dendritic's Just module defines `nom` recipes but does not add
+  `nix-output-monitor` to a shell; this tree supplies it through the default
+  `nix-shell` path.
+- Dendritic's devshell module exports one `default` shell. The existing
+  `interactive`, `agent`, `devcontainer`, `bubblewrap`, and `nix-shell` roles
+  must be split into independent modules before that implementation can replace
+  the local shell module without losing capabilities.
+- The treefmt, pre-commit, flake-root, and Just modules are coupled through
+  shared flake-parts inputs. Their eventual replacement should preserve this
+  repository's context verification and merge/push hooks explicitly.
