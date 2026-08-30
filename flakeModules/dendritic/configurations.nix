@@ -4,162 +4,162 @@
   lib,
   withSystem,
   ...
-}: {
-  dendritic.configurations = {
-    variants.enable = lib.mkDefault true;
+}: let
+  localModules = config.flake.dendritic.modules;
+in
+  with inputs.dendritic.modules; {
+    dendritic.configurations = {
+      variants.enable = lib.mkDefault true;
 
-    perClass = {
-      nixos = {
-        modules = [config.flake.dendritic.modules.nixos.base];
-      };
-      darwin = {
-        modules = [config.flake.dendritic.modules.darwin.base];
-      };
-      home.modules = [config.flake.dendritic.modules.homeManager.base];
-    };
-
-    perTag = {
-      base = {
-        perClass = {};
-      };
-      desktop = {
-        perClass = {
-          nixos.modules = [inputs.dendritic.modules.nixos.desktop];
-          darwin.modules = [inputs.dendritic.modules.darwin.desktop];
-          home.modules = [inputs.dendritic.modules.homeManager.desktop];
+      perClass = {
+        nixos = {
+          modules = [localModules.nixos.base];
         };
-      };
-      dev = {
-        perClass = {
-          nixos.modules = [inputs.dendritic.modules.nixos.dev];
-          darwin.modules = [inputs.dendritic.modules.darwin.dev];
-          home.modules = [inputs.dendritic.modules.homeManager.dev];
+        darwin = {
+          modules = [localModules.darwin.base];
         };
-      };
-      headless = {
-        perClass.nixos.modules = [inputs.dendritic.modules.nixos.terminfo];
-      };
-      standalone = {
-        perClass.home.modules = [inputs.dendritic.modules.homeManager.standalone];
-      };
-      workstation = {
-        perClass = {
-          darwin.modules = [
-            inputs.dendritic.modules.darwin.applications
-            inputs.dendritic.modules.darwin.desktop
-            inputs.dendritic.modules.darwin.dev
-            inputs.dendritic.modules.darwin.interactive
-            inputs.dendritic.modules.darwin.secrets
-          ];
-          home.modules = [
-            inputs.dendritic.modules.homeManager.desktop
-            inputs.dendritic.modules.homeManager.dev
-            inputs.dendritic.modules.homeManager.interactive
-            inputs.dendritic.modules.homeManager.secrets
-            ({lib, ...}: {
-              browser.backends.zen = {
-                enable = lib.mkDefault true;
-                default = lib.mkDefault true;
-              };
-            })
-          ];
-          nixos.modules = [
-            inputs.dendritic.modules.nixos.desktop
-            inputs.dendritic.modules.nixos.dev
-            inputs.dendritic.modules.nixos.interactive
-            inputs.dendritic.modules.nixos.secrets
-            (_: {
-              boot.tmp.cleanOnBoot = true;
-              programs.nix-ld.enable = true;
-            })
-          ];
-        };
-      };
-    };
-
-    users = {
-      standalone = {
-        enable = true;
-        standalone = {
-          enable = !lib.inPureEvalMode;
-          pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-          modules = [];
-        };
-        tags = ["standalone"];
-        variants.dev.tags = ["dev"];
+        home.modules = [localModules.homeManager.base];
       };
 
-      krad246 = {
-        enable = true;
-        tags = ["standalone"];
-        standalone = {
-          enable = !lib.inPureEvalMode;
-          pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-          modules = [];
-        };
-      };
-    };
-
-    hosts = {
-      # TODO: missing miniboi
-
-      # a concrete example we could work with is:
-      # 1. miniboi has a large number of variants
-      # with heterogeneous capability sets (vm-nogui)
-      # 2. define an actually useful testbed for the
-      # broader secure boot, disko cleanup, etc. on
-      # the "standard" miniboi, an actually usable config
-      # 3. use variants and the tag management to customize
-      # something like a graphical miniboi vm down to a
-      # vm-nogui
-
-      generic-headless-interactive = {
-        enable = true;
-        class = "nixos";
-        hostPlatforms = [{system = "x86_64-linux";}];
-        tags = ["headless"];
-        modules = [
-          ({lib, ...}: {
-            networking.hostName = "generic-headless-interactive";
-            fileSystems."/" = lib.mkDefault {
-              device = "none";
-              fsType = "tmpfs";
-            };
-            boot.loader.grub.devices = lib.mkDefault ["nodev"];
-          })
-        ];
-        variants = {
-          dev = {
-            tags = ["dev"]; # TODO: figure out if this is an additive merge over the tags up there.
-            modules = [
-              (_: {environment.etc."dendritic-variant".text = "dev";})
-            ];
+      perTag = {
+        desktop = {
+          perClass = {
+            nixos.modules = [nixos.desktop];
+            darwin.modules = [darwin.desktop];
+            home.modules = [homeManager.desktop];
           };
-          vm-nogui = {
-            modules = [
-              ({config, ...}: {
-                image.modules.vm = import ./image-modules/vm.nix;
-                image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
-                  vm = config.image.modules.vm;
+        };
+        dev = {
+          perClass = {
+            nixos.modules = [nixos.dev];
+            darwin.modules = [darwin.dev];
+            home.modules = [homeManager.dev];
+          };
+        };
+        headless = {
+          perClass.nixos.modules = [nixos.terminfo];
+        };
+        standalone = {
+          perClass.home.modules = [homeManager.standalone];
+        };
+        workstation = {
+          perClass = {
+            darwin.modules = [
+              darwin.applications
+              darwin.desktop
+              darwin.dev
+              darwin.interactive
+              darwin.secrets
+            ];
+            home.modules = [
+              homeManager.desktop
+              homeManager.dev
+              homeManager.interactive
+              homeManager.secrets
+              ({lib, ...}: {
+                browser.backends.zen = {
+                  enable = lib.mkDefault true;
+                  default = lib.mkDefault true;
                 };
               })
             ];
-            package = configuration: configuration.config.system.build.images.vm-nogui;
+            nixos.modules = [
+              nixos.desktop
+              nixos.dev
+              nixos.interactive
+              nixos.secrets
+              (_: {
+                boot.tmp.cleanOnBoot = true;
+                programs.nix-ld.enable = true;
+              })
+            ];
           };
         };
       };
 
-      nixbook-pro-composed = {
-        enable = true;
-        class = "darwin";
-        hostPlatforms = [{system = "aarch64-darwin";}];
-        tags = ["workstation"];
-        modules = [
-          (_: {networking.hostName = "nixbook-pro-composed";})
-        ];
-        users.krad246 = {};
-        variants.dev.tags = ["dev"];
+      users = {
+        standalone = {
+          enable = true;
+          standalone = {
+            enable = !lib.inPureEvalMode;
+            pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
+            modules = [];
+          };
+          tags = ["standalone"];
+          variants.dev.tags = ["dev"];
+        };
+
+        krad246 = {
+          enable = true;
+          tags = ["standalone"];
+          standalone = {
+            enable = !lib.inPureEvalMode;
+            pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
+            modules = [];
+          };
+        };
+      };
+
+      hosts = {
+        # TODO: missing miniboi
+
+        # a concrete example we could work with is:
+        # 1. miniboi has a large number of variants
+        # with heterogeneous capability sets (vm-nogui)
+        # 2. define an actually useful testbed for the
+        # broader secure boot, disko cleanup, etc. on
+        # the "standard" miniboi, an actually usable config
+        # 3. use variants and the tag management to customize
+        # something like a graphical miniboi vm down to a
+        # vm-nogui
+
+        generic-headless-interactive = {
+          enable = true;
+          class = "nixos";
+          hostPlatforms = [{system = "x86_64-linux";}];
+          tags = ["headless"];
+          modules = [
+            ({lib, ...}: {
+              networking.hostName = "generic-headless-interactive";
+              fileSystems."/" = lib.mkDefault {
+                device = "none";
+                fsType = "tmpfs";
+              };
+              boot.loader.grub.devices = lib.mkDefault ["nodev"];
+            })
+          ];
+          variants = {
+            dev = {
+              tags = ["dev"]; # TODO: figure out if this is an additive merge over the tags up there.
+              modules = [
+                (_: {environment.etc."dendritic-variant".text = "dev";})
+              ];
+            };
+            vm-nogui = {
+              modules = [
+                ({config, ...}: {
+                  image.modules.vm = import ./image-modules/vm.nix;
+                  image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
+                    vm = config.image.modules.vm;
+                  };
+                })
+              ];
+              package = configuration: configuration.config.system.build.images.vm-nogui;
+            };
+          };
+        };
+
+        nixbook-pro-composed = {
+          enable = true;
+          class = "darwin";
+          hostPlatforms = [{system = "aarch64-darwin";}];
+          tags = ["workstation"];
+          modules = [
+            (_: {networking.hostName = "nixbook-pro-composed";})
+          ];
+          users.krad246 = {};
+          variants.dev.tags = ["dev"];
+        };
       };
     };
-  };
-}
+  }
