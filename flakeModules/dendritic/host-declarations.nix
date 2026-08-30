@@ -38,7 +38,7 @@ in {
     (lib.filterAttrs (_: host: host.enable))
     (lib.mapAttrs (hostName: host: let
       class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
-      classNames = lib.unique [class.nativeClass host.class];
+      classNames = [class.nativeClass];
       rootProfiles = map (profile class.nativeClass) configurations.tags;
       hostProfiles = map (profile class.nativeClass) host.tags;
       baseContributions =
