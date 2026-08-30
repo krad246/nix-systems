@@ -11,25 +11,22 @@
 
   profile = nativeClass: tag: let
     overlay = configurations.perTag.${tag} or {};
+    classContribution = overlay.perClass.${nativeClass} or {};
+    homeContribution = overlay.perClass.home or {};
   in
     assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect"; {
-      system = lib.filter (
-        module:
-          !lib.isAttrs module
-          || (let moduleClass = module._class or null; in moduleClass == null || moduleClass == nativeClass)
-      ) (overlay.modules or []);
-      home = overlay.homeModules or [];
-      inherit (overlay) specialArgs extraSpecialArgs lateModuleArgs;
+      system = classContribution.modules or [];
+      home = homeContribution.modules or [];
     };
 
   homeContributions = username: contribution:
-    (contribution.homeModules or []) ++ (contribution.users.${username}.modules or []);
+    contribution.users.${username}.modules or [];
 
   profileHomeModules = username: tag: let
     selected = profile "home" tag;
     overlay = configurations.perTag.${tag} or {};
   in
-    selected.home ++ (overlay.users.${username}.modules or []);
+    selected.home ++ (overlay.perClass.home.users.${username}.modules or []);
 in {
   options.dendritic.internal.systemDeclarations = lib.mkOption {
     type = lib.types.attrsOf lib.types.raw;
@@ -48,8 +45,10 @@ in {
         [configurations.shared]
         ++ map (className: configurations.perClass.${className} or {}) classNames;
       homeClassLayer = configurations.perClass.home or {};
-      rootTagContributions = map (tag: configurations.perTag.${tag}) configurations.tags;
-      hostTagContributions = map (tag: configurations.perTag.${tag}) host.tags;
+      rootTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) configurations.tags;
+      hostTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) host.tags;
+      rootHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.home or {}) configurations.tags;
+      hostHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.home or {}) host.tags;
       systemContributions = baseContributions ++ rootTagContributions ++ hostTagContributions ++ [host];
       baseModules =
         configurations.shared.modules
@@ -84,14 +83,14 @@ in {
           userContributions =
             [configurations.shared homeClassLayer]
             ++ map (className: configurations.perClass.${className} or {}) classNames
-            ++ rootTagContributions
-            ++ map (tag: configurations.perTag.${tag}) user.tags
-            ++ hostTagContributions
-            ++ map (tag: configurations.perTag.${tag}) hostLayer.tags
+            ++ rootHomeTagContributions
+            ++ map (tag: configurations.perTag.${tag}.perClass.home or {}) user.tags
+            ++ hostHomeTagContributions
+            ++ map (tag: configurations.perTag.${tag}.perClass.home or {}) hostLayer.tags
             ++ [user hostLayer];
           baseUserModules =
             user.modules
-            ++ (homeClassLayer.homeModules or [])
+            ++ (homeClassLayer.modules or [])
             ++ (homeClassLayer.users.${username}.modules or [])
             ++ lib.concatMap (profileHomeModules username) configurations.tags
             ++ lib.concatMap (homeContributions username) (lib.tail baseContributions)

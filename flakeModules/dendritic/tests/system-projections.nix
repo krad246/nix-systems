@@ -28,20 +28,20 @@ in {
           (_: {dendritic.evaluatorTest.compositionTrace = ["perSystem"];})
         ];
         perTag = {
-          desktop.modules = [
+          desktop.perClass.nixos.modules = [
             (_: {
               dendritic.evaluatorTest.compositionTrace = ["perTag:root"];
             })
           ];
-          headless.modules = [
+          headless.perClass.nixos.modules = [
             (_: {
               dendritic.evaluatorTest.compositionTrace = ["perTag:headless"];
             })
           ];
-          dev.modules = [
+          dev.perClass.nixos.modules = [
             (_: {dendritic.evaluatorTest.compositionTrace = ["perTag:dev"];})
           ];
-          workstation.modules = [
+          workstation.perClass.nixos.modules = [
             (_: {environment.etc."dendritic-variant-tag".text = "variant";})
           ];
         };

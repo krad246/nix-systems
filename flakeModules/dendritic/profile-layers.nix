@@ -17,5 +17,11 @@ in {
 
   config.dendritic.internal.profileNames = assert lib.assertMsg
   (lib.all (name: lib.elem name profileNames) (lib.attrNames config.dendritic.configurations.perTag))
-  "dendritic.configurations.perTag may only contain canonical profile names from inputs.dendritic/modules/profiles"; profileNames;
+  "dendritic.configurations.perTag may only contain canonical profile names from inputs.dendritic/modules/profiles";
+  assert lib.assertMsg
+  (lib.all (tag:
+    lib.all (className: config.dendritic.configurations.perClass ? ${className})
+    (lib.attrNames (config.dendritic.configurations.perTag.${tag}.perClass or {})))
+  (lib.attrNames config.dendritic.configurations.perTag))
+  "dendritic.configurations.perTag.<tag>.perClass may only name classes declared by dendritic.configurations.perClass"; profileNames;
 }
