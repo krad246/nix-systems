@@ -256,7 +256,7 @@ in {
     perClass = lib.mkOption {
       type = perClassType;
       default = {};
-      description = "Modules selected by host class; perClass.homeManager is the shared Home Manager baseline.";
+      description = "Modules selected by evaluator class; perClass.home is the shared Home Manager baseline.";
     };
     perSystem = lib.mkOption {
       type = lib.types.attrsOf compositionType;

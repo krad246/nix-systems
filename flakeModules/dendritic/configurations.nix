@@ -4,65 +4,71 @@
   lib,
   withSystem,
   ...
-}: {
+}: let
+  # Project one or more named modules from a module namespace into the
+  # evaluator classes consumed by perClass and perTag.
+  modules = origin: names:
+    lib.pipe names [
+      lib.toList
+      (map (name: {
+        nixos.modules = [origin.nixos.${name}];
+        darwin.modules = [origin.darwin.${name}];
+        home.modules = [origin.homeManager.${name}];
+      }))
+      lib.mkMerge
+    ];
+in {
+  # TODO: better name for this interface
   dendritic.configurations = lib.mkMerge [
     {
-      # variants: a unifying interface between image modules and specialisations
+      # interface 1: variants
+
+      # a unifying interface between image modules and specialisations
       variants = {
         enable = lib.mkDefault true;
 
-        enableFlakeOutputs = lib.mkDefault true;       # publish variants as flake outputs
-        includeSpecialisations = lib.mkDefault false;  # embed variants as specialisations
+        enableFlakeOutputs = lib.mkDefault true; # publish variants as flake outputs
+        includeSpecialisations = lib.mkDefault false; # embed variants as specialisations
       };
     }
     {
-      perTag = with inputs.dendritic.modules; let
-        modules = names:
-          lib.pipe names [
-            lib.toList
-            (map (name: {
-              nixos.modules = [nixos.${name}];
-              darwin.modules = [darwin.${name}];
-              homeManager.modules = [homeManager.${name}];
-            }))
-            lib.mkMerge
-          ];
-      in {
-        desktop.perClass = modules "desktop";
-        dev.perClass = modules "dev";
+      # interface 2: module system classes
 
-        workstation = {
-          perClass = lib.mkMerge [
-            (modules ["desktop" "dev" "interactive" "secrets"])
-            {
-              darwin.modules = [darwin.applications];
-              homeManager.modules = [
-                ({lib, ...}: {
-                  browser.backends.zen = {
-                    enable = lib.mkDefault true;
-                    default = lib.mkDefault true;
-                  };
-                })
-              ];
-              nixos.modules = [
-                (_: {
-                  boot.tmp.cleanOnBoot = true;
-                  programs.nix-ld.enable = true;
-                })
-              ];
-            }
-          ];
-        };
-
-        headless.perClass.nixos.modules = [nixos.terminfo];
-        standalone.perClass.homeManager.modules = [homeManager.standalone];
-      };
+      # there is a generic registration mechanism for all module system classes now,
+      # meaning your flakes can implement as classes as they want / need and use the
+      # same generator interface to get things working for different contexts.
+      perClass = modules config.flake.dendritic.modules "base";
     }
     {
-      perClass = {
-        nixos.modules = [config.flake.dendritic.modules.nixos.base];
-        darwin.modules = [config.flake.dendritic.modules.darwin.base];
-        homeManager.modules = [config.flake.dendritic.modules.homeManager.base];
+      # define "tags": a logical "annotation" interface over composed modules.
+      # compose tags together as logical closures of capabities.
+      perTag = {
+        desktop.perClass = modules inputs.dendritic.modules "desktop";
+        dev.perClass = modules inputs.dendritic.modules "dev";
+
+        workstation.perClass = lib.mkMerge [
+          (modules inputs.dendritic.modules ["desktop" "dev" "interactive" "secrets"])
+          {
+            darwin.modules = [inputs.dendritic.modules.darwin.applications];
+            home.modules = [
+              ({lib, ...}: {
+                browser.backends.zen = {
+                  enable = lib.mkDefault true;
+                  default = lib.mkDefault true;
+                };
+              })
+            ];
+            nixos.modules = [
+              (_: {
+                boot.tmp.cleanOnBoot = true;
+                programs.nix-ld.enable = true;
+              })
+            ];
+          }
+        ];
+
+        headless.perClass.nixos.modules = [inputs.dendritic.modules.nixos.terminfo];
+        standalone.perClass.home.modules = [inputs.dendritic.modules.homeManager.standalone];
       };
     }
     {

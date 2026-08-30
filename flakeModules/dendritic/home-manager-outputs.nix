@@ -11,14 +11,14 @@
 
   profileHomeModules = username: tags:
     lib.concatMap (tag: let
-      contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
+      contribution = config.dendritic.configurations.perTag.${tag}.perClass.home or {};
     in
       assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
         (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
     tags;
 
   homeClassModules = username: let
-    layer = config.dendritic.configurations.perClass.homeManager or {};
+    layer = config.dendritic.configurations.perClass.home or {};
   in
     (layer.modules or []) ++ (layer.users.${username}.modules or []);
 
@@ -34,7 +34,7 @@
     else variant.outputName;
 
   standaloneDeclarations = lib.mapAttrs (username: user: let
-    tagContributions = map (tag: config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {}) (
+    tagContributions = map (tag: config.dendritic.configurations.perTag.${tag}.perClass.home or {}) (
       config.dendritic.configurations.tags ++ user.tags
     );
     standaloneContributions = tagContributions ++ [user user.standalone];
