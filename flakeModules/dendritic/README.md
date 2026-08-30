@@ -25,6 +25,15 @@ to downstream projections; both are preserved on normalized declaration rows.
 The same rule applies at
 root, host, user, host-user, and variant nodes.
 
+## Users
+
+Users participate in host-derived Home Manager configurations when
+`users.<name>.enable` is true. Standalone Home Manager output is opt-in by
+presence: `users.<name>.standalone = null` means the user is host-derived only,
+while a non-null block supplies the required `pkgs` and enables the independent
+output. There is no separate standalone user identity or nested standalone
+enable flag.
+
 ## Variants
 
 A variant is an additive module delta over its parent coordinate. The evaluator

@@ -4,7 +4,6 @@
   lib,
   ...
 }: let
-  flakeConfig = config;
   argumentOption = description:
     lib.mkOption {
       type = lib.types.lazyAttrsOf lib.types.raw;
@@ -109,14 +108,12 @@
         description = "Ordered profile aspects selecting contributions for this user node.";
       };
       standalone = lib.mkOption {
-        type = lib.types.submodule {
+        type = lib.types.nullOr (lib.types.submodule {
           imports = [moduleContributions];
           options = {
-            enable = lib.mkEnableOption "this standalone Home Manager configuration";
             pkgs = lib.mkOption {
-              type = lib.types.nullOr lib.types.pkgs;
-              default = null;
-              description = "Optional package-set override; impure standalone evaluation defaults to the current system.";
+              type = lib.types.pkgs;
+              description = "Package set used to evaluate this standalone Home Manager configuration.";
             };
             outputName = lib.mkOption {
               type = lib.types.nullOr lib.types.str;
@@ -124,9 +121,9 @@
               description = "Optional name for this standalone Home Manager root.";
             };
           };
-        };
-        default = {};
-        description = "Standalone Home Manager output for this user.";
+        });
+        default = null;
+        description = "Optional standalone Home Manager output for this user; presence enables the output.";
       };
       passInOsConfig = lib.mkOption {
         type = lib.types.bool;
@@ -385,20 +382,6 @@ in {
                 systemd.user.startServices = "sd-switch";
               })
             ];
-          };
-
-          homeManagerSupport = {
-            home.stateVersion = inputs.dendritic.lib.trivial.release;
-            programs.home-manager.enable = true;
-          };
-
-          standalone = {pkgs, ...}: {
-            imports = [
-              flakeConfig.flake.dendritic.modules.homeManager.base
-              flakeConfig.flake.dendritic.modules.homeManager.homeManagerSupport
-            ];
-
-            nix.package = lib.mkDefault pkgs.nix;
           };
 
           desktop.imports = [

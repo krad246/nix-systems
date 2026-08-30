@@ -1,4 +1,5 @@
 {
+
   config,
   inputs,
   lib,
@@ -42,6 +43,8 @@ in {
     {
       # define "tags": a logical "annotation" interface over composed modules.
       # compose tags together as logical closures of capabities.
+      # perClass: how to materialize the 'tag' interface for a given class.
+      # provides a clear interface-impl split.
       perTag = {
         desktop.perClass = modules inputs.dendritic.modules "desktop";
         dev.perClass = modules inputs.dendritic.modules "dev";
@@ -68,34 +71,33 @@ in {
         ];
 
         headless.perClass.nixos.modules = [inputs.dendritic.modules.nixos.terminfo];
-        standalone.perClass.home.modules = [inputs.dendritic.modules.homeManager.standalone];
+        # The upstream standalone profile currently imports base itself. Since
+        # perClass.home owns the base import, use only its administrative
+        # home-manager module here to avoid importing base twice. Revisit when
+        # the upstream profile/base split is decoupled.
+        standalone.perClass.home.modules = [
+          inputs.dendritic.modules.homeManager.home-manager
+          ({pkgs, ...}: {nix.package = lib.mkDefault pkgs.nix;})
+        ];
       };
     }
     {
-      users = {
-        standalone = {
-          enable = true;
-          standalone = {
-            enable = !lib.inPureEvalMode;
-            pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-            modules = [];
-          };
-          tags = ["standalone"];
-          variants.dev.tags = ["dev"];
-        };
+      # interface 3: defining users
+      users.krad246 = {
+        enable = true;
 
-        krad246 = {
-          enable = true;
-          tags = ["standalone"];
-          standalone = {
-            enable = !lib.inPureEvalMode;
-            pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-            modules = [];
-          };
+        # assume hosted users by default; you can make them standalone
+        # but you have to provide an implementation bridge.
+        standalone = lib.mkIf (!lib.inPureEvalMode) {
+          pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
+          modules = [];
         };
+        tags = ["standalone"]; # add tag interfaces the user implements
+        variants.dev.tags = ["dev"]; # add variants, and add tags to the variants
       };
     }
     {
+      # interface 4: hosts
       hosts = {
         # TODO: missing miniboi
 
