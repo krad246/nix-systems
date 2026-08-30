@@ -22,6 +22,11 @@
   in
     (layer.modules or []) ++ (layer.users.${username}.modules or []);
 
+  standaloneModules = user:
+    if user.standalone == null
+    then []
+    else user.standalone.modules;
+
   variantModules = username: variant:
     [{_module.args = variant.lateModuleArgs;}]
     ++ profileHomeModules username variant.tags
@@ -58,7 +63,7 @@
       ++ user.modules
       ++ profileHomeModules username user.tags
       ++ user.standalone.modules;
-  }) (lib.filterAttrs (_: user: user.enable && user.standalone.enable) config.dendritic.configurations.users);
+  }) (lib.filterAttrs (_: user: user.enable && user.standalone != null) config.dendritic.configurations.users);
 
   baseConfiguration = pkgs: declaration:
     inputs.home-manager.lib.homeManagerConfiguration {
@@ -128,7 +133,7 @@
         else userLayer.outputName;
       declaration = {
         inherit username;
-        modules = user.standalone.modules ++ userLayer.modules;
+        modules = standaloneModules user ++ userLayer.modules;
         inherit (user) variants;
         extraSpecialArgs = lib.mergeAttrsList [
           config.dendritic.configurations.globalArgs
@@ -163,8 +168,8 @@ in {
   };
 
   perSystem = {pkgs, ...}:
-    lib.mkIf (standaloneDeclarations ? standalone) (let
-      standalone = configuration pkgs standaloneDeclarations.standalone;
+    lib.mkIf (standaloneDeclarations != {}) (let
+      standalone = configuration pkgs (builtins.head (lib.attrValues standaloneDeclarations));
     in {
       checks = {
         dendritic-hm-standalone = standalone.activationPackage;
