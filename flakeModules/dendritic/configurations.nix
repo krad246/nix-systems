@@ -4,35 +4,27 @@
   lib,
   withSystem,
   ...
-}: let
-  classes = [
-    "nixos"
-    "darwin"
-    "homeManager"
-  ];
-  profile = modules: name:
-    lib.genAttrs classes (class: {
-      modules = [modules.${class}.${name}];
-    });
-in {
+}: {
   dendritic.configurations = lib.mkMerge [
     {
       variants.enable = lib.mkDefault true;
     }
     {
-      perClass = profile config.flake.dendritic.modules "base";
-    }
-    (with inputs.dendritic.modules; {
-      perTag = {
-        desktop.perClass = profile inputs.dendritic.modules "desktop";
-        dev.perClass = profile inputs.dendritic.modules "dev";
+      perTag = with inputs.dendritic.modules; let
+        modules = names:
+          lib.mkMerge (map (name: {
+              nixos.modules = [nixos.${name}];
+              darwin.modules = [darwin.${name}];
+              homeManager.modules = [homeManager.${name}];
+            })
+            names);
+      in {
+        desktop.perClass = modules ["desktop"];
+        dev.perClass = modules ["dev"];
 
         workstation = {
           perClass = lib.mkMerge [
-            (profile inputs.dendritic.modules "desktop")
-            (profile inputs.dendritic.modules "dev")
-            (profile inputs.dendritic.modules "interactive")
-            (profile inputs.dendritic.modules "secrets")
+            (modules ["desktop" "dev" "interactive" "secrets"])
             {
               darwin.modules = [darwin.applications];
               homeManager.modules = [
@@ -56,7 +48,14 @@ in {
         headless.perClass.nixos.modules = [nixos.terminfo];
         standalone.perClass.homeManager.modules = [homeManager.standalone];
       };
-    })
+    }
+    {
+      perClass = {
+        nixos.modules = [config.flake.dendritic.modules.nixos.base];
+        darwin.modules = [config.flake.dendritic.modules.darwin.base];
+        homeManager.modules = [config.flake.dendritic.modules.homeManager.base];
+      };
+    }
     {
       users = {
         standalone = {
