@@ -38,12 +38,16 @@ in {
       # its class-specific module contributions.
       tags = ["base"];
       perTag = {
-        # Select the shared upstream baseline explicitly at the root.
         base.perClass = modules config.flake.dendritic.modules "base";
         desktop.perClass = modules inputs.dendritic.modules "desktop";
         dev.perClass = modules inputs.dendritic.modules "dev";
         workstation.perClass = lib.mkMerge [
-          (modules inputs.dendritic.modules ["desktop" "dev" "interactive" "secrets"])
+          (modules inputs.dendritic.modules [
+            "desktop"
+            "dev"
+            "interactive"
+            "secrets"
+          ])
           {
             darwin.modules = [inputs.dendritic.modules.darwin.applications];
             homeManager.modules = [
@@ -128,20 +132,15 @@ in {
             vm-nogui = {
               package = configuration: configuration.config.system.build.images.vm-nogui;
               modules = [
-                ({config, ...}: {
-                  image.modules.vm = import ./image-modules/vm.nix;
-                  image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
-                    vm = config.image.modules.vm;
-                  };
-                })
+                {
+                  image.modules.vm-nogui = import ./image-modules/vm-nogui.nix;
+                }
               ];
             };
           };
         };
 
         nixbook-pro-composed = {
-          # Darwin uses the same host grammar; only its native class, platform,
-          # and selected profile/user coordinates differ.
           enable = true;
           class = "darwin";
           hostPlatforms = [{system = "aarch64-darwin";}];
