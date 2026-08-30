@@ -63,7 +63,7 @@ in {
           ];
           variants = {
             tagged.tags = ["workstation"];
-            not-built.build = false;
+            not-built.enableFlakeOutput = false;
           };
         };
       };

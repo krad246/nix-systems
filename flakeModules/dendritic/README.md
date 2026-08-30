@@ -26,7 +26,7 @@ root, host, user, host-user, and variant nodes.
 A variant is an additive module delta over its parent coordinate. The evaluator
 constructs the parent once and applies that exact delta for each projection:
 
-- `build = true` publishes an independently evaluated configuration; an
+- `enableFlakeOutput = true` publishes an independently evaluated configuration; an
   optional `package` then selects an image or other artifact from it.
 - `includeSpecialisations = true` embeds the same delta in a NixOS native
   specialisation set.
