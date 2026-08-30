@@ -32,16 +32,18 @@ in {
       };
     }
     {
-      # interface 2: module system classes
+      # interface 2: module-system class defaults
 
-      # perClass is keyed by module-system class (nixos, darwin, homeManager)
+      # perClass is the class-indexed baseline contribution table. The helper
+      # expands one named module from a namespace across the actual module
+      # classes: nixos, darwin, and homeManager.
       perClass = modules config.flake.dendritic.modules "base";
     }
     {
-      # define "tags": a logical "annotation" interface over composed modules.
-      # compose tags together as logical closures of capabilities.
-      # perClass: how to materialize the 'tag' interface for a given class.
-      # provides a clear interface-impl split.
+      # interface 3: profile aspects
+
+      # A tag names a semantic profile. Its perClass value has the same
+      # class-indexed contribution shape as the root baseline above.
       perTag = {
         desktop.perClass = modules inputs.dendritic.modules "desktop";
         dev.perClass = modules inputs.dendritic.modules "dev";
@@ -79,7 +81,7 @@ in {
       };
     }
     {
-      # interface 3: defining users
+      # interface 4: defining users
       users.krad246 = {
         enable = true;
 
@@ -94,7 +96,7 @@ in {
       };
     }
     {
-      # interface 4: hosts
+      # interface 5: defining hosts
       hosts = {
         # TODO: missing miniboi
 

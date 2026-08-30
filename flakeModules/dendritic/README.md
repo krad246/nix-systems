@@ -14,7 +14,10 @@ The declaration vocabulary has four separate concerns:
 
 ## Evaluator classes
 
-`perClass` is the module-system class projection axis. Its class keys are:
+`perClass` is the class-indexed contribution table for the module-system
+evaluator. A contribution under `perClass.<class>` is considered only while
+constructing that class; it is not a machine category or a host selector. The
+class keys are:
 
 ```nix
 perClass = {
@@ -28,10 +31,12 @@ perClass = {
 example can still accept a separate module origin, but the projection keys
 remain the actual class names exposed by the upstream module interface.
 
-Each class uses the same composition grammar. In addition to `modules`, a class
-can contribute `specialArgs`, `extraSpecialArgs`, `lateModuleArgs`, `metadata`,
-and per-user `users.<name>.modules`. These values are accumulated when the
-corresponding evaluator is constructed.
+The root `perClass` establishes the baseline for every coordinate. Each class
+uses the same composition grammar: in addition to `modules`, it can contribute
+`specialArgs`, `extraSpecialArgs`, `lateModuleArgs`, `metadata`, and per-user
+`users.<name>.modules`. These values are accumulated when that evaluator is
+constructed. `perTag.<tag>.perClass` uses this exact same table shape for
+profile-specific contributions.
 
 `classes.<name>.nativeClass` is a host-to-module-class mapping, not another
 module composition axis. For example:
