@@ -18,12 +18,14 @@
       lib.mkMerge
     ];
 in {
-  # TODO: better name for this interface
+  # The example is intentionally assembled as independent declaration blocks.
+  # mkMerge lets each interface contribute without hiding its merge boundary.
   dendritic.configurations = lib.mkMerge [
     {
       # interface 1: variants
 
-      # a unifying interface between image modules and specialisations
+      # Variants can be published as independent outputs, embedded as native
+      # specialisations, or both; each variant chooses its own delta later.
       variants = {
         enable = lib.mkDefault true;
 
@@ -45,9 +47,13 @@ in {
       # A tag names a semantic profile. Its perClass value has the same
       # class-indexed contribution shape as the root baseline above.
       perTag = {
+        # These tags are pure profile projections: the helper supplies the
+        # corresponding module from each evaluator-class namespace.
         desktop.perClass = modules inputs.dendritic.modules "desktop";
         dev.perClass = modules inputs.dendritic.modules "dev";
 
+        # A tag can also merge named profiles with class-specific additions.
+        # The extra modules below are intentionally limited to their classes.
         workstation.perClass = lib.mkMerge [
           (modules inputs.dendritic.modules ["desktop" "dev" "interactive" "secrets"])
           {
@@ -85,8 +91,8 @@ in {
       users.krad246 = {
         enable = true;
 
-        # assume hosted users by default; you can make them standalone
-        # but you have to provide an implementation bridge.
+        # A user is hosted by default. A non-null standalone block opts into an
+        # independent Home Manager output and supplies its evaluation pkgs.
         standalone = lib.mkIf (!lib.inPureEvalMode) {
           pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
           modules = [];
@@ -111,6 +117,8 @@ in {
         # vm-nogui
 
         generic-headless-interactive = {
+          # A host names one native evaluator coordinate and its host-local
+          # module delta; profile tags provide reusable semantic composition.
           enable = true;
           class = "nixos";
           hostPlatforms = [{system = "x86_64-linux";}];
@@ -127,12 +135,14 @@ in {
           ];
           variants = {
             dev = {
-              tags = ["dev"]; # TODO: figure out if this is an additive merge over the tags up there.
+              # Variant tags are additive: this host keeps headless and adds dev.
               modules = [
                 (_: {environment.etc."dendritic-variant".text = "dev";})
               ];
             };
             vm-nogui = {
+              # A package selector turns this sparse variant into a perSystem
+              # artifact without making the variant a second host identity.
               modules = [
                 ({config, ...}: {
                   image.modules.vm = import ./image-modules/vm.nix;
@@ -147,6 +157,8 @@ in {
         };
 
         nixbook-pro-composed = {
+          # Darwin uses the same host grammar; only its native class, platform,
+          # and selected profile/user coordinates differ.
           enable = true;
           class = "darwin";
           hostPlatforms = [{system = "aarch64-darwin";}];
