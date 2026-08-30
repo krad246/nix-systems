@@ -18,7 +18,7 @@
 
   profileHomeModules = username: tags:
     lib.concatMap (tag: let
-      contribution = config.dendritic.configurations.perTag.${tag}.perClass.home or {};
+      contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
     in
       (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
     tags;
