@@ -1,5 +1,4 @@
 {
-
   config,
   inputs,
   lib,
@@ -35,14 +34,12 @@ in {
     {
       # interface 2: module system classes
 
-      # there is a generic registration mechanism for all module system classes now,
-      # meaning your flakes can implement as classes as they want / need and use the
-      # same generator interface to get things working for different contexts.
+      # perClass is keyed by module-system class (nixos, darwin, homeManager)
       perClass = modules config.flake.dendritic.modules "base";
     }
     {
       # define "tags": a logical "annotation" interface over composed modules.
-      # compose tags together as logical closures of capabities.
+      # compose tags together as logical closures of capabilities.
       # perClass: how to materialize the 'tag' interface for a given class.
       # provides a clear interface-impl split.
       perTag = {
