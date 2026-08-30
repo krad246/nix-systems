@@ -4,73 +4,73 @@
   lib,
   withSystem,
   ...
-}: {
+}: let
+  classes = [
+    "nixos"
+    "darwin"
+    "home"
+  ];
+  classModules = {
+    nixos = config.flake.dendritic.modules.nixos;
+    darwin = config.flake.dendritic.modules.darwin;
+    home = config.flake.dendritic.modules.homeManager;
+  };
+  profileModules = {
+    nixos = inputs.dendritic.modules.nixos;
+    darwin = inputs.dendritic.modules.darwin;
+    home = inputs.dendritic.modules.homeManager;
+  };
+  profile = name: {
+    perClass =
+      lib.mapAttrs (_: modules: {
+        modules = [modules.${name}];
+      })
+      profileModules;
+  };
+in {
   dendritic.configurations = lib.mkMerge [
     {
       variants.enable = lib.mkDefault true;
     }
-    {
-      perClass =
-        lib.genAttrs [
-          "nixos"
-          "darwin"
-          "home"
-        ] (v: {
-          modules = [
-            config.flake.dendritic.modules.${v}.base
-          ];
-        });
-    }
     (with inputs.dendritic.modules; {
       perTag = {
-        desktop = {
-          perClass = {
-            nixos.modules = [nixos.desktop];
-            darwin.modules = [darwin.desktop];
-            home.modules = [homeManager.desktop];
-          };
-        };
-        headless = {
-          perClass.nixos.modules = [nixos.terminfo];
-        };
-        standalone = {
-          perClass.home.modules = [homeManager.standalone];
-        };
-        workstation = {
-          perClass = {
-            darwin.modules = [
-              darwin.applications
-              darwin.desktop
-              darwin.dev
-              darwin.interactive
-              darwin.secrets
-            ];
-            home.modules = [
-              homeManager.desktop
-              homeManager.dev
-              homeManager.interactive
-              homeManager.secrets
-              ({lib, ...}: {
-                browser.backends.zen = {
-                  enable = lib.mkDefault true;
-                  default = lib.mkDefault true;
-                };
-              })
-            ];
-            nixos.modules = [
-              nixos.desktop
-              nixos.dev
-              nixos.interactive
-              nixos.secrets
-              (_: {
-                boot.tmp.cleanOnBoot = true;
-                programs.nix-ld.enable = true;
-              })
-            ];
-          };
-        };
+        desktop = profile "desktop";
+        dev = profile "dev";
+        headless.perClass.nixos.modules = [nixos.terminfo];
+        standalone.perClass.home.modules = [homeManager.standalone];
+        workstation = lib.mkMerge [
+          (profile "desktop")
+          (profile "dev")
+          (profile "interactive")
+          (profile "secrets")
+          {
+            perClass = {
+              darwin.modules = [darwin.applications];
+              home.modules = [
+                ({lib, ...}: {
+                  browser.backends.zen = {
+                    enable = lib.mkDefault true;
+                    default = lib.mkDefault true;
+                  };
+                })
+              ];
+              nixos.modules = [
+                (_: {
+                  boot.tmp.cleanOnBoot = true;
+                  programs.nix-ld.enable = true;
+                })
+              ];
+            };
+          }
+        ];
       };
-
+    })
+    {
+      perClass = lib.genAttrs classes (class: {
+        modules = [classModules.${class}.base];
+      });
+    }
+    {
       users = {
         standalone = {
           enable = true;
@@ -93,7 +93,8 @@
           };
         };
       };
-
+    }
+    {
       hosts = {
         # TODO: missing miniboi
 
@@ -129,78 +130,32 @@
                 (_: {environment.etc."dendritic-variant".text = "dev";})
               ];
             };
-          };
-          dev = {
-            perClass = {
-              nixos.modules = [nixos.dev];
-              darwin.modules = [darwin.dev];
-              home.modules = [homeManager.dev];
-            };
-          };
-          headless = {
-            perClass.nixos.modules = [nixos.terminfo];
-          };
-          standalone = {
-            perClass.home.modules = [homeManager.standalone];
-          };
-          workstation = {
-            perClass = {
-              darwin.modules = [
-                darwin.applications
-                darwin.desktop
-                darwin.dev
-                darwin.interactive
-                darwin.secrets
-              ];
-              home.modules = [
-                homeManager.desktop
-                homeManager.dev
-                homeManager.interactive
-                homeManager.secrets
-                ({lib, ...}: {
-                  browser.backends.zen = {
-                    enable = lib.mkDefault true;
-                    default = lib.mkDefault true;
+            vm-nogui = {
+              modules = [
+                ({config, ...}: {
+                  image.modules.vm = import ./image-modules/vm.nix;
+                  image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
+                    vm = config.image.modules.vm;
                   };
                 })
               ];
-              nixos.modules = [
-                nixos.desktop
-                nixos.dev
-                nixos.interactive
-                nixos.secrets
-                (_: {
-                  boot.tmp.cleanOnBoot = true;
-                  programs.nix-ld.enable = true;
-                })
-              ];
+              package = configuration: configuration.config.system.build.images.vm-nogui;
             };
           };
         };
 
-        users = {
-          standalone = {
-            enable = true;
-            standalone = {
-              enable = !lib.inPureEvalMode;
-              pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-              modules = [];
-            };
-            tags = ["standalone"];
-            variants.dev.tags = ["dev"];
-          };
-
-          krad246 = {
-            enable = true;
-            tags = ["standalone"];
-            standalone = {
-              enable = !lib.inPureEvalMode;
-              pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
-              modules = [];
-            };
-          };
+        nixbook-pro-composed = {
+          enable = true;
+          class = "darwin";
+          hostPlatforms = [{system = "aarch64-darwin";}];
+          tags = ["workstation"];
+          modules = [
+            (_: {networking.hostName = "nixbook-pro-composed";})
+          ];
+          users.krad246 = {};
+          variants.dev.tags = ["dev"];
         };
       };
-    })
+    }
   ];
 }
