@@ -4,36 +4,30 @@
   lib,
   withSystem,
   ...
-}: let
-  localModules = config.flake.dendritic.modules;
-in
-  with inputs.dendritic.modules; {
-    dendritic.configurations = {
+}: {
+  dendritic.configurations = lib.mkMerge [
+    {
       variants.enable = lib.mkDefault true;
-
-      perClass = {
-        nixos = {
-          modules = [localModules.nixos.base];
-        };
-        darwin = {
-          modules = [localModules.darwin.base];
-        };
-        home.modules = [localModules.homeManager.base];
-      };
-
+    }
+    {
+      perClass =
+        lib.genAttrs [
+          "nixos"
+          "darwin"
+          "home"
+        ] (v: {
+          modules = [
+            config.flake.dendritic.modules.${v}.base
+          ];
+        });
+    }
+    (with inputs.dendritic.modules; {
       perTag = {
         desktop = {
           perClass = {
             nixos.modules = [nixos.desktop];
             darwin.modules = [darwin.desktop];
             home.modules = [homeManager.desktop];
-          };
-        };
-        dev = {
-          perClass = {
-            nixos.modules = [nixos.dev];
-            darwin.modules = [darwin.dev];
-            home.modules = [homeManager.dev];
           };
         };
         headless = {
@@ -135,31 +129,78 @@ in
                 (_: {environment.etc."dendritic-variant".text = "dev";})
               ];
             };
-            vm-nogui = {
-              modules = [
-                ({config, ...}: {
-                  image.modules.vm = import ./image-modules/vm.nix;
-                  image.modules.vm-nogui = import ./image-modules/vm-nogui.nix {
-                    vm = config.image.modules.vm;
+          };
+          dev = {
+            perClass = {
+              nixos.modules = [nixos.dev];
+              darwin.modules = [darwin.dev];
+              home.modules = [homeManager.dev];
+            };
+          };
+          headless = {
+            perClass.nixos.modules = [nixos.terminfo];
+          };
+          standalone = {
+            perClass.home.modules = [homeManager.standalone];
+          };
+          workstation = {
+            perClass = {
+              darwin.modules = [
+                darwin.applications
+                darwin.desktop
+                darwin.dev
+                darwin.interactive
+                darwin.secrets
+              ];
+              home.modules = [
+                homeManager.desktop
+                homeManager.dev
+                homeManager.interactive
+                homeManager.secrets
+                ({lib, ...}: {
+                  browser.backends.zen = {
+                    enable = lib.mkDefault true;
+                    default = lib.mkDefault true;
                   };
                 })
               ];
-              package = configuration: configuration.config.system.build.images.vm-nogui;
+              nixos.modules = [
+                nixos.desktop
+                nixos.dev
+                nixos.interactive
+                nixos.secrets
+                (_: {
+                  boot.tmp.cleanOnBoot = true;
+                  programs.nix-ld.enable = true;
+                })
+              ];
             };
           };
         };
 
-        nixbook-pro-composed = {
-          enable = true;
-          class = "darwin";
-          hostPlatforms = [{system = "aarch64-darwin";}];
-          tags = ["workstation"];
-          modules = [
-            (_: {networking.hostName = "nixbook-pro-composed";})
-          ];
-          users.krad246 = {};
-          variants.dev.tags = ["dev"];
+        users = {
+          standalone = {
+            enable = true;
+            standalone = {
+              enable = !lib.inPureEvalMode;
+              pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
+              modules = [];
+            };
+            tags = ["standalone"];
+            variants.dev.tags = ["dev"];
+          };
+
+          krad246 = {
+            enable = true;
+            tags = ["standalone"];
+            standalone = {
+              enable = !lib.inPureEvalMode;
+              pkgs = withSystem builtins.currentSystem ({pkgs, ...}: pkgs);
+              modules = [];
+            };
+          };
         };
       };
-    };
-  }
+    })
+  ];
+}

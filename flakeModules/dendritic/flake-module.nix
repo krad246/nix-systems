@@ -66,10 +66,10 @@
         default = [];
         description = "Ordered profile aspects selecting additional contributions for this variant node.";
       };
-      build = lib.mkOption {
+      enableFlakeOutput = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Whether to materialize this variant as an independent configuration and artifact coordinate.";
+        description = "Whether to materialize this variant as an independent flake output and artifact coordinate.";
       };
       outputName = lib.mkOption {
         type = lib.types.nullOr lib.types.str;
@@ -79,7 +79,7 @@
       enable = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Compatibility gate for this variant; prefer build for new declarations.";
+        description = "Compatibility gate for this variant; prefer enableFlakeOutput for new declarations.";
       };
       includeSpecialisations = lib.mkOption {
         type = lib.types.nullOr lib.types.bool;
@@ -274,10 +274,10 @@ in {
       description = "Canonical profile aspects, each with class-specific contributions shaped like perClass.";
     };
     variants = {
-      build = lib.mkOption {
+      enableFlakeOutput = lib.mkOption {
         type = lib.types.bool;
         default = true;
-        description = "Whether variants materialize as independent outputs by default.";
+        description = "Whether variants materialize as independent flake outputs by default.";
       };
       enable = lib.mkEnableOption "independent variant outputs";
       includeSpecialisations = lib.mkEnableOption "variants in native specialisation sets by default";

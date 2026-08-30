@@ -45,9 +45,9 @@
       inherit normalized variantName;
       variant = normalized.declaration.variants.${variantName};
     }) (builtins.attrNames (lib.filterAttrs (_: variant:
-      config.dendritic.configurations.variants.build
+      config.dendritic.configurations.variants.enableFlakeOutput
       && config.dendritic.configurations.variants.enable
-      && variant.build
+      && variant.enableFlakeOutput
       && variant.enable
       && variant.package != null)
     normalized.declaration.variants)))
