@@ -77,7 +77,7 @@ in {
       }: let
         darwin = flakeConfig.flake.darwinConfigurations;
         nixos = flakeConfig.flake.nixosConfigurations;
-        image = config.packages.generic-headless-interactive-vm-nogui-x86_64-linux or null;
+        image = config.packages.generic-headless-interactive-vm-nogui or null;
         coordinates = lib.concatMap (declaration:
           map (hostPlatform: {
             inherit declaration hostPlatform;
@@ -139,7 +139,7 @@ in {
             message = "a non-building variant remains available to native specialisation policy without an independent output";
           }
           {
-            assertion = system != "x86_64-linux" || builtins.attrNames (lib.filterAttrs (name: _: lib.hasPrefix "generic-headless-interactive" name) config.packages) == ["generic-headless-interactive-dev-x86_64-linux" "generic-headless-interactive-vm-nogui-x86_64-linux"];
+            assertion = system != "x86_64-linux" || builtins.attrNames (lib.filterAttrs (name: _: lib.hasPrefix "generic-headless-interactive" name) config.packages) == ["generic-headless-interactive-dev" "generic-headless-interactive-vm-nogui"];
             message = "package-bearing variants receive sparse package outputs";
           }
         ];

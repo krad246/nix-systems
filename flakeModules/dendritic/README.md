@@ -151,7 +151,7 @@ semantics inside the variant; a variant is not a second host. Omitting
 `package` (or setting it to `null`) still publishes the configuration when
 `enableFlakeOutput` is enabled, but publishes no package coordinate. Supplying
 a selector evaluates the variant first and publishes the selected derivation
-under `<variant-output-name>-<host-platform>`.
+under the same sparse variant output name in the matching `perSystem` package set.
 
 For example, a development variant can expose its complete system closure,
 while an image variant exposes only its image artifact:
@@ -162,6 +162,20 @@ variants = {
   vm-nogui.package = configuration: configuration.config.system.build.images.vm-nogui;
 };
 ```
+
+## Miniboi fixture
+
+`hosts.miniboi` is the permanent end-to-end fixture for the evaluator. It uses
+the real headless, bootloader, and disko modules, expands over both
+`x86_64-linux` and `aarch64-linux` host targets, and cross-builds from
+`x86_64-linux`. Its `vm`, `vm-with-bootloader`, and `disko-vm` variants keep
+the runnable system closure visible while selecting the corresponding VM
+runner as a package.
+
+The `dendritic-miniboi-matrix` check walks the normalized host and variant
+fixed points across every declared flake system. The pre-merge hook builds that
+check, so changes to evaluator composition exercise native, cross-target, VM,
+and disko image paths together.
 
 ## Composition and outputs
 

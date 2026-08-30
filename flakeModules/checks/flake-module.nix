@@ -66,6 +66,14 @@
 
             stages = ["pre-merge-commit"];
           };
+          miniboi-matrix = {
+            enable = true;
+            description = "Build the complete Miniboi target and variant matrix";
+            entry = "${lib.meta.getExe' pkgs.nix "nix-store"} --realise ${lib.strings.escapeShellArg (builtins.unsafeDiscardStringContext config.checks.dendritic-miniboi-matrix.drvPath)}";
+            always_run = true;
+            pass_filenames = false;
+            stages = ["pre-merge-commit"];
+          };
           check-flake = {
             enable = true;
             description = "Prevent pushing a flake that fails its checks";

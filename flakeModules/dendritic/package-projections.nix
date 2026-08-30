@@ -117,7 +117,7 @@
           };
     in
       lib.optional (coordinate.normalized.buildPlatform.system == buildSystem) {
-        "${variantOutputName coordinate.normalized coordinate.variantName coordinate.variant}-${coordinate.normalized.hostPlatform.system}" =
+        "${variantOutputName coordinate.normalized coordinate.variantName coordinate.variant}" =
           coordinate.variant.package variantConfiguration;
       })
     packageCoordinates;

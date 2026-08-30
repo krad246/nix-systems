@@ -67,7 +67,13 @@ in {
           }
         ];
 
-        headless.perClass.nixos.modules = [inputs.dendritic.modules.nixos.terminfo];
+        headless.perClass = {
+          nixos.modules = [
+            inputs.dendritic.modules.nixos.tailscale
+            inputs.dendritic.modules.nixos.terminal
+            inputs.dendritic.modules.nixos.terminfo
+          ];
+        };
 
         # FIXME: !!!!!!!!!!!!!!!!!!!!!!!!!!!
         # The upstream standalone profile currently imports base itself. Since
@@ -98,17 +104,74 @@ in {
     {
       # interface 4: defining hosts
       hosts = {
-        # TODO: missing miniboi
-
-        # a concrete example we could work with is:
-        # 1. miniboi has a large number of variants
-        # with heterogeneous capability sets (vm-nogui)
-        # 2. define an actually useful testbed for the
-        # broader secure boot, disko cleanup, etc. on
-        # the "standard" miniboi, an actually usable config
-        # 3. use variants and the tag management to customize
-        # something like a graphical miniboi vm down to a
-        # vm-nogui
+        # Miniboi is the end-to-end deployment fixture: one real disko-backed
+        # system coordinate, with each backend represented as a variant.
+        miniboi = {
+          enable = true;
+          class = "nixos";
+          hostPlatforms = [
+            {system = "x86_64-linux";}
+            {system = "aarch64-linux";}
+          ];
+          buildPlatform = {system = "x86_64-linux";};
+          crossCompile = true;
+          tags = ["headless"];
+          modules = [
+            inputs.dendritic.modules.nixos.disko
+            inputs.dendritic.modules.nixos.bootloader
+            inputs.dendritic.diskoConfigurations.simple
+            {
+              networking.hostName = "miniboi";
+              security.sudo.wheelNeedsPassword = false;
+              disko.enableConfig = true;
+              boot.loader = {
+                enable = true;
+                mode = "bios";
+              };
+              users.users.krad246.initialHashedPassword = "";
+            }
+          ];
+          variants = {
+            vm = {
+              package = configuration: configuration.config.system.build.vm;
+              modules = [
+                ({pkgs, ...}: {
+                  virtualisation.vmVariant.virtualisation.host.pkgs = pkgs;
+                })
+              ];
+            };
+            vm-with-bootloader = {
+              package = configuration: configuration.config.system.build.vmWithBootLoader;
+              modules = [
+                ({pkgs, ...}: {
+                  virtualisation.vmVariantWithBootLoader.virtualisation.host.pkgs = pkgs;
+                  virtualisation.vmVariantWithBootLoader.virtualisation.diskSize = 20 * 1024;
+                })
+              ];
+            };
+            disko-vm = {
+              package = configuration: configuration.config.system.build.vmWithDisko;
+              modules = [
+                ({pkgs, ...}: {
+                  virtualisation.vmVariantWithDisko = {
+                    virtualisation.host.pkgs = pkgs;
+                    boot.loader.grub.devices = lib.mkForce [];
+                    boot.loader.grub.mirroredBoots = lib.mkForce [
+                      {
+                        # Keep the VM's GRUB configuration bootable without
+                        # colliding with disko's installer-side /dev/vda
+                        # projection. The image builder still installs GRUB to
+                        # the actual disk when it materializes the disko image.
+                        devices = ["nodev"];
+                        path = "/boot";
+                      }
+                    ];
+                  };
+                })
+              ];
+            };
+          };
+        };
 
         generic-headless-interactive = {
           enable = true;
