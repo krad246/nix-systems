@@ -50,10 +50,15 @@
         default = {};
         description = "Class-specific module contributions selected when this profile aspect is active.";
       };
-      metadata = lib.mkOption {
+      meta = lib.mkOption {
         type = lib.types.attrsOf lib.types.raw;
         default = {};
-        description = "Declarative metadata carried by this profile aspect.";
+        description = "Descriptive metadata carried by this profile aspect.";
+      };
+      passthru = lib.mkOption {
+        type = lib.types.attrsOf lib.types.raw;
+        default = {};
+        description = "Arbitrary declarative data passed through with this profile aspect.";
       };
     };
   };

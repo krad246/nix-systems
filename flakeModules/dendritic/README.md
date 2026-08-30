@@ -20,7 +20,9 @@ module origin may still be named `homeManager`; the projection contract is
 deliberately independent. This keeps the tag key as the aspect interface while
 making platform selection explicit.
 `users.<name>.modules` adds a user-specific Home Manager contribution, while
-`metadata` is carried on normalized declaration rows. The same rule applies at
+`meta` carries descriptive profile facts and `passthru` carries arbitrary data
+to downstream projections; both are preserved on normalized declaration rows.
+The same rule applies at
 root, host, user, host-user, and variant nodes.
 
 ## Variants
