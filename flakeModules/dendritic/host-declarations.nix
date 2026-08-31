@@ -35,12 +35,12 @@ in {
     (lib.filterAttrs (_: host: host.enable))
     (lib.mapAttrs (hostName: host: let
       class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
-      rootProfiles = map (profile class.nativeClass) configurations.tags;
+      rootProfiles = map (profile class.nativeClass) configurations.defaults.tags;
       hostProfiles = map (profile class.nativeClass) host.tags;
       baseContributions = [configurations.shared];
-      rootTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) configurations.tags;
+      rootTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) configurations.defaults.tags;
       hostTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) host.tags;
-      rootHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.homeManager or {}) configurations.tags;
+      rootHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.homeManager or {}) configurations.defaults.tags;
       hostHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.homeManager or {}) host.tags;
       systemContributions = baseContributions ++ rootTagContributions ++ hostTagContributions ++ [host];
       baseModules =
@@ -54,7 +54,7 @@ in {
         host.users;
     in {
       inherit (host) enable outputName hostPlatforms buildPlatform crossCompile variants;
-      tags = configurations.tags ++ host.tags;
+      tags = configurations.defaults.tags ++ host.tags;
       inherit (host) class;
       inherit (class) nativeClass;
       inherit baseModules tagModules;
@@ -81,7 +81,7 @@ in {
             ++ [user hostLayer];
           baseUserModules =
             user.modules
-            ++ lib.concatMap (profileHomeModules username) configurations.tags
+            ++ lib.concatMap (profileHomeModules username) configurations.defaults.tags
             ++ lib.concatMap (profileHomeModules username) user.tags;
           taggedUserModules =
             lib.concatMap (profileHomeModules username) host.tags
@@ -119,7 +119,7 @@ in {
           name = tag;
           meta = configurations.perTag.${tag}.meta or {};
           passthru = configurations.perTag.${tag}.passthru or {};
-        }) (configurations.tags ++ host.tags);
+        }) (configurations.defaults.tags ++ host.tags);
         host = host.metadata;
       };
     }))

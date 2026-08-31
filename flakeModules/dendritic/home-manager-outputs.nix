@@ -35,7 +35,7 @@
 
   standaloneDeclarations = lib.mapAttrs (username: user: let
     tagContributions = map (tag: config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {}) (
-      config.dendritic.configurations.tags ++ user.tags
+      config.dendritic.configurations.defaults.tags ++ user.tags
     );
     standaloneContributions = tagContributions ++ [user user.standalone];
   in {
@@ -53,7 +53,7 @@
       (mergeArgs "lateModuleArgs" standaloneContributions)
     ];
     modules =
-      profileHomeModules username config.dendritic.configurations.tags
+      profileHomeModules username config.dendritic.configurations.defaults.tags
       ++ user.modules
       ++ profileHomeModules username user.tags
       ++ user.standalone.modules;
@@ -83,7 +83,7 @@
     includedSpecialisations = lib.filterAttrs (_: variant:
       if variant.includeSpecialisations != null
       then variant.includeSpecialisations
-      else config.dendritic.configurations.variants.includeSpecialisations)
+      else config.dendritic.configurations.defaults.variants.includeSpecialisations)
     declaration.variants;
   in
     if includedSpecialisations == {}
@@ -109,8 +109,8 @@
         modules = variantModules declaration.username variant;
       };
     }) (lib.filterAttrs (_: variant:
-      config.dendritic.configurations.variants.enableFlakeOutputs
-      && config.dendritic.configurations.variants.enable
+      config.dendritic.configurations.defaults.variants.enableFlakeOutputs
+      && config.dendritic.configurations.defaults.variants.enable
       && variant.enableFlakeOutput
       && variant.enable)
     declaration.variants);

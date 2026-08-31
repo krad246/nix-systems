@@ -8,7 +8,7 @@ in {
   config = lib.mkMerge [
     (lib.mkIf flakeConfig.debug {
       dendritic.configurations = {
-        tags = ["desktop"];
+        defaults.tags = ["desktop"];
         shared.modules = [
           ({lib, ...}: {
             options.dendritic.evaluatorTest.compositionTrace = lib.mkOption {
