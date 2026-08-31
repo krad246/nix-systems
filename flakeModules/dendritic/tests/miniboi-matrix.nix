@@ -23,8 +23,8 @@
 
   enabledVariants = coordinate:
     lib.filterAttrs (_: variant:
-      flakeConfig.dendritic.configurations.variants.enableFlakeOutputs
-      && flakeConfig.dendritic.configurations.variants.enable
+      flakeConfig.dendritic.configurations.defaults.variants.enableFlakeOutputs
+      && flakeConfig.dendritic.configurations.defaults.variants.enable
       && variant.enableFlakeOutput
       && variant.enable)
     coordinate.declaration.variants;

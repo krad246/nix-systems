@@ -109,7 +109,7 @@
     includedSpecialisations = lib.filterAttrs (_: variant:
       if variant.includeSpecialisations != null
       then variant.includeSpecialisations
-      else config.dendritic.configurations.variants.includeSpecialisations)
+      else config.dendritic.configurations.defaults.variants.includeSpecialisations)
     coordinate.variants;
   in
     if includedSpecialisations == {}
@@ -137,8 +137,8 @@
         modules = variantModules coordinate variant;
       };
     }) (lib.filterAttrs (_: variant:
-      config.dendritic.configurations.variants.enableFlakeOutputs
-      && config.dendritic.configurations.variants.enable
+      config.dendritic.configurations.defaults.variants.enableFlakeOutputs
+      && config.dendritic.configurations.defaults.variants.enable
       && variant.enableFlakeOutput
       && variant.enable)
     coordinate.variants);

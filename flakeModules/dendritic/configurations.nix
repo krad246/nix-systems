@@ -20,11 +20,11 @@
 in {
   dendritic.configurations = lib.mkMerge [
     {
-      # interface 1: variants
+      # interface 1: inherited defaults
 
       # Variants can be published as independent outputs, embedded as native
       # specialisations, or both; you can choose per-variant.
-      variants = {
+      defaults.variants = {
         enable = lib.mkDefault true;
 
         enableFlakeOutputs = lib.mkDefault true; # publish variants as flake outputs
@@ -36,7 +36,7 @@ in {
 
       # A tag names a semantic profile. It realizes those semantics through
       # its class-specific module contributions.
-      tags = ["base"];
+      defaults.tags = ["base"];
       perTag = {
         base.perClass = modules config.flake.dendritic.modules "base";
         desktop.perClass = modules inputs.dendritic.modules "desktop";

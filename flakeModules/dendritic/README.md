@@ -5,8 +5,9 @@ inputs—module contributions, users, hosts, and variants—and the evaluator
 projects those declarations into `nixosConfigurations`, `darwinConfigurations`,
 `homeConfigurations`, and `perSystem.packages`.
 
-The declaration vocabulary has four separate concerns:
+The declaration vocabulary has five separate concerns:
 
+- `defaults` supplies inherited profile tags and variant-output policy.
 - `perTag.<tag>.perClass` selects modules for an evaluator class within a
   semantic profile.
 - `perTag` names semantic profile aspects.
@@ -32,13 +33,14 @@ perTag.base.perClass = {
 example can still accept a separate module origin, but the projection keys
 remain the actual class names exposed by the upstream module interface.
 
-The root `tags` list establishes unconditional profile selection. The example
-selects the canonical `base` profile there, so baseline modules are ordinary
-profile contributions rather than a second, special composition axis. Each
-class uses the same composition grammar: in addition to `modules`, it can
-contribute `specialArgs`, `extraSpecialArgs`, `lateModuleArgs`, `metadata`, and
-per-user `users.<name>.modules`. These values are accumulated when that
-evaluator is constructed.
+The root `defaults.tags` list establishes inherited profile selection. The
+example selects the canonical `base` profile there, so baseline modules are
+ordinary profile contributions rather than a second, special composition axis.
+`defaults.variants` similarly holds the default policy for publishing and
+embedding variants. Each class uses the same composition grammar: in addition
+to `modules`, it can contribute `specialArgs`, `extraSpecialArgs`,
+`lateModuleArgs`, `metadata`, and per-user `users.<name>.modules`. These values
+are accumulated when that evaluator is constructed.
 
 `classes.<name>.nativeClass` is a host-to-module-class mapping, not another
 module composition axis. For example:
@@ -78,9 +80,10 @@ constructed. `meta` and `passthru` do not select modules or alter options; they
 are carried on normalized declaration metadata for downstream consumers. In
 practice, `passthru` is the general-purpose channel.
 
-Tags can be attached at the root, host, user, host-user, or variant node. The
-same ordered tag list is interpreted consistently at each location. A variant's
-tags extend its parent coordinate; they do not replace the parent's tags.
+Tags can be selected through `defaults.tags`, or attached locally at a host,
+user, host-user, or variant node. The same ordered tag list is interpreted
+consistently at each location. A variant's tags extend its parent coordinate;
+they do not replace the parent's tags.
 
 ## Users
 
@@ -189,7 +192,7 @@ and disko image paths together.
 For each host platform, the evaluator composes:
 
 ```text
-shared → root tags (projected by evaluator class) → architecture → system → host tags → host
+shared → default tags (projected by evaluator class) → architecture → system → host tags → host
 ```
 
 Integrated Home Manager users receive the corresponding `home` contributions
