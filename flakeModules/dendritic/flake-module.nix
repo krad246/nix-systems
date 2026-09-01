@@ -10,6 +10,7 @@
       default = {};
       inherit description;
     };
+
   moduleContributions = {
     options = {
       modules = lib.mkOption {
@@ -40,12 +41,11 @@
   };
 
   compositionType = lib.types.submodule composition;
-  perClassType = lib.types.attrsOf compositionType;
 
   tagType = lib.types.submodule {
     options = {
       perClass = lib.mkOption {
-        type = perClassType;
+        type = lib.types.attrsOf compositionType;
         default = {};
         description = "Class-specific module contributions selected when this profile aspect is active.";
       };
@@ -100,6 +100,7 @@
 
   userType = lib.types.submodule {
     imports = [moduleContributions];
+
     options = {
       enable = lib.mkEnableOption "this Home Manager user";
       tags = lib.mkOption {
