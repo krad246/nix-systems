@@ -9,21 +9,21 @@
   mergeArgs = field: contributions:
     lib.mergeAttrsList (map (contribution: contribution.${field} or {}) contributions);
 
-  profile = nativeClass: tag: let
-    overlay = configurations.perTag.${tag} or {};
-    classContribution = overlay.perClass.${nativeClass} or {};
-    homeContribution = overlay.perClass.homeManager or {};
-  in
-    assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect"; {
-      system = classContribution.modules or [];
-      home = homeContribution.modules or [];
-    };
+  profileSystemModules = nativeClass: tags:
+    lib.concatMap (tag: let
+      contribution = configurations.perTag.${tag}.perClass.${nativeClass} or {};
+    in
+      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
+        contribution.modules or [])
+    tags;
 
-  profileHomeModules = username: tag: let
-    selected = profile "home" tag;
-    overlay = configurations.perTag.${tag} or {};
-  in
-    selected.home ++ (overlay.perClass.homeManager.users.${username}.modules or []);
+  profileHomeModules = username: tags:
+    lib.concatMap (tag: let
+      contribution = configurations.perTag.${tag}.perClass.homeManager or {};
+    in
+      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
+        (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
+    tags;
 in {
   options.dendritic.internal.systemDeclarations = lib.mkOption {
     type = lib.types.attrsOf lib.types.raw;
@@ -35,8 +35,6 @@ in {
     (lib.filterAttrs (_: host: host.enable))
     (lib.mapAttrs (hostName: host: let
       class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
-      rootProfiles = map (profile class.nativeClass) configurations.defaults.tags;
-      hostProfiles = map (profile class.nativeClass) host.tags;
       baseContributions = [configurations.shared];
       rootTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) configurations.defaults.tags;
       hostTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) host.tags;
@@ -45,8 +43,8 @@ in {
       systemContributions = baseContributions ++ rootTagContributions ++ hostTagContributions ++ [host];
       baseModules =
         configurations.shared.modules
-        ++ lib.concatMap (selected: selected.system) rootProfiles;
-      tagModules = lib.concatMap (selected: selected.system) hostProfiles;
+        ++ profileSystemModules class.nativeClass configurations.defaults.tags;
+      tagModules = profileSystemModules class.nativeClass host.tags;
       selectedUsers =
         lib.filterAttrs (
           username: _: configurations.users ? ${username} && configurations.users.${username}.enable
