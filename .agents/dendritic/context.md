@@ -1000,6 +1000,19 @@ maxJobs, TERM, bottom, coredumps, and protocol.
   replacement cone and retained consumers are proven. This selects ownership
   of the contract; it does not silently accept every row-level behavioral
   difference in the parity ledger.
+- The owner selected deletion of the legacy mutable dotfiles link/sync
+  behavior (`H2: S:delete`). Do not recreate its out-of-store link or rsync
+  activation in the Dendritic base.
+- The owner selected retaining the automatic specialisation UX
+  (`H3: S:keep-and-port-to-dendritic`). Reimplement that behavior as a
+  Dendritic-owned Home Manager capability, with its activation policy explicit
+  and separate from the base profile's capability composition.
+- The owner selected the Dendritic interactive shell (`H4: T`) as the base
+  interactive shell contract.
+- The owner selected the Dendritic development shell while retaining legacy
+  extras (`H5: T+K`). Put legacy-only tools and behavior in an explicitly
+  opt-in Dendritic kitchen-sink/lost-and-found module; do not silently widen
+  either `base` or `dev` with those extras.
 
 The longer-term identity direction is a multi-identity software bus. Identity
 providers publish identities through a stable virtual interface; Git queries
@@ -1156,6 +1169,7 @@ evidence rather than filename inference.
 | input flake registry | architecturally superseded/win; bridged from predecessor | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Main now consumes it through the exported Dendritic `base`/`standalone` profiles rather than reconstructing the cone. |
 | registry filesystem projection | changed, capability available; path repaired | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has `input-registry.sysroot.install` and optional search-path projection, currently disabled for this consumer. PR #435 repaired its public absolute path from `/Users/krad246/./nix/path` to `/Users/krad246/nix/path` at the authoritative predecessor source. Selection policy remains to decide. |
 | dotfiles link/sync | accepted removal | Do not port the mutable synchronization/link behavior. |
+| automatic specialisation activation | owner-selected Dendritic port | Retain the UX, but implement it as a Dendritic-owned capability with explicit activation policy; do not carry over the legacy aggregate's ad-hoc activation script. |
 | XDG | preserved | PR #446 moved `xdg.enable=true` into the authoritative Dendritic `base`; both standalone and integrated bridge consumers now inherit it. |
 | manuals | preserved foundation policy | PR #446 established HTML false and JSON true in Dendritic `base`, independently of browser integration. |
 | state version | version drift | Main evaluates 26.05 and Dendritic 25.11 due branch input eras. Resolve intentionally during port; do not copy one blindly. |
@@ -1185,7 +1199,7 @@ evidence rather than filename inference.
 | LSD | preserved exactly | Normalized effective configuration hashes match. |
 | terminal fonts | accepted architectural removal/deferral | Do not port the old font bundle. It is incoherent and bloats closures. Kitty's direct font realization may remain only as backend-local behavior pending a future theme/Stylix capability design. |
 | Kitty terminal | preserved plus explicit integration | Enabled in both. Normalized effective settings, keybindings, theme, font, launch options, and shell-integration values match modulo store path. Dendritic additionally enables HM's Git integration through an explicit Git-Kitty capability relationship; Main leaves it false. |
-| base package set | changed | Main-only notable tools include `safe-rm`, `procs`, `has`; Dendritic adds a larger dev/interactive set including curl, file, jq, tree, archives, CMake/GDB/binutils, and Nix diagnostics. Classify by preset lane rather than demand exact set equality. |
+| base package set | changed by owner policy | Main-only notable tools include `safe-rm`, `procs`, `has`; Dendritic adds a larger dev/interactive set including curl, file, jq, tree, archives, CMake/GDB/binutils, and Nix diagnostics. Keep Dendritic `base`/`dev` semantics; place retained legacy-only extras in an explicit opt-in kitchen-sink/lost-and-found module. |
 | Ripgrep + ripgrep-all | preserved | Both enabled. Dendritic integration split provides Bat behavior. |
 | Spotify Player | accepted removal | Drop it for now. |
 | Starship | preserved exactly | Normalized settings hashes match; Dendritic shell integration is explicit. |
@@ -1767,6 +1781,13 @@ Before committing:
   materially changes.
 
 ## Immediate next work
+
+The first interactive parity batch is now the active implementation slice:
+finish the Dendritic base consumer wiring, keep the old specialisation UX by
+porting it into a Dendritic capability, validate the interactive profile, and
+separate the selected development profile from an explicit opt-in
+kitchen-sink/lost-and-found module. The deleted mutable dotfiles behavior stays
+deleted. Disk simulation remains a later, separate commit.
 
 1. Finish total behavioral porting of `. #base`, using the program-by-program HM
    ledger and explicit owner decisions rather than copying legacy bundles. The
