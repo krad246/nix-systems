@@ -23,16 +23,12 @@ in {
 
   config.dendritic.internal.systemCoordinates = lib.concatLists (lib.mapAttrsToList (hostName: declaration:
     map (hostPlatform: let
-      buildPlatform =
-        if declaration.buildPlatform == null
-        then hostPlatform
-        else declaration.buildPlatform;
       arch = architecture hostPlatform;
       archLayer = configurations.perArch.${arch} or {};
       systemLayer = configurations.perSystem.${hostPlatform.system} or {};
       coordinate = {
-        inherit hostName hostPlatform buildPlatform declaration;
-        inherit (declaration) class nativeClass outputName crossCompile variants;
+        inherit hostName hostPlatform declaration;
+        inherit (declaration) class nativeClass outputName buildPlatforms crossCompile variants;
         specialArgs = lib.mergeAttrsList [
           declaration.specialArgs
           (archLayer.specialArgs or {})
@@ -85,8 +81,7 @@ in {
         };
       };
     in
-      assert lib.assertMsg (declaration.nativeClass == expectedNativeClass hostPlatform) "dendritic.configurations: class ${declaration.class} resolves to ${declaration.nativeClass}, which conflicts with host platform ${hostPlatform.system}";
-      assert lib.assertMsg (buildPlatform.system == hostPlatform.system || declaration.crossCompile) "dendritic.configurations: host platform ${hostPlatform.system} requires crossCompile = true for build platform ${buildPlatform.system}"; coordinate)
+      assert lib.assertMsg (declaration.nativeClass == expectedNativeClass hostPlatform) "dendritic.configurations: class ${declaration.class} resolves to ${declaration.nativeClass}, which conflicts with host platform ${hostPlatform.system}"; coordinate)
     declaration.hostPlatforms)
   config.dendritic.internal.systemDeclarations);
 }

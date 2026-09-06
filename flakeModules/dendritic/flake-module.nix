@@ -11,6 +11,13 @@
       inherit description;
     };
 
+  platformType = lib.types.submodule {
+    options.system = lib.mkOption {
+      type = lib.types.str;
+      description = "A platform constraint identified by its system string.";
+    };
+  };
+
   moduleContributions = {
     options = {
       modules = lib.mkOption {
@@ -29,38 +36,16 @@
     };
   };
 
-  moduleContributionsType = lib.types.submodule moduleContributions;
-
   composition = {
     imports = [moduleContributions];
     options.users = lib.mkOption {
-      type = lib.types.attrsOf moduleContributionsType;
+      type = lib.types.attrsOf (lib.types.submodule moduleContributions);
       default = {};
       description = "Home Manager module contributions for users selected by a host.";
     };
   };
 
   compositionType = lib.types.submodule composition;
-
-  tagType = lib.types.submodule {
-    options = {
-      perClass = lib.mkOption {
-        type = lib.types.attrsOf compositionType;
-        default = {};
-        description = "Class-specific module contributions selected when this profile aspect is active.";
-      };
-      meta = lib.mkOption {
-        type = lib.types.attrsOf lib.types.raw;
-        default = {};
-        description = "Descriptive metadata carried by this profile aspect.";
-      };
-      passthru = lib.mkOption {
-        type = lib.types.attrsOf lib.types.raw;
-        default = {};
-        description = "Arbitrary declarative data passed through with this profile aspect.";
-      };
-    };
-  };
 
   variantType = lib.types.submodule {
     imports = [composition];
@@ -94,115 +79,6 @@
         type = lib.types.nullOr (lib.types.functionTo lib.types.package);
         default = null;
         description = "Optional target-specific selector returning a package from this independently evaluated variant configuration.";
-      };
-    };
-  };
-
-  userType = lib.types.submodule {
-    imports = [moduleContributions];
-
-    options = {
-      enable = lib.mkEnableOption "this Home Manager user";
-      tags = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [];
-        description = "Ordered profile aspects selecting contributions for this user node.";
-      };
-      standalone = lib.mkOption {
-        type = lib.types.nullOr (lib.types.submodule {
-          imports = [moduleContributions];
-          options = {
-            pkgs = lib.mkOption {
-              type = lib.types.pkgs;
-              description = "Package set used to evaluate this standalone Home Manager configuration.";
-            };
-            outputName = lib.mkOption {
-              type = lib.types.nullOr lib.types.str;
-              default = null;
-              description = "Optional name for this standalone Home Manager root.";
-            };
-          };
-        });
-        default = null;
-        description = "Optional standalone Home Manager output for this user; presence enables the output.";
-      };
-      passInOsConfig = lib.mkOption {
-        type = lib.types.bool;
-        default = true;
-        description = "Whether host-derived configurations receive osConfig.";
-      };
-      variants = lib.mkOption {
-        type = lib.types.attrsOf variantType;
-        default = {};
-        description = "Sparse Home Manager variant coordinates.";
-      };
-    };
-  };
-
-  hostUserType = lib.types.submodule {
-    imports = [moduleContributions];
-    options = {
-      tags = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [];
-        description = "Ordered profile aspects selecting contributions for this user within one host.";
-      };
-      outputName = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
-        description = "Optional name for this user's Home Manager projection on its host.";
-      };
-    };
-  };
-
-  hostType = lib.types.submodule {
-    imports = [moduleContributions];
-    options = {
-      enable = lib.mkEnableOption "this NixOS or nix-darwin host";
-      class = lib.mkOption {
-        type = lib.types.str;
-        default = "nixos";
-        description = "Semantic host class, resolved through configurations.classes.";
-      };
-      outputName = lib.mkOption {
-        type = lib.types.nullOr lib.types.str;
-        default = null;
-        description = "Optional name for this host's root system output.";
-      };
-      tags = lib.mkOption {
-        type = lib.types.listOf lib.types.str;
-        default = [];
-        description = "Ordered profile aspects selecting the corresponding perTag.<name> overlays.";
-      };
-      metadata = lib.mkOption {
-        type = lib.types.attrsOf lib.types.raw;
-        default = {};
-        description = "Machine facts and annotations carried with this host declaration.";
-      };
-      hostPlatforms = lib.mkOption {
-        type = lib.types.listOf (lib.types.submodule {options.system = lib.mkOption {type = lib.types.str;};});
-        default = [];
-        description = "Target host-platform coordinates; evaluator selection is internal.";
-      };
-      buildPlatform = lib.mkOption {
-        type = lib.types.nullOr (lib.types.submodule {options.system = lib.mkOption {type = lib.types.str;};});
-        default = null;
-        description = "Optional build platform; omission selects native construction.";
-      };
-      crossCompile = lib.mkOption {
-        type = lib.types.bool;
-        default = false;
-        description = "Whether differing build and host platforms are permitted.";
-      };
-      users = lib.mkOption {
-        type = lib.types.attrsOf hostUserType;
-        default = {};
-        description = "Host-specific module contributions for integrated Home Manager users.";
-      };
-      variants = lib.mkOption {
-        type = lib.types.attrsOf variantType;
-        default = {};
-        description = "Sparse system variant and specialisation coordinates.";
       };
     };
   };
@@ -274,12 +150,115 @@ in {
       description = "Semantic host classes; each name selects a native evaluator class, while profile composition belongs in tags.";
     };
     users = lib.mkOption {
-      type = lib.types.attrsOf userType;
+      type = lib.types.attrsOf (lib.types.submodule {
+        imports = [moduleContributions];
+
+        options = {
+          enable = lib.mkEnableOption "this Home Manager user";
+          tags = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [];
+            description = "Ordered profile aspects selecting contributions for this user node.";
+          };
+          standalone = lib.mkOption {
+            type = lib.types.nullOr (lib.types.submodule {
+              imports = [moduleContributions];
+              options = {
+                pkgs = lib.mkOption {
+                  type = lib.types.pkgs;
+                  description = "Package set used to evaluate this standalone Home Manager configuration.";
+                };
+                outputName = lib.mkOption {
+                  type = lib.types.nullOr lib.types.str;
+                  default = null;
+                  description = "Optional name for this standalone Home Manager root.";
+                };
+              };
+            });
+            default = null;
+            description = "Optional standalone Home Manager output for this user; presence enables the output.";
+          };
+          passInOsConfig = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+            description = "Whether host-derived configurations receive osConfig.";
+          };
+          variants = lib.mkOption {
+            type = lib.types.attrsOf variantType;
+            default = {};
+            description = "Sparse Home Manager variant coordinates.";
+          };
+        };
+      });
       default = {};
       description = "Home Manager users forming one axis of the configuration matrix.";
     };
     hosts = lib.mkOption {
-      type = lib.types.attrsOf hostType;
+      type = lib.types.attrsOf (lib.types.submodule {
+        imports = [moduleContributions];
+        options = {
+          enable = lib.mkEnableOption "this NixOS or nix-darwin host";
+          class = lib.mkOption {
+            type = lib.types.str;
+            default = "nixos";
+            description = "Semantic host class, resolved through configurations.classes.";
+          };
+          outputName = lib.mkOption {
+            type = lib.types.nullOr lib.types.str;
+            default = null;
+            description = "Optional name for this host's root system output.";
+          };
+          tags = lib.mkOption {
+            type = lib.types.listOf lib.types.str;
+            default = [];
+            description = "Ordered profile aspects selecting the corresponding perTag.<name> overlays.";
+          };
+          metadata = lib.mkOption {
+            type = lib.types.attrsOf lib.types.raw;
+            default = {};
+            description = "Machine facts and annotations carried with this host declaration.";
+          };
+          hostPlatforms = lib.mkOption {
+            type = lib.types.listOf platformType;
+            default = [];
+            description = "Constraints describing every realizable destination host platform.";
+          };
+          buildPlatforms = lib.mkOption {
+            type = lib.types.nullOr (lib.types.listOf platformType);
+            default = null;
+            description = "Optional constraints describing valid build platforms; null permits every declared flake system.";
+          };
+          crossCompile = lib.mkOption {
+            type = lib.types.bool;
+            default = false;
+            description = "Whether differing build and host platforms are permitted.";
+          };
+          users = lib.mkOption {
+            type = lib.types.attrsOf (lib.types.submodule {
+              imports = [moduleContributions];
+              options = {
+                tags = lib.mkOption {
+                  type = lib.types.listOf lib.types.str;
+                  default = [];
+                  description = "Ordered profile aspects selecting contributions for this user within one host.";
+                };
+                outputName = lib.mkOption {
+                  type = lib.types.nullOr lib.types.str;
+                  default = null;
+                  description = "Optional name for this user's Home Manager projection on its host.";
+                };
+              };
+            });
+            default = {};
+            description = "Host-specific module contributions for integrated Home Manager users.";
+          };
+          variants = lib.mkOption {
+            type = lib.types.attrsOf variantType;
+            default = {};
+            description = "Sparse system variant and specialisation coordinates.";
+          };
+        };
+      });
       default = {};
       description = "System hosts forming one axis of the configuration matrix.";
     };
@@ -299,7 +278,25 @@ in {
       description = "Modules selected by the architecture component of a host platform.";
     };
     perTag = lib.mkOption {
-      type = lib.types.attrsOf tagType;
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          perClass = lib.mkOption {
+            type = lib.types.attrsOf compositionType;
+            default = {};
+            description = "Class-specific module contributions selected when this profile aspect is active.";
+          };
+          meta = lib.mkOption {
+            type = lib.types.attrsOf lib.types.raw;
+            default = {};
+            description = "Descriptive metadata carried by this profile aspect.";
+          };
+          passthru = lib.mkOption {
+            type = lib.types.attrsOf lib.types.raw;
+            default = {};
+            description = "Arbitrary declarative data passed through with this profile aspect.";
+          };
+        };
+      });
       default = {};
       description = "Canonical profile aspects, each with class-specific contributions shaped like perClass.";
     };

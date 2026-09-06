@@ -6,6 +6,7 @@
   ...
 }: let
   systemCoordinates = config.dendritic.internal.systemCoordinates;
+  flakeSystems = config.systems;
   profileNames = config.dendritic.internal.profileNames;
 
   profileSystemModules = nativeClass: tags:
@@ -40,17 +41,29 @@
     then "${hostOutputName coordinate}-${variantName}"
     else variant.outputName;
 
+  validBuildSystems = normalized: let
+    candidates =
+      if normalized.buildPlatforms == null
+      then flakeSystems
+      else map (platform: platform.system) normalized.buildPlatforms;
+  in
+    lib.unique (lib.filter (buildSystem:
+      buildSystem == normalized.hostPlatform.system || normalized.crossCompile)
+    candidates);
+
   packageCoordinates = lib.concatMap (normalized:
-    map (variantName: {
-      inherit normalized variantName;
-      variant = normalized.declaration.variants.${variantName};
-    }) (builtins.attrNames (lib.filterAttrs (_: variant:
-      config.dendritic.configurations.defaults.variants.enableFlakeOutputs
-      && config.dendritic.configurations.defaults.variants.enable
-      && variant.enableFlakeOutput
-      && variant.enable
-      && variant.package != null)
-    normalized.declaration.variants)))
+    lib.concatMap (buildPlatform:
+      map (variantName: {
+        inherit normalized buildPlatform variantName;
+        variant = normalized.declaration.variants.${variantName};
+      }) (builtins.attrNames (lib.filterAttrs (_: variant:
+        config.dendritic.configurations.defaults.variants.enableFlakeOutputs
+        && config.dendritic.configurations.defaults.variants.enable
+        && variant.enableFlakeOutput
+        && variant.enable
+        && variant.package != null)
+      normalized.declaration.variants)))
+    (validBuildSystems normalized))
   config.dendritic.internal.systemCoordinates;
 
   variantModules = normalized: variant:
@@ -65,7 +78,7 @@
     normalized.users;
 
   baseConfiguration = coordinate:
-    withSystem coordinate.normalized.buildPlatform.system (_: let
+    withSystem coordinate.buildPlatform (_: let
       constructor =
         if coordinate.normalized.nativeClass == "darwin"
         then inputs.darwin.lib.darwinSystem
@@ -73,7 +86,7 @@
         then inputs.nixpkgs.lib.nixosSystem
         else throw "dendritic.configurations: unsupported target system ${coordinate.normalized.hostPlatform.system}";
       nixpkgsPlatformModules = [
-        {nixpkgs.buildPlatform = coordinate.normalized.buildPlatform.system;}
+        {nixpkgs.buildPlatform = coordinate.buildPlatform;}
         {nixpkgs.hostPlatform = coordinate.normalized.hostPlatform.system;}
       ];
     in
@@ -113,7 +126,7 @@
             modules = variantModules coordinate.normalized coordinate.variant;
           };
     in
-      lib.optional (coordinate.normalized.buildPlatform.system == buildSystem) {
+      lib.optional (coordinate.buildPlatform == buildSystem) {
         "${variantOutputName coordinate.normalized coordinate.variantName coordinate.variant}" =
           coordinate.variant.package variantConfiguration;
       })

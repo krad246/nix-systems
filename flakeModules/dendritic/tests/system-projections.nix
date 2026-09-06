@@ -81,10 +81,6 @@ in {
         coordinates = lib.concatMap (declaration:
           map (hostPlatform: {
             inherit declaration hostPlatform;
-            buildPlatform =
-              if declaration.buildPlatform == null
-              then hostPlatform
-              else declaration.buildPlatform;
           })
           declaration.hostPlatforms)
         (builtins.attrValues flakeConfig.dendritic.internal.systemDeclarations);
@@ -92,6 +88,10 @@ in {
           if lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString hostPlatform.system)
           then "darwin"
           else "nixos";
+        hostOutputName = coordinate:
+          if lib.count (candidate: candidate.hostName == coordinate.hostName) coordinates == 1
+          then coordinate.hostName
+          else "${coordinate.hostName}-${coordinate.hostPlatform.system}";
       in {
         dendritic.assertions = [
           {
@@ -119,8 +119,17 @@ in {
             message = "each host class matches every declared target platform";
           }
           {
-            assertion = lib.all (coordinate: coordinate.buildPlatform.system == coordinate.hostPlatform.system || coordinate.declaration.crossCompile) coordinates;
-            message = "a non-native build platform is gated by crossCompile";
+            assertion = lib.all (coordinate: let
+              output =
+                if coordinate.declaration.class == "darwin"
+                then darwin.${hostOutputName coordinate}
+                else nixos.${hostOutputName coordinate};
+            in
+              output.pkgs.stdenv.buildPlatform.system
+              == coordinate.hostPlatform.system
+              && output.pkgs.stdenv.hostPlatform.system == coordinate.hostPlatform.system)
+            coordinates;
+            message = "the canonical system projection uses its destination host platform for both build and host splice";
           }
           {
             assertion = system != "x86_64-linux" || nixos ? generic-headless-interactive;
