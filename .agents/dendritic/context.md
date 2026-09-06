@@ -101,6 +101,22 @@ slices rather than treating nixbook-pro as the exclusive prerequisite. This
 broadens the proof cohort only: it does not authorize a wholesale merge of the
 frozen Dendritic branch or revival of legacy host-shaped evaluators.
 
+### Owner sequencing and source-ownership decision (2026-09-05)
+
+Spend the next review units polishing the host/declaration interfaces and their
+semantics before expanding aggressively into more machine configurations. Keep
+disk-simulation behavior and its NixOS test harness in a separate commit/PR so
+the interface landing remains a small, reviewable contract change.
+
+Capabilities that `main` has begun consuming wholesale from the frozen Dendritic
+input should enter an explicit source-ownership transfer lane. Materialize the
+required literal module filesystem structure in this repository, move real
+consumers to the in-tree implementation, and only then deprecate/remove the
+predecessor-backed module path once its consumer count reaches zero. Preserve
+the predecessor as an implementation/reference source until that proof is
+complete; do not create a second shadow architecture or delete modules merely
+because their names now appear under a new tree.
+
 ## Authoritative architectural intent
 
 Systems are to be reconstructed from imports of capability interfaces, not
