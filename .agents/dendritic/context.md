@@ -1008,7 +1008,11 @@ maxJobs, TERM, bottom, coredumps, and protocol.
   corrected 2026-09-06). Specializations must be completely abstracted behind
   the same Dendritic interface/composition model as NixOS specialisations,
   with explicit inclusion and materialization policy. Do not port an automatic
-  activation or switching side effect.
+  activation or switching side effect. In particular, macOS-versus-Linux is a
+  platform/host adaptation axis realized by the target package splice and
+  conditional modules, not a Home Manager specialization or switchable user
+  profile. Keep Home Manager specialization support only for genuine additive
+  variants that have a consumer.
 - The owner selected the Dendritic interactive shell (`H4: T`) as the base
   interactive shell contract.
 - The owner selected the Dendritic development shell while retaining legacy
@@ -1171,7 +1175,7 @@ evidence rather than filename inference.
 | input flake registry | architecturally superseded/win; bridged from predecessor | Both expose registries. Dendritic replaces old `flake-registry` with the generic configurable input-registry source and locked/unlocked behavior. Main now consumes it through the exported Dendritic `base`/`standalone` profiles rather than reconstructing the cone. |
 | registry filesystem projection | changed, capability available; path repaired | Main installs `~/nix/path/*` links unconditionally via `home-link-registry`. Dendritic has `input-registry.sysroot.install` and optional search-path projection, currently disabled for this consumer. PR #435 repaired its public absolute path from `/Users/krad246/./nix/path` to `/Users/krad246/nix/path` at the authoritative predecessor source. Selection policy remains to decide. |
 | dotfiles link/sync | accepted removal | Do not port the mutable synchronization/link behavior. |
-| specialization abstraction | owner-selected Dendritic port | Retain the specialization concept, not automatic switching. Model it through the same Dendritic interface/composition machinery as NixOS specialisations, with explicit inclusion/materialization policy and no activation side effect. |
+| specialization abstraction | owner-selected Dendritic port | Retain the specialization concept, not automatic switching. Model genuine additive variants through the same Dendritic interface/composition machinery as NixOS specialisations, with explicit inclusion/materialization policy and no activation side effect. macOS-versus-Linux belongs to platform/host adaptation, not Home Manager specialisations. |
 | XDG | preserved | PR #446 moved `xdg.enable=true` into the authoritative Dendritic `base`; both standalone and integrated bridge consumers now inherit it. |
 | manuals | preserved foundation policy | PR #446 established HTML false and JSON true in Dendritic `base`, independently of browser integration. |
 | state version | version drift | Main evaluates 26.05 and Dendritic 25.11 due branch input eras. Resolve intentionally during port; do not copy one blindly. |
@@ -1785,12 +1789,13 @@ Before committing:
 ## Immediate next work
 
 The first interactive parity batch is now the active implementation slice:
-finish the Dendritic base consumer wiring, expose specializations through the
-same abstract interface/composition machinery as NixOS specialisations without
-automatic switching, validate the interactive profile, and separate the
-selected development profile from an explicit opt-in kitchen-sink/lost-and-found
-module. The deleted mutable dotfiles behavior stays deleted. Disk simulation
-remains a later, separate commit.
+finish the Dendritic base consumer wiring, keep genuine specializations behind
+the same abstract interface/composition machinery as NixOS specialisations
+without automatic switching or platform-profile abuse, validate the
+interactive profile, and separate the selected development profile from an
+explicit opt-in kitchen-sink/lost-and-found module. The deleted mutable
+dotfiles behavior stays deleted. Disk simulation remains a later, separate
+commit.
 
 1. Finish total behavioral porting of `. #base`, using the program-by-program HM
    ledger and explicit owner decisions rather than copying legacy bundles. The
