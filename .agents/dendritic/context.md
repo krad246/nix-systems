@@ -1607,6 +1607,14 @@ direct recovery and verification interface when a lower-level operation is
 needed. The canonical context bundle is the durable authority, while
 conversation memory and local caches are secondary indexes.
 
+For module-tree loading, use `import-tree` at the flake entrypoint. A
+materialized Dendritic tree is composed by merging the entrypoint's
+`inputs.import-tree ./modules` call with the repository's existing root module;
+do not invent a second recursive filesystem importer or insert a raw file list
+as a nested `imports` element. This preserves import-tree's module-level
+composition semantics and keeps the flake entrypoint as the single discovery
+boundary.
+
 The `agent` devshell exposes `verify-dendritic-context`, and the same executable
 backs the scoped `verify-dendritic-context` pre-commit hook. The hook is
 read-only: it runs when the canonical bundle or generated `AGENTS.md` changes
