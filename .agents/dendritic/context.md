@@ -109,13 +109,22 @@ disk-simulation behavior and its NixOS test harness in a separate commit/PR so
 the interface landing remains a small, reviewable contract change.
 
 Capabilities that `main` has begun consuming wholesale from the frozen Dendritic
-input should enter an explicit source-ownership transfer lane. Materialize the
-required literal module filesystem structure in this repository, move real
-consumers to the in-tree implementation, and only then deprecate/remove the
-predecessor-backed module path once its consumer count reaches zero. Preserve
-the predecessor as an implementation/reference source until that proof is
-complete; do not create a second shadow architecture or delete modules merely
-because their names now appear under a new tree.
+input should enter an explicit source-ownership transfer lane. The owner now
+directs this lane to remove current in-tree modules whenever the predecessor
+already supplies a real modern replacement, rather than preserving parallel
+implementations for compatibility. Materialize the replacement filesystem
+structure in-tree when that is the selected ownership boundary, move or remove
+its consumers, and retain only modules with no modern replacement or an
+explicitly retained legacy consumer. Preserve the predecessor as the
+implementation/reference source until each replacement cone is proven; do not
+delete by filename resemblance alone.
+
+The current ownership branch may therefore aggressively contract `main` while
+using the frozen Dendritic closure as the authoritative replacement source.
+Each deletion still requires an actual replacement/consumer mapping and a
+flake-evaluation proof; this is an intentional contraction of legacy module
+surface, not permission to remove unrelated capabilities or revive a second
+host-shaped architecture.
 
 ## Authoritative architectural intent
 
@@ -1252,8 +1261,8 @@ All of these remain required unless the owner explicitly revises them:
 The bridge landed on `main` at `c116a095`. Preserve these constraints as later
 ports extend it:
 
-- it must land on current `main`, not make `main` adopt the reconstructed
-  Dendritic tree wholesale;
+- it must land on current `main`, with replacement cones selected from the
+  reconstructed Dendritic closure rather than copied as one opaque rewrite;
 - legacy configurations must continue to work while individual lanes move;
 - new virtual module namespaces must be introducible alongside old
   `darwinModules`, `homeModules`, and `nixosModules` exports;
@@ -1262,9 +1271,9 @@ ports extend it:
 - generated `flake.nix`/`flake.lock` changes must be isolated and explainable;
 - commit boundaries should follow dependency cones and leave the flake
   evaluable;
-- prefer a substrate/registry bridge followed by low-level HM lanes, profiles,
-  system adapters, and host roots—not a cherry-pick of historical reconstruction
-  commits whose context assumes the blanked tree;
+- prefer coherent replacement cones followed by low-level HM lanes, profiles,
+  system adapters, and host roots—not a cherry-pick of historical
+  reconstruction commits whose context assumes the blanked tree;
 - record old-to-new behavior decisions so future ports are closure migrations,
   not archaeology repeats.
 
@@ -1286,12 +1295,12 @@ Apply the bridge repeatedly as a consumer-driven closure migration:
 3. reconstitute the target consumer from capability imports and prove behavior,
    backend replaceability, and derivation closure on the current main-based
    branch;
-4. deactivate or remove only the corresponding legacy `ezConfigs` code path and
-   old modules whose consumer count has reached zero; unrelated legacy hosts
-   and closures remain live;
-5. once a capability cone is proven, internalize/move its required module
-   sources into the current tree so main no longer depends on the predecessor
-   for that cone;
+4. deactivate or remove the corresponding legacy `ezConfigs` code path and old
+   modules when the selected predecessor replacement is proven and all retained
+   consumers have moved; unrelated legacy hosts and closures remain live;
+5. when in-tree ownership is selected for a capability cone, internalize/move
+   its required module sources into the current tree so `main` no longer
+   depends on the predecessor for that cone;
 6. merge the independently coherent slice to main and select the next consumer
    cone rather than accumulating a second long-lived integration branch;
 7. repeat until `ezConfigs`, predecessor registries/input, and compatibility
@@ -1299,12 +1308,13 @@ Apply the bridge repeatedly as a consumer-driven closure migration:
 8. delete `ezConfigs`, the Dendritic bridge/input, temporary realization hooks,
    and frozen-branch migration machinery as final cleanup—not before.
 
-Large deletions are therefore amortized by consumer migration. Never mirror the
-feature branch's original mass deletion onto main, and never require Dendritic
-to rebase over ongoing main development. Near the endpoint, the accumulated
-main tree becomes the successor architecture and the frozen branch ceases to be
-a dependency; this is a sequence of source-ownership transfers, not a final
-giant branch merge.
+Deletions are therefore justified by replacement and consumer migration. Do
+not mirror the feature branch's original mass deletion blindly, but do remove
+every mapped legacy module whose modern replacement is now authoritative. Never
+require Dendritic to rebase over ongoing main development. Near the endpoint,
+the accumulated main tree becomes the successor architecture and the frozen
+branch ceases to be a dependency; this is a sequence of replacement cones, not
+a final giant branch merge.
 
 Do not confuse source repair with source-ownership transfer. Fix a defect in a
 still-predecessor-owned capability through controlled thaw/re-freeze; transfer
