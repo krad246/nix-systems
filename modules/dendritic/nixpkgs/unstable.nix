@@ -1,0 +1,29 @@
+{
+  withSystem,
+  lib,
+  self,
+  ...
+}: {
+  flake-file.inputs.nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+  flake = {
+    modules = {
+      homeManager.nixpkgs-unstable = {
+        nixpkgs.overlays = [self.overlays.unstable];
+      };
+
+      nixos.nixpkgs-unstable = {
+        nixpkgs.overlays = [self.overlays.unstable];
+      };
+    };
+
+    overlays = {
+      # The host flake already owns this overlay.  Keep the materialized
+      # module compatible with that implementation when both closures are
+      # evaluated together.
+      unstable = lib.mkDefault (_: prev: {
+        unstable = withSystem prev.stdenv.hostPlatform.system (ctx: ctx.inputs'.nixpkgs-unstable.legacyPackages);
+      });
+    };
+  };
+}

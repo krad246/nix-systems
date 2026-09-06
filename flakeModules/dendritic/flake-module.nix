@@ -337,53 +337,8 @@ in {
       modules = {
         inherit (inputs.dendritic.modules) nixos darwin;
         homeManager = {
-          identity.options.identity.person = {
-            email = lib.mkOption {
-              type = lib.types.str;
-              default = "krad246@gmail.com";
-              description = "Primary email address for this identity.";
-            };
-            name = lib.mkOption {
-              type = lib.types.str;
-              default = "Keerthi Radhakrishnan";
-              description = "Full name for this identity.";
-            };
-            username = lib.mkOption {
-              type = lib.types.str;
-              default = "krad246";
-              description = "Username for this identity.";
-            };
-          };
-
-          base = {pkgs, ...}: {
-            imports = [
-              config.flake.dendritic.modules.homeManager.identity
-              inputs.dendritic.modules.homeManager.input-registry
-              inputs.dendritic.modules.homeManager.shell
-            ];
-
-            config = lib.mkMerge [
-              {
-                home = {
-                  preferXdgDirectories = true;
-                  stateVersion = inputs.dendritic.lib.trivial.release;
-                };
-                manual = {
-                  html.enable = false;
-                  json.enable = true;
-                };
-                news.display = "silent";
-                xdg.enable = true;
-              }
-              (lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
-                targets.genericLinux = {
-                  enable = true;
-                  gpu.enable = lib.mkDefault false;
-                };
-                systemd.user.startServices = "sd-switch";
-              })
-            ];
-          };
+          identity = config.flake.modules.homeManager.identity;
+          base = config.flake.modules.homeManager.base;
 
           desktop.imports = [
             inputs.dendritic.modules.homeManager.browser

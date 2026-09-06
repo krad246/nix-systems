@@ -79,11 +79,11 @@ in {
             ++ [user hostLayer];
           baseUserModules =
             user.modules
-            ++ lib.concatMap (profileHomeModules username) configurations.defaults.tags
-            ++ lib.concatMap (profileHomeModules username) user.tags;
+            ++ profileHomeModules username configurations.defaults.tags
+            ++ profileHomeModules username user.tags;
           taggedUserModules =
-            lib.concatMap (profileHomeModules username) host.tags
-            ++ lib.concatMap (profileHomeModules username) hostLayer.tags;
+            profileHomeModules username host.tags
+            ++ profileHomeModules username hostLayer.tags;
         in {
           inherit (hostLayer) outputName;
           tags = user.tags ++ hostLayer.tags;

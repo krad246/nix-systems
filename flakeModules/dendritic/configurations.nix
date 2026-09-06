@@ -38,9 +38,9 @@ in {
       # its class-specific module contributions.
       defaults.tags = ["base"];
       perTag = {
-        base.perClass = modules config.flake.dendritic.modules "base";
-        desktop.perClass = modules inputs.dendritic.modules "desktop";
-        dev.perClass = modules inputs.dendritic.modules "dev";
+        base.perClass = modules config.flake.modules ["base"];
+        desktop.perClass = modules inputs.dendritic.modules ["desktop"];
+        dev.perClass = modules inputs.dendritic.modules ["dev"];
         workstation.perClass = lib.mkMerge [
           (modules inputs.dendritic.modules [
             "desktop"

@@ -1,0 +1,90 @@
+{self, ...}: let
+  inherit (self) lib;
+in {
+  flake.modules = {
+    homeManager.base = {pkgs, ...}: {
+      imports = with self.modules.homeManager; [
+        identity
+        input-registry # overridable
+        shell
+      ];
+
+      config = lib.modules.mkMerge [
+        {
+          home = {
+            preferXdgDirectories = true;
+            # This checkout pins Home Manager to release-26.05 while nixpkgs
+            # is newer.  HM stateVersion is an HM compatibility contract, not
+            # the nixpkgs release selected by the flake.
+            stateVersion = "26.05";
+          };
+
+          manual = {
+            html.enable = false;
+            json.enable = true;
+          };
+
+          news.display = "silent";
+          xdg.enable = true;
+        }
+        (lib.modules.mkIf pkgs.stdenv.hostPlatform.isLinux {
+          # FIXME: once intel-media-driver is conditionally included for x86_64-linux,
+          # consider re-enabling targets.genericLinux.gpu.drivers
+          targets.genericLinux = {
+            enable = true;
+            gpu.enable = lib.modules.mkDefault false;
+          };
+          systemd.user.startServices = "sd-switch";
+        })
+      ];
+    };
+
+    nixos.base = {config, ...}: {
+      imports = with self.modules.nixos; ([
+          home-manager
+          input-registry
+          nix
+          nixpkgs-instance
+          owner
+        ]
+        ++ [
+          # hardware
+          locale
+        ]);
+
+      environment = {
+        homeBinInPath = true;
+        localBinInPath = true;
+      };
+
+      home-manager.users.${config.owner.username}.imports = [
+        self.modules.homeManager.base
+      ];
+
+      # nix.settings.trusted-users = ["@wheel"];
+
+      # security.sudo = {
+      #   # execWheelOnly = true;
+      #   wheelNeedsPassword = lib.modules.mkDefault true;
+      # };
+
+      system.stateVersion = lib.trivial.release;
+    };
+
+    darwin.base = {config, ...}: {
+      imports = with self.modules.darwin; [
+        home-manager
+        input-registry
+        nix
+        nixpkgs-instance
+        owner
+      ];
+
+      system.stateVersion = 6;
+
+      home-manager.users.${config.owner.username}.imports = [
+        self.modules.homeManager.base
+      ];
+    };
+  };
+}

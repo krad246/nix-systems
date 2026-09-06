@@ -994,6 +994,12 @@ maxJobs, TERM, bottom, coredumps, and protocol.
 - Do not port the current terminal-font architecture. It is incoherent and
   inflates closures. Revisit fonts through a future theming capability lane and
   its relationship to Stylix.
+- The interactive parity review selected the Dendritic Base Home Manager
+  contract (`H1: T`) as the authoritative replacement boundary. Move the base
+  consumer onto that contract and remove the legacy aggregate only after the
+  replacement cone and retained consumers are proven. This selects ownership
+  of the contract; it does not silently accept every row-level behavioral
+  difference in the parity ledger.
 
 The longer-term identity direction is a multi-identity software bus. Identity
 providers publish identities through a stable virtual interface; Git queries
@@ -1140,6 +1146,7 @@ evidence rather than filename inference.
 | HM responsibility | Status | Evaluated/source evidence and follow-up |
 |---|---|---|
 | username/home directory | preserved | Both evaluate to `krad246` and `/Users/krad246`. |
+| Base Home Manager contract | owner-selected replacement | The owner selected Dendritic `profiles/base.nix` as the authoritative H1 contract. Complete its consumer migration and prove the replacement cone; retain separate ledger decisions for row-level differences. |
 | identity name | preserved | Both Git configurations use `Keerthi Radhakrishnan`; Dendritic derives it from `identity.person`. |
 | special Git email | required local override | Preserve `condor-janitor0e@icloud.com` with a local layered Git override. Longer term select it from the multi-identity software bus rather than changing the general person default. |
 | RBW | preserved with better interface | Enabled in both. Dendritic derives email from `identity.person` and selects platform pinentry behind `identity.secrets.backends.rbw`. |
