@@ -1562,6 +1562,14 @@ public command generic: today it delegates to the Dendritic bundle's
 replace or extend that storage without renaming the lifecycle action. A matching
 Just command namespace is a possible convenience layer, not current scope.
 
+When resuming Dendritic work, use the repository's Nix agent/context
+applications as the operational entry point for context recovery and
+checkpointing. The stable `nix run .#agent-checkpoint` application is the
+convenient checkpoint front door; `.agents/dendritic/context.sh` remains the
+direct recovery and verification interface when a lower-level operation is
+needed. The canonical context bundle is the durable authority, while
+conversation memory and local caches are secondary indexes.
+
 The `agent` devshell exposes `verify-dendritic-context`, and the same executable
 backs the scoped `verify-dendritic-context` pre-commit hook. The hook is
 read-only: it runs when the canonical bundle or generated `AGENTS.md` changes
