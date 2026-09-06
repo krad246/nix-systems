@@ -11,6 +11,16 @@
   systemCoordinates = flakeConfig.dendritic.internal.systemCoordinates;
   miniboiCoordinates = lib.filter (coordinate: coordinate.hostName == "miniboi") systemCoordinates;
 
+  validBuildSystems = coordinate: let
+    candidates =
+      if coordinate.buildPlatforms == null
+      then flakeSystems
+      else map (platform: platform.system) coordinate.buildPlatforms;
+  in
+    lib.filter (buildPlatform:
+      buildPlatform == coordinate.hostPlatform.system || coordinate.crossCompile)
+    candidates;
+
   coordinateName = coordinate:
     if coordinate.outputName == null
     then coordinate.hostName
@@ -30,9 +40,11 @@
     coordinate.declaration.variants;
 
   packageCoordinates = lib.concatMap (coordinate:
-    lib.mapAttrsToList (variantName: variant: {
-      inherit coordinate variantName variant;
-    }) (lib.filterAttrs (_: variant: variant.package != null) (enabledVariants coordinate)))
+    lib.concatMap (buildPlatform:
+      lib.mapAttrsToList (variantName: variant: {
+        inherit coordinate buildPlatform variantName variant;
+      }) (lib.filterAttrs (_: variant: variant.package != null) (enabledVariants coordinate)))
+    (validBuildSystems coordinate))
   miniboiCoordinates;
 
   packageName = packageCoordinate: "${hostOutputName packageCoordinate.coordinate}-${packageCoordinate.variantName}";
@@ -45,21 +57,8 @@
 
   expectedPackageNames = system:
     builtins.sort builtins.lessThan (map packageName (lib.filter (packageCoordinate:
-      packageCoordinate.coordinate.buildPlatform.system == system)
+      packageCoordinate.buildPlatform == system)
     packageCoordinates));
-
-  crossPlatformAssertions =
-    map (coordinate: let
-      output = lib.getAttr (hostOutputName coordinate) flakeConfig.flake.nixosConfigurations;
-    in {
-      assertion =
-        output.pkgs.stdenv.buildPlatform.system
-        == coordinate.buildPlatform.system
-        && output.pkgs.stdenv.hostPlatform.system == coordinate.hostPlatform.system;
-      message = "Miniboi ${coordinate.hostPlatform.system} uses its declared build and host platforms in nixpkgs";
-    }) (lib.filter (coordinate:
-      coordinate.buildPlatform.system != coordinate.hostPlatform.system)
-    miniboiCoordinates);
 in {
   perSystem = {
     config,
@@ -75,12 +74,12 @@ in {
       packages = lib.attrByPath ["packages" flakeSystem] {} flakeConfig.flake;
     in
       map (packageCoordinate: lib.getAttr (packageName packageCoordinate) packages) (lib.filter (packageCoordinate:
-        packageCoordinate.coordinate.buildPlatform.system == flakeSystem)
+        packageCoordinate.buildPlatform == flakeSystem)
       packageCoordinates))
     flakeSystems;
     matrixPackageNames = lib.concatMap (flakeSystem:
       map packageName (lib.filter (packageCoordinate:
-        packageCoordinate.coordinate.buildPlatform.system == flakeSystem)
+        packageCoordinate.buildPlatform == flakeSystem)
       packageCoordinates))
     flakeSystems;
     miniboiConfigurations = lib.filterAttrs (name: _: lib.elem name configurationNames) flakeConfig.flake.nixosConfigurations;
@@ -88,8 +87,13 @@ in {
   in {
     dendritic.assertions = [
       {
-        assertion = lib.all (assertion: assertion.assertion) crossPlatformAssertions;
-        message = lib.concatStringsSep "; " (map (assertion: assertion.message) crossPlatformAssertions);
+        assertion = lib.all (packageCoordinate: let
+          package = lib.getAttr (packageName packageCoordinate) (lib.getAttr packageCoordinate.buildPlatform flakeConfig.flake.packages);
+        in
+          package.stdenv.buildPlatform.system
+          == packageCoordinate.buildPlatform)
+        packageCoordinates;
+        message = "every Miniboi package projection is realized by its declared build platform";
       }
       {
         assertion = lib.all (name: lib.hasAttr name flakeConfig.flake.nixosConfigurations) configurationNames;

@@ -454,6 +454,34 @@ native specialisation inclusion, and optional package/image artifact selector.
 does not create a second host, and override behaviour remains ordinary Nix
 module priority within its overlay.
 
+### Platform constraint-table decision (2026-09-05)
+
+The platform fields at the declaration boundary are constraint tables, not
+single builder or destination selections. The build-platform constraint
+describes the set of build platforms on which a declaration may be
+materialized; the host-platform constraint describes the set of realizable
+destination host platforms. Materialization forms the permitted build × host
+cross-product and passes each concrete pair to the native Nixpkgs/system
+splice. A package projection is therefore addressed as
+`packages.<buildPlatform>.<host>-<variant>` and must be reachable from every
+valid build platform, while retaining the selected destination host platform.
+The declaration promises admissible coordinates, not local builder
+provisioning: whether a concrete derivation is realized locally, remotely, or
+through emulation is controlled by the owner's Nix builder configuration.
+Constraining the build-platform table is the supported way to omit pairs that
+the owner does not intend to realize, such as Darwin builders for a Linux VM
+fixture. The Miniboi fixture currently hardcodes
+`x86_64-linux` and `aarch64-linux` as its valid build platforms, so its proof
+cohort covers both Linux directions and intentionally excludes Darwin builders.
+
+Do not collapse the declaration's constraint tables into one literal
+`buildPlatform` coordinate. A concrete system output may retain one canonical
+build/host pair where its native flake namespace requires a unique name, but
+artifact projections and simulation checks must enumerate every permitted
+build/host pair. Cross-compilation is valid exactly when the concrete pair
+differs and the declaration's cross policy permits it. The Miniboi fixture is
+the first required proof of this matrix.
+
 The host declaration model admits semantic class aliases through a typed class
 registry (`nativeClass` selects NixOS or nix-darwin while the alias keeps its
 own `perClass` contribution set), architecture contributions, and structured
@@ -524,12 +552,14 @@ platforms coincide; cross means they differ. Keep target `pkgs` distinct from
 host-side generator/runner `pkgs`, while deriving ordinary package universes
 from the same declared Nixpkgs source graph.
 
-The unified host declarations expose `buildPlatform = null | platform` and a
-`cross` gate. Null build coordinates mean native construction for
-each listed target; a differing build/target pair is rejected unless the
-host sets `cross = true`. The constructor injects the
-build platform only for that permitted relation, preserving target platform as
-the system output coordinate.
+The unified host declarations expose build-platform and host-platform
+constraint tables plus a cross gate. Normalization selects concrete pairs from
+those tables: a pair whose platforms coincide is native, while a differing pair
+is cross compilation and is rejected unless the host's cross policy allows it.
+The constructor injects both concrete platform records into the Nixpkgs splice,
+preserving the destination host platform as the system coordinate. Package
+projections enumerate all permitted build systems for each selected host and
+variant instead of filtering to one declaration-wide builder.
 
 The earlier `dendritic.systems.configurations` slice proved system projection
 mechanics but is no longer the public boundary: it and the parallel Home
@@ -1721,9 +1751,12 @@ Before committing:
    nixbook-pro and standalone as active consumers. Use the already-proven Home
    Manager modules for standalone, nix-darwin-integrated, NixOS-integrated,
    and generic FHS Linux instantiations; host declarations should contain only
-   facts, profile selections, and explicit overrides/overlays. Legacy
-   `generic-linux` remains deleted; its deferred desktop behavior stays in the
-   interface agenda rather than returning as a host bundle.
+   facts, profile selections, platform constraint tables, and explicit
+   overrides/overlays. Miniboi must expose every permitted
+   `buildPlatform × hostPlatform × variant` package coordinate and prove the
+   corresponding Nixpkgs splice. Legacy `generic-linux` remains deleted; its
+   deferred desktop behavior stays in the interface agenda rather than
+   returning as a host bundle.
 5. Port the Dendritic flake-policy interface, retaining a rich output surface
    while redesigning declaration/ownership/composition semantics.
    Inventory and eliminate every import-from-derivation consumer, especially

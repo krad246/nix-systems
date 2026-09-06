@@ -113,7 +113,13 @@ in {
             {system = "x86_64-linux";}
             {system = "aarch64-linux";}
           ];
-          buildPlatform = {system = "x86_64-linux";};
+          # The VM runner and disko helper are Linux-side build products. Keep
+          # Darwin out of this fixture's builder constraint table while still
+          # publishing both Linux build/host cross directions.
+          buildPlatforms = [
+            {system = "x86_64-linux";}
+            {system = "aarch64-linux";}
+          ];
           crossCompile = true;
           tags = ["headless"];
           modules = [
@@ -136,7 +142,7 @@ in {
               package = configuration: configuration.config.system.build.vm;
               modules = [
                 ({pkgs, ...}: {
-                  virtualisation.vmVariant.virtualisation.host.pkgs = pkgs;
+                  virtualisation.vmVariant.virtualisation.host.pkgs = pkgs.buildPackages;
                 })
               ];
             };
@@ -144,7 +150,7 @@ in {
               package = configuration: configuration.config.system.build.vmWithBootLoader;
               modules = [
                 ({pkgs, ...}: {
-                  virtualisation.vmVariantWithBootLoader.virtualisation.host.pkgs = pkgs;
+                  virtualisation.vmVariantWithBootLoader.virtualisation.host.pkgs = pkgs.buildPackages;
                   virtualisation.vmVariantWithBootLoader.virtualisation.diskSize = 20 * 1024;
                 })
               ];
@@ -154,7 +160,7 @@ in {
               modules = [
                 ({pkgs, ...}: {
                   virtualisation.vmVariantWithDisko = {
-                    virtualisation.host.pkgs = pkgs;
+                    virtualisation.host.pkgs = pkgs.buildPackages;
                     boot.loader.grub.devices = lib.mkForce [];
                     boot.loader.grub.mirroredBoots = lib.mkForce [
                       {

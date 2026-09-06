@@ -110,10 +110,12 @@ Users may also declare sparse Home Manager `variants`. User variants use the
 same additive module and tag contract as system variants.
 
 Host-derived Home Manager outputs follow the host coordinate exactly: every
-`hostPlatforms` target gets a corresponding user projection, and the host's
-`buildPlatform`/`crossCompile` validation applies before either system or user
-output is constructed. Standalone users do not declare a second platform
-matrix; their explicit `standalone.pkgs` is already the target package set.
+`hostPlatforms` target gets a corresponding user projection. A host's
+`buildPlatforms`/`crossCompile` constraints apply to independent artifact
+projections; the canonical system and user outputs use the destination host
+platform as their native build context. Standalone users do not declare a
+second platform matrix; their explicit `standalone.pkgs` is already the target
+package set.
 
 ## Hosts
 
@@ -136,12 +138,15 @@ cross-build gating happen when the system coordinate is constructed. Host-local
 `metadata` describes machine facts. It is separate from profile `meta` and
 `passthru`.
 
-`buildPlatform` selects the evaluator/build context. When it differs from a
-`hostPlatforms` target, `crossCompile = true` is required. The evaluator passes
-both platforms to the native NixOS or nix-darwin module and leaves
-`nixpkgs.pkgs` unset, so nixpkgs performs its normal splice. This keeps the
-same declaration usable with a remote builder today and a true cross build
-when its build and host coordinates are changed.
+`buildPlatforms` constrains the builders from which independent artifacts may
+be materialized. `hostPlatforms` constrains their destination systems. Every
+permitted build/host pair is spliced by passing both platforms to the native
+NixOS or nix-darwin module while leaving `nixpkgs.pkgs` unset, so nixpkgs
+performs its normal cross compilation splice. For example, Miniboi publishes
+`packages.<buildPlatform>.miniboi-<hostPlatform>-<variant>` for every declared
+build system and destination host system. A differing pair requires
+`crossCompile = true`; the declaration describes a valid pair, while the Nix
+builder configuration determines whether that pair can actually be realized.
 
 ## Variants
 
@@ -177,8 +182,8 @@ variants = {
 
 `hosts.miniboi` is the permanent end-to-end fixture for the evaluator. It uses
 the real headless, bootloader, and disko modules, expands over both
-`x86_64-linux` and `aarch64-linux` host targets, and cross-builds from
-`x86_64-linux`. Its `vm`, `vm-with-bootloader`, and `disko-vm` variants keep
+`x86_64-linux` and `aarch64-linux` host targets, and cross-builds from every
+permitted Linux flake build system. Its `vm`, `vm-with-bootloader`, and `disko-vm` variants keep
 the runnable system closure visible while selecting the corresponding VM
 runner as a package.
 

@@ -51,7 +51,7 @@ in {
         )
         host.users;
     in {
-      inherit (host) enable outputName hostPlatforms buildPlatform crossCompile variants;
+      inherit (host) enable outputName hostPlatforms buildPlatforms crossCompile variants;
       tags = configurations.defaults.tags ++ host.tags;
       inherit (host) class;
       inherit (class) nativeClass;

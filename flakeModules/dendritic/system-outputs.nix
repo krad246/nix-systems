@@ -65,7 +65,7 @@
     coordinate.users;
 
   baseConfiguration = coordinate:
-    withSystem coordinate.buildPlatform.system (_: let
+    withSystem coordinate.hostPlatform.system (_: let
       constructor =
         if coordinate.nativeClass == "darwin"
         then inputs.darwin.lib.darwinSystem
@@ -73,7 +73,7 @@
         then inputs.nixpkgs.lib.nixosSystem
         else throw "dendritic.configurations: unsupported target system ${coordinate.hostPlatform.system}";
       nixpkgsPlatformModules = [
-        {nixpkgs.buildPlatform = coordinate.buildPlatform.system;}
+        {nixpkgs.buildPlatform = coordinate.hostPlatform.system;}
         {nixpkgs.hostPlatform = coordinate.hostPlatform.system;}
       ];
     in
