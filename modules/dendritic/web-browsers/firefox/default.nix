@@ -1,5 +1,7 @@
-{
-  flake.modules.homeManager.firefox = {pkgs, ...}: {
+{inputs, ...}: {
+  flake.modules.homeManager.firefox = {pkgs, ...}: let
+    firefox-addons = inputs.nur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.repos.rycee.firefox-addons;
+  in {
     programs.firefox = {
       enable = true;
       # enableGnomeExtensions = pkgs.stdenv.hostPlatform.isLinux;
@@ -39,7 +41,7 @@
 
           containersForce = true;
 
-          extensions = with pkgs.krad246.firefox-addons; [
+          extensions = with firefox-addons; [
             bitwarden
             ghostery
             multi-account-containers

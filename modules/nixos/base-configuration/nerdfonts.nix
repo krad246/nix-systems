@@ -1,7 +1,6 @@
-{pkgs, ...}: {
+_: {
   fonts = {
     enableDefaultPackages = true;
-    packages = pkgs.krad246.term-fonts.paths;
     fontDir = {
       enable = true;
     };

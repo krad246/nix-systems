@@ -5,17 +5,25 @@
   ...
 }: let
   profileNames = config.dendritic.internal.profileNames;
+  capabilityTags = config.dendritic.internal.capabilityTags;
 
   mergeArgs = field: contributions:
     lib.mergeAttrsList (map (contribution: contribution.${field} or {}) contributions);
 
   profileHomeModules = username: tags:
-    lib.concatMap (tag: let
-      contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
-    in
-      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
-        (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
+    lib.concatMap (tag:
+      if lib.elem tag profileNames
+      then let
+        contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
+      in
+        (contribution.modules or []) ++ (contribution.users.${username}.modules or [])
+      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
+
+  profileContribution = tag:
+    if lib.elem tag profileNames
+    then config.dendritic.configurations.perTag.${tag}
+    else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; {};
 
   standaloneModules = user:
     if user.standalone == null
@@ -34,7 +42,7 @@
     else variant.outputName;
 
   standaloneDeclarations = lib.mapAttrs (username: user: let
-    tagContributions = map (tag: config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {}) (
+    tagContributions = map (tag: (profileContribution tag).perClass.homeManager or {}) (
       config.dendritic.configurations.defaults.tags ++ user.tags
     );
     standaloneContributions = tagContributions ++ [user user.standalone];

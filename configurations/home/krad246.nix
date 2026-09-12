@@ -6,7 +6,7 @@
 }: {
   imports =
     [
-      self.homeModules.base-home
+      self.modules.homeManager.base
     ]
     ++ (with self.modules.generic; [
       krad246-cachix

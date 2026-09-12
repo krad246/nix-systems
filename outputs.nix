@@ -4,27 +4,17 @@ flake-parts.lib.mkFlake
 {
   inherit inputs;
 }
-({self, ...}: let
+(_: let
   apps = ./flakeModules/apps;
-  checks = ./flakeModules/checks;
-  devShell = ./flakeModules/devShell;
   dendritic = ./flakeModules/dendritic;
-  ezConfigs = ./flakeModules/ezConfigs; # ties system and home configurations together
   herculesCI = ./flakeModules/herculesCI;
-  legacyPackages = ./flakeModules/legacyPackages;
-  overlays = ./flakeModules/overlays;
   packages = ./flakeModules/packages;
 
   toplevel = {
     imports = [
       apps
-      checks
-      devShell
       dendritic
-      ezConfigs
       herculesCI
-      legacyPackages
-      overlays
       packages
     ];
   };
@@ -33,6 +23,7 @@ in {
   # keeps code localized per directory
   imports =
     [
+      (inputs.import-tree ./modules/dendritic)
       flake-parts.flakeModules.flakeModules
       flake-parts.flakeModules.modules
     ]
@@ -107,6 +98,7 @@ in {
       # Simple connection glue between direnv, nix-shell, and flakes to get
       # the absolute roots of various subflakes in a project.
       flake-root.url = "github:srid/flake-root";
+      import-tree.url = "github:vic/import-tree";
 
       # Consumer flake to build all outputs in this flake
       devour-flake = {
@@ -155,33 +147,12 @@ in {
       default = toplevel;
 
       inherit apps;
-      inherit checks;
-      inherit devShell;
       inherit dendritic;
-      inherit ezConfigs;
       inherit herculesCI;
-      inherit legacyPackages;
-      inherit overlays;
       inherit packages;
     };
 
-    # use these for the options namespaces of system / home configurations
-    modules = {
-      flake = flakeModules; # alias output name
-
-      # ezConfigs does the heavy lifting of figuring these out for us
-
-      nixos = self.nixosModules;
-      darwin = self.darwinModules;
-      home = self.homeModules;
-
-      # can be used in all of the above contexts
-      generic = let
-        inherit (self.lib) krad246;
-        paths = krad246.fileset.filterExt "nix" ./modules/generic;
-      in
-        krad246.attrsets.genAttrs' paths (path: krad246.attrsets.stemValuePair path (import path));
-    };
+    modules.flake = flakeModules;
   };
 
   # FIXME(platforms): Nixpkgs unstable dropped x86_64-darwin after 26.05.

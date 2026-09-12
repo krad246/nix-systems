@@ -13,7 +13,7 @@
     keybindings = stripComments ./keybindings.json;
     settings = stripComments ./settings.json;
   in {
-    home.packages = with pkgs; ([nil nixd] ++ krad246.term-fonts.paths);
+    home.packages = with pkgs; [nil nixd];
     programs.vscode = {
       enable = true;
 
@@ -21,7 +21,7 @@
         if pkgs.stdenv.hostPlatform.isLinux
         then
           pkgs.vscode.fhsWithPackages (ps:
-            with ps; ([nil nixd] ++ krad246.term-fonts.paths))
+            with ps; [nil nixd])
         else pkgs.vscode;
 
       profiles.default = {

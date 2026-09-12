@@ -5,25 +5,32 @@
 }: let
   configurations = config.dendritic.configurations;
   profileNames = config.dendritic.internal.profileNames;
+  capabilityTags = config.dendritic.internal.capabilityTags;
 
   mergeArgs = field: contributions:
     lib.mergeAttrsList (map (contribution: contribution.${field} or {}) contributions);
 
   profileSystemModules = nativeClass: tags:
-    lib.concatMap (tag: let
-      contribution = configurations.perTag.${tag}.perClass.${nativeClass} or {};
-    in
-      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
-        contribution.modules or [])
+    lib.concatMap (tag:
+      if lib.elem tag profileNames
+      then (configurations.perTag.${tag}.perClass.${nativeClass} or {}).modules or []
+      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
 
   profileHomeModules = username: tags:
-    lib.concatMap (tag: let
-      contribution = configurations.perTag.${tag}.perClass.homeManager or {};
-    in
-      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
-        (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
+    lib.concatMap (tag:
+      if lib.elem tag profileNames
+      then let
+        contribution = configurations.perTag.${tag}.perClass.homeManager or {};
+      in
+        (contribution.modules or []) ++ (contribution.users.${username}.modules or [])
+      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
+
+  profileContribution = tag:
+    if lib.elem tag profileNames
+    then configurations.perTag.${tag}
+    else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; {};
 in {
   options.dendritic.internal.systemDeclarations = lib.mkOption {
     type = lib.types.attrsOf lib.types.raw;
@@ -36,10 +43,10 @@ in {
     (lib.mapAttrs (hostName: host: let
       class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
       baseContributions = [configurations.shared];
-      rootTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) configurations.defaults.tags;
-      hostTagContributions = map (tag: configurations.perTag.${tag}.perClass.${class.nativeClass} or {}) host.tags;
-      rootHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.homeManager or {}) configurations.defaults.tags;
-      hostHomeTagContributions = map (tag: configurations.perTag.${tag}.perClass.homeManager or {}) host.tags;
+      rootTagContributions = map (tag: (profileContribution tag).perClass.${class.nativeClass} or {}) configurations.defaults.tags;
+      hostTagContributions = map (tag: (profileContribution tag).perClass.${class.nativeClass} or {}) host.tags;
+      rootHomeTagContributions = map (tag: (profileContribution tag).perClass.homeManager or {}) configurations.defaults.tags;
+      hostHomeTagContributions = map (tag: (profileContribution tag).perClass.homeManager or {}) host.tags;
       systemContributions = baseContributions ++ rootTagContributions ++ hostTagContributions ++ [host];
       baseModules =
         configurations.shared.modules

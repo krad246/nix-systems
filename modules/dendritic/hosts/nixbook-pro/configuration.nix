@@ -4,7 +4,7 @@
   lib,
   ...
 }: {
-  flake.darwinConfigurations.nixbook-pro = inputs.nix-darwin.lib.darwinSystem {
+  flake.darwinConfigurations.nixbook-pro = inputs.darwin.lib.darwinSystem {
     modules = [
       {
         imports = [

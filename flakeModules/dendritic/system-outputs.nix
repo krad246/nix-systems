@@ -7,21 +7,49 @@
 }: let
   systemCoordinates = config.dendritic.internal.systemCoordinates;
   profileNames = config.dendritic.internal.profileNames;
+  capabilityTags = config.dendritic.internal.capabilityTags;
+
+  virtualisationEnabled = variant:
+    config.dendritic.virtualisation.enable
+    && (
+      if variant.virtualisation == null
+      then lib.elem "virtualisation" variant.tags
+      else variant.virtualisation.enable
+    );
 
   profileSystemModules = nativeClass: tags:
-    lib.concatMap (tag: let
-      contribution = config.dendritic.configurations.perTag.${tag}.perClass.${nativeClass} or {};
-    in
-      assert lib.assertMsg (lib.elem tag profileNames) "dendritic.configurations: tag ${tag} is not a canonical profile aspect";
-        contribution.modules or [])
+    lib.concatMap (tag:
+      if lib.elem tag profileNames
+      then (config.dendritic.configurations.perTag.${tag}.perClass.${nativeClass} or {}).modules or []
+      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
 
   profileHomeModules = username: tags:
-    lib.concatMap (tag: let
-      contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
-    in
-      (contribution.modules or []) ++ (contribution.users.${username}.modules or []))
+    lib.concatMap (tag:
+      if lib.elem tag profileNames
+      then let
+        contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
+      in
+        (contribution.modules or []) ++ (contribution.users.${username}.modules or [])
+      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
+
+  virtualisationModules = variantName: variant: let
+    cfg = variant.virtualisation;
+    presetName =
+      if config.dendritic.virtualisation.presets ? ${variantName}
+      then variantName
+      else "vm";
+    preset = config.dendritic.virtualisation.presets.${presetName} or (throw "dendritic.virtualisation: unknown preset ${presetName}");
+  in
+    lib.optionals (virtualisationEnabled variant)
+    (preset.modules
+      ++ lib.optional (cfg != null && cfg.options != {}) cfg.options
+      ++ (
+        if cfg == null
+        then []
+        else cfg.modules
+      ));
 
   hostOutputName = coordinate:
     if lib.count (candidate: candidate.hostName == coordinate.hostName) systemCoordinates == 1
@@ -40,11 +68,12 @@
     then "${hostOutputName coordinate}-${variantName}"
     else variant.outputName;
 
-  variantModules = coordinate: variant:
+  variantModules = coordinate: variantName: variant:
     [
       {_module.args = variant.lateModuleArgs;}
     ]
     ++ profileSystemModules coordinate.nativeClass variant.tags
+    ++ virtualisationModules variantName variant
     ++ variant.modules
     ++ lib.optional (coordinate.users != {}) {
       home-manager.extraSpecialArgs = lib.mergeAttrsList (
@@ -121,8 +150,8 @@
         modules = [
           {
             specialisation =
-              lib.mapAttrs (_: variant: {
-                configuration.imports = variantModules coordinate variant;
+              lib.mapAttrs (variantName: variant: {
+                configuration.imports = variantModules coordinate variantName variant;
               })
               includedSpecialisations;
           }
@@ -134,7 +163,7 @@
     ++ lib.mapAttrsToList (variantName: variant: {
       ${variantOutputName coordinate variantName variant} = (baseConfiguration coordinate).extendModules {
         inherit (variant) specialArgs;
-        modules = variantModules coordinate variant;
+        modules = variantModules coordinate variantName variant;
       };
     }) (lib.filterAttrs (_: variant:
       config.dendritic.configurations.defaults.variants.enableFlakeOutputs

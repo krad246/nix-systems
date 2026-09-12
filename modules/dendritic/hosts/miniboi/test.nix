@@ -4,7 +4,7 @@
       name = "miniboi-automated-install";
 
       nodes.miniboi = {
-        imports = self.nixosConfigurations.miniboi.graph;
+        imports = self.nixosConfigurations.miniboi-aarch64-linux.graph;
       };
 
       testScript = ''

@@ -9,14 +9,11 @@ in {
 
   services.vscode-server = {
     enable = true;
-    extraRuntimeDependencies = with pkgs; (
-      [
-        nodejs
-        jq
-        wget
-        coreutils
-      ]
-      ++ krad246.term-fonts.paths
-    );
+    extraRuntimeDependencies = with pkgs; [
+      nodejs
+      jq
+      wget
+      coreutils
+    ];
   };
 }

@@ -21,7 +21,7 @@
       })
       (self.lib.mkIf (system == "aarch64-linux") {
         checks.flake-lib-miniboi = let
-          cfg = self.nixosConfigurations.miniboi.config;
+          cfg = self.nixosConfigurations.miniboi-aarch64-linux.config;
           home = cfg.home-manager.users.${cfg.owner.username};
         in
           assert self.lib.trivial.release == inputs.nixpkgs.lib.trivial.release;

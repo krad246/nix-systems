@@ -64,6 +64,7 @@
     hercules-ci-effects.url = "github:hercules-ci/hercules-ci-effects";
     home-manager.url = "github:nix-community/home-manager/release-26.05";
     impermanence.url = "github:nix-community/impermanence";
+    import-tree.url = "github:vic/import-tree";
     just-flake.url = "github:juspay/just-flake";
     mac-app-util.url = "github:hraban/mac-app-util";
     multiverse.url = "github:fzakaria/nixpkgs-multiverse";

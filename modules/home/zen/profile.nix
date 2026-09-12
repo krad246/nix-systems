@@ -1,10 +1,12 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   ...
 }: let
   inherit (lib) modules;
+  firefox-addons = inputs.nur.legacyPackages.${pkgs.stdenv.hostPlatform.system}.repos.rycee.firefox-addons;
 in {
   programs.firefox = {
     enable = true;
@@ -28,7 +30,7 @@ in {
 
       extensions = {
         force = true;
-        packages = with pkgs.krad246.firefox-addons; [
+        packages = with firefox-addons; [
           bitwarden
           ghostery
           multi-account-containers

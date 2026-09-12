@@ -8,6 +8,6 @@ in {
   imports = [agenix.darwinModules.age];
 
   environment.systemPackages = [
-    pkgs.krad246.agenix
+    inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

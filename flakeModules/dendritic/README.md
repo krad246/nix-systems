@@ -161,6 +161,13 @@ projection:
 - `outputName` overrides the generated sparse output name.
 - `tags` adds ordered profile aspects to the variant.
 
+The framework also exposes `dendritic.virtualisation`. Enabling it supplies
+default VM presets keyed by variant name; a variant may add direct
+`virtualisation.options` and `virtualisation.modules` overlays. The framework
+preloads the runner package set into NixOS's `virtualisation.host.pkgs`, so a
+Linux guest such as `miniboi-aarch64-linux` can expose a native
+`packages.aarch64-darwin.*-vm-nogui` launcher.
+
 These controls are independent. Nix module priorities provide override
 semantics inside the variant; a variant is not a second host. Omitting
 `package` (or setting it to `null`) still publishes the configuration when

@@ -5,7 +5,7 @@
   ...
 }: {
   imports = [
-    self.homeModules.base-home
+    self.modules.homeManager.base
   ];
 
   home = {

@@ -8,11 +8,9 @@
   # VSCode *is* supported!
   containers = ./containers;
   nixos-generators = ./nixos-generators;
-  disko-config = ./disko;
 in {
   imports = [
     containers
-    disko-config
     nixos-generators
   ];
 
@@ -20,7 +18,6 @@ in {
   flake = rec {
     flakeModules = {
       inherit containers;
-      inherit disko-config;
       inherit nixos-generators;
     };
 

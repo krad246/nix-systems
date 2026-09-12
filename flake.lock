@@ -1196,6 +1196,21 @@
         "type": "github"
       }
     },
+    "import-tree_2": {
+      "locked": {
+        "lastModified": 1788467110,
+        "narHash": "sha256-ljEMTXP/rH0tOvDzc9gzwww6KcHRPRnEHzd9lK48V7s=",
+        "owner": "vic",
+        "repo": "import-tree",
+        "rev": "eb1b52eaecc57f7c136d07ae8a93e724dfecac46",
+        "type": "github"
+      },
+      "original": {
+        "owner": "vic",
+        "repo": "import-tree",
+        "type": "github"
+      }
+    },
     "just-flake": {
       "locked": {
         "lastModified": 1713316411,
@@ -2051,6 +2066,7 @@
         "hercules-ci-effects": "hercules-ci-effects",
         "home-manager": "home-manager_2",
         "impermanence": "impermanence",
+        "import-tree": "import-tree_2",
         "just-flake": "just-flake",
         "mac-app-util": "mac-app-util",
         "multiverse": "multiverse",

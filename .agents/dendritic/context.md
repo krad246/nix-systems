@@ -126,6 +126,47 @@ flake-evaluation proof; this is an intentional contraction of legacy module
 surface, not permission to remove unrelated capabilities or revive a second
 host-shaped architecture.
 
+Legacy files are retained only as an explicit, temporary exception for a
+legitimate feature that has not yet been ported and has an identified consumer.
+Once that feature is represented by a Dendritic interface/backend or other
+owned replacement, the legacy implementation is deleted; compatibility
+duplication is not an accepted end state. This applies equally to Home
+Manager, NixOS, nix-darwin, hardware, persistence, disko, package, and flake
+modules.
+
+When removing a legacy capability cone, distinguish reusable provider and
+backend plumbing from the concrete legacy preset or consumer built on it. The
+provider/backend must first be re-materialized under Dendritic and become the
+new owner; only then should the old concrete implementation be deleted. For
+example, the old fortress-desktop disko layout is the deletion target, while
+the reusable disko and impermanence modules are retained through their
+Dendritic interface/backend ports.
+
+Reusable behavior that is meaningful only for a subset of hosts or variants
+should be exposed as a Dendritic capability module selected at the host or
+variant boundary, rather than wired as repeated implementation details into one
+machine. VM artifact realization is the model case: the framework owns an
+explicit `dendritic.virtualisation` enable/preset interface, while Miniboi only
+opts its VM variants into that capability and supplies direct option/module
+overlays.
+
+The VM runner package set is a distinct host-of-the-artifact coordinate. Do not
+infer it from the target NixOS module's `pkgs.buildPackages`, which can describe
+the evaluator's build splice rather than the selected runner. Package
+projections preload the exact `withSystem` package set for the runner into the
+standard `virtualisation.host.pkgs` option. Thus a Linux guest coordinate can
+produce a native Darwin `vm-nogui` launcher while retaining its Linux guest
+hostPlatform; native Linux projections remain available from the permitted
+Linux realization builders.
+
+The framework's default virtualization presets are direct module sets, not
+stringly typed backend pointers. A variant's `virtualisation.options` is an
+`attrsOf raw` direct-options passthrough and its `virtualisation.modules` are
+merged after the variant-name-matched default preset, so consumers can override
+or extend the preset through ordinary module semantics. The `virtualisation`
+tag remains a useful semantic capability marker; explicit `enable = false`
+disables it for a variant.
+
 ## Authoritative architectural intent
 
 Systems are to be reconstructed from imports of capability interfaces, not
@@ -456,13 +497,15 @@ it is not a positional tuple or a list of stringly typed coordinate kinds.
 Names belong to their corresponding typed node, with structural defaults, and
 the former generic naming callback is compatibility-only.
 
-`tags` has one law at every taggable node: its ordered list selects canonical
+`tags` has one law at every taggable node: profile tags select canonical
 profile aspects from the regular top-level files in
 `inputs.dendritic/modules/profiles` (currently `base`, `desktop`, `dev`,
-`headless`, `standalone`, and `workstation`). Tags are never host names,
-application names, or low-level capabilities. Root tags apply to every host
-root, host tags refine that root, user and host-user tags refine their Home
-Manager node, and variant tags form the final additive delta of that variant.
+`headless`, `standalone`, and `workstation`). Framework capability tags are a
+separate, closed vocabulary and do not select `perTag` profile modules;
+`virtualisation` is currently the first such capability tag. Tags are never
+host names or application names. Root tags apply to every host root, host tags
+refine that root, user and host-user tags refine their Home Manager node, and
+variant tags form the final additive delta of that variant.
 The matching profile modules are materialized for the target evaluator through
 the explicit `perTag.<name>.modules` and `perTag.<name>.homeModules` sets.
 `users.<name>.modules` remains the user-specific Home Manager seam, and the
@@ -493,11 +536,15 @@ valid build platform, while retaining the selected destination host platform.
 The declaration promises admissible coordinates, not local builder
 provisioning: whether a concrete derivation is realized locally, remotely, or
 through emulation is controlled by the owner's Nix builder configuration.
-Constraining the build-platform table is the supported way to omit pairs that
-the owner does not intend to realize, such as Darwin builders for a Linux VM
-fixture. The Miniboi fixture currently hardcodes
-`x86_64-linux` and `aarch64-linux` as its valid build platforms, so its proof
-cohort covers both Linux directions and intentionally excludes Darwin builders.
+Constraining the build-platform table is the supported way to omit target
+realization pairs that the owner does not intend to realize, such as Darwin
+builders for the Linux VM fixture. The Miniboi fixture currently hardcodes
+`x86_64-linux` and `aarch64-linux` as its valid Linux realization builders, so
+its target-system proof cohort covers both Linux directions and intentionally
+excludes Darwin target builders. Virtualization variants additionally project
+native runner packages for non-Linux flake systems, including
+`aarch64-darwin`; those runner projections do not change the guest
+`hostPlatform` or the Linux realization-builder constraint.
 
 Do not collapse the declaration's constraint tables into one literal
 `buildPlatform` coordinate. A concrete system output may retain one canonical
@@ -1615,6 +1662,40 @@ as a nested `imports` element. This preserves import-tree's module-level
 composition semantics and keeps the flake entrypoint as the single discovery
 boundary.
 
+### `legacyPackages` ownership decision (2026-09-06)
+
+Dendritic owns the flake-parts `perSystem.legacyPackages` package set. The
+canonical implementation consumes the already-spliced `inputs'.nixpkgs`
+package set, applies only the intended Dendritic package overlay (currently
+the narrow `unstable` projection), and binds the resulting set as the
+per-system `pkgs` argument. Do not retain the legacy package factory that
+re-imports Nixpkgs with `self.overlays.default`; that creates a second package
+fixed point, obscures splicing, and reintroduces the old overlay recursion.
+
+Host-specific artifacts are not package-set ownership. The former Miniboi
+declaration that placed VM outputs beneath `perSystem.legacyPackages` is being
+moved into the Dendritic host/variant package projection; it must not become a
+second `legacyPackages` producer. Delete `flakeModules/legacyPackages` and
+`flakeModules/overlays` wholesale, including the combined/default adapter and
+the `krad246` library/package scope. Restore `flake.lib = inputs.nixpkgs.lib`.
+Only the narrow Dendritic `nixpkgs/unstable.nix` overlay remains. Every
+remaining `pkgs.krad246.*`, `self.lib.krad246.*`, and generic-module consumer
+must be explicitly ported to its owning interface or removed; do not recreate
+the old scope under another name.
+
+### Dendritic replacement convergence decision (2026-09-06)
+
+The main-based migration line is a staging path toward the frozen `dendritic`
+branch's functional tree, not a permanent hybrid architecture. The intended
+end state is equivalent to checking out `dendritic` for the modern module and
+flake structure, plus only the explicitly accepted fixes, parity decisions,
+platform constraints, and interface improvements discovered during this
+audit. Use the branch as the replacement baseline: inventory each straggler,
+classify its retained delta, port any accepted behavior into the Dendritic
+owner, and delete the predecessor implementation. Do not preserve bridge
+surfaces merely because both trees currently coexist; eliminate the bridge
+when the corresponding replacement and accepted delta are proven.
+
 The `agent` devshell exposes `verify-dendritic-context`, and the same executable
 backs the scoped `verify-dendritic-context` pre-commit hook. The hook is
 read-only: it runs when the canonical bundle or generated `AGENTS.md` changes
@@ -1804,6 +1885,12 @@ interactive profile, and separate the selected development profile from an
 explicit opt-in kitchen-sink/lost-and-found module. The deleted mutable
 dotfiles behavior stays deleted. Disk simulation remains a later, separate
 commit.
+
+The package-set ownership cut is also active: the legacy root
+`flakeModules/legacyPackages` and `flakeModules/overlays` producers are removed
+from the entrypoint, and Miniboi's VM projections now live under the new host
+variant package interface. The deeper disk-simulation proof remains a separate
+follow-up commit.
 
 1. Finish total behavioral porting of `. #base`, using the program-by-program HM
    ledger and explicit owner decisions rather than copying legacy bundles. The

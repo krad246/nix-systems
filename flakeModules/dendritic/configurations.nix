@@ -18,6 +18,8 @@
       lib.mkMerge
     ];
 in {
+  dendritic.virtualisation.enable = true;
+
   dendritic.configurations = lib.mkMerge [
     {
       # interface 1: inherited defaults
@@ -104,81 +106,6 @@ in {
     {
       # interface 4: defining hosts
       hosts = {
-        # Miniboi is the end-to-end deployment fixture: one real disko-backed
-        # system coordinate, with each backend represented as a variant.
-        miniboi = {
-          enable = true;
-          class = "nixos";
-          hostPlatforms = [
-            {system = "x86_64-linux";}
-            {system = "aarch64-linux";}
-          ];
-          # The VM runner and disko helper are Linux-side build products. Keep
-          # Darwin out of this fixture's builder constraint table while still
-          # publishing both Linux build/host cross directions.
-          buildPlatforms = [
-            {system = "x86_64-linux";}
-            {system = "aarch64-linux";}
-          ];
-          crossCompile = true;
-          tags = ["headless"];
-          modules = [
-            inputs.dendritic.modules.nixos.disko
-            inputs.dendritic.modules.nixos.bootloader
-            inputs.dendritic.diskoConfigurations.simple
-            {
-              networking.hostName = "miniboi";
-              security.sudo.wheelNeedsPassword = false;
-              disko.enableConfig = true;
-              boot.loader = {
-                enable = true;
-                mode = "bios";
-              };
-              users.users.krad246.initialHashedPassword = "";
-            }
-          ];
-          variants = {
-            vm = {
-              package = configuration: configuration.config.system.build.vm;
-              modules = [
-                ({pkgs, ...}: {
-                  virtualisation.vmVariant.virtualisation.host.pkgs = pkgs.buildPackages;
-                })
-              ];
-            };
-            vm-with-bootloader = {
-              package = configuration: configuration.config.system.build.vmWithBootLoader;
-              modules = [
-                ({pkgs, ...}: {
-                  virtualisation.vmVariantWithBootLoader.virtualisation.host.pkgs = pkgs.buildPackages;
-                  virtualisation.vmVariantWithBootLoader.virtualisation.diskSize = 20 * 1024;
-                })
-              ];
-            };
-            disko-vm = {
-              package = configuration: configuration.config.system.build.vmWithDisko;
-              modules = [
-                ({pkgs, ...}: {
-                  virtualisation.vmVariantWithDisko = {
-                    virtualisation.host.pkgs = pkgs.buildPackages;
-                    boot.loader.grub.devices = lib.mkForce [];
-                    boot.loader.grub.mirroredBoots = lib.mkForce [
-                      {
-                        # Keep the VM's GRUB configuration bootable without
-                        # colliding with disko's installer-side /dev/vda
-                        # projection. The image builder still installs GRUB to
-                        # the actual disk when it materializes the disko image.
-                        devices = ["nodev"];
-                        path = "/boot";
-                      }
-                    ];
-                  };
-                })
-              ];
-            };
-          };
-        };
-
         generic-headless-interactive = {
           enable = true;
           class = "nixos"; # module class, same
