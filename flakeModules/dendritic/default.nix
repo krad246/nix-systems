@@ -18,7 +18,9 @@
       };
     };
 
-    crossCompilation = lib.modules.importApply ./cross-compilation.nix {inherit lib;};
+    crossCompilation = lib.modules.importApply ./cross-compilation.nix {
+      inherit lib platformType;
+    };
 
     moduleContributions = {
       imports = [crossCompilation];

@@ -1,12 +1,11 @@
-{lib, ...}: {
+{
+  lib,
+  platformType,
+  ...
+}: {
   options = {
     buildPlatforms = lib.mkOption {
-      type = lib.types.nullOr (lib.types.listOf (lib.types.submodule {
-        options.system = lib.mkOption {
-          type = lib.types.str;
-          description = "A platform constraint identified by its system string.";
-        };
-      }));
+      type = lib.types.nullOr (lib.types.listOf platformType);
       default = null;
       description = "Optional constraints describing valid build platforms; null permits every declared flake system.";
     };
