@@ -142,6 +142,11 @@ gating happen when the system coordinate is constructed. Host-local
 `metadata` describes machine facts. It is separate from profile `meta` and
 `passthru`.
 
+The hosts interface owns host declaration normalization, destination
+coordinate expansion, and NixOS/nix-darwin system outputs. Cross-compilation is
+composed into the interface as an independent mixin, while package and VM
+artifact projections remain a separate concern.
+
 `buildPlatforms` constrains the builders from which independent artifacts may
 be materialized. `hostPlatforms` constrains their destination systems. This
 cross-compilation policy is a composable mixin used by hosts, users, profiles,

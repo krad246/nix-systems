@@ -179,6 +179,14 @@ configuration layers that need to participate in a coordinate. The mixin owns
 the cross-build constraint semantics; host declarations only assemble it with
 destination host-platform facts.
 
+The hosts interface owns the host declaration schema, host lowering, destination
+coordinate expansion, and native NixOS/nix-darwin system projections. These
+responsibilities live together in the hosts interface; obsolete peer modules
+for host declarations, system coordinates, and system outputs are deleted
+after their logic is consolidated. Cross-compilation remains a separate
+`importApply`-composed mixin, and artifact/package projections remain separate
+from the hosts system-output owner.
+
 ## Authoritative architectural intent
 
 Systems are to be reconstructed from imports of capability interfaces, not
