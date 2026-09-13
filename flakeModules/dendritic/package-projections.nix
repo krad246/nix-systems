@@ -8,7 +8,6 @@
   systemCoordinates = config.dendritic.internal.systemCoordinates;
   flakeSystems = lib.unique (lib.filter (system: system != "x86_64-darwin") config.systems);
   profileNames = config.dendritic.internal.profileNames;
-  capabilityTags = config.dendritic.internal.capabilityTags;
 
   moduleClass = system:
     if lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString system)
@@ -32,7 +31,7 @@
     lib.concatMap (tag:
       if lib.elem tag profileNames
       then (config.dendritic.configurations.perTag.${tag}.perClass.${evaluatorClass} or {}).modules or []
-      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
+      else [])
     tags;
 
   profileHomeModules = username: tags:
@@ -42,7 +41,7 @@
         contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
       in
         (contribution.modules or []) ++ (contribution.users.${username}.modules or [])
-      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
+      else [])
     tags;
 
   hostOutputName = coordinate:

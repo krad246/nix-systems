@@ -2,8 +2,8 @@
   lib,
   types,
   ...
-}: let
-  inherit (types) argumentOption compositionType;
+}: {config, ...}: let
+  inherit (types) argumentOption compositionType profileTagType;
 in {
   options.dendritic.configurations = {
     globalArgs = argumentOption "Target-independent early arguments shared by every native and Home Manager evaluator.";
@@ -13,7 +13,7 @@ in {
       type = lib.types.submodule {
         options = {
           tags = lib.mkOption {
-            type = lib.types.listOf lib.types.str;
+            type = lib.types.listOf (profileTagType config);
             default = [];
             description = "Ordered profile aspects inherited by every host and user declaration.";
           };

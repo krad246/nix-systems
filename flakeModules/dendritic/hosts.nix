@@ -5,10 +5,9 @@
   withSystem,
   ...
 }: let
-  inherit (types) hostUsers moduleContributions platformType variantType;
+  inherit (types) hostUsers moduleContributions platformType profileTagType variantType;
   configurations = config.dendritic.configurations;
   profileNames = config.dendritic.internal.profileNames;
-  capabilityTags = config.dendritic.internal.capabilityTags;
   systemCoordinates = resolvedSystemCoordinates;
 
   mergeArgs = field: contributions:
@@ -29,7 +28,7 @@
     lib.concatMap (tag:
       if lib.elem tag profileNames
       then (configurations.perTag.${tag}.perClass.${evaluatorClass} or {}).modules or []
-      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
+      else [])
     tags;
 
   profileHomeModules = username: tags:
@@ -39,13 +38,13 @@
         contribution = configurations.perTag.${tag}.perClass.homeManager or {};
       in
         (contribution.modules or []) ++ (contribution.users.${username}.modules or [])
-      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
+      else [])
     tags;
 
   profileContribution = tag:
     if lib.elem tag profileNames
     then configurations.perTag.${tag}
-    else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; {};
+    else {};
 
   resolvedSystemDeclarations = lib.pipe configurations.hosts [
     (lib.filterAttrs (_: host: host.enable))
@@ -364,7 +363,7 @@ in {
       configurations = {
         hosts = lib.mkOption {
           type = lib.types.attrsOf (lib.types.submodule {
-            imports = [moduleContributions hostUsers];
+            imports = [moduleContributions (hostUsers config)];
             options = {
               enable = lib.mkEnableOption "this NixOS or nix-darwin host";
               outputName = lib.mkOption {
@@ -373,7 +372,7 @@ in {
                 description = "Optional name for this host's root system output.";
               };
               tags = lib.mkOption {
-                type = lib.types.listOf lib.types.str;
+                type = lib.types.listOf (profileTagType config);
                 default = [];
                 description = "Ordered profile aspects selecting the corresponding perTag.<name> overlays.";
               };
@@ -388,7 +387,7 @@ in {
                 description = "Constraints describing every realizable destination host platform.";
               };
               variants = lib.mkOption {
-                type = lib.types.attrsOf variantType;
+                type = lib.types.attrsOf (variantType config);
                 default = {};
                 description = "Sparse system variant and specialisation coordinates.";
               };

@@ -591,6 +591,12 @@ already-resolved internal fields. Construction-only dependencies such as
 shared type constructors are curried into import-composed modules with
 `lib.modules.importApply` and are not transported through `_module.args`.
 
+Tag-bearing declaration options use a `lib.types.enum` closed over the resolved
+canonical profile and framework capability names. This makes invalid tags fail
+at the declaration boundary; resolvers may treat valid capability tags as
+semantic markers that contribute no profile modules without repeating runtime
+membership assertions.
+
 Interface ownership includes the projections an interface materializes. The
 users interface therefore owns standalone and host-integrated Home Manager
 outputs, their variant extensions, and their HM realization checks; these are

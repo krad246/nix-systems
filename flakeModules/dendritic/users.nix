@@ -4,10 +4,9 @@
   lib,
   ...
 }: let
-  inherit (types) moduleContributions variantType;
+  inherit (types) moduleContributions profileTagType variantType;
 
   profileNames = config.dendritic.internal.profileNames;
-  capabilityTags = config.dendritic.internal.capabilityTags;
 
   mergeArgs = field: contributions:
     lib.mergeAttrsList (map (contribution: contribution.${field} or {}) contributions);
@@ -19,13 +18,13 @@
         contribution = config.dendritic.configurations.perTag.${tag}.perClass.homeManager or {};
       in
         (contribution.modules or []) ++ (contribution.users.${username}.modules or [])
-      else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
+      else [])
     tags;
 
   profileContribution = tag:
     if lib.elem tag profileNames
     then config.dendritic.configurations.perTag.${tag}
-    else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; {};
+    else {};
 
   standaloneModules = user:
     if user.standalone == null
@@ -164,7 +163,7 @@ in {
       options = {
         enable = lib.mkEnableOption "this Home Manager user";
         tags = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
+          type = lib.types.listOf (profileTagType config);
           default = [];
           description = "Ordered profile aspects selecting contributions for this user node.";
         };
@@ -192,7 +191,7 @@ in {
           description = "Whether host-derived configurations receive osConfig.";
         };
         variants = lib.mkOption {
-          type = lib.types.attrsOf variantType;
+          type = lib.types.attrsOf (variantType config);
           default = {};
           description = "Sparse Home Manager variant coordinates.";
         };

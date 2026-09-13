@@ -84,6 +84,10 @@ constructed. `meta` and `passthru` do not select modules or alter options; they
 are carried on normalized declaration metadata for downstream consumers. In
 practice, `passthru` is the general-purpose channel.
 
+Tag-bearing options are checked against an enum of the resolved canonical
+profile and framework capability names. Capability tags are valid semantic
+markers but do not select profile modules.
+
 Tags can be selected through `defaults.tags`, or attached locally at a host,
 user, host-user, or variant node. The same ordered tag list is interpreted
 consistently at each location. A variant's tags extend its parent coordinate;

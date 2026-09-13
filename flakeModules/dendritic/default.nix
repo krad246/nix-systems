@@ -18,6 +18,12 @@
       };
     };
 
+    profileTagType = config:
+      lib.types.enum (
+        config.dendritic.internal.profileNames
+        ++ config.dendritic.internal.capabilityTags
+      );
+
     crossCompilation = lib.modules.importApply ./cross-compilation.nix {
       inherit lib platformType;
     };
@@ -50,11 +56,11 @@
       };
     };
 
-    variant = {
+    variant = tagType: {
       imports = [composition];
       options = {
         tags = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
+          type = lib.types.listOf tagType;
           default = [];
           description = "Ordered profile aspects selecting additional contributions for this variant node.";
         };
@@ -117,13 +123,13 @@
       };
     };
 
-    hostUsers = {
+    hostUsersType = tagType: {
       options.users = lib.mkOption {
         type = lib.types.attrsOf (lib.types.submodule {
           imports = [moduleContributions];
           options = {
             tags = lib.mkOption {
-              type = lib.types.listOf lib.types.str;
+              type = lib.types.listOf tagType;
               default = [];
               description = "Ordered profile aspects selecting contributions for this user within one host.";
             };
@@ -140,9 +146,10 @@
     };
 
     types = {
-      inherit argumentOption platformType moduleContributions composition hostUsers;
+      inherit argumentOption platformType moduleContributions composition profileTagType;
       compositionType = lib.types.submodule composition;
-      variantType = lib.types.submodule variant;
+      variantType = config: lib.types.submodule (variant (profileTagType config));
+      hostUsers = config: hostUsersType (profileTagType config);
       virtualisationPresetType = lib.types.submodule virtualisation;
     };
   in
