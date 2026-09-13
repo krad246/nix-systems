@@ -583,6 +583,13 @@ already-resolved internal fields. Construction-only dependencies such as
 shared type constructors are curried into import-composed modules with
 `lib.modules.importApply` and are not transported through `_module.args`.
 
+Interface ownership includes the projections an interface materializes. The
+users interface therefore owns standalone and host-integrated Home Manager
+outputs, their variant extensions, and their HM realization checks; these are
+not a separate peer-owned `home-manager-outputs` interface. Likewise, an
+obsolete helper file is deleted when its owning interface absorbs its only
+consumer.
+
 The concrete Home Manager, NixOS, and nix-darwin evaluators use the module-style
 `build` and `includeSpecialisations` options. Keep those evaluators as explicit
 recursive attrsets rather than hiding their native contracts behind a backend

@@ -160,7 +160,6 @@ in {
     ./host-declarations.nix
     ./system-coordinates.nix
     ./system-outputs.nix
-    ./home-manager-outputs.nix
     ./package-projections.nix
     ./configurations.nix
   ];
