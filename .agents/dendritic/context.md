@@ -167,6 +167,18 @@ or extend the preset through ordinary module semantics. The `virtualisation`
 tag remains a useful semantic capability marker; explicit `enable = false`
 disables it for a variant.
 
+Evaluator dispatch does not need a public `nativeClass` or host class registry.
+At the native evaluator boundary, the framework determines NixOS versus
+nix-darwin from `_module.args.pkgs.stdenv.hostPlatform` and branches inline;
+platform-string inspection is only a pre-evaluator normalization fallback.
+
+Cross-compilation is a composable mixin, not a responsibility owned by the
+hosts interface. The hosts API composes the mixin into its declarations, while
+the same build-platform and cross-policy options remain available to the other
+configuration layers that need to participate in a coordinate. The mixin owns
+the cross-build constraint semantics; host declarations only assemble it with
+destination host-platform facts.
+
 ## Authoritative architectural intent
 
 Systems are to be reconstructed from imports of capability interfaces, not
@@ -554,12 +566,22 @@ build/host pair. Cross-compilation is valid exactly when the concrete pair
 differs and the declaration's cross policy permits it. The Miniboi fixture is
 the first required proof of this matrix.
 
-The host declaration model admits semantic class aliases through a typed class
-registry (`nativeClass` selects NixOS or nix-darwin while the alias keeps its
-own `perClass` contribution set), architecture contributions, and structured
-host metadata.
-It deliberately excludes filesystem discovery and a global untyped
+The host declaration model derives its evaluator from the target package set;
+it does not expose a redundant `nativeClass` field or host class registry.
+Evaluator-specific profile contributions remain under `perClass`, and the
+framework dispatches inline from `pkgs.stdenv.hostPlatform.isDarwin` (with
+platform-string dispatch only in pre-evaluator normalization). Host
+declarations retain architecture contributions and structured host metadata,
+while deliberately excluding filesystem discovery and a global untyped
 `specialArgs` universe.
+
+Resolved data is normally published in `dendritic.internal`, which is the
+framework's evaluated data-sharing namespace. Use an additional
+`dendritic.internal.resolved` namespace only when an interface has a meaningful
+pre-resolution and post-resolution pair; do not add it merely to rename
+already-resolved internal fields. Construction-only dependencies such as
+shared type constructors are curried into import-composed modules with
+`lib.modules.importApply` and are not transported through `_module.args`.
 
 The concrete Home Manager, NixOS, and nix-darwin evaluators use the module-style
 `build` and `includeSpecialisations` options. Keep those evaluators as explicit

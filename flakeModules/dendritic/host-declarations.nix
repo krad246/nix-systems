@@ -10,10 +10,21 @@
   mergeArgs = field: contributions:
     lib.mergeAttrsList (map (contribution: contribution.${field} or {}) contributions);
 
-  profileSystemModules = nativeClass: tags:
+  moduleClass = platforms: let
+    systems = map (platform: lib.systems.parse.mkSystemFromString platform.system) platforms;
+  in
+    if systems == []
+    then throw "dendritic.configurations: an enabled host must declare at least one host platform"
+    else if lib.all lib.systems.inspect.predicates.isDarwin systems
+    then "darwin"
+    else if lib.all lib.systems.inspect.predicates.isLinux systems
+    then "nixos"
+    else throw "dendritic.configurations: host platforms must be Linux or Darwin";
+
+  profileSystemModules = evaluatorClass: tags:
     lib.concatMap (tag:
       if lib.elem tag profileNames
-      then (configurations.perTag.${tag}.perClass.${nativeClass} or {}).modules or []
+      then (configurations.perTag.${tag}.perClass.${evaluatorClass} or {}).modules or []
       else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
 
@@ -41,17 +52,17 @@ in {
   config.dendritic.internal.systemDeclarations = lib.pipe configurations.hosts [
     (lib.filterAttrs (_: host: host.enable))
     (lib.mapAttrs (hostName: host: let
-      class = configurations.classes.${host.class} or (throw "dendritic.configurations: host ${hostName} refers to unknown class ${host.class}");
+      evaluatorClass = moduleClass host.hostPlatforms;
       baseContributions = [configurations.shared];
-      rootTagContributions = map (tag: (profileContribution tag).perClass.${class.nativeClass} or {}) configurations.defaults.tags;
-      hostTagContributions = map (tag: (profileContribution tag).perClass.${class.nativeClass} or {}) host.tags;
+      rootTagContributions = map (tag: (profileContribution tag).perClass.${evaluatorClass} or {}) configurations.defaults.tags;
+      hostTagContributions = map (tag: (profileContribution tag).perClass.${evaluatorClass} or {}) host.tags;
       rootHomeTagContributions = map (tag: (profileContribution tag).perClass.homeManager or {}) configurations.defaults.tags;
       hostHomeTagContributions = map (tag: (profileContribution tag).perClass.homeManager or {}) host.tags;
       systemContributions = baseContributions ++ rootTagContributions ++ hostTagContributions ++ [host];
       baseModules =
         configurations.shared.modules
-        ++ profileSystemModules class.nativeClass configurations.defaults.tags;
-      tagModules = profileSystemModules class.nativeClass host.tags;
+        ++ profileSystemModules evaluatorClass configurations.defaults.tags;
+      tagModules = profileSystemModules evaluatorClass host.tags;
       selectedUsers =
         lib.filterAttrs (
           username: _: configurations.users ? ${username} && configurations.users.${username}.enable
@@ -60,8 +71,6 @@ in {
     in {
       inherit (host) enable outputName hostPlatforms buildPlatforms crossCompile variants;
       tags = configurations.defaults.tags ++ host.tags;
-      inherit (host) class;
-      inherit (class) nativeClass;
       inherit baseModules tagModules;
       hostModules = host.modules;
       modules = baseModules ++ tagModules ++ host.modules;
@@ -116,10 +125,6 @@ in {
         selectedUsers;
       metadata = {
         inherit hostName;
-        class = {
-          name = host.class;
-          inherit (class) metadata nativeClass;
-        };
         tags = map (tag: {
           name = tag;
           meta = configurations.perTag.${tag}.meta or {};

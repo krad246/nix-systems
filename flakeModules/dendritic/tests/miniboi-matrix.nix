@@ -10,6 +10,9 @@
   flakeSystems = lib.unique (lib.filter (system: system != "x86_64-darwin") flakeConfig.systems);
   systemCoordinates = flakeConfig.dendritic.internal.systemCoordinates;
   miniboiCoordinates = lib.filter (coordinate: coordinate.hostName == "miniboi") systemCoordinates;
+  variantUsesVirtualisation = variant:
+    variant.virtualisation != null || lib.elem "virtualisation" variant.tags;
+
   virtualisationEnabled = variant:
     flakeConfig.dendritic.virtualisation.enable
     && (
@@ -43,7 +46,8 @@
       flakeConfig.dendritic.configurations.defaults.variants.enableFlakeOutputs
       && flakeConfig.dendritic.configurations.defaults.variants.enable
       && variant.enableFlakeOutput
-      && variant.enable)
+      && variant.enable
+      && (!variantUsesVirtualisation variant || virtualisationEnabled variant))
     coordinate.declaration.variants;
 
   packageCoordinates = lib.concatMap (coordinate: let

@@ -108,7 +108,6 @@ in {
       hosts = {
         generic-headless-interactive = {
           enable = true;
-          class = "nixos"; # module class, same
           hostPlatforms = [{system = "x86_64-linux";}]; # cross-compile this host for a list of
           tags = ["headless"]; # add tag interfaces to the host, then implement perClass, same as above.
           modules = [
@@ -141,7 +140,6 @@ in {
 
         nixbook-pro-composed = {
           enable = true;
-          class = "darwin";
           hostPlatforms = [{system = "aarch64-darwin";}];
           tags = ["workstation"];
           modules = [

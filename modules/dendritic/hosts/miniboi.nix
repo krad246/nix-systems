@@ -5,7 +5,6 @@
 }: {
   dendritic.configurations.hosts.miniboi = {
     enable = true;
-    class = "nixos";
     hostPlatforms = [
       {system = "x86_64-linux";}
       {system = "aarch64-linux";}

@@ -7,6 +7,7 @@ flake-parts.lib.mkFlake
 (_: let
   apps = ./flakeModules/apps;
   dendritic = ./flakeModules/dendritic;
+  dendriticChecks = flake-parts.lib.importApply ./flakeModules/dendritic/checks.nix {};
   herculesCI = ./flakeModules/herculesCI;
   packages = ./flakeModules/packages;
 
@@ -14,6 +15,7 @@ flake-parts.lib.mkFlake
     imports = [
       apps
       dendritic
+      dendriticChecks
       herculesCI
       packages
     ];
@@ -148,6 +150,7 @@ in {
 
       inherit apps;
       inherit dendritic;
+      "dendritic-checks" = dendriticChecks;
       inherit herculesCI;
       inherit packages;
     };

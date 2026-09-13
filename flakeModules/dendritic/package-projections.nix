@@ -10,6 +10,16 @@
   profileNames = config.dendritic.internal.profileNames;
   capabilityTags = config.dendritic.internal.capabilityTags;
 
+  moduleClass = system:
+    if lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString system)
+    then "darwin"
+    else if lib.systems.inspect.predicates.isLinux (lib.systems.parse.mkSystemFromString system)
+    then "nixos"
+    else throw "dendritic.configurations: unsupported host platform ${system}";
+
+  variantUsesVirtualisation = variant:
+    variant.virtualisation != null || lib.elem "virtualisation" variant.tags;
+
   virtualisationEnabled = variant:
     config.dendritic.virtualisation.enable
     && (
@@ -18,10 +28,10 @@
       else variant.virtualisation.enable
     );
 
-  profileSystemModules = nativeClass: tags:
+  profileSystemModules = evaluatorClass: tags:
     lib.concatMap (tag:
       if lib.elem tag profileNames
-      then (config.dendritic.configurations.perTag.${tag}.perClass.${nativeClass} or {}).modules or []
+      then (config.dendritic.configurations.perTag.${tag}.perClass.${evaluatorClass} or {}).modules or []
       else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
 
@@ -68,6 +78,7 @@
       && config.dendritic.configurations.defaults.variants.enable
       && variant.enableFlakeOutput
       && variant.enable
+      && (!variantUsesVirtualisation variant || virtualisationEnabled variant)
       && variant.package != null)
     normalized.declaration.variants;
 
@@ -92,7 +103,7 @@
 
   variantModules = normalized: variantName: variant:
     [{_module.args = variant.lateModuleArgs;}]
-    ++ profileSystemModules normalized.nativeClass variant.tags
+    ++ profileSystemModules (moduleClass normalized.hostPlatform.system) variant.tags
     ++ virtualisationModules variantName variant
     ++ variant.modules
     ++ lib.mapAttrsToList (username: _: {
@@ -105,9 +116,9 @@
   baseConfiguration = coordinate:
     withSystem coordinate.buildPlatform (_: let
       constructor =
-        if coordinate.normalized.nativeClass == "darwin"
+        if moduleClass coordinate.normalized.hostPlatform.system == "darwin"
         then inputs.darwin.lib.darwinSystem
-        else if coordinate.normalized.nativeClass == "nixos"
+        else if moduleClass coordinate.normalized.hostPlatform.system == "nixos"
         then inputs.nixpkgs.lib.nixosSystem
         else throw "dendritic.configurations: unsupported target system ${coordinate.normalized.hostPlatform.system}";
       nixpkgsPlatformModules = [

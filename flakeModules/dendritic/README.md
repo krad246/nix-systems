@@ -42,15 +42,19 @@ to `modules`, it can contribute `specialArgs`, `extraSpecialArgs`,
 `lateModuleArgs`, `metadata`, and per-user `users.<name>.modules`. These values
 are accumulated when that evaluator is constructed.
 
-`classes.<name>.nativeClass` is a host-to-module-class mapping, not another
-module composition axis. For example:
+The evaluator class is derived from the target package set at the construction
+boundary: `_module.args.pkgs.stdenv.hostPlatform.isDarwin` selects `darwin`,
+and `.isLinux` selects `nixos`. There is no second host-class registry or
+redundant `nativeClass` field. Semantic machine categories belong in tags, not
+in evaluator class names.
 
-```nix
-classes.laptop.nativeClass = "darwin";
-hosts.nixbook.class = "laptop";
-```
-
-Semantic machine categories belong in tags, not in evaluator class names.
+The framework keeps resolved fixed-point data in `dendritic.internal`. For
+example, profile validation publishes `internal.profileNames`, host lowering
+publishes `internal.systemDeclarations`, and platform expansion publishes
+`internal.systemCoordinates`. These read-only values are the data-sharing
+surface for downstream projection modules; use an additional `internal.resolved`
+namespace only when an interface has a meaningful pre-resolution and
+post-resolution pair.
 
 ## Profile tags
 
@@ -119,13 +123,12 @@ package set.
 
 ## Hosts
 
-A host declaration supplies its evaluator class, target platform, profile tags,
-host modules, integrated users, and system variants:
+A host declaration supplies target platforms, profile tags, host modules,
+integrated users, and system variants:
 
 ```nix
 hosts.nixbook = {
   enable = true;
-  class = "laptop";
   hostPlatforms = [{ system = "aarch64-darwin"; }];
   tags = [ "workstation" ];
   modules = [ ... ];
@@ -133,13 +136,16 @@ hosts.nixbook = {
 };
 ```
 
-`class` resolves through `classes.<name>.nativeClass`; platform validation and
-cross-build gating happen when the system coordinate is constructed. Host-local
+The evaluator class is inferred from the declared target host platform when
+the native package set is available. Platform validation and cross-build
+gating happen when the system coordinate is constructed. Host-local
 `metadata` describes machine facts. It is separate from profile `meta` and
 `passthru`.
 
 `buildPlatforms` constrains the builders from which independent artifacts may
-be materialized. `hostPlatforms` constrains their destination systems. Every
+be materialized. `hostPlatforms` constrains their destination systems. This
+cross-compilation policy is a composable mixin used by hosts, users, profiles,
+and variants; the hosts API merely composes it into host declarations. Every
 permitted build/host pair is spliced by passing both platforms to the native
 NixOS or nix-darwin module while leaving `nixpkgs.pkgs` unset, so nixpkgs
 performs its normal cross compilation splice. For example, Miniboi publishes

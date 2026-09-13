@@ -9,6 +9,16 @@
   profileNames = config.dendritic.internal.profileNames;
   capabilityTags = config.dendritic.internal.capabilityTags;
 
+  moduleClass = system:
+    if lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString system)
+    then "darwin"
+    else if lib.systems.inspect.predicates.isLinux (lib.systems.parse.mkSystemFromString system)
+    then "nixos"
+    else throw "dendritic.configurations: unsupported host platform ${system}";
+
+  variantUsesVirtualisation = variant:
+    variant.virtualisation != null || lib.elem "virtualisation" variant.tags;
+
   virtualisationEnabled = variant:
     config.dendritic.virtualisation.enable
     && (
@@ -17,10 +27,10 @@
       else variant.virtualisation.enable
     );
 
-  profileSystemModules = nativeClass: tags:
+  profileSystemModules = evaluatorClass: tags:
     lib.concatMap (tag:
       if lib.elem tag profileNames
-      then (config.dendritic.configurations.perTag.${tag}.perClass.${nativeClass} or {}).modules or []
+      then (config.dendritic.configurations.perTag.${tag}.perClass.${evaluatorClass} or {}).modules or []
       else assert lib.assertMsg (lib.elem tag capabilityTags) "dendritic.configurations: tag ${tag} is not a canonical profile aspect or framework capability"; [])
     tags;
 
@@ -72,7 +82,7 @@
     [
       {_module.args = variant.lateModuleArgs;}
     ]
-    ++ profileSystemModules coordinate.nativeClass variant.tags
+    ++ profileSystemModules (moduleClass coordinate.hostPlatform.system) variant.tags
     ++ virtualisationModules variantName variant
     ++ variant.modules
     ++ lib.optional (coordinate.users != {}) {
@@ -94,13 +104,13 @@
     coordinate.users;
 
   baseConfiguration = coordinate:
-    withSystem coordinate.hostPlatform.system (_: let
+    withSystem coordinate.hostPlatform.system ({pkgs, ...}: let
       constructor =
-        if coordinate.nativeClass == "darwin"
+        if pkgs.stdenv.hostPlatform.isDarwin
         then inputs.darwin.lib.darwinSystem
-        else if coordinate.nativeClass == "nixos"
+        else if pkgs.stdenv.hostPlatform.isLinux
         then inputs.nixpkgs.lib.nixosSystem
-        else throw "dendritic.configurations: unsupported target system ${coordinate.hostPlatform.system}";
+        else throw "dendritic.configurations: unsupported target system ${pkgs.stdenv.hostPlatform.system}";
       nixpkgsPlatformModules = [
         {nixpkgs.buildPlatform = coordinate.hostPlatform.system;}
         {nixpkgs.hostPlatform = coordinate.hostPlatform.system;}
@@ -136,14 +146,17 @@
   configuration = coordinate: let
     root = baseConfiguration coordinate;
     includedSpecialisations = lib.filterAttrs (_: variant:
-      if variant.includeSpecialisations != null
-      then variant.includeSpecialisations
-      else config.dendritic.configurations.defaults.variants.includeSpecialisations)
+      (!variantUsesVirtualisation variant || virtualisationEnabled variant)
+      && (
+        if variant.includeSpecialisations != null
+        then variant.includeSpecialisations
+        else config.dendritic.configurations.defaults.variants.includeSpecialisations
+      ))
     coordinate.variants;
   in
     if includedSpecialisations == {}
     then root
-    else if coordinate.nativeClass == "darwin"
+    else if moduleClass coordinate.hostPlatform.system == "darwin"
     then throw "nix-darwin configurations do not support included specialisations"
     else
       root.extendModules {
@@ -169,11 +182,12 @@
       config.dendritic.configurations.defaults.variants.enableFlakeOutputs
       && config.dendritic.configurations.defaults.variants.enable
       && variant.enableFlakeOutput
-      && variant.enable)
+      && variant.enable
+      && (!variantUsesVirtualisation variant || virtualisationEnabled variant))
     coordinate.variants);
 in {
   flake = {
-    nixosConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: coordinate.nativeClass == "nixos") systemCoordinates));
-    darwinConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: coordinate.nativeClass == "darwin") systemCoordinates));
+    nixosConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: moduleClass coordinate.hostPlatform.system == "nixos") systemCoordinates));
+    darwinConfigurations = lib.mkMerge (lib.concatMap outputRows (lib.filter (coordinate: moduleClass coordinate.hostPlatform.system == "darwin") systemCoordinates));
   };
 }

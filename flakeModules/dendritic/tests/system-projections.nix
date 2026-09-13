@@ -47,7 +47,6 @@ in {
         };
         hosts.dendritic-composition-order = {
           enable = true;
-          class = "nixos";
           hostPlatforms = [{system = "x86_64-linux";}];
           tags = ["headless" "dev"];
           modules = [
@@ -84,10 +83,8 @@ in {
           })
           declaration.hostPlatforms)
         (builtins.attrValues flakeConfig.dendritic.internal.systemDeclarations);
-        expectedClass = hostPlatform:
-          if lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString hostPlatform.system)
-          then "darwin"
-          else "nixos";
+        isDarwin = hostPlatform:
+          lib.systems.inspect.predicates.isDarwin (lib.systems.parse.mkSystemFromString hostPlatform.system);
         hostOutputName = coordinate:
           if lib.count (candidate: candidate.hostName == coordinate.hostName) coordinates == 1
           then coordinate.hostName
@@ -115,13 +112,9 @@ in {
             message = "the generic headless image materializes as a NixOS VM";
           }
           {
-            assertion = lib.all (coordinate: coordinate.declaration.class == expectedClass coordinate.hostPlatform) coordinates;
-            message = "each host class matches every declared target platform";
-          }
-          {
             assertion = lib.all (coordinate: let
               output =
-                if coordinate.declaration.class == "darwin"
+                if isDarwin coordinate.hostPlatform
                 then darwin.${hostOutputName coordinate}
                 else nixos.${hostOutputName coordinate};
             in
@@ -137,7 +130,7 @@ in {
           }
           {
             assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos.dendritic-composition-order.config.dendritic.evaluatorTest.compositionTrace == ["shared" "perTag:base" "perArch" "perSystem" "perTag:headless" "perTag:dev" "host"];
-            message = "root, class, architecture, platform, ordered host tags, and host modules accumulate in declaration order";
+            message = "root, architecture, platform, ordered host tags, and host modules accumulate in declaration order";
           }
           {
             assertion = !flakeConfig.debug || system != "x86_64-linux" || nixos."dendritic-composition-order-tagged".config.environment.etc."dendritic-variant-tag".text == "variant";

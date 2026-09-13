@@ -4,15 +4,6 @@
   ...
 }: let
   configurations = config.dendritic.configurations;
-  expectedNativeClass = hostPlatform: let
-    platform = lib.systems.parse.mkSystemFromString hostPlatform.system;
-  in
-    if lib.systems.inspect.predicates.isDarwin platform
-    then "darwin"
-    else if lib.systems.inspect.predicates.isLinux platform
-    then "nixos"
-    else throw "dendritic.configurations: unsupported host platform ${hostPlatform.system}";
-
   architecture = hostPlatform: builtins.head (lib.splitString "-" hostPlatform.system);
 in {
   options.dendritic.internal.systemCoordinates = lib.mkOption {
@@ -28,7 +19,7 @@ in {
       systemLayer = configurations.perSystem.${hostPlatform.system} or {};
       coordinate = {
         inherit hostName hostPlatform declaration;
-        inherit (declaration) class nativeClass outputName buildPlatforms crossCompile variants;
+        inherit (declaration) outputName buildPlatforms crossCompile variants;
         specialArgs = lib.mergeAttrsList [
           declaration.specialArgs
           (archLayer.specialArgs or {})
@@ -81,7 +72,7 @@ in {
         };
       };
     in
-      assert lib.assertMsg (declaration.nativeClass == expectedNativeClass hostPlatform) "dendritic.configurations: class ${declaration.class} resolves to ${declaration.nativeClass}, which conflicts with host platform ${hostPlatform.system}"; coordinate)
+      coordinate)
     declaration.hostPlatforms)
   config.dendritic.internal.systemDeclarations);
 }
